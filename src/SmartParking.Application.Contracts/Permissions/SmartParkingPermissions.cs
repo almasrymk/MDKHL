@@ -16,7 +16,7 @@ public static class SmartParkingPermissions
     public const string ViewGarageCard = ".ViewGarageCard";
     public const string ViewBeneficiaresCard = ".ViewBeneficiaresCard";
     public const string ViewBarChartCard = ".ViewBarChartCard";
-    public const string ViewBieChartCard = ".ViewBieChartCard";
+    public const string ViewBieChartCard = ".ViewPieChartCard";
     public const string ViewAmountCard = ".ViewAmountCard";
     public const string ViewNoPackageCard = ".ViewNoPackageCard";
 }
