@@ -55,4 +55,6 @@ public class Organization : BaseEntity
     public int Graceperiod { get; set; }
 
     public string TaxIdentificationNumber { get; set; }
+    public bool HasFreeSlots { get; set; }
+
 }
