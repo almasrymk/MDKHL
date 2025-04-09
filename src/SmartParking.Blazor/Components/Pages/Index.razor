@@ -15,6 +15,7 @@
 @using SmartParking.Utilities
 @using MudBlazor
 @using Volo.Abp.MultiTenancy
+@using Microsoft.AspNetCore.Authorization
 @inherits SmartParkingComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IStringLocalizer<SmartParkingResource> L
@@ -33,7 +34,7 @@
 <PageTitle>@L["Dashboard"]</PageTitle>
 
 <MudGrid>
-    @if (currenttenant.Id == null)
+    @if (currenttenant.Id == null && IsShowOrganizationsCard)
     {
         <SpCardInfo grid="totalGrid"
         Number="@_organizationsCount.ToString()"
@@ -42,18 +43,24 @@
 
 
 
-    }  
-    <SpCardInfo grid="grid"
-    Number="@_garagesCount.ToString()"
-    Type="@L["Garages"]"
-    icon="images/dashboard/garage.png"></SpCardInfo>
+    } 
+    @if (IsShowGaragesCard){
+        <SpCardInfo grid="grid"
+        Number="@_garagesCount.ToString()"
+        Type="@L["Garages"]"
+        icon="images/dashboard/garage.png"></SpCardInfo>
+    }
 
-    <SpCardInfo grid="grid"
-    Number="@_customersCount.ToString()"
-    Type="@L["Customers"]"
-    icon="images/dashboard/customers.png"></SpCardInfo>
+    @if (IsShowTotalCustomersCard)
+    {
+        <SpCardInfo grid="grid"
+        Number="@_customersCount.ToString()"
+        Type="@L["Customers"]"
+        icon="images/dashboard/customers.png"></SpCardInfo>
+    }
 
-    @if (currenttenant.Id is not null)
+
+    @if (currenttenant.Id is not null )
     {
         <SpCardStatistics grid="grid"
         Header="@L["TotalSlots"]"
@@ -63,36 +70,43 @@
         BodyText2="@totalEmptyOfParking.ToString()"></SpCardStatistics>
     }
     <MudItem sm="12" Class="row">
-        <MudItem Class="col">
-            <SpCardInfo Number="@data[0].ToString()"
-                        Type="@L["Beneficiaries"]"
-                        icon="images/dashboard/customers.png"></SpCardInfo>
-        </MudItem>
-        <MudItem Class="col">
-            <SpCardInfo Number="@data[1].ToString()"
-                        Type="@L["Employees"]"
-                        icon="images/dashboard/customers.png"></SpCardInfo>
-        </MudItem>
-        <MudItem Class="col">
-           
-            <SpCardInfo 
-                        Number="@data[2].ToString()"
-                        Type="@L["Visitors"]"
-                        icon="images/dashboard/customers.png"></SpCardInfo>
-        </MudItem>
-            @if (currenttenant.Id is null)
-            {
+        @if (IsShowBeneficiariesCard)
+        {
             <MudItem Class="col">
-                    <SpCardInfo 
-                                Number="@data[3].ToString()"
-                                Type="@L["NoPackages"]"
-                                icon="images/dashboard/customers.png"></SpCardInfo>
+                <SpCardInfo Number="@data[0].ToString()"
+                Type="@L["Beneficiaries"]"
+                icon="images/dashboard/customers.png"></SpCardInfo>
             </MudItem>
-            }
-        
+        }
+        @if(IsShowEmployeesCard){
+            <MudItem Class="col">
+                <SpCardInfo Number="@data[1].ToString()"
+                Type="@L["Employees"]"
+                icon="images/dashboard/customers.png"></SpCardInfo>
+            </MudItem>
+        }
+        @if(IsShowVisitorsCard){
+            <MudItem Class="col">
+
+                <SpCardInfo Number="@data[2].ToString()"
+                Type="@L["Visitors"]"
+                icon="images/dashboard/customers.png"></SpCardInfo>
+            </MudItem>
+        }
+
+        @if (currenttenant.Id is null && IsShowNoPackagesCard)
+        {
+            <MudItem Class="col">
+                <SpCardInfo 
+                Number="@data[3].ToString()"
+                Type="@L["NoPackages"]"
+                icon="images/dashboard/customers.png"></SpCardInfo>
+            </MudItem>
+        }
+
     </MudItem>
-    
-    
+
+
 
 
 
@@ -120,14 +134,15 @@
 
 
     }
-    <SpCardStatistics 
-    grid="12"
-    Header="@L["CollectedMoneyToday"]"
-    HeaderText1="@L["Day"]"
-    BodyText1="@Day"
-    HeaderText2="@L["Collected"]"
-    BodyText2=@collectedMoneyToday
-    ></SpCardStatistics>
+    @if(IsShowCollectedMoneyTodayCard){
+        <SpCardStatistics grid="12"
+        Header="@L["CollectedMoneyToday"]"
+        HeaderText1="@L["Day"]"
+        BodyText1="@Day"
+        HeaderText2="@L["Collected"]"
+        BodyText2=@collectedMoneyToday></SpCardStatistics>
+    }
+
 
     <MudItem sm="6">
         <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex gap-2 align-items-center h-100">
@@ -141,8 +156,16 @@
         </MudPaper>
     </MudItem>
     <div style="display: flex; gap: 16px; width: 100%; padding: 16px; box-sizing: border-box;">
-        <SpPieChart data="@data" labels="@labels" msg="@msg"></SpPieChart>
-        <SpBarChart  XAxisLabels="@XAxisLabels" Series="@Series"></SpBarChart>
+        @if(IsShowPieChartCard){
+            <SpPieChart data="@data" labels="@labels" msg="@msg"></SpPieChart>
+        }
+
+        @if (IsShowBarChartCard)
+        {
+            <SpBarChart XAxisLabels="@XAxisLabels" Series="@Series"></SpBarChart>
+
+        }
+
         
     </div>
 
