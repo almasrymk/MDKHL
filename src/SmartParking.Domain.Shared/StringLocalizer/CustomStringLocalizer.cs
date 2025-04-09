@@ -24,7 +24,7 @@ public static class CustomStringLocalizer
     public const string ViewBeneficiaresCard = "Permission:ViewBeneficiaresCard";
     public const string ViewAmountCard = "Permission:ViewAmountCard";
     public const string ViewBarChartCard = "Permission:ViewBarChartCard";
-    public const string ViewBieChartCard = "Permission:ViewBieChartCard";
+    public const string ViewBieChartCard = "Permission:ViewPieChartCard";
     public const string ViewNoPackageCard = "Permission:ViewNoPackageCard";
     public const string ViewTotalSlotsCard = "Permission:ViewTotalSlotsCard";
     public const string ViewNumberOfEmployeeCard = "Permission:ViewNumberOfEmployeeCard";
