@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.JSInterop;
 using MudBlazor;
 using SmartParking.Analysis;
@@ -7,14 +9,29 @@ using SmartParking.Enums;
 using SmartParking.Helpers;
 using SmartParking.Localization;
 using SmartParking.Organizations;
+using SmartParking.Permissions.CardsPermissions;
+using SmartParking.Permissions.CustomerPermissions;
 using SmartParking.Utilities;
 
 namespace SmartParking.Blazor.Components.Pages;
 
 public partial class Index
 {
-    ChartOptions options = new ChartOptions();
-    AnalysisNamesCountDto value = new AnalysisNamesCountDto();
+    private bool IsShowOrganizationsCard {  get; set; }
+    private bool IsShowGaragesCard {  get; set; }
+    private bool IsShowTotalCustomersCard {  get; set; }
+    private bool IsShowTotalSlotsCard {  get; set; }
+    private bool IsShowBeneficiariesCard {  get; set; }
+    private bool IsShowEmployeesCard {  get; set; }
+    private bool IsShowVisitorsCard {  get; set; }
+    private bool IsShowNoPackagesCard {  get; set; }
+    private bool IsShowNumberOfCustomerParkingCard {  get; set; }
+    private bool IsShowNumberOfEmployeeParkingCard {  get; set; }
+    private bool IsShowNumberOfVistiorParkingCard {  get; set; }
+    private bool IsShowCollectedMoneyTodayCard {  get; set; }
+    private bool IsShowPieChartCard {  get; set; }
+    private bool IsShowBarChartCard {  get; set; }
+    
     public EventCallback<string> SelectValueChanged { get; set; }
     private int _organizationsCount;
     private int _garagesCount;
@@ -22,13 +39,12 @@ public partial class Index
     private int grid;
     private int totalGrid;
     private GetNumberOfParkingAndEmptyParkingDto getNumberOfParking { get; set; } = new GetNumberOfParkingAndEmptyParkingDto();
-    double[] data = { 0, 0, 0, 0 };
+    public double[] data { get; set; } = { 0, 0, 0, 0 };
 
     string[] labels = { "Customers", "Employees", "Visitors", "NoPackage" };
-    string msg;
+    public string msg { get; set; }
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
-    public string[] XAxisLabels = { " " };
-    private int index = -1;
+    public string[] XAxisLabels { get; set; } = { " " };
 
     public List<ChartSeries> Series = new List<ChartSeries>();
 
@@ -55,7 +71,20 @@ public partial class Index
 
         // Fetch the data from backend
 
-
+        IsShowOrganizationsCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewOrganizationCard);
+        IsShowBarChartCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewBarChartCard);
+        IsShowBeneficiariesCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewBeneficiaresCard);
+        IsShowCollectedMoneyTodayCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewAmountCard);
+        IsShowEmployeesCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewEmployeeCard);
+        IsShowGaragesCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewGarageCard);
+        IsShowNoPackagesCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewNoPackageCard);
+        IsShowVisitorsCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewVisitorCard);
+        IsShowPieChartCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewBieChartCard);
+        IsShowTotalCustomersCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewCustomerCard);
+        IsShowTotalSlotsCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewTotalSlotsCard);
+        IsShowNumberOfCustomerParkingCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewNumberOfCustomerCard);
+        IsShowNumberOfEmployeeParkingCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewNumberOfEmployeeCard);
+        IsShowNumberOfVistiorParkingCard = await AuthorizationService.IsGrantedAsync(CardsPermissions.ViewNumberOfVisitorCard);
         _organizationsCount = await OrganizationAppService.GetOrganizationsCount();
         _garagesCount = await GarageAppService.GetAllGaragesCount();
 
@@ -79,7 +108,7 @@ public partial class Index
         {
 
             var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
-            await GetNumberOfParkingAndEmptyAsync(organization.Id);
+            await GetNumberOfParkingAndEmptyAsync(organization?.Id);
             var dataForCount = await AnalysisAppService.GetCountOfCustomersAndVisitorsAndEmployeesOrganization(organization.Id);
             ShowData(dataForCount.totalCountOfCustomers, dataForCount.totalCountOfVisitors, dataForCount.totalCountOfEmployees, dataForCount.totalCountOfNoPackage);
             grid = 4;
@@ -93,10 +122,8 @@ public partial class Index
             collectedMoneyToday = $"{Math.Round((decimal)dataForToday.totalAmounts, 2).ToString()} {@L["SAR"]}";
         }
 
-        string[] colors = { "#0D5480", "#16B7D3", "#CE3333", "#ca06e1" };
-        options.ChartPalette = colors;
-        options.ShowLegend = true;
-        options.LineStrokeWidth = 20;
+        
+
     }
 
     private void ShowData(int NumberOfCustomers, int NumberOfVisitors, int NumberOfEmployees, int? NumberOfNoPackage)
@@ -119,12 +146,16 @@ public partial class Index
 
     }
 
-    private async Task GetNumberOfParkingAndEmptyAsync(int organizationId)
+    private async Task GetNumberOfParkingAndEmptyAsync(int? organizationId)
     {
-        getNumberOfParking = await AnalysisAppService.GetNumberOfParkingSlotsAndEmptySolts(organizationId);
-        totalOfParking = getNumberOfParking.NumberOfParking;
-        totalEmptyOfParking = getNumberOfParking.NumberOfEmptyParking;
+        if (organizationId.HasValue)
+        {
 
+            getNumberOfParking = await AnalysisAppService.GetNumberOfParkingSlotsAndEmptySolts(organizationId.Value);
+            totalOfParking = getNumberOfParking.NumberOfParking;
+            totalEmptyOfParking = getNumberOfParking.NumberOfEmptyParking;
+
+        }
 
     }
 
