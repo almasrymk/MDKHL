@@ -793,7 +793,8 @@
     "Assign User to Shift": "تخصيص وردية للمستخدم",
     "InvoiceNumberView": "رقم الفاتورة",
     "DelPackage": "لا يمكن مسح باقه لديها مشتركين",
-    "HasFreeSlots": "بدون اماكن"
+    "HasFreeSlots": "بدون اماكن",
+    "VehicleNotFoundAtGate": "لا توجد مركبة أمام البوابة"
 
 
 
