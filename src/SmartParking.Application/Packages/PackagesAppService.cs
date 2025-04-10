@@ -197,7 +197,6 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
     private async Task<PagedResultDto<PackageDto>> MapToGetListDto(PagedAndSortedResultRequestDto input,  IQueryable<Package> queryable)
     {
         var totalCount = await AsyncExecuter.CountAsync(queryable);
-
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
         var packages = await AsyncExecuter.ToListAsync(queryable);
         var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);

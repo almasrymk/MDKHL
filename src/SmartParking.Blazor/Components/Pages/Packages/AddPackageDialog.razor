@@ -76,14 +76,14 @@
                     {
                         <MudItem sm="6">
                             <MudSelect T="string"
-                                       Class="custom-placeholder"
-                                       Variant="Variant.Text"
-                                       Label=@L["Organizations"]
-                                       HelperText=@L["Helper Text"]
-                                       Required
-                                       Placeholder="@L[ "Choose"]"
-                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                                       @bind-Value="OrganizationId">
+                            Class="custom-placeholder"
+                            Variant="Variant.Text"
+                            Label=@L["Organizations"]
+                            HelperText=@L["Helper Text"]
+                            Required
+                            Placeholder="@L[ "Choose"]"
+                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                            @bind-Value="OrganizationId">
                                 @* <MudSelectItem Value="0" Disabled="true" style="color: rgb(66 66 66 / 48%);">@L["Choose"]</MudSelectItem> *@
 
                                 @foreach (var organization in _organizations)
@@ -97,7 +97,7 @@
                                     }
                                     else
                                     {
-                                        <MudSelectItem Value="organization.Id">@organization.ArabicName</MudSelectItem>
+                                        <MudSelectItem Value="organization.Id.ToString()">@organization.ArabicName</MudSelectItem>
                                     }
                                 }
                             </MudSelect>
@@ -108,12 +108,20 @@
 
                     <MudItem sm="6" md="6">
                         <MudSelect @bind-Value="@PackageTypeId" Label="@L["PackageType"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"] Required>
-                           
+
                             @foreach (var type in packageTypes)
                             {
-                                <MudSelectItem T="string" Value="@type.Id.ToString()">
-                                    @type.EnglishName
-                                </MudSelectItem>
+                                if (CultureInfo.CurrentCulture.Name == "en")
+                                {
+                                     <MudSelectItem T="string" Value="@type.Id.ToString()">
+                                         @type.EnglishName
+                                     </MudSelectItem>
+                                }
+                                else{
+                                    <MudSelectItem T="string" Value="@type.Id.ToString()">
+                                        @type.ArabicName
+                                    </MudSelectItem>
+                                }
                             }
                         </MudSelect>
                     </MudItem>
@@ -213,13 +221,13 @@
     }
 
     .custom-numeric-field input {
-        display: flex;
-        text-align: end;
-        width: 100%; /* Equivalent to w-100 in Bootstrap */
+    display: flex;
+    text-align: end;
+    width: 100%; /* Equivalent to w-100 in Bootstrap */
     }
 
     .custom-placeholder .mud-disabled {
-        color: gray !important; /* Change this to your desired placeholder color */
+    color: gray !important; /* Change this to your desired placeholder color */
     }
 
 </style>
@@ -249,6 +257,10 @@
         packageTypes = packageTypesList;
         timeSpanFrom = createUpdatePackage.PublishFrom.ToTimeSpan();
         timeSpanTo = createUpdatePackage.PublishTo.ToTimeSpan();
+        if(CurrentTenant.Id!=null){
+            var id = await organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
+            OrganizationId = id.ToString();
+        }
         await base.OnInitializedAsync();
     }
     private void OnTimeFromChanged(TimeSpan? value)
@@ -282,25 +294,21 @@
         createUpdatePackage.PackageTypeId = int.Parse(PackageTypeId);
         createUpdatePackage.OrganizationId = int.Parse(OrganizationId);
         createUpdatePackage.CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), CustomerCategory);
-        if (CurrentTenant.Id != null)
+        if (CurrentTenant.Id == null)
         {
-            createUpdatePackage.OrganizationId = await organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
-        }
-        else{
             createUpdatePackage.TenantId = _organizations.FirstOrDefault(x => x.Id == createUpdatePackage.OrganizationId).TenantId;
         }
+
         try
         {
             if(form.IsValid)
             {
                 createUpdatePackage.Published = createUpdatePackage.Published || PackageValidations.CheckPackageTimeValiditity(createUpdatePackage.PublishFrom, createUpdatePackage.PublishTo);
-            createUpdatePackage.TenantId = CurrentTenant.Id;
-            createUpdatePackage.ActivationDate = DateTime.Now;
-            createUpdatePackage.PackageStatus = SubscriptionStatus.Draft;
-            createUpdatePackage.Status = Status.Inactive;
-                
-            await PackagesAppService.CreateAsync(createUpdatePackage);
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {createUpdatePackage.ArabicName}", Severity.Success);
+                createUpdatePackage.ActivationDate = DateTime.Now;
+                createUpdatePackage.PackageStatus = SubscriptionStatus.Draft;
+                createUpdatePackage.Status = Status.Inactive;
+                await PackagesAppService.CreateAsync(createUpdatePackage);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {createUpdatePackage.ArabicName}", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 NavigationManager.NavigateTo("/package", true);

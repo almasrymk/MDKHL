@@ -181,28 +181,21 @@ public partial class Package
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-
-        termSearch = pageInfo.SearchTerm;
-        CurrentPage = pageInfo.PageNumber;
-        RowPerPage = pageInfo.RowsPerPage;
-        sortColumn = pageInfo.SortColumn;
-
-
         // Create a request object for paged and sorted data
         var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm= termSearch
-            
+            SearchingTerm= pageInfo.SearchTerm
+
         };
 
         var packagesDto = (CurrentTenant.Id) switch {
             (not null)=>await PackagesAppService.GetListAsync(input),
             (null)=>await PackagesAppService.GetListMDKHLAsync(input,null),
         };
-        TotalItem = (int)packagesDto.TotalCount;
+       TotalItem = (int)packagesDto.TotalCount;
         await CreateTable(packagesDto);
 
     }
