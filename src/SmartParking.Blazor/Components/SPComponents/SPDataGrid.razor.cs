@@ -326,6 +326,7 @@ public partial class SPDataGrid
             await Task.Delay(1000);
             await OpenNewBlank($"Folders/Excel/{Data.Name}.xlsx");
             IsExport = false;
+            await ServerReload(state);
         }
         catch
         {
@@ -354,7 +355,7 @@ public partial class SPDataGrid
             await Task.Delay(1000);
             await OpenNewBlank($"Folders/Csv/{Data.Name}.csv");
             IsExport = false;
-
+            await ServerReload(state);
         }
         catch
         {
@@ -388,6 +389,7 @@ public partial class SPDataGrid
             await Task.Delay(1000);
             await OpenNewBlank($"Folders/PDF/{Data.Name}.pdf");
             IsExport = false;
+            await ServerReload(state);
 
         }
         catch
