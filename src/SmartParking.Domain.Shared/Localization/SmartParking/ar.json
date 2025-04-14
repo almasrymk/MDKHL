@@ -794,6 +794,7 @@
     "InvoiceNumberView": "رقم الفاتورة",
     "DelPackage": "لا يمكن مسح باقه لديها مشتركين",
     "HasFreeSlots": "بدون اماكن",
+    "VehicleNotFoundAtGate": "لا توجد مركبة أمام البوابة",
     "BeneficiaryName": "إسم المستفيد",
     "AddedBy": "إضافة بواسطة",
     "AddedDate": "تاريخ الإضافة",

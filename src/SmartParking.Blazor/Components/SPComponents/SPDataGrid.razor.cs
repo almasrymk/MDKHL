@@ -279,7 +279,7 @@ public partial class SPDataGrid
         var pageArgs = new PageChangeEventArgs()
         {
             PageNumber = state.Page + 1,
-            RowsPerPage = state.PageSize-1,
+            RowsPerPage = state.PageSize,
             SortColumn = sortString,
             SearchTerm = _searchString,
             Filters = ColumnsFilter,
