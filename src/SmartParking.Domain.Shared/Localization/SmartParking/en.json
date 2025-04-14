@@ -765,7 +765,12 @@
     "Assign User to Shift": "Assign User to Shift",
     "InvoiceNumberView": "Invoice Number",
     "DelPackage": "Can't delete package It has subscribers",
-    "HasFreeSlots": "Without Slots"
+    "HasFreeSlots": "Without Slots",
+    "BeneficiaryName": "Beneficiary Name",
+    "BeneficiariesVehicles": "Beneficiaries Vehicles",
+    "AddedBy": "Added By",
+    "AddedDate": "Added Date",
+    "BeneficiariesVehiclesReport": "Beneficiaries Vehicles Report"
 
   }
 

@@ -793,10 +793,11 @@
     "Assign User to Shift": "تخصيص وردية للمستخدم",
     "InvoiceNumberView": "رقم الفاتورة",
     "DelPackage": "لا يمكن مسح باقه لديها مشتركين",
-    "HasFreeSlots": "بدون اماكن"
-
-
-
-
+    "HasFreeSlots": "بدون اماكن",
+    "BeneficiaryName": "إسم المستفيد",
+    "AddedBy": "إضافة بواسطة",
+    "AddedDate": "تاريخ الإضافة",
+    "BeneficiariesVehicles": "مركبات المستفيدين",
+    "BeneficiariesVehiclesReport": "تقرير مركبات المستفيدين"
   }
 }
