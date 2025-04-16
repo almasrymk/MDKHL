@@ -452,7 +452,8 @@ public static class CreateTableHelper
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CountUsePackage"), Name = "CountUsePackage", TypeFilter = TypeFilter.Number, IsSortable = true, PropertyName = "CountUsePackage", IsFilterable = true });
         tableData.Columns.Add(new ColumnDef() { DisplayName = $"{LocalizationHelper.GetLocalizedString("ValueOfPackage")} ({LocalizationHelper.GetLocalizedString("SAR")})", Name = "ValueOfPackage", TypeFilter = TypeFilter.Number, IsSortable = true, PropertyName = "ValueOfPackage", IsFilterable = true });
         tableData.Columns.Add(new ColumnDef() { DisplayName = $"{LocalizationHelper.GetLocalizedString("ValueTotalPackage")} ({LocalizationHelper.GetLocalizedString("SAR")})", Name = "ValueTotalPackage", TypeFilter = TypeFilter.Number, IsSortable = true, PropertyName = "ValueTotalPackage", IsFilterable = true });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Date"), Name = "Date", TypeFilter = TypeFilter.Date, TypeOfColumn = typeof(DateTime), IsSortable = true, PropertyName = "Package.CreationTime", IsFilterable = true });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Date"), Name = "Date", TypeFilter = TypeFilter.DateOnly, TypeOfColumn = typeof(DateOnly), IsSortable = true, PropertyName = "Date", IsFilterable = true });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Time"), Name = "Time", TypeFilter = TypeFilter.Time, TypeOfColumn = typeof(TimeOnly), IsSortable = true, PropertyName = "Time", IsFilterable = true });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("customer category"), Name = "CustomerCategory", TypeFilter = TypeFilter.Enum, IsSortable = true, PropertyName = "Package.CustomerCategory", IsFilterable = true, TypeOfColumn = typeof(CustomerCategoryStatus) });
         // Loop through the payments data and add rows to the table
         foreach (var payment in payments)
@@ -472,7 +473,8 @@ public static class CreateTableHelper
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CountUsePackage"), payment.CountUsePackage.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{LocalizationHelper.GetLocalizedString("ValueOfPackage")} ({LocalizationHelper.GetLocalizedString("SAR")})", payment.ValueOfPackage.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{LocalizationHelper.GetLocalizedString("ValueTotalPackage")} ({LocalizationHelper.GetLocalizedString("SAR")})", payment.ValueTotalPackage.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Date"), payment.Package.CreationTime.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Date"), payment.Date.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Time"), payment.Time.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("customer category"), LocalizationHelper.GetLocalizedString(payment.Package.CustomerCategory.ToString())));
             tableData.Rows.Add(rowDef);
         }
