@@ -20,5 +20,6 @@ public class VehicleCustomerReportDto
     public string EnPlateNumber { get; set; }
     public Guid? TenantId { get; set; }
     public string CreatedBy { get; set; }
-    public DateTime? CreationTime { get; set; }
+    public TimeOnly? CreationTime { get; set; }
+    public DateOnly? CreationDate { get; set; }
 }
