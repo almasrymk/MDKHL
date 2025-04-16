@@ -403,7 +403,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
        var invoice =await query.FirstOrDefaultAsync();
         if (invoice == null)
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Vehicle")+ " "+ LocalizationHelper.GetLocalizedString("NotFoundValidation") + LocalizationHelper.GetLocalizedString("AtGate"));
+            throw new Exception(LocalizationHelper.GetLocalizedString("VehicleNotFoundAtGate"));
         }
        return ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
       

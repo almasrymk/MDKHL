@@ -2,6 +2,7 @@
 using Castle.Core.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using SmartParking.CustomerPackages;
 using SmartParking.DataTable;
 using SmartParking.Entities.Analysis;
@@ -21,6 +22,7 @@ using SmartParking.Payments;
 using SmartParking.PDF;
 using SmartParking.Repositories;
 using SmartParking.Results;
+using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -52,7 +54,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     private readonly IGarageTransactionAnalysisRepository _garageTransactionAnalysis;
     private readonly IGarageAnalysisRepository _garageAnalysis;
     private readonly IShiftAnalysisRepository _shiftAnalysisRepository;
-
+    private readonly IMyUserRepository _myUserRepository;
     private readonly IPaymentAnalysisRepository _paymentAnalysisRepository;
     private readonly IOrganizationsAppService _organizationsAppService;
 
@@ -88,7 +90,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         IOrganizationsAppService organizationsAppService,
         IRepository<GarageTransaction, int> garageTransactionRepository,
         IPackageAnalysisRepository packageAnalysisRepository,
-        IShiftAnalysisRepository shiftAnalysisRepository)
+        IShiftAnalysisRepository shiftAnalysisRepository,
+        IMyUserRepository myUserRepository)
     {
         _custeRepo = custeRepo;
         _orgRepo = orgRepo;
@@ -104,6 +107,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         _packageAnalysisRepository = packageAnalysisRepository;
         _vehicleRepository = VehicleRepository;
         _shiftAnalysisRepository = shiftAnalysisRepository;
+        _myUserRepository = myUserRepository;
     }
 
     public async Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations()
@@ -736,4 +740,70 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+
+    public async Task<PagedResultDto<VehicleCustomerReportDto>> ReportVehicleCustomerAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _vehicleRepository.GetQueryableAsync();
+            var userQuery = await _myUserRepository.GetQueryableAsync();
+            var resultJoin = from vehicle in query
+                             
+                             select new VehicleCustomerReportDto
+                             {
+                                 ArPlateNumber = vehicle.ArPlateNumber,
+                                 EnPlateNumber = vehicle.EnPlateNumber,
+                                 CustomerEnglishName = vehicle.Customer.IdentityUser.Name,
+                                 CustomerArabicName = vehicle.Customer.ArabicName,
+                                 BrandArabicName = vehicle.VehicleBrand.ArabicName,
+                                 BrandEnglishName = vehicle.VehicleBrand.EnglishName,
+                                 ModelArabicName = vehicle.VehicleModel.ArabicName,
+                                 ModelEnglishName = vehicle.VehicleModel.EnglishName,
+                                 CreatedBy  = userQuery.Where(_ => _.Id == vehicle.CreatorId).FirstOrDefault().Name,
+                                 CreationTime = vehicle.CreationTime,
+                                 ModelYear = vehicle.ModelYear,
+                                 TenantId = vehicle.TenantId
+                             };
+            
+            if (tenantId.HasValue)
+                resultJoin = resultJoin.Where(_ => _.TenantId == tenantId);
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    resultJoin = resultJoin.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    resultJoin = resultJoin.OrderBy(input.Sorting);
+                }
+
+            }
+            if (input.filters.Count > 0)
+            {
+                var filterExpression = BuildExpression<VehicleCustomerReportDto>.BuildFilterExpression(input.filters);
+                if (filterExpression is not null)
+                {
+                    resultJoin = resultJoin.Where(filterExpression);
+                }
+            }
+            if(!input.SearchingTerm.IsNullOrEmpty())
+            {
+                resultJoin = resultJoin.Where(_ => _.CustomerEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.CustomerArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+                );
+            }
+            var totalCount = await AsyncExecuter.CountAsync(resultJoin);
+            resultJoin = resultJoin.Skip(input.SkipCount).Take(input.MaxResultCount);
+            var result = await AsyncExecuter.ToListAsync(resultJoin);
+            return new PagedResultDto<VehicleCustomerReportDto>
+            {
+                Items = result,
+                TotalCount = totalCount
+            };
+        }
+    }
+
 }
