@@ -801,6 +801,9 @@
     "AddedTime": "وقت الإضافة",
     "BeneficiariesVehicles": "مركبات المستفيدين",
     "BeneficiariesVehiclesReport": "تقرير مركبات المستفيدين",
-    "AccurateDate": "تاريخ الفعلي"
+    "AccurateDate": "تاريخ الفعلي",
+    "SubscriptionTime": "وقت الاشتراك",
+    "ExpiryTime": "وقت إنتهاء"
+
   }
 }
