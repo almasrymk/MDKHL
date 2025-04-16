@@ -761,7 +761,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  ModelArabicName = vehicle.VehicleModel.ArabicName,
                                  ModelEnglishName = vehicle.VehicleModel.EnglishName,
                                  CreatedBy  = userQuery.Where(_ => _.Id == vehicle.CreatorId).FirstOrDefault().Name,
-                                 CreationTime = vehicle.CreationTime,
+                                 CreationTime = TimeOnly.FromDateTime(vehicle.CreationTime),
+                                 CreationDate = DateOnly.FromDateTime(vehicle.CreationTime),
                                  ModelYear = vehicle.ModelYear,
                                  TenantId = vehicle.TenantId
                              };
