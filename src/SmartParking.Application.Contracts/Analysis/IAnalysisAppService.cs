@@ -4,6 +4,7 @@ using SmartParking.DataTable;
 using SmartParking.Entities.Analysis;
 using SmartParking.Enums;
 using SmartParking.Payments;
+using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,4 +89,6 @@ public interface IAnalysisAppService : IApplicationService
     /// The report data is then returned as a paged result with the items and total count.
     /// </remarks>
     Task<PagedResultDto<DiscountPaymentAnalysis>> ReportDiscountPaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    Task<PagedResultDto<VehicleCustomerReportDto>> ReportVehicleCustomerAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
 }
