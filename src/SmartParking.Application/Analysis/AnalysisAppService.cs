@@ -540,8 +540,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  Currency = payment.Currency,
                                  Invoice = payment.Invoice,
                                  CheckoutId = payment.CheckoutId,
-                                 CreatedDate = DateOnly.FromDateTime(payment.CreationTime),
-                                 CreatedTime = TimeOnly.FromDateTime(payment.CreationTime),
+                                 Date = DateOnly.FromDateTime(payment.CreationTime),
+                                 Time = TimeOnly.FromDateTime(payment.CreationTime),
                                  Customers = payment.Customers,
                                  PaymentMethod = payment.PaymentMethod.ToString(),
                                  PaymentNumber = payment.PaymentNumber,
@@ -553,8 +553,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
                                  InvoiceId = payment.InvoiceId
-                                 
-
                              };
             resultJoin = CheckTenantPayment(tenantId, resultJoin);
             resultJoin = ApplySortPayment(input, resultJoin);
@@ -585,19 +583,19 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  Currency = payment.Currency,
                                  Invoice = payment.Invoice,
                                  CheckoutId = payment.CheckoutId,
-                                 CreatedDate = DateOnly.FromDateTime(payment.CreationTime),
-                                 CreatedTime = TimeOnly.FromDateTime(payment.CreationTime),
+                                 Date = DateOnly.FromDateTime(payment.CreationTime),
+                                 Time = TimeOnly.FromDateTime(payment.CreationTime),
                                  Customers = payment.Customers,
                                  PaymentMethod = payment.PaymentMethod.ToString(),
-                                 PaymentNumber = payment.Invoice.InvoiceNumber,
+                                 PaymentNumber = payment.PaymentNumber,
                                  OrganizationArabicName = payment.Invoice.Organization.ArabicName,
                                  OrganizationEnglishName = payment.Invoice.Organization.EnglishName,
                                  PlateNumber = payment.Invoice.PlateNumber,
                                  AmountWithoutDiscount = payment.InvoiceId.HasValue ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
                                  QrCodeInvoice = payment.QrCodeInvoice,
                                  CreationTime = payment.CreationTime.ToString(),
-                                 PaymentCategory = payment.PaymentCategory
-
+                                 PaymentCategory = payment.PaymentCategory,
+                                 InvoiceId = payment.InvoiceId
                              };
             resultJoin = CheckTenantPayment(tenantId, resultJoin);
             resultJoin = ApplySortPayment(input, resultJoin);
@@ -624,23 +622,23 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                              where payment.PaymentMethod == PaymentMethod.Cash
                              select new PaymentDto
                              {
-                                 Id = payment.Id,
                                  Amount = payment.Amount,
                                  Currency = payment.Currency,
                                  Invoice = payment.Invoice,
                                  CheckoutId = payment.CheckoutId,
-                                 CreatedDate = DateOnly.FromDateTime(payment.CreationTime),
-                                 CreatedTime = TimeOnly.FromDateTime(payment.CreationTime),
+                                 Date = DateOnly.FromDateTime(payment.CreationTime),
+                                 Time = TimeOnly.FromDateTime(payment.CreationTime),
                                  Customers = payment.Customers,
                                  PaymentMethod = payment.PaymentMethod.ToString(),
-                                 PaymentNumber = payment.Invoice.InvoiceNumber,
+                                 PaymentNumber = payment.PaymentNumber,
                                  OrganizationArabicName = payment.Invoice.Organization.ArabicName,
                                  OrganizationEnglishName = payment.Invoice.Organization.EnglishName,
-                                 PlateNumber = payment.ArPlateNumber,
+                                 PlateNumber = payment.Invoice.PlateNumber,
                                  AmountWithoutDiscount = payment.InvoiceId.HasValue ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
                                  QrCodeInvoice = payment.QrCodeInvoice,
                                  CreationTime = payment.CreationTime.ToString(),
-                                 PaymentCategory = payment.PaymentCategory
+                                 PaymentCategory = payment.PaymentCategory,
+                                 InvoiceId = payment.InvoiceId
 
                              };
 

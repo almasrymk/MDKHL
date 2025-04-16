@@ -24,9 +24,9 @@ public class PaymentDto
     public string Currency { get; set; }
     public string CreationTime { get; set; }
 
-    public DateOnly CreatedDate { get; set; }
+    public DateOnly Date { get; set; }
 
-    public TimeOnly CreatedTime {  get; set; }
+    public TimeOnly Time {  get; set; }
   public string PaymentNumber { get; set; }
     public string PlateNumber { get; set; }
     public string OrganizationArabicName { get; set; }
