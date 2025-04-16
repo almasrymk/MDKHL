@@ -3,14 +3,14 @@
 @using SmartParking.Localization
 @inject IStringLocalizer<SmartParkingResource> L
 <MudItem sm="7" Style="flex: 0 0 60%; display: flex; flex-direction: column; height: 100%; padding: 16px; margin: 0;">
-    <MudPaper Style="height: 100%; padding: 16px; margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+    <MudPaper Style="height: 100%; padding: 30px; margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
         <MudItem Style="display: flex; align-items: flex-start; justify-content: flex-end;">
         </MudItem>
         @if (Series != null && Series.Any(s => s.Data != null && s.Data.Any(d => d > 0)))
         {
             @if (CultureInfo.CurrentCulture.Name == "en")
             {
-                <MudItem Style="margin-left: 32px;font-size: 12px; margin-bottom: 4px;">
+                <MudItem Style="margin-left: 15px;font-size: 12px; margin-bottom: 4px;">
                     @L["SAR"]
                 </MudItem>
             }
@@ -28,7 +28,7 @@
                   XAxisLabels="@XAxisLabels"
                   Width="100%"
                   Height="300px"
-                  Style="max-width: 100%; margin: 0 auto;" />
+                  Style="max-width: 100%; margin: 20 auto;" />
     </MudPaper>
 </MudItem>
 
