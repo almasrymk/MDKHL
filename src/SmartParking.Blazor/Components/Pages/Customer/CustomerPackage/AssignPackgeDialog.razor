@@ -24,12 +24,12 @@
 <PageTitle>@L["Assign Package"]</PageTitle>
 
 <div class="modal-wrapper w-100">
-	<MudDialog class="mud-modal w-100" Style="min-width:fit-content !important">
+	<MudDialog class="d-flex mud-modal w-100">
 		<TitleContent>
 			<MudText Typo="Typo.h6">@L["Assign Package"]</MudText>
 		</TitleContent>
 		<DialogContent>
-			<MudForm Class="flex-grow-1 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+			<MudForm Class="flex-grow-0 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
 					@if (CurrentTenant.Id is null)
 					{
@@ -84,11 +84,9 @@
 
 						</MudItem>
 					}
-
-
-					@if (Packages.Count > 0)
+					@if (Packages.Count > 0 && !IsCustom )
 					{
-						<MudItem sm="12">
+						<MudItem sm="10">
 							<MudSelect T="int"
 							ValueChanged="PackageValueChanged"
 							Variant="Variant.Text"
@@ -114,36 +112,75 @@
 							</MudSelect>
 						</MudItem>
 					}
+					else if (IsCustom)
+					{
+						<MudItem sm="10">
+							@if(CultureInfo.CurrentCulture.Name == "en")
+							{
+
+								<MudTextField T="string" Label="@L["CustomPackage"]" Placeholder="@L["CustomPackage"]" ReadOnly @bind-Value="_customerPackageDto.PackageArabicName"> @L["CustomPackage"] </MudTextField>
+							}
+							else
+							{
+								<MudTextField T="string" Label="@L["CustomPackage"]" Placeholder="@L["CustomPackage"]" ReadOnly @bind-Value="_customerPackageDto.PackageArabicName"> @L["CustomPackage"] </MudTextField>
+							}
+						</MudItem>
+
+					}
+					<MudItem sm="2">
+						<MudCheckBox @bind-value="IsCustom">
+							@L["IsCustom"]
+						</MudCheckBox>
+					</MudItem>
+
+					@if (IsCustom)
+					{
 
 
+						<MudItem sm="4">
+							<MudDatePicker @bind-Date="ActivationDate" Label="@L["StartDate"]" Placeholder="@L["StartDate"]"> @L["StartDate"]</MudDatePicker>
+						</MudItem>
+						<MudItem sm="4">
+							<MudDatePicker @bind-Date="DectivationDate" Label="@L["EndDate"]" Placeholder="@L["EndDate"]"> @L["EndDate"]</MudDatePicker>
+						</MudItem>
+						<MudItem sm="4">
+							<MudNumericField @bind-value="_customerPackageDto.PriceOfPackage" HideSpinButtons Min="0" Label="@L["Price"]"> @L["Price"]</MudNumericField>
+						</MudItem>
 
+
+					}
 				</MudGrid>
-				<MudTable T="PackageDto" Items="selectedPackageDto" Style="width:100%">
-					<HeaderContent>
-						<MudTh>@L["Name"]</MudTh>
-						<MudTh>@L["Package Type"]</MudTh>
-						<MudTh>@L["Price"]</MudTh>
-						<MudTh>@L["Publish From"]</MudTh>
-						<MudTh>@L["Publish To"]</MudTh>
-						<MudTh>@L["TotalHours"]</MudTh>
-					</HeaderContent>
-					<RowTemplate>
-						@if (CultureInfo.CurrentCulture.Name == "en")
-						{
-							<MudTd>@context.EnglishName</MudTd>
-						}
-						else
-						{
-							<MudTd>@context.ArabicName</MudTd>
-						}
 
-						<MudTd>@context.PackageTypeEnglishName</MudTd>
-						<MudTd>@context.Price</MudTd>
-						<MudTd>@context.PublishFrom</MudTd>
-						<MudTd>@context.PublishTo</MudTd>
-						<MudTd>@context.DurationOfPackage</MudTd>
-					</RowTemplate>
-				</MudTable>
+
+				@if (!IsCustom)
+				{
+					<MudTable T="PackageDto" Items="selectedPackageDto" Style="width:100%">
+						<HeaderContent>
+							<MudTh>@L["Name"]</MudTh>
+							<MudTh>@L["Package Type"]</MudTh>
+							<MudTh>@L["Price"]</MudTh>
+							<MudTh>@L["Publish From"]</MudTh>
+							<MudTh>@L["Publish To"]</MudTh>
+							<MudTh>@L["TotalHours"]</MudTh>
+						</HeaderContent>
+						<RowTemplate>
+							@if (CultureInfo.CurrentCulture.Name == "en")
+							{
+								<MudTd>@context.EnglishName</MudTd>
+							}
+							else
+							{
+								<MudTd>@context.ArabicName</MudTd>
+							}
+
+							<MudTd>@context.PackageTypeEnglishName</MudTd>
+							<MudTd>@context.Price</MudTd>
+							<MudTd>@context.PublishFrom</MudTd>
+							<MudTd>@context.PublishTo</MudTd>
+							<MudTd>@context.DurationOfPackage</MudTd>
+						</RowTemplate>
+					</MudTable>
+				}
 
 			</MudForm>
 		</DialogContent>
@@ -174,6 +211,7 @@
 	[CascadingParameter]
 	private IMudDialogInstance MudDialogAdd { get; set; }
 	public PackageDto CustomerPackage = new PackageDto();
+	public CustomerPackageDto _customerPackageDto = new CustomerPackageDto();
 	[Parameter]
 	public CustomerDto Customer { get; set; }
 	[Parameter] public int VehicleId { get; set; }
@@ -185,6 +223,10 @@
 	bool _clearable;
 	private MudForm form;
 	public List<PackageDto> selectedPackageDto { get; set; } = new List<PackageDto>();
+	private bool IsCustom { get; set; } = false;
+	private DateTime?  ActivationDate { get; set; }
+	private DateTime? DectivationDate { get; set; }
+
 
 	private async Task getPackage(string customerCategory)
 	{
@@ -199,14 +241,13 @@
 	{
 		var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
 		Organizations = result.Items;
-
 		await base.OnInitializedAsync();
 	}
 
 	private async Task SubmitEdit()
 	{
 
-		if(CustomerPackage.CustomerCategory!=Customercategory.ToString()){
+		if(CustomerPackage.CustomerCategory!=Customercategory.ToString() && !IsCustom){
 			SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("Package")} , " +
 			$"{LocalizationHelper.GetLocalizedString("customer category")} "+
 			$"{LocalizationHelper.GetLocalizedString("NotSameType")} ", Severity.Error);
@@ -220,11 +261,23 @@
 			{
 				await CustomerPackagesAppService.CheckSubscriptionCustomersLimitsAsync(CustomerPackage.OrganizationId);
 			}
-			var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.Id, Customer.Id, vehicle.ArPlateNumber,vehicle.EnPlateNumber);
-			if (!assignPackage)
-				throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " "+
-				LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ASSIGN) + " " +
-				LocalizationHelper.GetLocalizedString("Package") + " ");
+			if (IsCustom)
+			{
+				_customerPackageDto.CustomerCategory = Customercategory;
+				_customerPackageDto.publishedOfPackage = true;
+				_customerPackageDto.ActivationDateOfPackage = ActivationDate.Value.Date;
+				_customerPackageDto.ExpiryDate = DectivationDate.Value.Date;
+
+			}
+			else
+			{
+				    var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.Id, Customer.Id, vehicle.ArPlateNumber, vehicle.EnPlateNumber);
+				    if (!assignPackage)
+					throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+					LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ASSIGN) + " " +
+					LocalizationHelper.GetLocalizedString("Package") + " ");
+			}
+		
 
 			SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
 			LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD)+" "+
