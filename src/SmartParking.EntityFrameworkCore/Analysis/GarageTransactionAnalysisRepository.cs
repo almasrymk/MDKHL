@@ -303,8 +303,8 @@ public class GarageTransactionAnalysisRepository
                 var sortingSplit = sorting.Split(' ').ToList();
                sorting = sortingSplit[0] + " descending";
             }
-            
-        
+
+
         var query = from garageTransaction in dbContext.GarageTransactions
                     where tenantId == null || garageTransaction.TenantId == tenantId
                     join vehicle in dbContext.Vehicles
@@ -328,7 +328,9 @@ public class GarageTransactionAnalysisRepository
                         OrganizationName = garageTransaction.Organization.EnglishName,
                         OrganizationNameAr = garageTransaction.Organization.ArabicName,
                         ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
-                        UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.Name : v1.Customer.IdentityUser.Name
+                        UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.Name : v1.Customer.IdentityUser.Name,
+                        TransactionTime = TimeOnly.FromDateTime(garageTransaction.AccurateTime.Value),
+                        TransactionDate = DateOnly.FromDateTime(garageTransaction.AccurateTime.Value),
 
                     };
         query = query.Where(filterRequests);

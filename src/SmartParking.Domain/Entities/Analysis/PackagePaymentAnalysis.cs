@@ -14,4 +14,6 @@ public class PackagePaymentAnalysis
     public int CountUsePackage { get; set; }
     public decimal ValueOfPackage { get; set; }
     public decimal ValueTotalPackage { get; set; }
+    public DateOnly Date { get; set; }
+    public TimeOnly Time { get; set; }
 }

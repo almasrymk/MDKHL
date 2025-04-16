@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using SmartParking.CustomerPackages;
+using SmartParking.Cutomers;
 using SmartParking.DataTable;
 using SmartParking.Entities.Analysis;
 using SmartParking.Entities.Authentication;
@@ -444,25 +445,52 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         {
             var query = await _customerPackageRepository.GetQueryableAsync();
             query = query.Include(x => x.Customer).ThenInclude(x => x.IdentityUser);
-            query = CheckFilter(input, query);
-            query = CheckTenant(tenantId, query);
-            query = ApplySort(input, query);
-            var totalCount = await AsyncExecuter.CountAsync(query);
-            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
-            var result = await AsyncExecuter.ToListAsync(query);
+            var resultJoin = from CustomerPackage in query
+                             select new CustomerPackageDto
+                             {
+                                 ActivationDate = DateOnly.FromDateTime(CustomerPackage.ActivationDateOfPackage.Value),
+                                 ActivationTime = TimeOnly.FromDateTime(CustomerPackage.ActivationDateOfPackage.Value),
+                                 ActivationDateOfPackage = CustomerPackage.ActivationDateOfPackage.Value,
+                                 ArPlateNumber = CustomerPackage.ArPlateNumber,
+                                 CustomerCategory = CustomerPackage.CustomerCategory,
+                                 CustomerId = CustomerPackage.CustomerId,
+                                 CustomerPackageStatus = CustomerPackage.CustomerPackageStatus,
+                                 DectivationDateOfPackage = CustomerPackage.DectivationDateOfPackage.Value,
+                                 DescriptionOfPackage = CustomerPackage.DescriptionOfPackage,
+                                 DurationOfPackage = CustomerPackage.DurationOfPackage,
+                                 EnPlateNumber = CustomerPackage.EnPlateNumber,
+                                 ExpiryDate = CustomerPackage.ExpiryDate,
+                                 ExpiryDateOfPackage = DateOnly.FromDateTime(CustomerPackage.ExpiryDate),
+                                 ExpiryTimeOfPackage = TimeOnly.FromDateTime(CustomerPackage.ExpiryDate),
+                                 PackageArabicName = CustomerPackage.PackageArabicName,
+                                 PackageEnglishName = CustomerPackage.PackageEnglishName,
+                                 PriceOfPackage = CustomerPackage.PriceOfPackage,
+                                 publishedOfPackage = CustomerPackage.publishedOfPackage,
+                                 PublishFromOfPackage = CustomerPackage.PublishFromOfPackage.Value,
+                                 PublishToOfPackage = CustomerPackage.PublishToOfPackage.Value,
+                                 TenantId = CustomerPackage.TenantId,
+                                 CustomerArabicName = CustomerPackage.Customer.ArabicName,
+                                 CustomerEnglishName = CustomerPackage.Customer.IdentityUser.Name
+                             };
+            resultJoin = CheckFilter(input, resultJoin);
+            resultJoin = CheckTenant(tenantId, resultJoin);
+            resultJoin = ApplySort(input, resultJoin);
+            var totalCount = await AsyncExecuter.CountAsync(resultJoin);
+            resultJoin = resultJoin.Skip(input.SkipCount).Take(input.MaxResultCount);
+            var result = await AsyncExecuter.ToListAsync(resultJoin);
             return new PagedResultDto<CustomerPackageDto>
             {
                 TotalCount = totalCount,
-                Items = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result)
+                Items = result
             };
         }
     }
 
-    private static IQueryable<CustomerPackage> CheckFilter(PagedAndSortedAndFilteredResultRequestDto input, IQueryable<CustomerPackage> query)
+    private static IQueryable<CustomerPackageDto> CheckFilter(PagedAndSortedAndFilteredResultRequestDto input, IQueryable<CustomerPackageDto> query)
     {
         if (input.filters.Count > 0)
         {
-            var filterExpression = BuildExpression<CustomerPackage>.BuildFilterExpression(input.filters);
+            var filterExpression = BuildExpression<CustomerPackageDto>.BuildFilterExpression(input.filters);
             if (filterExpression is not null)
             {
                 query = query.Where(filterExpression);
@@ -474,14 +502,14 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
 
 
-    private static IQueryable<CustomerPackage> CheckTenant(Guid? tenantId, IQueryable<CustomerPackage> query)
+    private static IQueryable<CustomerPackageDto> CheckTenant(Guid? tenantId, IQueryable<CustomerPackageDto> query)
     {
         if (tenantId.HasValue)
             query = query.Where(_ => _.TenantId == tenantId.Value);
         return query;
     }
 
-    private static IQueryable<CustomerPackage> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<CustomerPackage> query)
+    private static IQueryable<CustomerPackageDto> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<CustomerPackageDto> query)
     {
         if (!input.Sorting.IsNullOrEmpty())
         {
@@ -761,7 +789,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  ModelArabicName = vehicle.VehicleModel.ArabicName,
                                  ModelEnglishName = vehicle.VehicleModel.EnglishName,
                                  CreatedBy  = userQuery.Where(_ => _.Id == vehicle.CreatorId).FirstOrDefault().Name,
-                                 CreationTime = vehicle.CreationTime,
+                                 CreationTime = TimeOnly.FromDateTime(vehicle.CreationTime),
+                                 CreationDate = DateOnly.FromDateTime(vehicle.CreationTime),
                                  ModelYear = vehicle.ModelYear,
                                  TenantId = vehicle.TenantId
                              };
