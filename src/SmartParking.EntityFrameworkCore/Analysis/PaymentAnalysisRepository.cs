@@ -156,7 +156,9 @@ public class PaymentAnalysisRepository
                         PaymentMethod = payments.PaymentMethod,
                         PaymentNumber = payments.PaymentNumber,
                         PaymentStatus = payments.PaymentStatus,
-                        TenantId = payments.TenantId
+                        TenantId = payments.TenantId,
+                        Date = DateOnly.FromDateTime(payments.CreationTime),
+                        Time = TimeOnly.FromDateTime(payments.CreationTime),
 
                         
                     };

@@ -771,7 +771,13 @@
     "BeneficiariesVehicles": "Beneficiaries Vehicles",
     "AddedBy": "Added By",
     "AddedDate": "Added Date",
-    "BeneficiariesVehiclesReport": "Beneficiaries Vehicles Report"
+    "CustomPackage": "Custom Package",
+    "IsCustom" :  "Custom" ,
+    "AddedTime": "Added Time",
+    "BeneficiariesVehiclesReport": "Beneficiaries Vehicles Report",
+    "AccurateDate": "Accurate Date",
+    "ExpiryTime": "Expiry Time",
+    "ActivationTime": "Activation Time"
 
   }
 

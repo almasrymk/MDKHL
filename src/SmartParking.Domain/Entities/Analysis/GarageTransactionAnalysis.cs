@@ -32,4 +32,6 @@ public class GarageTransactionAnalysis
     public string CreatorName { get; set; }
     public DateOnly? CreationDate { get; set; }
     public TimeOnly? CreationTime { get; set; }
+    public DateOnly? TransactionDate { get; set; }
+    public TimeOnly? TransactionTime { get; set; }
 }

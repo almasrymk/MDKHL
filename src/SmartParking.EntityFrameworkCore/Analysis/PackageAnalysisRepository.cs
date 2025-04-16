@@ -50,6 +50,8 @@ public class PackageAnalysisRepository : EfCoreRepository<SmartParkingDbContext,
                         CountUsePackage = package.CustomerPackages.Count(),
                         ValueOfPackage = package.Price,
                         ValueTotalPackage = dbContext.Payments.Where(_ => _.PackageId == package.Id).Sum(x => x.Amount),
+                        Date = DateOnly.FromDateTime(package.CreationTime),
+                        Time = TimeOnly.FromDateTime(package.CreationTime),
                     
                     };
 
