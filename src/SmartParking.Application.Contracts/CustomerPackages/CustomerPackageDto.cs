@@ -17,6 +17,7 @@ public class CustomerPackageDto
     public int Id { get; set; }
     public Guid CustomerId { get; set; }
     public int PackageId { get; set; }
+    public int OrganizationId { get; set; }
     public CustomerPackageStatus CustomerPackageStatus { get; set; }
     public  PackageDto Package { get; set; }
     public  OrganizationDto Organization { get; set; }
@@ -43,6 +44,8 @@ public class CustomerPackageDto
     public TimeOnly ExpiryTimeOfPackage { get; set; }
     public DateOnly? ActivationDate { get; set; }
     public TimeOnly? ActivationTime { get; set; }
+    public bool IsCustomPackage { get; set; }
+
 
 
 }
