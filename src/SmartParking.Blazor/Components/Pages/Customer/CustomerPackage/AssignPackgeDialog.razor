@@ -265,14 +265,15 @@
 			_customerPackageDto.EnPlateNumber = vehicle.EnPlateNumber;
 
 			_customerPackageDto.CustomerId = Customer.Id;
-			
+
 			if (IsCustom)
 			{
 				_customerPackageDto.CustomerCategory = Customercategory;
 				_customerPackageDto.publishedOfPackage = true;
 				_customerPackageDto.ActivationDateOfPackage = ActivationDate.Value.Date;
 				_customerPackageDto.ExpiryDate = DectivationDate.Value.Date;
-                _customerPackageDto.IsCustomPackage = true;
+				_customerPackageDto.IsCustomPackage = true;
+				_customerPackageDto.DurationOfPackage = DectivationDate.Value.DayOfYear - ActivationDate.Value.DayOfYear;
 				CustomerPackage.Id = default;
 			}
 			if (CurrentTenant.Id is null)
