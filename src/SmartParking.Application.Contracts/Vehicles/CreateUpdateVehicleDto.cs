@@ -36,5 +36,7 @@ namespace SmartParking.Vehicles
 		public bool BelongToCompany { get; set; }
 		public string? CompanyName { get; set; }
         public Guid? CreatorId { get; set; }
+        public Guid? LastModifierId { get; set; }
+        public DateTime? LastModificationTime { get; set; }
     }
 }
