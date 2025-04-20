@@ -268,7 +268,17 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                         {
                             //package.Status = status == PaymentStatus.Success ? Status.Active : Status.Inactive;
                             //await _packageRepo.UpdateAsync(package);
-                            var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value, payment.CustomerId,ArabicPlateNumber,EnglishPlateNumber);
+                            var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value,
+
+                                new CustomerPackageDto
+                                {
+                                    OrganizationId = payment.OrganizationId,
+                                    CustomerId = payment.CustomerId.Value  ,
+                                    ArPlateNumber = ArabicPlateNumber,
+                                    EnPlateNumber = EnglishPlateNumber,
+
+
+                                });
                             if (!assignStatus)
                             {
                                 throw new Exception("Can't assign package to customer");
