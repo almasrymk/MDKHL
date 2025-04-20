@@ -261,24 +261,37 @@
 			{
 				await CustomerPackagesAppService.CheckSubscriptionCustomersLimitsAsync(CustomerPackage.OrganizationId);
 			}
+			_customerPackageDto.ArPlateNumber = vehicle.ArPlateNumber;
+			_customerPackageDto.EnPlateNumber = vehicle.EnPlateNumber;
+
+			_customerPackageDto.CustomerId = Customer.Id;
+			
 			if (IsCustom)
 			{
 				_customerPackageDto.CustomerCategory = Customercategory;
 				_customerPackageDto.publishedOfPackage = true;
 				_customerPackageDto.ActivationDateOfPackage = ActivationDate.Value.Date;
 				_customerPackageDto.ExpiryDate = DectivationDate.Value.Date;
+                _customerPackageDto.IsCustomPackage = true;
+				CustomerPackage.Id = default;
+			}
+			if (CurrentTenant.Id is null)
+			{
+				_customerPackageDto.OrganizationId = organizationId;
+				_customerPackageDto.TenantId = Organizations.FirstOrDefault(x => x.Id == organizationId).TenantId;
 
 			}
 			else
 			{
-				    var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.Id, Customer.Id, vehicle.ArPlateNumber, vehicle.EnPlateNumber);
-				    if (!assignPackage)
-					throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
-					LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ASSIGN) + " " +
-					LocalizationHelper.GetLocalizedString("Package") + " ");
+				_customerPackageDto.OrganizationId = Organizations.FirstOrDefault(x => x.TenantId == CurrentTenant.Id).Id;
+				_customerPackageDto.TenantId = CurrentTenant.Id;
 			}
-		
+			var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(CustomerPackage.Id, _customerPackageDto);
 
+			if (!assignPackage)
+				throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+				LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ASSIGN) + " " +
+				LocalizationHelper.GetLocalizedString("Package") + " ");
 			SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
 			LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD)+" "+
 			LocalizationHelper.GetLocalizedString("Package"),Severity.Success);
