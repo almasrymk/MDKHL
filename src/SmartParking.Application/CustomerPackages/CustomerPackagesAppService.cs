@@ -148,7 +148,7 @@ public class CustomerPackagesAppService:
     private async Task<bool> CustomerPackageExistsAsync(int? packageId, int organizationId, Guid customerId,string ArabicPlateNumber,string EnglishPlateNumber)
     {
         var existingPackage = await _repository.AnyAsync(p =>
-            (packageId.HasValue && p.PackageId == packageId.Value) || (p.IsCustomPackage==true && p.PackageId==null) &&
+            ((packageId.HasValue && p.PackageId == packageId.Value) || (p.IsCustomPackage==true && p.PackageId==null)) &&
             p.OrganizationId == organizationId &&
             p.CustomerId == customerId &&
             p.ExpiryDate >= DateTime.Today &&
@@ -377,7 +377,7 @@ public class CustomerPackagesAppService:
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => c.CustomerId == customerId );
+            query = query.Where(c => c.CustomerId == customerId && (c.PackageId.HasValue || c.IsCustomPackage));
             var resultPaged = await ApplyPaged(input, query);
             var result = await AsyncExecuter.ToListAsync(resultPaged.query);
             var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
@@ -402,7 +402,7 @@ public class CustomerPackagesAppService:
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => c.CustomerId == customerId && c.OrganizationId == org.Id);
+            query = query.Where(c => c.CustomerId == customerId && c.OrganizationId == org.Id && (c.PackageId.HasValue || c.IsCustomPackage));
             var resultPaged = await ApplyPaged(input, query);
             var result = await AsyncExecuter.ToListAsync(resultPaged.query);
             var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
