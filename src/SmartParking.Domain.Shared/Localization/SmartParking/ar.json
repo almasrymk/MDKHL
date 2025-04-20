@@ -799,13 +799,16 @@
     "AddedBy": "إضافة بواسطة",
     "AddedDate": "تاريخ الإضافة",
     "AddedTime": "وقت الإضافة",
+    "ModifiedBy": "تعديل بواسطة",
+    "ModifiedDate": "تاريخ التعديل",
+    "ModifiedTime": "وقت التعديل",
     "BeneficiariesVehicles": "مركبات المستفيدين",
     "AccurateDate": "تاريخ الفعلي",
     "SubscriptionTime": "وقت الاشتراك",
-    "ExpiryTime": "وقت إنتهاء" , 
+    "ExpiryTime": "وقت إنتهاء",
 
     "BeneficiariesVehiclesReport": "تقرير مركبات المستفيدين",
     "CustomPackage": "باقة مخصصه",
-    "IsCustom" :  "تخصيص"
+    "IsCustom": "تخصيص"
   }
 }
