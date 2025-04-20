@@ -1531,6 +1531,9 @@ namespace SmartParking.Migrations
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("IsCustomPackage")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
