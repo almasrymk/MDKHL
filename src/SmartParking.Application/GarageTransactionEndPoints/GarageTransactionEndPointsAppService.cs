@@ -821,7 +821,17 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     public async Task<Result<InvoiceDto>> CustomerCheckoutFromKeeperMobile(int garageTransactionId)
     {
-        return await CheckoutSequence(garageTransactionId);
+        var result = await InitiateGarageTransaction(garageTransactionId);
+        var lstCheckout = result.EntryGarageTransaction.CheckoutMobile.HasValue ? result.EntryGarageTransaction.CheckoutMobile.Value : DateTime.MinValue;
+        var _garageTransactionDto = ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(result.EntryGarageTransaction);
+        if (!(_garageTransactionDto.IsIn && _garageTransactionDto.IsPending == false && _garageTransactionDto.CanCheckout == true))
+        {
+            throw new Exception("Transaction Already Checked-Out");
+        }
+        var invoice = await CustomerPreCheckoutFromKeeperMobile(garageTransactionId);
+        await UpdateEntryTransactionCheckouFromMobile(result.EntryGarageTransaction);
+        return await SaveTransactionWithInvoice(invoice, result.ExitGarageTransaction);
+
     }
 
 
