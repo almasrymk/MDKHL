@@ -31,4 +31,5 @@ public class CustomerPackage : FullAuditedEntity<int>, IBaseEntity
     public string EnPlateNumber { get; set; }
     public string ArPlateNumber { get; set; }
 
+    public  bool IsCustomPackage { get; set; }
 }
