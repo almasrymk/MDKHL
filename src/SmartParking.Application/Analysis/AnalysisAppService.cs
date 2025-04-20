@@ -854,6 +854,9 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  CreatedBy  = userQuery.Where(_ => _.Id == vehicle.CreatorId).FirstOrDefault().Name,
                                  CreationTime = TimeOnly.FromDateTime(vehicle.CreationTime),
                                  CreationDate = DateOnly.FromDateTime(vehicle.CreationTime),
+                                 ModifiedBy  = userQuery.Where(_ => _.Id == vehicle.LastModifierId).FirstOrDefault().Name,
+                                 ModifiedTime = TimeOnly.FromDateTime((DateTime)vehicle.LastModificationTime),
+                                 ModifiedDate = DateOnly.FromDateTime((DateTime)vehicle.LastModificationTime),
                                  ModelYear = vehicle.ModelYear,
                                  TenantId = vehicle.TenantId
                              };
