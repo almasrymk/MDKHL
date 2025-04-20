@@ -246,6 +246,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateKeeperShiftDto, KeeperShift>().ReverseMap();
         CreateMap<ShiftDto, Shift>().ReverseMap();
         CreateMap<KeeperShiftDto, KeeperShift>().ReverseMap();
+        CreateMap<CustomerPackageDto, CustomerPackage>()
+            .ReverseMap();
 
 
 
