@@ -19,6 +19,7 @@ using SmartParking.Payments;
 using SmartParking.Repositories;
 using SmartParking.Results;
 using SmartParking.Utilities;
+using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -316,11 +317,21 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             }
             if(discountValue != default)
             {
-                await _invoiceAppService.UpdateDiscountForInvoice(invoiceId,discountValue);
+                try
+                {
+                    await _invoiceAppService.UpdateDiscountForInvoice(invoiceId, discountValue);
+                }
+                catch(Exception ex)
+                {
+                    return Result.Error(ex.Message);
+                }
+                
             }
             var result = await RequestToPaymentCheckout(invoice, discountValue);
             var image = await _invoiceAppService.GetImage(invoice, result.QrCodeInvoice);
             return await ProcessingInvoiceMobileDto(discountValue, invoice, image);
+
+
         }
     }
 
