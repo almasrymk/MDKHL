@@ -127,7 +127,10 @@
     }
     private async Task OnAddDiscount(decimal discountValue)
     {
-        if (discountValue < InvoicePriceWithVat && discountValue > 0)
+
+        // discount 100   
+        // invoice price = 0 
+        if (discountValue <= InvoicePriceWithVat && discountValue > 0)
         {
             
             InvoicePriceAfterDiscount = InvoicePriceWithVat - discountValue;

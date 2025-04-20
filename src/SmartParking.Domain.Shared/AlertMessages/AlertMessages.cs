@@ -20,5 +20,7 @@ public static class AlertMessages
     public const string EXPORT = "Export";
     public const string START = "Start";
     public const string END = "End";
+    public const string PackageNameAr = "باقة مخصصه";
+    public const string PackageNameEn = "Custom Package";
 
 }
