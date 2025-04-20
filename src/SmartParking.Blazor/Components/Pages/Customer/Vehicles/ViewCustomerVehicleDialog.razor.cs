@@ -25,6 +25,8 @@ using SmartParking.Utilities;
 using SmartParking.Helpers;
 using SmartParking.Results;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
+using SmartParking.Entities.Customers;
+using SmartParking.Cutomers;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
@@ -36,6 +38,7 @@ public partial class ViewCustomerVehicleDialog
     private void Cancel() => MudDialog.Cancel();
 
     private int TotalItem;
+    private CustomerDto  CustomerDto = new CustomerDto();
     public int CurrentPage { get; set; } = 1; // Default current page value is 10
     public int RowPerPage { get; set; } = 10; // Default value is 10
 
@@ -70,7 +73,7 @@ public partial class ViewCustomerVehicleDialog
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn
         };
-
+        CustomerDto  = await CustomerAppService.GetAsync(Guid.Parse(CustomerId));
         var vehicleDto = await CustomerAppService.GetVehiclesRelatedToSpecificCustomerMdkhl(Guid.Parse(CustomerId), input);
         TotalItem =(int) vehicleDto.TotalCount;
         
@@ -136,21 +139,24 @@ public partial class ViewCustomerVehicleDialog
     }
     public async Task ShowCustomerTransactions((RowDef row, string TypeDownload) args)
     {
+
         var (row, TypeDownload) = args;
         var plateNumber = row.Cells[1].Value;
         TableData Data;
-        if (CurrentTenant.Id == null)
+        var input = new PagedAndSortedAndFilteredResultRequestDto
         {
-            var garageTransactionAnalsisDto = await AnalysisAppService.ReportGarageTransactionForMDKHLPlateAsync(plateNumber);
-            Data =await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalsisDto , CurrentTenant.Id);
-        }
-        else
-        {
-            var garageTransactionAnalsisDto = await AnalysisAppService.ReportGarageTransactionForOrganization(plateNumber,CurrentTenant.Id);
-            Data =await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalsisDto , CurrentTenant.Id);
+            MaxResultCount = int.MaxValue - 1,
+            SkipCount = 0,
+            Sorting = CultureInfo.CurrentCulture.Name == "ar" ? "CustomerArabicName" : "CustomerEnglishName" ,
+            SearchingTerm = CultureInfo.CurrentCulture.Name == "ar" ? CustomerDto.ArabicName : CustomerDto.FullName,
+            filters= new ()
+            
 
-        }
-        Data.Name = L["VicheleTransactionsReport"];
+        };
+        var vehicleCustomer = await AnalysisAppService.ReportVehicleCustomerAsync(input, CurrentTenant.Id);
+        
+        Data = await CreateTableHelper.CreateDataTableForCustomersVehicles(vehicleCustomer.Items.ToList());
+
         var exportTask = TypeDownload.ToLower() switch
         {
             "pdf" => JSRuntime.ExportToPdfAsync(Data, GenerateFilesAppService, Snackbar),
