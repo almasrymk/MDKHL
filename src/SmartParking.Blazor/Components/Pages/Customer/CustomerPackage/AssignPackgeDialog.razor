@@ -138,13 +138,30 @@
 
 
 						<MudItem sm="4">
-							<MudDatePicker @bind-Date="ActivationDate" Label="@L["StartDate"]" Placeholder="@L["StartDate"]"> @L["StartDate"]</MudDatePicker>
+							<MudDatePicker Label="@L["StartDate"]"
+										   PickerVariant="PickerVariant.Dialog"
+										   ShowToolbar="false"
+										   @bind-Date="ActivationDate"
+										   MinDate="@( DateTime.Today  )"
+										   MaxDate="DectivationDate"
+										   Required="true"
+										   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 						</MudItem>
 						<MudItem sm="4">
-							<MudDatePicker @bind-Date="DectivationDate" Label="@L["EndDate"]" Placeholder="@L["EndDate"]"> @L["EndDate"]</MudDatePicker>
+							<MudDatePicker Label="@L["EndDate"]"
+										   PickerVariant="PickerVariant.Dialog"
+										   ShowToolbar="false"
+										   @bind-Date="DectivationDate"
+										   MinDate="@( ActivationDate is not null  ? ActivationDate : DateTime.Today )"
+										   MaxDate="DectivationDate"
+										   Required="true"
+										   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 						</MudItem>
 						<MudItem sm="4">
-							<MudNumericField @bind-value="_customerPackageDto.PriceOfPackage" HideSpinButtons Min="0" Label="@L["Price"]"> @L["Price"]</MudNumericField>
+							<MudNumericField 
+								@bind-value="_customerPackageDto.PriceOfPackage" HideSpinButtons Min="0" Label="@L["Price"]"
+							    Required ="true"
+							    RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"/>
 						</MudItem>
 
 
@@ -275,6 +292,8 @@
 				_customerPackageDto.IsCustomPackage = true;
 				_customerPackageDto.DurationOfPackage = DectivationDate.Value.DayOfYear - ActivationDate.Value.DayOfYear;
 				CustomerPackage.Id = default;
+				_customerPackageDto.PackageArabicName = AlertMessages.AlertMessages.PackageNameAr;
+				_customerPackageDto.PackageEnglishName = AlertMessages.AlertMessages.PackageNameEn;
 			}
 			if (CurrentTenant.Id is null)
 			{
