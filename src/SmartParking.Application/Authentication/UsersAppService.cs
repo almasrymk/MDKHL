@@ -514,6 +514,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         user.SetIsActive(input.IsActive);
         user.SetProperty("IdentificationTypes", input.IdentificationTypes);
         user.SetProperty("NationalId", input.NationalId);
+        user.SetProperty("OrganizationId", input.OrganizationId);
         ObjectHelper.TrySetProperty(
             user,
             x => x.PhoneNumber,
