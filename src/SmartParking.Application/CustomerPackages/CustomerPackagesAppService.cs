@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Castle.Core.Resource;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.Cutomers;
@@ -116,7 +117,7 @@ public class CustomerPackagesAppService:
                     });
                 }
 
-                var customerPackage = CreateCustomerPackage(packageId, customer, package,ArabicPlateNumber,EnglishPlateNumber);
+                var customerPackage = CreateCustomerPackage(packageId, customer.Id, package,ArabicPlateNumber,EnglishPlateNumber);
                 var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
 
                 if (existingPackage != null)
@@ -144,10 +145,10 @@ public class CustomerPackagesAppService:
        
     }
 
-    private async Task<bool> CustomerPackageExistsAsync(int packageId, int organizationId, Guid customerId,string ArabicPlateNumber,string EnglishPlateNumber)
+    private async Task<bool> CustomerPackageExistsAsync(int? packageId, int organizationId, Guid customerId,string ArabicPlateNumber,string EnglishPlateNumber)
     {
-        var existingPackage = await _repository.FirstOrDefaultAsync(p =>
-            p.PackageId == packageId &&
+        var existingPackage = await _repository.AnyAsync(p =>
+            ((packageId.HasValue && p.PackageId == packageId.Value) || (p.IsCustomPackage==true && p.PackageId==null)) &&
             p.OrganizationId == organizationId &&
             p.CustomerId == customerId &&
             p.ExpiryDate >= DateTime.Today &&
@@ -155,14 +156,14 @@ public class CustomerPackagesAppService:
             p.ArPlateNumber==ArabicPlateNumber &&
             p.EnPlateNumber==EnglishPlateNumber
             );
-        return existingPackage != null;
+        return existingPackage;
     }
 
     private async Task<CustomerPackage?> GetExistingPackageAsync(int organizationId)
     {
         var query = await _repository.GetQueryableAsync();
         return await query.AsNoTracking()
-            .FirstOrDefaultAsync(p => p.PackageId == null && p.OrganizationId == organizationId);
+            .FirstOrDefaultAsync(p => p.IsCustomPackage == false && p.PackageId==null &&p.OrganizationId == organizationId);
     }
 
     private async Task<Result> UpdateCustomerPackageAsync(CustomerPackage customerPackage)
@@ -177,12 +178,12 @@ public class CustomerPackagesAppService:
         return assignedPackage != null ? Result.Success() : Result.Error("Can't assign package to customer");
     }
 
-    private static CustomerPackage CreateCustomerPackage(int packageId, Customer? customer, Package package,string arPlateNumber,string enPlateNumber)
+    private static CustomerPackage CreateCustomerPackage(int packageId, Guid? customerId, Package package,string arPlateNumber,string enPlateNumber)
     {
         return  new CustomerPackage
         {
             PackageId = packageId,
-            CustomerId = customer.Id,
+            CustomerId = customerId.Value,
             OrganizationId = package.OrganizationId,
             ExpiryDate = DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute),
             ActivationDateOfPackage = DateTime.Now,
@@ -204,42 +205,73 @@ public class CustomerPackagesAppService:
     }
 
     ///<inheritdoc/>
-    public  async Task<bool> AssignPackageToCustomerWebAsync(int packageId,Guid? customerId, string ArabicPlateNumber, string EnglishPlateNumber)
+    public  async Task<bool> AssignPackageToCustomerWebAsync(int? packageId,CustomerPackageDto customerPackageDto)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var customer = await _customerRepository.FirstOrDefaultAsync(c => c.Id == customerId);
+            var customer = await _customerRepository.FirstOrDefaultAsync(c => c.Id == customerPackageDto.CustomerId);
             if(customer == null)
                 throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-            var package = await GetPackageAsync(packageId);
-
-            if (package == null)
-                throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-            
-            if (await CustomerPackageExistsAsync(packageId, package.OrganizationId, customer.Id,ArabicPlateNumber,EnglishPlateNumber))
+    
+            if (await CustomerPackageExistsAsync(packageId, customerPackageDto.OrganizationId, customer.Id, customerPackageDto.ArPlateNumber, customerPackageDto.EnPlateNumber))
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("DuplicateValidation")
                     + " " + LocalizationHelper.GetLocalizedString("Customer"));
             }
+            await CheckSubscriptionCustomersLimitsAsync(customerPackageDto.OrganizationId);
 
-            var customerPackage = CreateCustomerPackage(packageId, customer, package, ArabicPlateNumber, EnglishPlateNumber);
-            var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
+            CustomerPackage customerPackage;
 
-            if (existingPackage != null)
+            if (packageId != 0)
             {
-                ObjectHelper.TrySetProperty(
-                    customerPackage,
-                    x => x.Id,
-                    () => existingPackage.Id
-                );
-                var updatePackage = await UpdateCustomerPackageAsync(customerPackage);
-                return updatePackage.IsSuccess;
+                var result = await AssignNormalPackageToCUstomerAsync(
+                    packageId.Value,
+                    customerId: customer.Id,
+                    customerPackageDto.ArPlateNumber,
+                    customerPackageDto.EnPlateNumber);
+                customerPackage = result.Item1;
+                if (result.Item2)
+                {
+                    await CurrentUnitOfWork.SaveChangesAsync();
+                    return true;
+                }
             }
+            else
+            {
+                customerPackage = ObjectMapper.Map<CustomerPackageDto, CustomerPackage>(customerPackageDto);
+                customerPackage.PackageId = null;
+
+            }
+
+
             // Check Subscription Limit for number Of Customers
-            await CheckSubscriptionCustomersLimitsAsync(package.OrganizationId);
             var insertPackage = await InsertCustomerPackageAsync(customerPackage);
-           return insertPackage.IsSuccess;
+            return insertPackage.IsSuccess;
         }
+    }
+
+
+    private async Task<(CustomerPackage,bool)> AssignNormalPackageToCUstomerAsync(int packageId , Guid customerId, string ArabicPlateNumber, string EnglishPlateNumber)
+    {
+        var package = await GetPackageAsync(packageId);
+        if (package == null)
+            throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+        var customerPackage = CreateCustomerPackage(packageId, customerId, package, ArabicPlateNumber, EnglishPlateNumber);
+        var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
+        bool flag=false;
+        if (existingPackage != null)
+        {
+            ObjectHelper.TrySetProperty(
+                customerPackage,
+                x => x.Id,
+                () => existingPackage.Id
+            );
+            // update 
+            await UpdateCustomerPackageAsync(customerPackage);
+            flag=true;
+
+        }
+        return (customerPackage,flag);
     }
     public async Task CheckSubscriptionCustomersLimitsAsync(int organizationId)
     {
@@ -336,6 +368,7 @@ public class CustomerPackagesAppService:
         customerPackage.DurationOfPackage = null;
         customerPackage.DectivationDateOfPackage = null;
         customerPackage.DescriptionOfPackage = null;
+        customerPackage.IsCustomPackage = false;
         customerPackage.CustomerPackageStatus = CustomerPackageStatus.InActive;
     }
 
@@ -344,7 +377,7 @@ public class CustomerPackagesAppService:
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => c.CustomerId == customerId && c.PackageId != null);
+            query = query.Where(c => c.CustomerId == customerId && (c.PackageId.HasValue || c.IsCustomPackage));
             var resultPaged = await ApplyPaged(input, query);
             var result = await AsyncExecuter.ToListAsync(resultPaged.query);
             var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
@@ -369,7 +402,7 @@ public class CustomerPackagesAppService:
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => c.CustomerId == customerId && c.OrganizationId == org.Id && c.PackageId != null);
+            query = query.Where(c => c.CustomerId == customerId && c.OrganizationId == org.Id && (c.PackageId.HasValue || c.IsCustomPackage));
             var resultPaged = await ApplyPaged(input, query);
             var result = await AsyncExecuter.ToListAsync(resultPaged.query);
             var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);

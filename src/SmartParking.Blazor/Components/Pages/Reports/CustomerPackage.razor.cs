@@ -105,7 +105,7 @@ public partial class CustomerPackage
             {
                 MaxResultCount = 500,
                 SkipCount = 0,
-                Sorting = CultureInfo.CurrentCulture.Name == "ar" ? "Customer.ArabicName" : "Customer.IdentityUser.Name",
+                Sorting = CultureInfo.CurrentCulture.Name == "ar" ? "CustomerArabicName" : "CustomerEnglishName",
                 SearchingTerm = "",
                 filters = new List<FilterRequestDto>
                 {
@@ -150,7 +150,7 @@ public partial class CustomerPackage
         {
             MaxResultCount = paged.RowsPerPage,
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
-            Sorting = paged.SortColumn == "Id" ? CultureInfo.CurrentCulture.Name == "ar" ? "Customer.ArabicName" : "Customer.IdentityUser.Name" : paged.SortColumn,
+            Sorting = paged.SortColumn == "Id" ? CultureInfo.CurrentCulture.Name == "ar" ? "CustomerArabicName" : "CustomerEnglishName" : paged.SortColumn,
             filters = paged.Filters,
             SearchingTerm = paged.SearchTerm
             

@@ -12,6 +12,7 @@ using SmartParking.Filters;
 using SmartParking.Localization;
 using SmartParking.Results;
 using SmartParking.Utilities;
+using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -426,8 +427,17 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             if (invoice == null) {
                 throw new Exception(LocalizationHelper.GetLocalizedString("Invoice") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation") + LocalizationHelper.GetLocalizedString("AtGate"));
             }
-            invoice.Discount=discount;
-            await CurrentUnitOfWork.SaveChangesAsync();
+            var result = NumbersValidations.ValidateInvoice(discount, Math.Round((invoice.InvoicePrice * 0.15m) + (invoice.InvoicePrice),2));
+            if(result==null) {
+            
+                invoice.Discount = discount;
+                await CurrentUnitOfWork.SaveChangesAsync();
+            }
+            else
+            {
+                throw new Exception(result);
+            }
+
 
         }
 

@@ -701,7 +701,7 @@
     "CountUsePackage": "عدد المستخدمين",
     "ValueOfPackage": "قيمة الباقة",
     "ValueTotalPackage": "قيمة الباقات",
-    "Date": "الوقت",
+    "Date": "التاريخ",
     "GaragesReports": "تقارير المواقف",
     "BeneficiariesReports": "تقارير الحركات",
     "PackagesReports": "تقارير اشتراكات الباقات",
@@ -764,7 +764,7 @@
     "KeeperTransactionsReport": "تقارير الحركات للوردية",
     "KeeperPayments": "تحصيلات الوردية",
     "KeeperTransactions": "الحركات للوردية",
-    "Time": "وقت",
+    "Time": "الوقت",
     "DeleteValidation": "لا يمكن حذفه لأنها مُخصص حاليًا",
     "Permission:ManageShifts": "موديول ادارة الورديات",
     "RemoveAssignShiftValidation": " لا يمكن الغاء التخصيص لهذه الورديه",
@@ -798,7 +798,17 @@
     "BeneficiaryName": "إسم المستفيد",
     "AddedBy": "إضافة بواسطة",
     "AddedDate": "تاريخ الإضافة",
+    "AddedTime": "وقت الإضافة",
+    "ModifiedBy": "تعديل بواسطة",
+    "ModifiedDate": "تاريخ التعديل",
+    "ModifiedTime": "وقت التعديل",
     "BeneficiariesVehicles": "مركبات المستفيدين",
-    "BeneficiariesVehiclesReport": "تقرير مركبات المستفيدين"
+    "AccurateDate": "تاريخ الفعلي",
+    "SubscriptionTime": "وقت الاشتراك",
+    "ExpiryTime": "وقت إنتهاء",
+
+    "BeneficiariesVehiclesReport": "تقرير مركبات المستفيدين",
+    "CustomPackage": "باقة مخصصه",
+    "IsCustom": "تخصيص"
   }
 }

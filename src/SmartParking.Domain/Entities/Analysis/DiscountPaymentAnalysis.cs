@@ -24,4 +24,6 @@ public class DiscountPaymentAnalysis
     public decimal? Discount { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
     public DateTime PaymentDate { get; set; }
+    public DateOnly Date { get; set; }
+    public TimeOnly Time { get; set; }
 }

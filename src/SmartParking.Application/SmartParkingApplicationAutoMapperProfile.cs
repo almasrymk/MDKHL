@@ -167,7 +167,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateVehicleDto, Vehicle>()
             .ForMember(dest => dest.ArPlateNumber, src => src.MapFrom(f => f.FullArPlate))
             .ForMember(dest => dest.EnPlateNumber, src => src.MapFrom(f => f.FullEnPlate))
-            .ForMember(dest => dest.CreatorId, src => src.MapFrom(f => f.CreatorId));
+            .ForMember(dest => dest.CreatorId, src => src.MapFrom(f => f.CreatorId))
+            .ForMember(dest => dest.LastModifierId, src => src.MapFrom(f => f.LastModifierId))
+            .ForMember(dest => dest.LastModificationTime, src => src.MapFrom(f => f.LastModificationTime));
 
         CreateMap<Package, PackageDto>()
         .ForMember(dest => dest.PackageType, opt => opt.MapFrom(src => src.PackageType))
@@ -246,6 +248,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateKeeperShiftDto, KeeperShift>().ReverseMap();
         CreateMap<ShiftDto, Shift>().ReverseMap();
         CreateMap<KeeperShiftDto, KeeperShift>().ReverseMap();
+        CreateMap<CustomerPackageDto, CustomerPackage>()
+            .ReverseMap();
 
 
 
