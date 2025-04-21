@@ -110,4 +110,6 @@ public interface IUsersAppService:  IApplicationService
 
     Task<bool> IsCurrentUserHasShift();
     Task CheckSubscriptionUsersLimitsAsync(int organizationId);
+
+    Task<UserDto> UpdateUserWithRoleChangeMdkhlAsync(Guid? id, UpdateUserDto input);
 }

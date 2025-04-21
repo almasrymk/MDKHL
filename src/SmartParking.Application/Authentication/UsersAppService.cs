@@ -444,6 +444,47 @@ public class UsersAppService : ApplicationService, IUsersAppService
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             return userDto;
         }
+    }    
+    public async Task<UserDto> UpdateUserWithRoleChangeMdkhlAsync(Guid? id, UpdateUserDto input)
+    {
+        try
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                IdentityUser? user = await IsUserFound(id);
+
+                ChenageRoleInMdkhl(input, user);
+                await UpdateUserProperties(user, input);
+                await AssignRoleIfCustomerAsync(input, user);
+                var updatedUser = await _userManager.UpdateAsync(user);
+                if (!updatedUser.Succeeded)
+                {
+                    throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                        LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.UPDATE) + " " +
+                        LocalizationHelper.GetLocalizedString("User"));
+                }
+
+                var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
+                return userDto;
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    private static void ChenageRoleInMdkhl(UpdateUserDto input, IdentityUser? user)
+    {
+        if (input.RoleId == Guid.Empty)
+            throw new Exception(LocalizationHelper.GetLocalizedString("Role") + " " +
+                LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+
+        foreach (var item in user.Roles)
+        {
+            user.RemoveRole(item.RoleId);
+        }
+        user.AddRole(input.RoleId);
     }
 
     private async Task AssignRoleIfCustomerAsync(UpdateUserDto input, IdentityUser? user)
