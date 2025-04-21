@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Authentication
+@using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Organizations
 @inject ISnackbar Snackbar
@@ -68,6 +69,48 @@
                     <MudItem sm="6">
                         <MudCheckBox @bind-Value="@updateUserDto.IsCustomer" Color="MudBlazor.Color.Primary">@L["ISCustomer"]</MudCheckBox>
                     </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudSelect ValueChanged="SelectOrganization" T="int"
+                                   Label="@L["OrganizationName"]"
+                                   Placeholder="@L[ "Choose"]"
+                                   HelperText=@L["Helper Text"]
+                                   Required>
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                            @foreach (var organization in Organizations)
+                            {
+                                if (organization.Status != Status.Active)
+                                    continue;
+                                <MudSelectItem T="int" Value="@organization.Id">
+
+                                    @organization.EnglishName
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+
+                    </MudItem>
+
+                    @if (IsSelectOrganization)
+                    {
+                        <MudItem sm="6" md="6">
+                            <MudSelect @bind-Value="@role"
+                                       Label="@L["UserRole"]"
+                                       Placeholder="@L[ "Choose"]"
+                                       HelperText=@L["Helper Text"]
+                                       Required>
+
+                                @foreach (var role in RolesList)
+                                {
+
+                                    <MudSelectItem Value="@role">
+                                        @role.Name
+                                    </MudSelectItem>
+
+                                }
+                            </MudSelect>
+
+                        </MudItem>
+                    }
+
                     <MudItem sm="12">
                         <SPDataGrid PageName=@L["UserRoles"] Data="@itemData" OnPageChanged="FetchTableData" OnClickRowDelete="HandleDelete"></SPDataGrid>
                     </MudItem>

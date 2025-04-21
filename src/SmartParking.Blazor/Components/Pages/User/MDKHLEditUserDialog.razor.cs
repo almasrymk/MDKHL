@@ -8,14 +8,21 @@ using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Entities;
 using SmartParking.Enums;
 using SmartParking.Localization;
+using SmartParking.Organizations;
 using System.Security.Authentication;
 using Volo.Abp;
+using Volo.Abp.Identity;
 using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
 public partial class MDKHLEditUserDialog
 {
+    private List<OrganizationDto> Organizations = new List<OrganizationDto>();
+    private List<IdentityRoleDto> RolesList = new List<IdentityRoleDto>();
+    private IdentityRoleDto role;
+    private bool IsOrganization { get; set; }
+    private bool IsSelectOrganization { get; set; } = true;
     [Parameter]
     public string userId { get; set; }
     [Parameter]
@@ -30,7 +37,14 @@ public partial class MDKHLEditUserDialog
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; }
 
+    private async Task SelectOrganization(int organizationId)
+    {
+        IsSelectOrganization = true;
+        var orag = await OrganizationAppService.GetAsync(organizationId);
 
+        updateUserDto.TenantId = orag.TenantId;
+        RolesList = await RoleAppService.GetListByTenant(orag.TenantId);
+    }
     public MDKHLEditUserDialog(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
