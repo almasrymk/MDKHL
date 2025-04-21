@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Bcpg;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Cameras;
@@ -120,19 +121,21 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         {
             return await NotFoundEntityAndExceptionHandling(input,"Organization");
         }
-        var _hasFreeSlots = await CheckIfOrganizationHasFreeSots(organizationId);
-        
+        var result = await CheckIfOrganizationHasFreeSots(organizationId);
+        var _hasFreeSlots = result.HasFreeSlots;
+        var _hasPackageOnly = result.HasPackageOnly;
         CreateUpdateGarageTransactionDto GarageTransaction = GenerateCreateGarageTransactionDto(input, camera, cameraId, garageId, organizationId);
-
         try
         {
-            switch(GarageTransaction.CameraType)
+            switch (GarageTransaction.CameraType)
             {
                 case CameraType.Exit:
+                    
                     if (_hasFreeSlots)
                     {
                         return false;
                     }
+                  
                     return await HandleCamersExit(garageId, organizationId, GarageTransaction);
 
                 case CameraType.Entry:
@@ -143,6 +146,12 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                         canEnter = await HandleCameraEntry(garageId, GarageTransaction.CustomerCategory);
                     }
                     await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+                    if (_hasPackageOnly)
+                    {
+                        var customerPackageDto = await CheckActivePackageForPlateNumber(input.PlateNumber, GarageTransaction.OrganizationID, input.AccurateTime.Value);
+                        if (customerPackageDto is not null)
+                            return true;
+                    }
                     return canEnter;
                     
             };
@@ -156,13 +165,12 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     }
 
-    private async Task<bool> CheckIfOrganizationHasFreeSots(int OrganizationId)
+    private async Task<( bool HasFreeSlots , bool HasPackageOnly)> CheckIfOrganizationHasFreeSots(int OrganizationId)
     {
         var organization = await GetOrganization(OrganizationId);
-        return organization.HasFreeSlots;
+        return (organization.HasFreeSlots, organization.HasPackageOnly) ;
 
     }
-
     private async Task<CustomerCategoryStatus> GetTransactionCategory(CreateUpdateGarageTransactionEndPointDto input, CreateUpdateGarageTransactionDto GarageTransaction)
     {
         var Id = await CheckVehicle(input.PlateNumber);

@@ -249,6 +249,9 @@
                             <MudCheckBox T="bool" @bind-Value="_createUpdateOrganiztionDto.HasFreeSlots">@L["HasFreeSlots"]</MudCheckBox>
                         </MudItem>
                         <MudItem sm="4">
+                            <MudCheckBox T="bool" @bind-Value="_createUpdateOrganiztionDto.HasPackageOnly">@L["HasPackageOnly"]</MudCheckBox>
+                        </MudItem>
+                        <MudItem sm="4">
                             <MudNumericField T="decimal" Immediate="true" @bind-Value="_createUpdateOrganiztionDto.FirstHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FirstHourPrice"]} ({L["SAR"]})") />
                         </MudItem>
                         <MudItem sm="4">

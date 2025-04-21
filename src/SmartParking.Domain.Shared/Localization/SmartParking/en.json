@@ -780,7 +780,8 @@
     "BeneficiariesVehiclesReport": "Beneficiaries Vehicles Report",
     "AccurateDate": "Accurate Date",
     "ExpiryTime": "Expiry Time",
-    "ActivationTime": "Activation Time"
+    "ActivationTime": "Activation Time",
+    "HasPackageOnly": "With Package"
 
   }
 

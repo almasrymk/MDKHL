@@ -1795,6 +1795,9 @@ namespace SmartParking.Migrations
                     b.Property<bool>("HasFreeSlots")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("HasPackageOnly")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsClose")
                         .HasColumnType("boolean");
 
