@@ -57,7 +57,7 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
     public async Task<QRCodeDto> GetQrCodeAsync(decimal amount, int organizationId)
     {
 
-        var oragnization = await _organizationsRepository.GetAsync(organizationId);
+        var oragnization = await _organizationsRepository.FirstOrDefaultAsync(_ => _.Id==organizationId);
         //"12-25-2024"
         return await GetQrCodeAsync(amount, oragnization);
     }

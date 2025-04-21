@@ -187,6 +187,7 @@ public static class NumbersValidations
 
     public static string ValidateInvoice(decimal discountValue, decimal InvoicePriceWithVat)
     {
+
         if (discountValue < 0)
             return LocalizationHelper.GetLocalizedString("DiscountInvalidationLessThanZero");
         if (discountValue > InvoicePriceWithVat)

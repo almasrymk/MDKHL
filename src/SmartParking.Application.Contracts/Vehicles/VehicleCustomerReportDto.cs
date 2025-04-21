@@ -22,4 +22,7 @@ public class VehicleCustomerReportDto
     public string CreatedBy { get; set; }
     public TimeOnly? CreationTime { get; set; }
     public DateOnly? CreationDate { get; set; }
+    public string ModifiedBy { get; set; }
+    public TimeOnly? ModifiedTime { get; set; }
+    public DateOnly? ModifiedDate { get; set; }
 }

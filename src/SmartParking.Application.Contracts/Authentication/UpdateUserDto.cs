@@ -41,4 +41,5 @@ public class UpdateUserDto
     public string NationalId { get; set; }
     public bool IsCustomer { get; set; }
     public  UserTypeCategory? UserTypeCategory { get; set; }
+    public int OrganizationId { get; set; }
 }

@@ -117,6 +117,7 @@ public class VehiclesAppService:
 	{
         using (_dataFilter.Disable<IMultiTenant>())
         {
+            var vehicle = await _repository.GetAsync(id);
             //input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
            // input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
             if (!VehicleValidation.CheckPlateNumberCriteria(input.FullArPlate, input.FullEnPlate))
@@ -141,7 +142,8 @@ public class VehiclesAppService:
             {
                 throw new InvalidOperationException("PlatNumber already exists");
             }
-
+            input.LastModificationTime = DateTime.Now;
+            input.LastModifierId = _currentUser.Id;
             return await base.UpdateAsync(id,input);
         }
     }
