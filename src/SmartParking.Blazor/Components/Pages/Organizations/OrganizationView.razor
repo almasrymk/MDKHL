@@ -163,7 +163,11 @@
 
                         <MudItem sm="4">
                             <MudCheckBox T="bool" Immediate="true" @bind-Value="organization.HasFreeSlots" Label=@($"{L["HasFreeSlots"]}") ReadOnly="true" />
-                        </MudItem> 
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <MudCheckBox T="bool" Immediate="true" @bind-Value="organization.HasPackageOnly" Label=@($"{L["HasPackageOnly"]}") ReadOnly="true" />
+                        </MudItem>
                         <MudItem sm="4">
                             <MudNumericField T="decimal" Immediate="true" @bind-Value="organization.FirstHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FirstHourPrice"]} ({L["SAR"]})") ReadOnly="true" />
                         </MudItem>
