@@ -809,6 +809,8 @@
 
     "BeneficiariesVehiclesReport": "تقرير مركبات المستفيدين",
     "CustomPackage": "باقة مخصصه",
-    "IsCustom": "تخصيص"
+    "IsCustom": "تخصيص",
+    "HasPackageOnly": "له باقة"
+
   }
 }

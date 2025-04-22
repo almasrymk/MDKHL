@@ -67,6 +67,7 @@ public class OrganizationDto :AuditedEntityDto<int>
     public int Graceperiod { get; set; }
     public string TaxNumber { get; set; }
     public bool HasFreeSlots { get; set; }
+    public bool HasPackageOnly { get; set; }
 
 
 

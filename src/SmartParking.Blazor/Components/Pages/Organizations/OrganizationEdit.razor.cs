@@ -211,6 +211,7 @@ public partial class OrganizationEdit
         _createUpdateOrganiztionDto.Graceperiod = organization.Graceperiod;
         _createUpdateOrganiztionDto.TaxNumber = organization.TaxNumber;
         _createUpdateOrganiztionDto.HasFreeSlots = organization.HasFreeSlots;
+        _createUpdateOrganiztionDto.HasPackageOnly = organization.HasPackageOnly;
         _createUpdateOrganiztionDto.TenantId=organization.TenantId;
     }
 
