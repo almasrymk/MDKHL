@@ -328,7 +328,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 
             }
             var result = await RequestToPaymentCheckout(invoice, discountValue);
-            var image = await _invoiceAppService.GetImage(invoice, result.QrCodeInvoice);
+            var image = await _invoiceAppService.GetImage(invoice,result is null ? " " : result.QrCodeInvoice);
             return await ProcessingInvoiceMobileDto(discountValue, invoice, image);
 
 
@@ -345,7 +345,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         return invoiceDto;
     }
 
-    private async Task<PaymentCheckoutDto> RequestToPaymentCheckout(InvoiceDto invoice , decimal discountValue)
+    private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout(InvoiceDto invoice , decimal discountValue)
     {
         var paymentChekout = new PaymentCheckoutRequestDto
         {

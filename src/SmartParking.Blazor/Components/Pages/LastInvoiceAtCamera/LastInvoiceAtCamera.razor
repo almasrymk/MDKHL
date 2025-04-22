@@ -142,7 +142,7 @@
 				CustomerId = Invoice.CustomerId,
 				PaymentName = PaymentMethod.Cash.ToString()
 			};
-		var payment = await PaymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
+		PaymentCheckoutDto? payment = await PaymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
 		return payment;
 	}
 }
