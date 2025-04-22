@@ -328,8 +328,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         var garageTransaction =  await _garageTransactionsAppService.CreateAsync(GarageTransaction);
         invoice.GarageTransactionExitId = garageTransaction.Id;
-        if (invoice.InvoicePrice == 0)
-            return null;
         var resultedInvoice= await _invoiceAppService.CreateAsync(invoice);
         return resultedInvoice;
     }
@@ -498,7 +496,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         var invoiceCreateUpdateDto = await CalculateStayingHoursForCustomer(EntranceTime.Value, GarageTransaction, exsitCustomer, organization, totalHours, packageDto);
         var resultedInvoice = await SaveTransactionWithInvoice(invoiceCreateUpdateDto, GarageTransaction);
-        return (resultedInvoice == null || resultedInvoice.InvoicePrice > 0) ? false : true;
+        return (resultedInvoice.InvoicePrice > 0) ? false : true;
     }
 
     private async Task<bool> ExitsInFreeMinutesPeriod(CreateUpdateGarageTransactionDto GarageTransaction)
