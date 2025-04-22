@@ -532,8 +532,13 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var query = await _paymentRepository.GetQueryableAsync();
+            var organizations = await _orgRepo.GetQueryableAsync();
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
+            if (tenantId.HasValue)
+                query = query.Where(_ => tenantId == tenantId.Value);
             var resultJoin = from payment in query
+                             join organization in organizations 
+                             on payment.OrganizationId equals organization.Id
                              select new PaymentDto
                              {
                                  Amount = payment.Amount,
@@ -545,16 +550,15 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  Customers = payment.Customers,
                                  PaymentMethod = payment.PaymentMethod.ToString(),
                                  PaymentNumber = payment.PaymentNumber,
-                                 OrganizationArabicName = payment.Invoice.Organization.ArabicName,
-                                 OrganizationEnglishName = payment.Invoice.Organization.EnglishName,
-                                 PlateNumber = payment.Invoice.PlateNumber,
+                                 OrganizationArabicName = organization.ArabicName,
+                                 OrganizationEnglishName = organization.EnglishName,
+                                 PlateNumber = payment.Invoice != null ? payment.Invoice.PlateNumber: payment.EnPlateNumber,
                                  AmountWithoutDiscount = payment.InvoiceId.HasValue ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
                                  QrCodeInvoice = payment.QrCodeInvoice,
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
-                                 InvoiceId = payment.InvoiceId
+                                 InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
                              };
-            resultJoin = CheckTenantPayment(tenantId, resultJoin);
             resultJoin = ApplySortPayment(input, resultJoin);
             resultJoin = ApplyFilterPayment(input, resultJoin);
             var totalCount = await AsyncExecuter.CountAsync(resultJoin);
@@ -574,9 +578,14 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var query = await _paymentRepository.GetQueryableAsync();
+            var organizations = await _orgRepo.GetQueryableAsync();
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
+            if (tenantId.HasValue)
+                query = query.Where(_ => tenantId == tenantId.Value);
             var resultJoin = from payment in query
                              where payment.CustomerId != null
+                             join organization in organizations
+                             on payment.OrganizationId equals organization.Id
                              select new PaymentDto
                              {
                                  Amount = payment.Amount,
@@ -588,16 +597,16 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  Customers = payment.Customers,
                                  PaymentMethod = payment.PaymentMethod.ToString(),
                                  PaymentNumber = payment.PaymentNumber,
-                                 OrganizationArabicName = payment.Invoice.Organization.ArabicName,
-                                 OrganizationEnglishName = payment.Invoice.Organization.EnglishName,
-                                 PlateNumber = payment.Invoice.PlateNumber,
+                                 OrganizationArabicName = organization.ArabicName,
+                                 OrganizationEnglishName = organization.EnglishName,
+                                 PlateNumber = payment.Invoice != null ? payment.Invoice.PlateNumber: payment.EnPlateNumber,
                                  AmountWithoutDiscount = payment.InvoiceId.HasValue ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
                                  QrCodeInvoice = payment.QrCodeInvoice,
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
                                  InvoiceId = payment.InvoiceId
                              };
-            resultJoin = CheckTenantPayment(tenantId, resultJoin);
+          //  resultJoin = CheckTenantPayment(tenantId, resultJoin);
             resultJoin = ApplySortPayment(input, resultJoin);
             resultJoin = ApplyFilterPayment(input, resultJoin);
             var totalCount = await AsyncExecuter.CountAsync(resultJoin);
@@ -617,9 +626,15 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var query = await _paymentRepository.GetQueryableAsync();
+            var organizations = await _orgRepo.GetQueryableAsync();
+
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
+            if (tenantId.HasValue)
+                query = query.Where(_ => tenantId == tenantId.Value);
             var resultJoin = from payment in query
                              where payment.PaymentMethod == PaymentMethod.Cash
+                             join organization in organizations
+                             on payment.OrganizationId equals organization.Id
                              select new PaymentDto
                              {
                                  Amount = payment.Amount,
@@ -631,9 +646,9 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  Customers = payment.Customers,
                                  PaymentMethod = payment.PaymentMethod.ToString(),
                                  PaymentNumber = payment.PaymentNumber,
-                                 OrganizationArabicName = payment.Invoice.Organization.ArabicName,
-                                 OrganizationEnglishName = payment.Invoice.Organization.EnglishName,
-                                 PlateNumber = payment.Invoice.PlateNumber,
+                                 OrganizationArabicName = organization.ArabicName,
+                                 OrganizationEnglishName = organization.EnglishName,
+                                 PlateNumber = payment.Invoice != null ? payment.Invoice.PlateNumber : payment.EnPlateNumber,
                                  AmountWithoutDiscount = payment.InvoiceId.HasValue ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
                                  QrCodeInvoice = payment.QrCodeInvoice,
                                  CreationTime = payment.CreationTime.ToString(),
@@ -642,7 +657,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
                              };
 
-            resultJoin = CheckTenantPayment(tenantId, resultJoin);
+            //resultJoin = CheckTenantPayment(tenantId, resultJoin);
             resultJoin = ApplySortPayment(input, resultJoin);
             resultJoin = ApplyFilterPayment(input, resultJoin);
             var totalCount = await AsyncExecuter.CountAsync(resultJoin);
@@ -693,7 +708,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     private static IQueryable<PaymentDto> CheckTenantPayment(Guid? tenantId, IQueryable<PaymentDto> query)
     {
         if (tenantId.HasValue)
-            query = query.Where(_ => _.TenantId == tenantId);
+            query = query.Where(_ => _.TenantId == tenantId.Value);
         return query;
     }
 
