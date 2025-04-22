@@ -143,9 +143,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     var customerPackageDto = await CheckActivePackageForPlateNumber(input.PlateNumber, GarageTransaction.OrganizationID, input.AccurateTime.Value);
                     bool _hasActivePackage = customerPackageDto is not null ? true : false;
                     bool canEnter = await HandleCameraEntry(garageId, GarageTransaction.CustomerCategory);
-                    await _garageTransactionsAppService.CreateAsync(GarageTransaction);
-
-                    return (_hasPackageOnly, _hasFreeSlots, canEnter, _hasActivePackage) switch
+                    bool finalResult =  (_hasPackageOnly, _hasFreeSlots, canEnter, _hasActivePackage) switch
                     {
                         (true , _  , _ , false) => false , 
                         (true , true , _ , true ) => true  , 
@@ -154,7 +152,10 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                         (false, true , _, _) => true,
                         (false, false , true , _) => true,
                         (false, false , false , _) => false,
-                    };    
+                    };
+                    if(finalResult)
+                        await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+                    return finalResult;
             };
         }
         catch (Exception ex)
