@@ -72,7 +72,7 @@ public partial class DetailsInvoice
         }
     }
 
-    private async Task<PaymentCheckoutDto> RequestToPaymentCheckout()
+    private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()
     {
         var paymentChekout = new PaymentCheckoutRequestDto
         {
@@ -83,7 +83,7 @@ public partial class DetailsInvoice
             Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Discount),
             CustomerId = Invoice.CustomerId
         };
-        var payment = await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
+        PaymentCheckoutDto? payment = await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
         return payment;
     }
 }

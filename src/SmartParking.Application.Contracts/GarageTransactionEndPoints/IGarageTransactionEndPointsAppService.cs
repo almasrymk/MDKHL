@@ -20,7 +20,7 @@ public interface IGarageTransactionEndPointsAppService : IApplicationService
     Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutFromHisMobile(int garageTransactionId);
     Task<Result<InvoiceDto>> CustomerCheckoutFromKeeperMobile(int garageTransactionId);
     Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutFromKeeperMobile(int garageTransactionId);
-    Task<PaymentCheckoutDto> PayInvoiceFromWeb(InvoiceDto invoice);
+    Task<PaymentCheckoutDto?> PayInvoiceFromWeb(InvoiceDto invoice);
 
 
 }

@@ -881,7 +881,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     }
 
-    public async Task<PaymentCheckoutDto> PayInvoiceFromWeb(InvoiceDto invoice)
+    public async Task<PaymentCheckoutDto?> PayInvoiceFromWeb(InvoiceDto invoice)
     {
         var paymentChekout = new PaymentCheckoutRequestDto
         {
