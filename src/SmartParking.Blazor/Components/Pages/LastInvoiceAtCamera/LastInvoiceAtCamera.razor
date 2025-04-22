@@ -95,6 +95,11 @@
 			await JSRuntime.InvokeAsync<object>("open", $"/payments/view/{payment.PaymentId}", "_blank");
 
 		}
+		else{
+			await OpenGate();
+			Refresh();
+
+		}
 	}
 	private async Task OpenGate(){
 		try{
@@ -118,7 +123,7 @@
 		await GarageTransactionAppService.DeleteAsync(ExitTransctionId);
 		SnackBar.ShowSnackbar(Snackbar, @L["Done"] + " " + @L["Delete"] + " " + @L["Invoice"], MudBlazor.Severity.Success);
 		await Task.Delay(1000);
-		Navigation.Refresh(true);
+		Refresh();
 	}
 
 	private void Refresh(){
@@ -126,7 +131,7 @@
 
 	}
 
-	private async Task<PaymentCheckoutDto> RequestToPaymentCheckout()
+	private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()
 	{
 		var paymentChekout = new PaymentCheckoutRequestDto
 			{
@@ -138,7 +143,7 @@
 				CustomerId = Invoice.CustomerId,
 				PaymentName = PaymentMethod.Cash.ToString()
 			};
-		var payment = await PaymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
+		PaymentCheckoutDto? payment = await PaymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
 		return payment;
 	}
 }

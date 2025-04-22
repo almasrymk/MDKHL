@@ -357,10 +357,12 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         }
     }
 
-    public async Task<PaymentCheckoutDto> CreateCheckoutInvoicePaymentWebAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
+    public async Task<PaymentCheckoutDto?> CreateCheckoutInvoicePaymentWebAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
     {
+        await UpdateInvoiceStatusAsync(paymentCheckoutRequest.InvoiceId);
+        if (paymentCheckoutRequest.Amount == 0)
+            return null;
         var paymentCheckoutDto= await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
-       await UpdateInvoiceStatusAsync(paymentCheckoutRequest.InvoiceId);
         return paymentCheckoutDto;
     }
 
