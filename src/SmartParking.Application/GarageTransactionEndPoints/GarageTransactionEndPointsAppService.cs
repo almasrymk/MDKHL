@@ -140,20 +140,21 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
                 case CameraType.Entry:
                     GarageTransaction.CustomerCategory = await GetTransactionCategory(input, GarageTransaction);
-                    bool canEnter = true;
-                    if (!_hasFreeSlots)
-                    {
-                        canEnter = await HandleCameraEntry(garageId, GarageTransaction.CustomerCategory);
-                    }
+                    var customerPackageDto = await CheckActivePackageForPlateNumber(input.PlateNumber, GarageTransaction.OrganizationID, input.AccurateTime.Value);
+                    bool _hasActivePackage = customerPackageDto is not null ? true : false;
+                    bool canEnter = await HandleCameraEntry(garageId, GarageTransaction.CustomerCategory);
                     await _garageTransactionsAppService.CreateAsync(GarageTransaction);
-                    if (_hasPackageOnly)
+
+                    return (_hasPackageOnly, _hasFreeSlots, canEnter, _hasActivePackage) switch
                     {
-                        var customerPackageDto = await CheckActivePackageForPlateNumber(input.PlateNumber, GarageTransaction.OrganizationID, input.AccurateTime.Value);
-                        if (customerPackageDto is not null)
-                            return true;
-                    }
-                    return canEnter;
-                    
+                        (true , _  , _ , false) => false , 
+                        (true , true , _ , true ) => true  , 
+                        (true , false , true , true ) => true ,
+                        (true, false, false, true) => false,
+                        (false, true , _, _) => true,
+                        (false, false , true , _) => true,
+                        (false, false , false , _) => false,
+                    };    
             };
         }
         catch (Exception ex)
