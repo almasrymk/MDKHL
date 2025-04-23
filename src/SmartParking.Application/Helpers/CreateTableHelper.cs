@@ -709,6 +709,7 @@ public static class CreateTableHelper
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", IsFilterable = true, PropertyName = "ArPlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("BrandName"), Name = "BrandName", IsFilterable = true, PropertyName = "BrandArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ModelName"), Name = "ModelName", IsFilterable = true, PropertyName = "ModelArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageName"), Name = "PackageName", IsFilterable = true, PropertyName = "PackageNameArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 
         }
@@ -719,9 +720,11 @@ public static class CreateTableHelper
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", IsFilterable = true, PropertyName = "EnPlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("BrandName"), Name = "BrandName", IsFilterable = true, PropertyName = "BrandEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ModelName"), Name = "ModelName", IsFilterable = true, PropertyName = "ModelEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageName"), Name = "PackageName", IsFilterable = true, PropertyName = "PackageNameEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 
         }
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("customer category"), Name = "CustomerCategory", IsFilterable = true, PropertyName = "CustomerCategory", IsSortable = true, TypeFilter = TypeFilter.Enum,TypeOfColumn=typeof(CustomerCategoryStatus) });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ModelYear"), Name = "ModelYear", IsFilterable = true, PropertyName = "ModelYear", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AddedBy"), Name = "AddedBy", IsFilterable = true, PropertyName = "CreatedBy", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AddedDate"), Name = "AddedDate", IsFilterable = true, PropertyName = "CreationDate", IsSortable = true, TypeFilter = TypeFilter.DateOnly,TypeOfColumn = typeof(DateOnly) });
@@ -735,13 +738,13 @@ public static class CreateTableHelper
         {
             var rowDef = new RowDef();
 
-            //rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Id"), vehicleCustomer.Id.ToString()));
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("BeneficiaryName"), vehicleCustomer.CustomerArabicName ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), vehicleCustomer.ArPlateNumber));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("BrandName"), vehicleCustomer.BrandArabicName));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ModelName"), vehicleCustomer.ModelArabicName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageName"), vehicleCustomer.PackageNameArabicName));
 
             }
             else
@@ -750,8 +753,10 @@ public static class CreateTableHelper
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), vehicleCustomer.EnPlateNumber));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("BrandName"), vehicleCustomer.BrandEnglishName ));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ModelName"), vehicleCustomer.ModelEnglishName ));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageName"), vehicleCustomer.PackageNameEnglishName ));
 
             }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("customer category"), vehicleCustomer.CustomerCategory.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ModelYear"), vehicleCustomer.ModelYear));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AddedBy"), vehicleCustomer.CreatedBy));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AddedDate"), vehicleCustomer.CreationDate.ToString()));
