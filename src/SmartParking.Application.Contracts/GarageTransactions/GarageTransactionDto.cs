@@ -31,6 +31,8 @@ namespace SmartParking.GarageTransactions
         public bool CanCheckout { get; set; }
         public string OrganizationArabicName { get; set; }
         public string OrganizationEnglishName { get; set; }
+        public string GarageArabicName { get; set; }
+        public string GarageEnglishName { get; set; }
 
 
     }

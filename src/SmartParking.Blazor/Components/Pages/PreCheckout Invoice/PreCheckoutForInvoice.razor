@@ -1,0 +1,129 @@
+﻿@page "/preinvoice/{GarageTransactionId:int}"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Pages.Invoices
+@using SmartParking.Blazor.Components.Pages.LastInvoiceAtCamera
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Enums
+@using SmartParking.GarageTransactionEndPoints
+@using SmartParking.GarageTransactions
+@using SmartParking.Invoices
+@using SmartParking.Localization
+@using SmartParking.Payments
+@using SmartParking.Utilities
+@using System.Globalization
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IGarageTransactionEndPointsAppService GarageTransactionEndPoint
+@inject IGarageTransactionsAppService GarageTransactionAppService
+@inject IInvoiceAppService InvoiceAppService
+@inject IPaymentAppService PaymentAppSerivce
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>@L["PreInvoice"]</PageTitle>
+
+<MudGrid>
+
+    <MudItem sm="7" Class="d-flex flex-column">
+        <MudItem sm="12" Class="d-flex flex-row justify-content-between">
+            <MudText Typo="Typo.h6" Class="fw-bold mb-4">@L["Checkout"]</MudText>
+        </MudItem>
+
+        <MudItem sm="12" Class="d-flex flex-row mb-4 justify-content-center">
+            <CarImageDetails Date="@(Invoice.EntranceTime ?? DateTime.Now)"
+            Image="@Invoice?.EntryTransactionImage"
+            Title="@L["EntranceImage"]" />
+
+            <MudItem sm="2" Class="d-flex align-items-center mx-6">
+                <MudIcon Icon="@(CultureInfo.CurrentCulture.Name == "en" ? Icons.Material.Filled.ArrowForward : Icons.Material.Filled.ArrowBack)" />
+            </MudItem>
+
+            <CarImageDetails Date="@(Invoice.InvoiceTime ?? DateTime.Now)"
+            Image="@Invoice?.ExitTransactionImage"
+            Title="@L["ExitImage"]" />
+        </MudItem>
+
+        <div class="mx-3">
+            <LastInvoiceOnGateDetails Key="@L["PlateNumber"]" Value="@Invoice?.PlateNumber" />
+            <LastInvoiceOnGateDetails Key="@L["OrganizationName"]"
+            Value="@(CultureInfo.CurrentCulture.Name == "en"
+                                              ? GarageTransactionDto?.OrganizationEnglishName
+                                              : GarageTransactionDto?.OrganizationArabicName)" />
+            <LastInvoiceOnGateDetails Key="@L["GarageName"]"
+            Value="@(CultureInfo.CurrentCulture.Name == "en"
+                                              ? GarageTransactionDto?.GarageEnglishName
+                                              : GarageTransactionDto?.GarageArabicName)" />
+            <LastInvoiceOnGateDetails Key="@L["CustomerName"]"
+            Value="@(CultureInfo.CurrentCulture.Name == "en"
+                                              ? Invoice?.CustomerEnName
+                                              : Invoice?.CustomerArName)" />
+            <LastInvoiceOnGateDetails Key="@($"{L["TotalHours"]} ({L["Hour"]})")"
+            Value="@Invoice?.TotalHours.ToString()" />
+            <LastInvoiceOnGateDetails Key="@($"{L["Price"]} ({L["SAR"]})")"
+            Value="@Invoice?.InvoicePrice.ToString()" />
+        </div>
+    </MudItem>
+
+    <PreInvoiceSummaryComponent ComponentSize="5"
+    InvoicePrice="@Invoice?.InvoicePrice"
+    IsPaid="@(Invoice?.InvoiceType == InvoiceType.Paid)"
+    Cancel="Cancel"
+    PayInvoice="PayInvoice" />
+
+</MudGrid>
+
+@code {
+    [Parameter]
+    public int GarageTransactionId { get; set; }
+
+    public CreateUpdateInvoiceDto Invoice { get; set; } = new();
+    public GarageTransactionDto GarageTransactionDto { get; set; } = new();
+    public int Id { get; set; }
+    private bool NoInvoice => Invoice == null || string.IsNullOrEmpty(Invoice?.PlateNumber);
+    public decimal Discount { get; set; } = default;
+    private PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/garagetransactions");
+    }
+
+    private async Task PayInvoice()
+    {
+        var invoice = await GarageTransactionEndPoint.CustomerCheckoutFromKeeperMobile(GarageTransactionId);
+        Id = invoice.Value.Id;
+        if (Discount != default)
+        {
+            await InvoiceAppService.UpdateDiscountForInvoice(Id, Discount);
+        }
+        PaymentCheckoutDto payment = await RequestToPaymentCheckout();
+        if (payment != null)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]}  {L["Checkout"]}", MudBlazor.Severity.Success);
+            await Task.Delay(1000);
+            Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
+        }
+    }
+
+    private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()
+    {
+      
+        var paymentCheckout = new PaymentCheckoutRequestDto
+            {
+                OrganizationId = Invoice.OrganizationId,
+                PaymentCategory = PaymentCategory.PaymentParking,
+                InvoiceId = Id,
+                PaymentMethod = PaymentMethod,
+                Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Discount),
+                CustomerId = Invoice.CustomerId
+            };
+
+        return await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentCheckout);
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        GarageTransactionDto = await GarageTransactionAppService.GetAsync(GarageTransactionId);
+        Invoice = await GarageTransactionEndPoint.CustomerPreCheckoutFromKeeperMobile(GarageTransactionId);
+    }
+}

@@ -109,7 +109,7 @@
 				<MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
 				@if (GarageTransaction.IsIn && GarageTransaction.IsPending == false && GarageTransaction.CanCheckout == true && _organizationDto.HasFreeSlots==false)
 				{
-					<MudButton Variant="Variant.Filled"  Color="MudBlazor.Color.Primary" OnClick="Checkout"> @L["Checkout"]</MudButton>
+					<MudButton Variant="Variant.Filled"  Color="MudBlazor.Color.Primary" OnClick="PreCheckout"> @L["Checkout"]</MudButton>
 				}
 			</div>
 		</DialogActions>
@@ -193,17 +193,9 @@
 		await base.OnInitializedAsync();
 	}
 
-	private async void Checkout(){
-
-		var result = await GarageTransactionAppService.CustomerCheckoutFromKeeperMobile(GarageTransaction.Id);
-		await GarageTransactionAppService.PayInvoiceFromWeb(result.Value);
-
-		if(result.IsSuccess){
-			SnackBar.ShowSnackbar(Snackbar, $"{L["Done"]} , {L["Submit"]} {L["Invoice"]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
-			await Task.Delay(1000);
-			Navigation.NavigateTo($"/invoices/details/{result.Value.Id}");
-		}
-
+	private void PreCheckout()
+	{
+		Navigation.NavigateTo($"/preinvoice/{GarageTransaction.Id}");
 	}
 
 	private void OnCloseViewOnly()

@@ -329,14 +329,15 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             }
             var result = await RequestToPaymentCheckout(invoice, discountValue);
             var image = await _invoiceAppService.GetImage(invoice,result is null ? " " : result.QrCodeInvoice);
-            return await ProcessingInvoiceMobileDto(discountValue, invoice, image);
+            return await ProcessingInvoiceMobileDto(discountValue,invoiceId ,image);
 
 
         }
     }
 
-    private async Task<Result<InvoiceMobileDto>> ProcessingInvoiceMobileDto(decimal discountValue, InvoiceDto invoice, Result<string> image)
+    private async Task<Result<InvoiceMobileDto>> ProcessingInvoiceMobileDto(decimal discountValue, int invoiceId, Result<string> image)
     {
+        var invoice = await _invoiceAppService.GetAsync(invoiceId);
         var invoiceDto = ObjectMapper.Map<InvoiceDto, InvoiceMobileDto>(invoice);
         invoiceDto.QrCodeInvoice = image.Value;
         invoiceDto.Vehicle = await _vehicleAppService.GetVehicleByPlateNumberAsync(invoice.PlateNumber);
