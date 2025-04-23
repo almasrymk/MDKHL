@@ -259,6 +259,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<GarageTransaction, GarageTransactionDto>()
          .ForPath(d => d.OrganizationArabicName, s => s.MapFrom(o => o.Organization.ArabicName))
          .ForPath(d => d.OrganizationEnglishName, s => s.MapFrom(o => o.Organization.EnglishName))
+         .ForPath(d => d.GarageArabicName, s => s.MapFrom(o => o.Garage.NameAr))
+         .ForPath(d => d.GarageEnglishName, s => s.MapFrom(o => o.Garage.NameEn))
          .ForMember(d => d.RemainingTime,
             src =>
             {
