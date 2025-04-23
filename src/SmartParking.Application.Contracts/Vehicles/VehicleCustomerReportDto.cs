@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,4 +26,7 @@ public class VehicleCustomerReportDto
     public string ModifiedBy { get; set; }
     public TimeOnly? ModifiedTime { get; set; }
     public DateOnly? ModifiedDate { get; set; }
+    public CustomerCategoryStatus CustomerCategory { get; set; }
+    public string? PackageNameArabicName { get; set; }
+    public string? PackageNameEnglishName { get; set; }
 }
