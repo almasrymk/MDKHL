@@ -1,0 +1,65 @@
+﻿@page "/preinvoice/{GarageTransactionId}"
+
+@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Pages.Invoices
+@using SmartParking.Blazor.Components.Pages.LastInvoiceAtCamera
+@using SmartParking.Enums
+@using SmartParking.GarageTransactionEndPoints
+@using SmartParking.GarageTransactions
+@using SmartParking.Invoices
+@using SmartParking.Localization
+@using System.Globalization
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IGarageTransactionEndPointsAppService GarageTransactionEndPoint
+@inject IGarageTransactionsAppService GarageTransactionAppService
+<PageTitle>@L["PreInvoice"]</PageTitle>
+<MudGrid>
+
+	<MudItem sm="7" Class="d-flex flex-column">
+		<MudItem sm="12" Class="d-flex flex-row justify-content-between">
+			<MudText Typo="Typo.h6" Class="fw-bold mb-4">@L["PreInvoice"]</MudText>
+		</MudItem>
+
+		<MudItem sm="12" Class="d-flex flex-row mb-4 justify-content-center">
+			<CarImageDetails Date="@(Invoice.EntranceTime.HasValue ?Invoice.EntranceTime.Value : DateTime.Now)" Image="@Invoice?.EntryTransactionImage" Title="@L["EntranceImage"]" />
+			<MudItem sm="2" Class="d-flex align-items-center mx-6">
+				<MudIcon Icon="@(CultureInfo.CurrentCulture.Name=="en"?Icons.Material.Filled.ArrowForward:Icons.Material.Filled.ArrowBack)" />
+			</MudItem>
+			<CarImageDetails Date="@(Invoice.InvoiceTime.HasValue ?Invoice.InvoiceTime.Value : DateTime.Now)" Image="@Invoice?.ExitTransactionImage" Title="@L["ExitImage"]" />
+		</MudItem>
+		<div class="mx-3">
+			<LastInvoiceOnGateDetails Key="@L["PlateNumber"]" Value="@(Invoice?.PlateNumber)" />
+			<LastInvoiceOnGateDetails Key="@L["OrganizationName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?GarageTransactionDto?.OrganizationEnglishName:GarageTransactionDto?.OrganizationArabicName)" />
+			<LastInvoiceOnGateDetails Key="@L["GarageName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?GarageTransactionDto?.GarageEnglishName:GarageTransactionDto?.GarageArabicName)" />
+			<LastInvoiceOnGateDetails Key="@L["CustomerName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.CustomerEnName:Invoice?.CustomerArName)" />
+			<LastInvoiceOnGateDetails Key="@($"{L["TotalHours"]} ({L["Hour"]})")" Value="@Invoice?.TotalHours.ToString()" />
+			<LastInvoiceOnGateDetails Key="@($"{L["Price"]} ({L["SAR"]})")" Value="@Invoice?.InvoicePrice.ToString()" />
+		</div>
+
+
+	</MudItem>
+
+
+	<PriceSummaryComponent OnValueSelected="HandleAddDiscount" ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice?.InvoicePrice" IsPaid="Invoice.InvoiceType==InvoiceType.Paid.ToString()" Cancel="Cancel" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" NoInvoice="NoInvoice" ShowOpenGate="true" OpenGate="OpenGate" />
+</MudGrid>
+
+@code {
+
+	[Parameter]
+	public int GarageTransactionId { set; get; }
+
+	public CreateUpdateInvoiceDto Invoice { set; get; }
+
+	public GarageTransactionDto GarageTransactionDto { set; get; }
+
+
+
+
+	protected async override Task OnInitializedAsync()
+	{
+		GarageTransactionDto = await GarageTransactionAppService.GetAsync(GarageTransactionId);
+		Invoice =await GarageTransactionEndPoint.CustomerPreCheckoutFromKeeperMobile(GarageTransactionId);
+	}
+
+
+}
