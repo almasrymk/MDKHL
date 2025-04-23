@@ -1,6 +1,7 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Cameras
+@using SmartParking.Entities.GarageTransactions
 @using SmartParking.GarageTransactionEndPoints
 @using SmartParking.GarageTransactions
 @using SmartParking.Garages
@@ -14,197 +15,203 @@
 @inject IOrganizationsAppService OrganizationsAppService
 @inject ICamerasAppService CamerasAppService
 @inject IGarageTransactionEndPointsAppService GarageTransactionAppService
+@inject IGarageTransactionEndPointsAppService GarageTransactionEndPoint
 @inject NavigationManager Navigation
 
 <div class="modal-wrapper">
-	<MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
-		<TitleContent>
-			<MudText Typo="Typo.h6">@L["Details"]</MudText>
-		</TitleContent>
-		<DialogContent>
-			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
-				<MudGrid>
+    <MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["Details"]</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                <MudGrid>
 
-					<MudItem sm="6" md="6">
-						<MudTextField
-						Value="@L[$"{GarageTransaction.CameraType}"]"
-						Immediate="true"
-						Disabled=true
-						Label="@L["TransactionType"]" />
-					</MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField
+                        Value="@L[$"{GarageTransaction.CameraType}"]"
+                        Immediate="true"
+                        Disabled=true
+                        Label="@L["TransactionType"]" />
+                    </MudItem>
 
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="GarageTransaction.PlateNumber"
-						For="@(() => GarageTransaction.PlateNumber)"
-						Immediate="true"
-						Disabled=true
-						Label="@L["PlateNumber"]" />
-					</MudItem>
-					<MudItem sm="6" md="6">
-						<MudTextField
-						Value="GarageTransaction.SnapTime.ToString()"
-						Immediate="true"
-						Disabled=true
-						Label="@L["SnapTime"]" />
-					</MudItem>
-					<MudItem sm="6" md="6">
-						<MudTextField 
-						Value="GarageTransaction.AccurateTime.ToString()"
-						Immediate="true"
-						Disabled=true
-						Label="@L["AccurateTime"]" />
-					</MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="GarageTransaction.PlateNumber"
+                        For="@(() => GarageTransaction.PlateNumber)"
+                        Immediate="true"
+                        Disabled=true
+                        Label="@L["PlateNumber"]" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField
+                        Value="GarageTransaction.SnapTime.ToString()"
+                        Immediate="true"
+                        Disabled=true
+                        Label="@L["SnapTime"]" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField 
+                        Value="GarageTransaction.AccurateTime.ToString()"
+                        Immediate="true"
+                        Disabled=true
+                        Label="@L["AccurateTime"]" />
+                    </MudItem>
 
-					<MudItem sm="6" md="6">
-						<MudTextField
-						Value="OrgName"
-						Immediate="true"
-						Disabled=true
-						Label="@L["OrganizationName"]" />
-					</MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField
+                        Value="OrgName"
+                        Immediate="true"
+                        Disabled=true
+                        Label="@L["OrganizationName"]" />
+                    </MudItem>
 
-					<MudItem sm="6" md="6">
-						<MudTextField 
-						Value="GarageName"
-						Immediate="true"
-						Disabled=true
-						Label="@L["Garage Name"]" />
-					</MudItem>
-					<MudItem sm="6" md="6">
-						<MudTextField
-						Value="@L[$"{CustomerCategory}"]"
-						Immediate="true"
-						Disabled=true
-						Label="@L["customer category"]" />
-					</MudItem> 
+                    <MudItem sm="6" md="6">
+                        <MudTextField 
+                        Value="GarageName"
+                        Immediate="true"
+                        Disabled=true
+                        Label="@L["Garage Name"]" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField
+                        Value="@L[$"{CustomerCategory}"]"
+                        Immediate="true"
+                        Disabled=true
+                        Label="@L["customer category"]" />
+                    </MudItem> 
 
-					<MudItem sm="6" md="6">
-						<MudTextField @bind-Value="cameraCode"
-						For="@(() => cameraCode)"
-						Immediate="true"
-						Disabled=true
-						Label="@L["CameraId"]" />
-					</MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="cameraCode"
+                        For="@(() => cameraCode)"
+                        Immediate="true"
+                        Disabled=true
+                        Label="@L["CameraId"]" />
+                    </MudItem>
 
-					<MudItem sm="12" md="12" class="d-flex justify-center">
-						<div class="zoom-container"
-						@onmousemove="SetZoomOrigin"
-						@onmouseleave="ResetZoom">
-							<img src="@GarageTransaction.VehiclePicture"
-							alt="Vehicle Image"
-							style="transform-origin: @TransformOrigin; transform: @Scale;" />
-						</div>
-					</MudItem>
-
-
-				</MudGrid>
-			</MudForm>
+                    <MudItem sm="12" md="12" class="d-flex justify-center">
+                        <div class="zoom-container"
+                        @onmousemove="SetZoomOrigin"
+                        @onmouseleave="ResetZoom">
+                            <img src="@GarageTransaction.VehiclePicture"
+                            alt="Vehicle Image"
+                            style="transform-origin: @TransformOrigin; transform: @Scale;" />
+                        </div>
+                    </MudItem>
 
 
-
-		</DialogContent>
-		<DialogActions>
-			<div class="d-flex align-items-center justify-content-between">
-
-				<MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
-				@if (GarageTransaction.IsIn && GarageTransaction.IsPending == false && GarageTransaction.CanCheckout == true && _organizationDto.HasFreeSlots==false)
-				{
-					<MudButton Variant="Variant.Filled"  Color="MudBlazor.Color.Primary" OnClick="Checkout"> @L["Checkout"]</MudButton>
-				}
-			</div>
-		</DialogActions>
+                </MudGrid>
+            </MudForm>
 
 
-	</MudDialog>
+
+        </DialogContent>
+        <DialogActions>
+            <div class="d-flex align-items-center justify-content-between">
+
+                <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
+                @if (GarageTransaction.IsIn && GarageTransaction.IsPending == false && GarageTransaction.CanCheckout == true && _organizationDto.HasFreeSlots==false)
+                {
+                    <MudButton Variant="Variant.Filled"  Color="MudBlazor.Color.Primary" OnClick="PreCheckout"> @L["Checkout"]</MudButton>
+                }
+            </div>
+        </DialogActions>
+
+
+    </MudDialog>
 
 </div>
 
 <style>
-	.zoom-container 
-	{
-	position: relative;
-	display: inline-block;
-	overflow: hidden;
-	width: 400px; /* Container width */
-	height: 300px; /* Container height */
-	cursor: zoom-in;
-	}
+    .zoom-container 
+    {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    width: 400px; /* Container width */
+    height: 300px; /* Container height */
+    cursor: zoom-in;
+    }
 
-	.zoom-container img 
-	{
-	width: 100%;
-	height: 100%;
-	transition: transform 0.3s ease, transform-origin 0.3s ease;
-	transform: scale(1);
-	}
+    .zoom-container img 
+    {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease, transform-origin 0.3s ease;
+    transform: scale(1);
+    }
 
-	.zoom-container:hover img {
-	transform: scale(2); /* Adjust the scale for zoom level */
-	}
+    .zoom-container:hover img {
+    transform: scale(2); /* Adjust the scale for zoom level */
+    }
 </style>
 
 @code {
-	[CascadingParameter]
-	private IMudDialogInstance MudDialogAdd { get; set; }
-	[Parameter] public GarageTransactionDto GarageTransaction { get; set; }
-	string cameraCode = "";
-	string OrgName="";
-	string GarageName = "";
-	string CustomerCategory = "";
-	bool _clearable;
-	private MudForm form;
-	private OrganizationDto _organizationDto = new OrganizationDto();
+    [CascadingParameter]
+    private IMudDialogInstance MudDialogAdd { get; set; }
+    [Parameter] public GarageTransactionDto GarageTransaction { get; set; }
+    string cameraCode = "";
+    string OrgName="";
+    string GarageName = "";
+    string CustomerCategory = "";
+    bool _clearable;
+    private MudForm form;
+    private OrganizationDto _organizationDto = new OrganizationDto();
 
-	private string TransformOrigin { get; set; } = "center center";
-	private string Scale { get; set; } = "scale(1)";
+    private string TransformOrigin { get; set; } = "center center";
+    private string Scale { get; set; } = "scale(1)";
 
-	private void SetZoomOrigin(MouseEventArgs e)
-	{
-		// Calculate the position of the mouse relative to the container
-		double xPercent = e.OffsetX / 400 * 100; // 400 is the container width
-		double yPercent = e.OffsetY / 300 * 100; // 300 is the container height
+    private void SetZoomOrigin(MouseEventArgs e)
+    {
+        // Calculate the position of the mouse relative to the container
+        double xPercent = e.OffsetX / 400 * 100; // 400 is the container width
+        double yPercent = e.OffsetY / 300 * 100; // 300 is the container height
 
-		TransformOrigin = $"{xPercent}% {yPercent}%";
-		Scale = "scale(2)"; // Zoom level when hovered
-	}
+        TransformOrigin = $"{xPercent}% {yPercent}%";
+        Scale = "scale(2)"; // Zoom level when hovered
+    }
 
-	private void ResetZoom(MouseEventArgs e)
-	{
-		TransformOrigin = "center center";
-		Scale = "scale(1)"; // Reset zoom when mouse leaves
-	}
+    private void ResetZoom(MouseEventArgs e)
+    {
+        TransformOrigin = "center center";
+        Scale = "scale(1)"; // Reset zoom when mouse leaves
+    }
 
-	protected override async Task OnInitializedAsync()
-	{
-		_organizationDto = await OrganizationsAppService.GetAsync(GarageTransaction.OrganizationID);
+    protected override async Task OnInitializedAsync()
+    {
+        _organizationDto = await OrganizationsAppService.GetAsync(GarageTransaction.OrganizationID);
 
-		var Garage =await GaragesAppService.GetAsync(GarageTransaction.GarageId);
-		@if (CultureInfo.CurrentCulture.Name == "en")
-		{
-			OrgName = _organizationDto.EnglishName;
-			GarageName = Garage.NameEn;
-		}else{
-			OrgName = _organizationDto.ArabicName;
-			GarageName = Garage.NameAr;
-		}
-		var Camera = await CamerasAppService.GetAsync(GarageTransaction.CameraId);
-		cameraCode = Camera.DeviceId;
-		CustomerCategory = GarageTransaction.CustomerCategory.ToString();
-		await base.OnInitializedAsync();
-	}
+        var Garage =await GaragesAppService.GetAsync(GarageTransaction.GarageId);
+        @if (CultureInfo.CurrentCulture.Name == "en")
+        {
+            OrgName = _organizationDto.EnglishName;
+            GarageName = Garage.NameEn;
+        }else{
+            OrgName = _organizationDto.ArabicName;
+            GarageName = Garage.NameAr;
+        }
+        var Camera = await CamerasAppService.GetAsync(GarageTransaction.CameraId);
+        cameraCode = Camera.DeviceId;
+        CustomerCategory = GarageTransaction.CustomerCategory.ToString();
+        await base.OnInitializedAsync();
+    }
 
-	private async void Checkout(){
+    private async void Checkout(){
 
-		var result = await GarageTransactionAppService.CustomerCheckoutFromKeeperMobile(GarageTransaction.Id);
-		await GarageTransactionAppService.PayInvoiceFromWeb(result.Value);
+        var result = await GarageTransactionAppService.CustomerCheckoutFromKeeperMobile(GarageTransaction.Id);
+        await GarageTransactionAppService.PayInvoiceFromWeb(result.Value);
 
-		if(result.IsSuccess){
-			SnackBar.ShowSnackbar(Snackbar, $"{L["Done"]} , {L["Submit"]} {L["Invoice"]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
-			await Task.Delay(1000);
-			Navigation.NavigateTo($"/invoices/details/{result.Value.Id}");
-		}
+        if(result.IsSuccess){
+            SnackBar.ShowSnackbar(Snackbar, $"{L["Done"]} , {L["Submit"]} {L["Invoice"]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+            await Task.Delay(1000);
+            Navigation.NavigateTo($"/invoices/details/{result.Value.Id}");
+        }
 
-	}
+    }
+    private async void PreCheckout()
+    {
+        Navigation.NavigateTo($"/preinvoice/{GarageTransaction.Id}");
+    }
+
 
 	private void OnCloseViewOnly()
 	{
