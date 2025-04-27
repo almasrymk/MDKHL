@@ -854,8 +854,13 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
             var query = await _vehicleRepository.GetQueryableAsync();
             var userQuery = await _myUserRepository.GetQueryableAsync();
+            var packageCustomerQuery = await _customerPackageRepository.GetQueryableAsync();
             var resultJoin = from vehicle in query
-                             
+                             join packageCustomer in packageCustomerQuery
+                             on new { vehicle.ArPlateNumber, vehicle.EnPlateNumber }
+                             equals new { packageCustomer.ArPlateNumber, packageCustomer.EnPlateNumber }
+                             into vehiclePackageGroup
+                             from packageCustomer in vehiclePackageGroup.DefaultIfEmpty()
                              select new VehicleCustomerReportDto
                              {
                                  ArPlateNumber = vehicle.ArPlateNumber,
@@ -873,7 +878,23 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  ModifiedTime = TimeOnly.FromDateTime((DateTime)vehicle.LastModificationTime),
                                  ModifiedDate = DateOnly.FromDateTime((DateTime)vehicle.LastModificationTime),
                                  ModelYear = vehicle.ModelYear,
-                                 TenantId = vehicle.TenantId
+                                 TenantId = vehicle.TenantId,
+                                 CustomerCategory =  packageCustomer.CustomerCategory == null? CustomerCategoryStatus.None: 
+                                 packageCustomerQuery
+                                        .Where(_ =>_.ExpiryDate >= DateTime.Now)
+                                        .Select(_ => _.CustomerCategory).FirstOrDefault(),
+
+                                 PackageNameArabicName =
+                                    packageCustomerQuery
+                                        .Where(_ => _.ArPlateNumber == vehicle.ArPlateNumber &&
+                                                    _.EnPlateNumber == vehicle.EnPlateNumber && 
+                                                    _.ExpiryDate >= DateTime.Now)
+                                        .Select(_ => _.PackageArabicName).FirstOrDefault(),
+                                PackageNameEnglishName = packageCustomerQuery
+                                        .Where(_ => _.ArPlateNumber == vehicle.ArPlateNumber &&
+                                                    _.EnPlateNumber == vehicle.EnPlateNumber &&
+                                                    _.ExpiryDate >= DateTime.Now)
+                                        .Select(_ => _.PackageEnglishName).FirstOrDefault()
                              };
             
             if (tenantId.HasValue)
