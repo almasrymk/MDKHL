@@ -438,7 +438,7 @@
     "ParkingSlot": "Slots",
     "TransactionType": "Transaction Type",
     "Payments": "Payments",
-    "PackageName": "Name",
+    "PackageName": "Package Name",
     "Amount": "Amount",
     "Currency": "Currency",
     "PaymentCategory": "Category",

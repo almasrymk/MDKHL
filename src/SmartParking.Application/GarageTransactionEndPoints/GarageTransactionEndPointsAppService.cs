@@ -155,6 +155,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     };
                     if(finalResult)
                         await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+
+                    _logger.LogInformation($"{DateTime.Now} ====> Get Response {finalResult}");
+
                     return finalResult;
             };
         }
