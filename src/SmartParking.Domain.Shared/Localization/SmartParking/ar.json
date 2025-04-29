@@ -458,7 +458,7 @@
     "ParkingSlot": "الأماكن",
     "TransactionType": "نوع الحركة",
     "Payments": "الفواتير",
-    "PackageName": "اسم",
+    "PackageName": " اسم الباقة",
     "Currency": "العملة",
     "Amount": "المجموع",
     "PaymentCategory": "فئة الدفع",
@@ -810,7 +810,8 @@
     "BeneficiariesVehiclesReport": "تقرير مركبات المستفيدين",
     "CustomPackage": "باقة مخصصه",
     "IsCustom": "تخصيص",
-    "HasPackageOnly": "له باقة"
+    "HasPackageOnly": "له باقة",
+    "RoleValidation": "لا يمكن حذف الدور لانه مستخدم"
 
   }
 }

@@ -259,6 +259,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<GarageTransaction, GarageTransactionDto>()
          .ForPath(d => d.OrganizationArabicName, s => s.MapFrom(o => o.Organization.ArabicName))
          .ForPath(d => d.OrganizationEnglishName, s => s.MapFrom(o => o.Organization.EnglishName))
+         .ForPath(d => d.GarageArabicName, s => s.MapFrom(o => o.Garage.NameAr))
+         .ForPath(d => d.GarageEnglishName, s => s.MapFrom(o => o.Garage.NameEn))
          .ForMember(d => d.RemainingTime,
             src =>
             {
@@ -266,7 +268,6 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             src.MapFrom(o => CalculateRemainingTimeWithGrace(o.CheckoutMobile, o.Organization.Graceperiod));
             })
         .ForMember(d => d.IsPending, s => s.MapFrom(o => o.CheckoutMobile.HasValue && o.RemainingTime.HasValue && o.RemainingTime.Value > DateTime.MinValue?true:false))
-        .ForMember(d => d.CanCheckout, s => s.MapFrom((d => d.CheckoutMobile.HasValue==false && d.RemainingTime.HasValue && d.RemainingTime.Value > DateTime.MinValue&&d.IsMapped==false ? false :true)))
         
         .ReverseMap();
 

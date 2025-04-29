@@ -4,9 +4,13 @@ using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Authentication;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Shared;
+using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Cameras;
 using SmartParking.Localization;
 using System.Globalization;
+using System.Security.Authentication;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Identity;
 
@@ -227,5 +231,51 @@ public partial class RolesMdkhl
     public override int GetHashCode()
     {
         return HashCode.Combine(PermissionRolesManagementModal);
+    }
+
+    private async Task OnClickRowDelete(RowDef row)
+    {
+
+
+        var id = Guid.Parse(row.Cells[0].Value);
+        var Name = row.Cells[2].Value;
+
+        var parameters = new DialogParameters
+        {
+            ["Name"] = Name,
+
+        };
+
+        var dialog = await DialogService.ShowAsync<SPDialogDelete>("DeleteRole", parameters);
+        var result = await dialog.Result;
+        try
+        {
+            if (!result.Canceled)
+            {
+                await RoleAppService.Delete(id);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name} ", Severity.Success);
+                await Task.Delay(1000);
+
+                Navigation.NavigateTo("/roles/mdkhl");
+
+            }
+
+
+        }
+        catch (BusinessException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}: {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}", Severity.Error);
+        }
+
+
     }
 }
