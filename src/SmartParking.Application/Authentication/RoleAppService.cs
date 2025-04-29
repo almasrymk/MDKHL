@@ -54,6 +54,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
+            
             var queryable = await _roleReository.GetQueryableAsync();
             queryable = GetQueryByTenat(tenantId, queryable);
             queryable = ApplySearchFilter(queryable, input.SearchingTerm);
@@ -64,6 +65,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
 
     private static IQueryable<IdentityRole> ApplySortForOrganization(PagedAndSortedResultRequestDto input, IQueryable<IdentityRole> queryable)
     {
+        
         if (!input.Sorting.IsNullOrEmpty())
             queryable = queryable.OrderBy(input.Sorting);
         return queryable;
@@ -361,15 +363,18 @@ public class RoleAppService : ApplicationService, IRoleAppService
         }
     }
 
-    //public async Task<IdentityRoleDto> Delete(Guid RoleId)
-    //{
-    //    using (_dataFilter.Disable<IMultiTenant>())
-    //    {
-    //        var role = await _roleReository.FirstOrDefaultAsync(r => r.Id == RoleId);
-    //        if (role is null)
-    //            throw new Exception(LocalizationHelper.GetLocalizedString("Role") + ' ' + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-
-    //        await _roleReository.DeleteAsync(role,true);
-    //    }
-    //}
+    public async Task<IdentityRoleDto> Delete(Guid RoleId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var role = await _roleReository.FirstOrDefaultAsync(r => r.Id == RoleId);
+            if (role is null)
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("Role") + ' ' + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            var isRoleInUser = await _userManager.GetUsersInRoleAsync(role.Name);
+            if (isRoleInUser.Any())
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("Role") + ' ' + LocalizationHelper.GetLocalizedString("RoleValidation"));
+            await _roleReository.DeleteAsync(role, true);
+            return ObjectMapper.Map<IdentityRole, IdentityRoleDto>(role);
+        }
+    }
 }
