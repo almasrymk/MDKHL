@@ -177,7 +177,6 @@ public partial class OrganizationEdit
         SubscriptionSlotNumber = SelectedSubscription.ParkingSlot;
         Parkingslot = SelectedSubscription.ParkingSlot;
 
-
     }
 
     private void MappingDtos(OrganizationDto organization)
@@ -213,6 +212,7 @@ public partial class OrganizationEdit
         _createUpdateOrganiztionDto.HasFreeSlots = organization.HasFreeSlots;
         _createUpdateOrganiztionDto.HasPackageOnly = organization.HasPackageOnly;
         _createUpdateOrganiztionDto.TenantId=organization.TenantId;
+        _createUpdateOrganiztionDto.PaymentCode=organization.PaymentCode;
     }
 
     private async Task GetRegions()
