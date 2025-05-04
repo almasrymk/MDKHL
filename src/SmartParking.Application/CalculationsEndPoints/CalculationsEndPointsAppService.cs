@@ -293,8 +293,10 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
 
     }
     public static DateTime MinDate(DateTime T1, DateTime T2) => (T1.Date.Date <= T2.Date.Date && T1.Date.TimeOfDay <= T2.Date.TimeOfDay) ? T1 : T2;
- 
-
-
-
+    public int CalculateTimeForCustomPackage(DateTime? exitTime, CustomerPackageDto packageDto)
+    {
+        var timeDifference = exitTime.Value.TimeOfDay - packageDto.PublishToOfPackage.Value.ToTimeSpan();
+        return timeDifference.TotalHours > 0 ?
+            (int)Math.Ceiling(timeDifference.TotalHours / 24) : 0;
+    }
 }
