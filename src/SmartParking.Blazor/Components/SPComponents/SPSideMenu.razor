@@ -137,7 +137,7 @@
                             <MudNavLink Href="/visitorreport" Icon="@Icons.Material.Filled.Accessibility">@L["VisitorAndTransactionReport"]</MudNavLink>
                             <MudNavLink Href="/keepertransactionsreport" Icon="@Icons.Material.Filled.CompareArrows">@L["KeeperTransactions"]</MudNavLink>
                             <MudNavLink Href="/beneficiariesvehiclesreport" Icon="@Icons.Material.Filled.CarCrash">@L["BeneficiariesVehiclesReport"]</MudNavLink>
-
+                            <MudNavLink Href="/beneficiariesdetailsreport" Icon="@Icons.Material.Filled.Group">@L["BeneficiariesDetailsReports"]</MudNavLink>
                          }  
                          @* <MudNavLink Href="/garagesreport" Icon="@Icons.Material.Filled.Garage">@L["Garages"] @L["Reports"]</MudNavLink> *@
                          @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager).Result || currenttenant.Id is null)
