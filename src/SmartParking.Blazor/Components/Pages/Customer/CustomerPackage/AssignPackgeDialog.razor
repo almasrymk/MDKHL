@@ -75,6 +75,8 @@
 
 								@foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
 								{
+									if (category == CustomerCategoryStatus.None)
+										continue;
 									<MudSelectItem Value="@category.ToString()">
 
 										@category.ToString()
