@@ -23,5 +23,6 @@ public interface ICalculationsEndPointsAppService : ITransientDependency
     decimal CalculatePriceHoursExceededDay(Organization organization, int hours);
     (double, double) CalculateHours(CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime, Organization organization);
     int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto);
+    int CalculateTimeForCustomPackage( DateTime? exitTime, CustomerPackageDto packageDto);
 
 }

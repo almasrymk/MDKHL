@@ -320,9 +320,20 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private async Task<CreateUpdateInvoiceDto> CalculateInvoiceForCustomerPackage(DateTime EntranceTime, Organization organization, Customer exsitCustomer, CustomerPackageDto packageDto, CreateUpdateGarageTransactionDto GarageTransaction,int TotalHours,CustomerCategoryStatus customerCategory)
     {
 
-        var THoursOutPackage = _calculationsEndPointAppService.CalculateTimeDependsOnPackage(EntranceTime, GarageTransaction.AccurateTime, packageDto);
+        decimal price;
 
-        var price = THoursOutPackage * organization.AdditionalHourPrice;
+
+        if (packageDto.IsCustomPackage) {
+            var totaldays = _calculationsEndPointAppService.CalculateTimeForCustomPackage(GarageTransaction.AccurateTime, packageDto);
+            price = totaldays * organization.FullDayPrice; ;
+        }
+        else
+        {
+            var THoursOutPackage = _calculationsEndPointAppService.CalculateTimeDependsOnPackage(EntranceTime, GarageTransaction.AccurateTime, packageDto);
+            price  = THoursOutPackage * organization.AdditionalHourPrice;
+        }
+
+
 
         CreateUpdateInvoiceDto invoice = await GenrateInvoiceNumberAndInitiateInvoice(EntranceTime, exsitCustomer, GarageTransaction, TotalHours, price, true);
 
