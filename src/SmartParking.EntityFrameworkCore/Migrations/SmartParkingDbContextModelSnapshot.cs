@@ -1827,6 +1827,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("OrganizationPicture")
                         .HasColumnType("text");
 
+                    b.Property<string>("PaymentCode")
+                        .HasColumnType("text");
+
                     b.Property<string>("PhoneNum")
                         .HasColumnType("text");
 
