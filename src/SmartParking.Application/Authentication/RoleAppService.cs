@@ -365,16 +365,22 @@ public class RoleAppService : ApplicationService, IRoleAppService
 
     public async Task<IdentityRoleDto> Delete(Guid RoleId)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var role = await _roleReository.FirstOrDefaultAsync(r => r.Id == RoleId);
-            if (role is null)
-                throw new BusinessException(LocalizationHelper.GetLocalizedString("Role") + ' ' + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-            var isRoleInUser = await _userManager.GetUsersInRoleAsync(role.Name);
-            if (isRoleInUser.Any())
-                throw new BusinessException(LocalizationHelper.GetLocalizedString("Role") + ' ' + LocalizationHelper.GetLocalizedString("RoleValidation"));
-            await _roleReository.DeleteAsync(role, true);
-            return ObjectMapper.Map<IdentityRole, IdentityRoleDto>(role);
-        }
+            IdentityRole? role;
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                 role = await _roleReository.FirstOrDefaultAsync(r => r.Id == RoleId);
+                if (role is null)
+                    throw new BusinessException(LocalizationHelper.GetLocalizedString("Role") + ' ' + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            }
+            using (CurrentTenant.Change(role.TenantId))
+            {
+                var isRoleInUser = await _userManager.GetUsersInRoleAsync(role.Name);
+                if (isRoleInUser.Any())
+                    throw new BusinessException(LocalizationHelper.GetLocalizedString("Role") + ' ' + LocalizationHelper.GetLocalizedString("RoleValidation"));
+                await _roleReository.DeleteAsync(role, true);
+                return ObjectMapper.Map<IdentityRole, IdentityRoleDto>(role);
+            }
+            
+        
     }
 }

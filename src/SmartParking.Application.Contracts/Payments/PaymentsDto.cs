@@ -19,7 +19,7 @@ public class PaymentDto
     public int OrganizationId { get; set; }
     public string QrCodeInvoice { get; set; }
     public Customer Customers { get; set; }
-    public string PaymentMethod { get; set; }
+    public PaymentMethod PaymentMethod { get; set; }
     public decimal Amount { get; set; }
     public string Currency { get; set; }
     public string CreationTime { get; set; }
