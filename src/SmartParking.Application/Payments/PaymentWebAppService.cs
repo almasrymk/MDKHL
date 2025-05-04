@@ -307,7 +307,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 
             queryable = queryable.Where(or =>
                 or.Amount.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.PaymentMethod.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.PaymentMethod.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.PaymentStatus.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.PaymentCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.Currency.ToLower().Contains(input.SearchingTerm.ToLower()) ||
