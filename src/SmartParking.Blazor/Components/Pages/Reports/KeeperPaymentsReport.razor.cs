@@ -86,7 +86,10 @@ partial class KeeperPaymentsReport
     {
 
 
-        if (!await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager) && !await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT))
+        if (!await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager) &&
+            !await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT)&&
+            !await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement)
+            )
         {
 
             Navigation.NavigateTo("/Account/AccessDenied", true);
