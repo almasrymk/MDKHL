@@ -365,13 +365,13 @@ public class RoleAppService : ApplicationService, IRoleAppService
 
     public async Task<IdentityRoleDto> Delete(Guid RoleId)
     {
-        IdentityRole? role;
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-             role = await _roleReository.FirstOrDefaultAsync(r => r.Id == RoleId);
-            if (role is null)
-                throw new BusinessException(LocalizationHelper.GetLocalizedString("Role") + ' ' + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-        }
+            IdentityRole? role;
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                 role = await _roleReository.FirstOrDefaultAsync(r => r.Id == RoleId);
+                if (role is null)
+                    throw new BusinessException(LocalizationHelper.GetLocalizedString("Role") + ' ' + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            }
             using (CurrentTenant.Change(role.TenantId))
             {
                 var isRoleInUser = await _userManager.GetUsersInRoleAsync(role.Name);
