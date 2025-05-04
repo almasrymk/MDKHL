@@ -548,7 +548,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  Date = DateOnly.FromDateTime(payment.CreationTime),
                                  Time = TimeOnly.FromDateTime(payment.CreationTime),
                                  Customers = payment.Customers,
-                                 PaymentMethod = payment.PaymentMethod.ToString(),
+                                 PaymentMethod = payment.PaymentMethod,
                                  PaymentNumber = payment.PaymentNumber,
                                  OrganizationArabicName = organization.ArabicName,
                                  OrganizationEnglishName = organization.EnglishName,
@@ -595,7 +595,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  Date = DateOnly.FromDateTime(payment.CreationTime),
                                  Time = TimeOnly.FromDateTime(payment.CreationTime),
                                  Customers = payment.Customers,
-                                 PaymentMethod = payment.PaymentMethod.ToString(),
+                                 PaymentMethod = payment.PaymentMethod,
                                  PaymentNumber = payment.PaymentNumber,
                                  OrganizationArabicName = organization.ArabicName,
                                  OrganizationEnglishName = organization.EnglishName,
@@ -644,7 +644,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  Date = DateOnly.FromDateTime(payment.CreationTime),
                                  Time = TimeOnly.FromDateTime(payment.CreationTime),
                                  Customers = payment.Customers,
-                                 PaymentMethod = payment.PaymentMethod.ToString(),
+                                 PaymentMethod = payment.PaymentMethod,
                                  PaymentNumber = payment.PaymentNumber,
                                  OrganizationArabicName = organization.ArabicName,
                                  OrganizationEnglishName = organization.EnglishName,
@@ -948,7 +948,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                      {
                          BeneficiaryNameAr = customer.ArabicName,
                          BeneficiaryNameEn = customer.IdentityUser.Name,
-                         PackageCategory = customer.CustomerPackages.Select(_ => _.CustomerCategory).FirstOrDefault().ToString(),
+                         PackageCategory = customer.CustomerPackages.Select(_ => _.CustomerCategory).FirstOrDefault(),
                          CreatedBy = userQuery.Where(_ => _.Id == customer.CreatorId).FirstOrDefault().Name,
                          CreationTime = TimeOnly.FromDateTime(customer.CreationTime),
                          CreationDate = DateOnly.FromDateTime(customer.CreationTime),
@@ -971,7 +971,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
         if (input.filters.Count > 0)
         {
-            var filterExpression = BuildExpression<VehicleCustomerReportDto>.BuildFilterExpression(input.filters);
+            var filterExpression = BuildExpression<CustomerAnalysis>.BuildFilterExpression(input.filters);
             if (filterExpression is not null)
             {
                 result = result.Where(filterExpression);
@@ -982,7 +982,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             result = result
                 .Where(_ => _.BeneficiaryNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                         _.BeneficiaryNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                        _.PackageCategory.ToLower().Contains(input.SearchingTerm.ToLower())  || 
+                        _.PackageCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower())  || 
                         _.BeneficiaryStatus.ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +11,7 @@ public class CustomerAnalysis
 {
     public string BeneficiaryNameAr { get; set; }
     public string BeneficiaryNameEn { get; set; }
-    public string PackageCategory { get; set; }
+    public CustomerCategoryStatus PackageCategory { get; set; }
     public string BeneficiaryStatus { get; set; }
     public string CreatedBy { get; set; }
     public DateOnly? CreationDate { get; set; }
