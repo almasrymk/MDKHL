@@ -47,6 +47,17 @@ partial class BeneficiariesReport
         _localizer = localizer;
 
     }
+    protected async override Task OnInitializedAsync()
+    {
+
+
+        if ((!await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager)) && (!await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT)))
+        {
+
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await CreateMenue(itemData.Columns);
+    }
     private async Task CreateMenue(List<ColumnDef> columns)
     {
         var MenuDatasTable = new List<MudMenuData>
@@ -153,17 +164,7 @@ partial class BeneficiariesReport
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Error);
         }
     }
-    protected async override Task OnInitializedAsync()
-    {
-
-
-        if (!await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager) || !await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT))
-        {
-
-            Navigation.NavigateTo("/Account/AccessDenied", true);
-        }
-        await CreateMenue(itemData.Columns);
-    }
+    
     private async Task FetchData(PageChangeEventArgs paged)
     {
 
