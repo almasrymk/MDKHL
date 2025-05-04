@@ -811,7 +811,8 @@
     "CustomPackage": "باقة مخصصه",
     "IsCustom": "تخصيص",
     "HasPackageOnly": "له باقة",
-    "RoleValidation": "لا يمكن حذف الدور لانه مستخدم"
+    "RoleValidation": "لا يمكن حذف الدور لانه مستخدم",
+    "PaymentCode": "كود الفواتير"
 
   }
 }

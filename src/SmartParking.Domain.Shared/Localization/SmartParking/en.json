@@ -782,8 +782,9 @@
     "ExpiryTime": "Expiry Time",
     "ActivationTime": "Activation Time",
     "HasPackageOnly": "With Package",
-    "RoleValidation": "can't role It has been used"
-   
+    "RoleValidation": "can't role It has been used",
+    "PaymentCode": "Payment Code"
+
 
   }
 
