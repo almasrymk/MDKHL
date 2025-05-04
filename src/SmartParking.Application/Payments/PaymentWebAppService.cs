@@ -7,6 +7,7 @@ using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
+using SmartParking.Enums;
 using SmartParking.Garages;
 using SmartParking.Invoices;
 using SmartParking.Organizations;
@@ -71,7 +72,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                         InvoiceId = payment.InvoiceId,
                         OrganizationId = payment.OrganizationId,
                         PaymentCategory = payment.PaymentCategory,
-                        PaymentMethod = payment.PaymentMethod.ToString(),
+                        PaymentMethod = (PaymentMethod)Enum.Parse(typeof(PaymentMethod), payment.PaymentMethod.ToString()),
                         PaymentStatus = payment.PaymentStatus,
                         PackageId = payment.PackageId,
                         QrCodeInvoice = payment.QrCodeInvoice,
