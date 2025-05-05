@@ -431,6 +431,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             if(result==null) {
             
                 invoice.Discount = discount;
+                invoice.InvoiceType = InvoiceType.Paid;
+                await _invoiceRepository.UpdateAsync(invoice);
                 await CurrentUnitOfWork.SaveChangesAsync();
             }
             else

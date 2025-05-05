@@ -537,7 +537,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             if (tenantId.HasValue)
                 query = query.Where(_ => tenantId == tenantId.Value);
             var resultJoin = from payment in query
-                             join organization in organizations 
+                             join organization in organizations
                              on payment.OrganizationId equals organization.Id
                              select new PaymentDto
                              {
@@ -547,13 +547,13 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  CheckoutId = payment.CheckoutId,
                                  Date = DateOnly.FromDateTime(payment.CreationTime),
                                  Time = TimeOnly.FromDateTime(payment.CreationTime),
-                                 Customers = payment.Customers ,
-                                 PaymentMethod = payment.PaymentMethod.ToString(),
+                                 Customers = payment.Customers,
+                                 PaymentMethod = payment.PaymentMethod,
                                  PaymentNumber = payment.PaymentNumber,
                                  OrganizationArabicName = organization.ArabicName,
                                  OrganizationEnglishName = organization.EnglishName,
-                                 PlateNumber = payment.Invoice != null ? payment.Invoice.PlateNumber: payment.EnPlateNumber,
-                                 AmountWithoutDiscount = payment.Invoice != null? (payment.Invoice.InvoicePrice * 1.15m) : 0,
+                                 PlateNumber = payment.Invoice != null ? payment.Invoice.PlateNumber : payment.EnPlateNumber,
+                                 AmountWithoutDiscount = payment.Invoice != null ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
                                  QrCodeInvoice = payment.QrCodeInvoice,
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
@@ -569,7 +569,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 Items = result,
                 TotalCount = totalCount
             };
-       
+
         }
 
     }
@@ -595,18 +595,18 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  Date = DateOnly.FromDateTime(payment.CreationTime),
                                  Time = TimeOnly.FromDateTime(payment.CreationTime),
                                  Customers = payment.Customers,
-                                 PaymentMethod = payment.PaymentMethod.ToString(),
+                                 PaymentMethod = payment.PaymentMethod,
                                  PaymentNumber = payment.PaymentNumber,
                                  OrganizationArabicName = organization.ArabicName,
                                  OrganizationEnglishName = organization.EnglishName,
-                                 PlateNumber = payment.Invoice != null ? payment.Invoice.PlateNumber: payment.EnPlateNumber,
+                                 PlateNumber = payment.Invoice != null ? payment.Invoice.PlateNumber : payment.EnPlateNumber,
                                  AmountWithoutDiscount = payment.Invoice != null ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
                                  QrCodeInvoice = payment.QrCodeInvoice,
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
                                  InvoiceId = payment.InvoiceId
                              };
-          //  resultJoin = CheckTenantPayment(tenantId, resultJoin);
+            //  resultJoin = CheckTenantPayment(tenantId, resultJoin);
             resultJoin = ApplySortPayment(input, resultJoin);
             resultJoin = ApplyFilterPayment(input, resultJoin);
             var totalCount = await AsyncExecuter.CountAsync(resultJoin);
@@ -644,12 +644,12 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  Date = DateOnly.FromDateTime(payment.CreationTime),
                                  Time = TimeOnly.FromDateTime(payment.CreationTime),
                                  Customers = payment.Customers,
-                                 PaymentMethod = payment.PaymentMethod.ToString(),
+                                 PaymentMethod = payment.PaymentMethod,
                                  PaymentNumber = payment.PaymentNumber,
                                  OrganizationArabicName = organization.ArabicName,
                                  OrganizationEnglishName = organization.EnglishName,
                                  PlateNumber = payment.Invoice != null ? payment.Invoice.PlateNumber : payment.EnPlateNumber,
-                                 AmountWithoutDiscount = payment.Invoice !=null ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
+                                 AmountWithoutDiscount = payment.Invoice != null ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
                                  QrCodeInvoice = payment.QrCodeInvoice,
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
@@ -837,7 +837,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         {
             var filterExpression = BuildExpression<DiscountPaymentAnalysis>.BuildFilterExpression(input.filters);
 
-            var result = await _paymentAnalysisRepository.GetReportDiscount(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression,input.SearchingTerm);
+            var result = await _paymentAnalysisRepository.GetReportDiscount(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression, input.SearchingTerm);
             return new PagedResultDto<DiscountPaymentAnalysis>
             {
                 Items = result.Queryable.ToList(),
@@ -854,8 +854,13 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
             var query = await _vehicleRepository.GetQueryableAsync();
             var userQuery = await _myUserRepository.GetQueryableAsync();
+            var packageCustomerQuery = await _customerPackageRepository.GetQueryableAsync();
             var resultJoin = from vehicle in query
-                             
+                             join packageCustomer in packageCustomerQuery
+                             on new { vehicle.ArPlateNumber, vehicle.EnPlateNumber }
+                             equals new { packageCustomer.ArPlateNumber, packageCustomer.EnPlateNumber }
+                             into vehiclePackageGroup
+                             from packageCustomer in vehiclePackageGroup.DefaultIfEmpty()
                              select new VehicleCustomerReportDto
                              {
                                  ArPlateNumber = vehicle.ArPlateNumber,
@@ -866,16 +871,32 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  BrandEnglishName = vehicle.VehicleBrand.EnglishName,
                                  ModelArabicName = vehicle.VehicleModel.ArabicName,
                                  ModelEnglishName = vehicle.VehicleModel.EnglishName,
-                                 CreatedBy  = userQuery.Where(_ => _.Id == vehicle.CreatorId).FirstOrDefault().Name,
+                                 CreatedBy = userQuery.Where(_ => _.Id == vehicle.CreatorId).FirstOrDefault().Name,
                                  CreationTime = TimeOnly.FromDateTime(vehicle.CreationTime),
                                  CreationDate = DateOnly.FromDateTime(vehicle.CreationTime),
-                                 ModifiedBy  = userQuery.Where(_ => _.Id == vehicle.LastModifierId).FirstOrDefault().Name,
+                                 ModifiedBy = userQuery.Where(_ => _.Id == vehicle.LastModifierId).FirstOrDefault().Name,
                                  ModifiedTime = TimeOnly.FromDateTime((DateTime)vehicle.LastModificationTime),
                                  ModifiedDate = DateOnly.FromDateTime((DateTime)vehicle.LastModificationTime),
                                  ModelYear = vehicle.ModelYear,
-                                 TenantId = vehicle.TenantId
+                                 TenantId = vehicle.TenantId,
+                                 CustomerCategory = packageCustomer.CustomerCategory == null ? CustomerCategoryStatus.None :
+                                 packageCustomerQuery
+                                        .Where(_ => _.ExpiryDate >= DateTime.Now)
+                                        .Select(_ => _.CustomerCategory).FirstOrDefault(),
+
+                                 PackageNameArabicName =
+                                    packageCustomerQuery
+                                        .Where(_ => _.ArPlateNumber == vehicle.ArPlateNumber &&
+                                                    _.EnPlateNumber == vehicle.EnPlateNumber &&
+                                                    _.ExpiryDate >= DateTime.Now)
+                                        .Select(_ => _.PackageArabicName).FirstOrDefault(),
+                                 PackageNameEnglishName = packageCustomerQuery
+                                        .Where(_ => _.ArPlateNumber == vehicle.ArPlateNumber &&
+                                                    _.EnPlateNumber == vehicle.EnPlateNumber &&
+                                                    _.ExpiryDate >= DateTime.Now)
+                                        .Select(_ => _.PackageEnglishName).FirstOrDefault()
                              };
-            
+
             if (tenantId.HasValue)
                 resultJoin = resultJoin.Where(_ => _.TenantId == tenantId);
             if (!input.Sorting.IsNullOrEmpty())
@@ -899,7 +920,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                     resultJoin = resultJoin.Where(filterExpression);
                 }
             }
-            if(!input.SearchingTerm.IsNullOrEmpty())
+            if (!input.SearchingTerm.IsNullOrEmpty())
             {
                 resultJoin = resultJoin.Where(_ => _.CustomerEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 _.CustomerArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
@@ -916,4 +937,63 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
     }
 
+    public async Task<PagedResultDto<CustomerAnalysis>> ReportBeneficiariesDetailsAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
+    {
+        var query = await _custeRepo.GetQueryableAsync();
+        var userQuery = await _myUserRepository.GetQueryableAsync();
+
+        var result = from customer in query
+                     where tenantId.HasValue ? customer.TenantId == tenantId : true
+                     select new CustomerAnalysis
+                     {
+                         BeneficiaryNameAr = customer.ArabicName,
+                         BeneficiaryNameEn = customer.IdentityUser.Name,
+                         PackageCategory = customer.CustomerPackages.Select(_ => _.CustomerCategory).FirstOrDefault(),
+                         CreatedBy = userQuery.Where(_ => _.Id == customer.CreatorId).FirstOrDefault().Name,
+                         CreationTime = TimeOnly.FromDateTime(customer.CreationTime),
+                         CreationDate = DateOnly.FromDateTime(customer.CreationTime),
+                         ModifiedBy = userQuery.Where(_ => _.Id == customer.LastModifierId).FirstOrDefault().Name,
+                         ModifiedTime = TimeOnly.FromDateTime((DateTime)customer.LastModificationTime),
+                         ModifiedDate = DateOnly.FromDateTime((DateTime)customer.LastModificationTime),
+                     };
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                result = result.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                result = result.OrderBy(input.Sorting);
+            }
+
+        }
+        if (input.filters.Count > 0)
+        {
+            var filterExpression = BuildExpression<CustomerAnalysis>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
+            {
+                result = result.Where(filterExpression);
+            }
+        }
+        if (!input.SearchingTerm.IsNullOrEmpty())
+        {
+            result = result
+                .Where(_ => _.BeneficiaryNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                        _.BeneficiaryNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                        _.PackageCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower())  || 
+                        _.BeneficiaryStatus.ToLower().Contains(input.SearchingTerm.ToLower())
+            );
+        }
+        var totalCount = await AsyncExecuter.CountAsync(result);
+        result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
+        IList<CustomerAnalysis> finalResult = await AsyncExecuter.ToListAsync(result);
+
+        return new PagedResultDto<CustomerAnalysis>
+        {
+            Items = finalResult.ToList(),
+            TotalCount = totalCount
+        };
+    }
 }

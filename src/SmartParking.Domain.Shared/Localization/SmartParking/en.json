@@ -438,7 +438,7 @@
     "ParkingSlot": "Slots",
     "TransactionType": "Transaction Type",
     "Payments": "Payments",
-    "PackageName": "Name",
+    "PackageName": "Package Name",
     "Amount": "Amount",
     "Currency": "Currency",
     "PaymentCategory": "Category",
@@ -781,7 +781,12 @@
     "AccurateDate": "Accurate Date",
     "ExpiryTime": "Expiry Time",
     "ActivationTime": "Activation Time",
-    "HasPackageOnly": "With Package"
+    "HasPackageOnly": "With Package",
+    "RoleValidation": "can't role It has been used",
+    "BeneficiariesDetials": "Beneficiaries Details",
+    "BeneficiariesDetailsReports": "Beneficiaries Details Reports", 
+    "PaymentCode": "Payment Code"
+
 
   }
 

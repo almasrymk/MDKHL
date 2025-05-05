@@ -85,8 +85,7 @@ partial class KeeperTransactionsReport
     protected async override Task OnInitializedAsync()
     {
 
-
-        if (!await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager) || !await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT))
+        if (!await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager) && !await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT))
         {
 
             Navigation.NavigateTo("/Account/AccessDenied", true);

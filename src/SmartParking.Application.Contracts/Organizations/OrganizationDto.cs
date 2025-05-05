@@ -68,6 +68,7 @@ public class OrganizationDto :AuditedEntityDto<int>
     public string TaxNumber { get; set; }
     public bool HasFreeSlots { get; set; }
     public bool HasPackageOnly { get; set; }
+    public string PaymentCode { get; set; }
 
 
 
