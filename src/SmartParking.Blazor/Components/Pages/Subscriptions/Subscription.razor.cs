@@ -122,15 +122,23 @@ public partial class Subscription
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
 
+        string sort;
+        if (pageInfo.SortColumn == "Id")
+            sort = "Id";
+        else
+            sort = pageInfo.SortColumn;
+
+        termSearch = pageInfo.SearchTerm;
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        Console.WriteLine(RowPerPage);
-        // Create a request object for paged and sorted data
-        var input = new PagedAndSortedResultRequestDto
+      
+
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
-            MaxResultCount = pageInfo.RowsPerPage,
-            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
+            MaxResultCount = RowPerPage,
+            SkipCount = (CurrentPage - 1) * pageInfo.RowsPerPage,
+            Sorting = sort,
+            SearchingTerm = termSearch
         };
 
         // Retrieve the list of cities from the server
