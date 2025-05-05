@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Currency;
 using SmartParking.Invoices;
 using SmartParking.Localization;
 using System.Globalization;
@@ -127,7 +128,14 @@ public partial class ViewCustomerInvoiceDialog
             }
 
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["TotalHours"], item.TotalHours.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoicePrice"], item.InvoicePrice.ToString()));
+            var iconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+                _localizer["InvoicePrice"],
+                item.InvoicePrice != null
+                    ? $"{item.InvoicePrice.ToString()} {iconHtml}"
+                    : $"0 {iconHtml}"
+            ));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"], item.InvoiceType));
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
