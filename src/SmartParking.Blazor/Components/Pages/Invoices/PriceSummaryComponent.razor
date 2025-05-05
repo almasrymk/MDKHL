@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.Shared
+@using SmartParking.Currency
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Permissions.InvoicesPermissions
@@ -21,14 +22,18 @@
                     <MudText Typo="Typo.h6">@L["DueValue"]</MudText>
                 </MudItem>
                 <MudItem xs="6" Class="text-end">
-                    <MudText Typo="Typo.h6">@InvoicePrice.Value @L["SAR"]</MudText>
+                    <MudText Typo="Typo.h6">
+                        @((MarkupString)$"{InvoicePrice.Value} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
+                    </MudText>
                 </MudItem>
 
                 <MudItem xs="6">
                     <MudText Typo="Typo.h6">@L["VAT"]</MudText>
                 </MudItem>
                 <MudItem xs="6" Class="text-end">
-                    <MudText Typo="Typo.h6">@($"{Math.Round((InvoicePrice.Value * 0.15m), 2)} {L["SAR"]}")</MudText>
+                    <MudText Typo="Typo.h6">
+                        @((MarkupString)$"{Math.Round((InvoicePrice.Value * 0.15m), 2)} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
+                    </MudText>
                 </MudItem>
 
                 <MudItem xs="6">
@@ -36,19 +41,22 @@
                 </MudItem>
                 <MudItem xs="6" Class="text-end">
                     <MudText Typo="Typo.h6" style="@(OnChooseDiscount ? "text-decoration: line-through;" : "")">
-                        @($"{InvoicePriceWithVat} {L["SAR"]}")
+                        @((MarkupString)$"{InvoicePriceWithVat} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
                     </MudText>
                 </MudItem>
-                @if(OnChooseDiscount){
+
+                @if (OnChooseDiscount)
+                {
                     <MudItem xs="6">
-                        <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["After"]  @L["Discount"]</MudText>
+                        <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["After"] @L["Discount"]</MudText>
                     </MudItem>
                     <MudItem xs="6" Class="text-end">
                         <MudText Typo="Typo.h6" Color="MudBlazor.Color.Tertiary">
-                            @($"{InvoicePriceAfterDiscount} {L["SAR"]}")
+                            @((MarkupString)$"{InvoicePriceAfterDiscount} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
                         </MudText>
                     </MudItem>
                 }
+
             </MudGrid>
         </MudItem>
 
