@@ -4,6 +4,7 @@
 @using SmartParking.Blazor.Components.LookUps
 @inject IOrganizationsAppService OrganizationsAppService
 @inject IStringLocalizer<SmartParkingResource> L
+@using SmartParking.Currency
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.Region
@@ -252,20 +253,65 @@
                             <MudCheckBox T="bool" @bind-Value="_createUpdateOrganiztionDto.HasPackageOnly">@L["HasPackageOnly"]</MudCheckBox>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="_createUpdateOrganiztionDto.FirstHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FirstHourPrice"]} ({L["SAR"]})") />
+                            <div style="display: flex; flex-direction: column;">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                    @L["FirstHourPrice"]
+                                    @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                                </label>
+                                <MudNumericField T="decimal" Immediate="true"
+                                                 @bind-Value="_createUpdateOrganiztionDto.FirstHourPrice"
+                                                 Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" />
+                            </div>
                         </MudItem>
+
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="_createUpdateOrganiztionDto.SecondHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["SecondHourPrice"]} ({L["SAR"]})") />
+                            <div style="display: flex; flex-direction: column;">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                    @L["SecondHourPrice"]
+                                    @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                                </label>
+                                <MudNumericField T="decimal" Immediate="true"
+                                                 @bind-Value="_createUpdateOrganiztionDto.SecondHourPrice"
+                                                 Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" />
+                            </div>
                         </MudItem>
+
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="_createUpdateOrganiztionDto.ThirdHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["ThirdHourPrice"]} ({L["SAR"]})") />
+                            <div style="display: flex; flex-direction: column;">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                    @L["ThirdHourPrice"]
+                                    @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                                </label>
+                                <MudNumericField T="decimal" Immediate="true"
+                                                 @bind-Value="_createUpdateOrganiztionDto.ThirdHourPrice"
+                                                 Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" />
+                            </div>
                         </MudItem>
+
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="_createUpdateOrganiztionDto.AdditionalHourPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["AdditionalHourPrice"]} ({L["SAR"]})") />
+                            <div style="display: flex; flex-direction: column;">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                    @L["AdditionalHourPrice"]
+                                    @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                                </label>
+                                <MudNumericField T="decimal" Immediate="true"
+                                                 @bind-Value="_createUpdateOrganiztionDto.AdditionalHourPrice"
+                                                 Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" />
+                            </div>
                         </MudItem>
+
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" Immediate="true" @bind-Value="_createUpdateOrganiztionDto.FullDayPrice" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FullDay"]} ({L["SAR"]})") />
+                            <div style="display: flex; flex-direction: column;">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                    @L["FullDay"]
+                                    @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                                </label>
+                                <MudNumericField T="decimal" Immediate="true"
+                                                 @bind-Value="_createUpdateOrganiztionDto.FullDayPrice"
+                                                 Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" />
+                            </div>
                         </MudItem>
+
 
                         <MudItem sm="4">
                             <MudNumericField T="int" @bind-Value="_createUpdateOrganiztionDto.FreeMinutes" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FreeMinutes"]} ({L["Minutes"]})") />
