@@ -4,6 +4,7 @@ using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Currency;
 using SmartParking.CustomerPackages;
 using SmartParking.Localization;
 using System.Globalization;
@@ -104,7 +105,14 @@ public partial class ViewCustomerPackageDialog
             }
 
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"], item.CustomerCategory.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Price"], item.PriceOfPackage.ToString()));
+            var iconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+               $"{LocalizationHelper.GetLocalizedString("Price")}",
+               item.PriceOfPackage != null ?
+                   $"{item.PriceOfPackage.ToString()} {iconHtml}" :
+                   $"0 {iconHtml}"
+            ));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageDuration"], item.DurationOfPackage.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ActivationDate"], item.ActivationDateOfPackage.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ExpiryDate"], item.ExpiryDate.ToString()));
