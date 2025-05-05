@@ -63,13 +63,22 @@ public partial class ViewCustomerInvoiceDialog
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-        var input = new PagedResultRequestDto
+        string sort;
+        if (pageInfo.SortColumn == "Id")
+            sort = "Id DESC";
+        else
+            sort = pageInfo.SortColumn;
+
+        termSearch = pageInfo.SearchTerm;
+        CurrentPage = pageInfo.PageNumber;
+        RowPerPage = pageInfo.RowsPerPage;
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
-            MaxResultCount = pageInfo.RowsPerPage,
-            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage
+            MaxResultCount = RowPerPage,
+            SkipCount = (CurrentPage - 1) * pageInfo.RowsPerPage,
+            Sorting = sort,
+            SearchingTerm = termSearch
         };
-
-
         var invoiceDto = await InvoiceAppService.GetInvoiceForCustomer(Guid.Parse(CustomerId), input);
         TotalItem = (int)invoiceDto.TotalCount;
         CreateTable(invoiceDto.Items.ToList());
