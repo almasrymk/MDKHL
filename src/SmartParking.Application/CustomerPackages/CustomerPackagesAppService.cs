@@ -148,7 +148,7 @@ public class CustomerPackagesAppService:
     private async Task<bool> CustomerPackageExistsAsync(int? packageId, int organizationId, Guid customerId,string ArabicPlateNumber,string EnglishPlateNumber)
     {
         var existingPackage = await _repository.AnyAsync(p =>
-            ((packageId.HasValue && p.PackageId == packageId.Value) || (p.IsCustomPackage==true && p.PackageId==null)) &&
+            ((packageId.HasValue && p.PackageId == packageId.Value) || (!packageId.HasValue && p.IsCustomPackage && p.PackageId  == null)) &&
             p.OrganizationId == organizationId &&
             p.CustomerId == customerId &&
             p.ExpiryDate >= DateTime.Today &&
@@ -218,6 +218,14 @@ public class CustomerPackagesAppService:
                 throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("DuplicateValidation")
                     + " " + LocalizationHelper.GetLocalizedString("Customer"));
             }
+            //
+
+            var activePackage =await  GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(customerPackageDto.OrganizationId, customerPackageDto.EnPlateNumber, DateTime.Now);
+            if (activePackage != null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("CannotAssignTwoPackageToSameVehicle"));
+            }
+
             await CheckSubscriptionCustomersLimitsAsync(customerPackageDto.OrganizationId);
 
             CustomerPackage customerPackage;

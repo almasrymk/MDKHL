@@ -813,7 +813,8 @@
     "RoleValidation": "لا يمكن حذف الدور لانه مستخدم",
     "BeneficiariesDetails": "تفاصيل المستفدين",
     "BeneficiariesDetailsReports": "تقرير بتفاصيل المستفدين",
-     "PaymentCode": "كود الفواتير"
+    "PaymentCode": "كود الفواتير",
+    "CannotAssignTwoPackageToSameVehicle": "السياره لديها باقه نشطه بالفعل"
 
   }
 }

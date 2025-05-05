@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Currency;
 using SmartParking.Invoices;
 using SmartParking.Localization;
 using System.Globalization;
@@ -63,13 +64,22 @@ public partial class ViewCustomerInvoiceDialog
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-        var input = new PagedResultRequestDto
+        string sort;
+        if (pageInfo.SortColumn == "Id")
+            sort = "Id DESC";
+        else
+            sort = pageInfo.SortColumn;
+
+        termSearch = pageInfo.SearchTerm;
+        CurrentPage = pageInfo.PageNumber;
+        RowPerPage = pageInfo.RowsPerPage;
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
-            MaxResultCount = pageInfo.RowsPerPage,
-            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage
+            MaxResultCount = RowPerPage,
+            SkipCount = (CurrentPage - 1) * pageInfo.RowsPerPage,
+            Sorting = sort,
+            SearchingTerm = termSearch
         };
-
-
         var invoiceDto = await InvoiceAppService.GetInvoiceForCustomer(Guid.Parse(CustomerId), input);
         TotalItem = (int)invoiceDto.TotalCount;
         CreateTable(invoiceDto.Items.ToList());
@@ -118,7 +128,14 @@ public partial class ViewCustomerInvoiceDialog
             }
 
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["TotalHours"], item.TotalHours.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoicePrice"], item.InvoicePrice.ToString()));
+            var iconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+                _localizer["InvoicePrice"],
+                item.InvoicePrice != null
+                    ? $"{item.InvoicePrice.ToString()} {iconHtml}"
+                    : $"0 {iconHtml}"
+            ));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"], item.InvoiceType));
             if (CultureInfo.CurrentCulture.Name == "ar")
             {

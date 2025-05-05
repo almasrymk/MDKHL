@@ -534,9 +534,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var query = await _paymentRepository.GetQueryableAsync();
             var organizations = await _orgRepo.GetQueryableAsync();
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
-            if (tenantId.HasValue)
-                query = query.Where(_ => tenantId == tenantId.Value);
             var resultJoin = from payment in query
+                             where tenantId.HasValue ? payment.TenantId == tenantId.Value : true
                              join organization in organizations
                              on payment.OrganizationId equals organization.Id
                              select new PaymentDto
@@ -580,9 +579,9 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var query = await _paymentRepository.GetQueryableAsync();
             var organizations = await _orgRepo.GetQueryableAsync();
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
-            if (tenantId.HasValue)
-                query = query.Where(_ => tenantId == tenantId.Value);
             var resultJoin = from payment in query
+                             where tenantId.HasValue ? payment.TenantId == tenantId.Value : true
+
                              where payment.CustomerId != null
                              join organization in organizations
                              on payment.OrganizationId equals organization.Id
@@ -629,9 +628,9 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var organizations = await _orgRepo.GetQueryableAsync();
 
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
-            if (tenantId.HasValue)
-                query = query.Where(_ => tenantId == tenantId.Value);
             var resultJoin = from payment in query
+                             where tenantId.HasValue ? payment.TenantId == tenantId.Value : true
+
                              where payment.PaymentMethod == PaymentMethod.Cash
                              join organization in organizations
                              on payment.OrganizationId equals organization.Id
@@ -939,61 +938,67 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     public async Task<PagedResultDto<CustomerAnalysis>> ReportBeneficiariesDetailsAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
-        var query = await _custeRepo.GetQueryableAsync();
-        var userQuery = await _myUserRepository.GetQueryableAsync();
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var queryCustomerPackage = await _customerPackageRepository.GetQueryableAsync();
+            var queryCustomer = await _custeRepo.GetQueryableAsync();
+            var userQuery = await _myUserRepository.GetQueryableAsync();
 
-        var result = from customer in query
-                     where tenantId.HasValue ? customer.TenantId == tenantId : true
-                     select new CustomerAnalysis
-                     {
-                         BeneficiaryNameAr = customer.ArabicName,
-                         BeneficiaryNameEn = customer.IdentityUser.Name,
-                         PackageCategory = customer.CustomerPackages.Select(_ => _.CustomerCategory).FirstOrDefault(),
-                         CreatedBy = userQuery.Where(_ => _.Id == customer.CreatorId).FirstOrDefault().Name,
-                         CreationTime = TimeOnly.FromDateTime(customer.CreationTime),
-                         CreationDate = DateOnly.FromDateTime(customer.CreationTime),
-                         ModifiedBy = userQuery.Where(_ => _.Id == customer.LastModifierId).FirstOrDefault().Name,
-                         ModifiedTime = TimeOnly.FromDateTime((DateTime)customer.LastModificationTime),
-                         ModifiedDate = DateOnly.FromDateTime((DateTime)customer.LastModificationTime),
-                     };
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
+            var result = from customer in queryCustomer
+                         join cp in queryCustomer on customer.Id equals cp.Id
+                         where tenantId.HasValue ? cp.TenantId == tenantId.Value : true
+                         select new CustomerAnalysis
+                         {
+                             BeneficiaryNameAr = customer.ArabicName,
+                             BeneficiaryNameEn = customer.IdentityUser.Name,
+                             PackageCategory = customer.CustomerPackages.Select(_ => _.CustomerCategory).FirstOrDefault(),
+                             CreatedBy = userQuery.Where(_ => _.Id == customer.CreatorId).FirstOrDefault().Name,
+                             CreationTime = TimeOnly.FromDateTime(customer.CreationTime),
+                             CreationDate = DateOnly.FromDateTime(customer.CreationTime),
+                             ModifiedBy = userQuery.Where(_ => _.Id == customer.LastModifierId).FirstOrDefault().Name,
+                             ModifiedTime = TimeOnly.FromDateTime((DateTime)customer.LastModificationTime),
+                             ModifiedDate = DateOnly.FromDateTime((DateTime)customer.LastModificationTime),
+                         };
+            if (!input.Sorting.IsNullOrEmpty())
             {
-                var sorting = input.Sorting.Split(' ').ToList();
-                result = result.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-                result = result.OrderBy(input.Sorting);
-            }
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    result = result.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    result = result.OrderBy(input.Sorting);
+                }
 
-        }
-        if (input.filters.Count > 0)
-        {
-            var filterExpression = BuildExpression<CustomerAnalysis>.BuildFilterExpression(input.filters);
-            if (filterExpression is not null)
-            {
-                result = result.Where(filterExpression);
             }
+            if (input.filters.Count > 0)
+            {
+                var filterExpression = BuildExpression<CustomerAnalysis>.BuildFilterExpression(input.filters);
+                if (filterExpression is not null)
+                {
+                    result = result.Where(filterExpression);
+                }
+            }
+            if (!input.SearchingTerm.IsNullOrEmpty())
+            {
+                result = result
+                    .Where(_ => _.BeneficiaryNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                            _.BeneficiaryNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                            _.PackageCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                            _.BeneficiaryStatus.ToLower().Contains(input.SearchingTerm.ToLower())
+                );
+            }
+            var totalCount = await AsyncExecuter.CountAsync(result);
+            result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
+            IList<CustomerAnalysis> finalResult = await AsyncExecuter.ToListAsync(result);
+            var finalResultCount = finalResult.Count();
+            return new PagedResultDto<CustomerAnalysis>
+            {
+                Items = finalResult.ToList(),
+                TotalCount = totalCount
+            };
         }
-        if (!input.SearchingTerm.IsNullOrEmpty())
-        {
-            result = result
-                .Where(_ => _.BeneficiaryNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                        _.BeneficiaryNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                        _.PackageCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower())  || 
-                        _.BeneficiaryStatus.ToLower().Contains(input.SearchingTerm.ToLower())
-            );
-        }
-        var totalCount = await AsyncExecuter.CountAsync(result);
-        result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
-        IList<CustomerAnalysis> finalResult = await AsyncExecuter.ToListAsync(result);
-
-        return new PagedResultDto<CustomerAnalysis>
-        {
-            Items = finalResult.ToList(),
-            TotalCount = totalCount
-        };
+       
     }
 }
