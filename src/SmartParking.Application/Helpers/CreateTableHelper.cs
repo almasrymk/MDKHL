@@ -297,7 +297,8 @@ public static class CreateTableHelper
             var iconHtml =CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
             rowDef.Cells.Add(new KeyValuePair<string, string>(
                 $"{LocalizationHelper.GetLocalizedString("PriceOfPackage")}",
-                $"{customerPackage.PriceOfPackage?.ToString()} {iconHtml}"));
+                customerPackage.PriceOfPackage != null ?
+                $"{customerPackage.PriceOfPackage?.ToString()} {iconHtml}" :$"0 {iconHtml}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{LocalizationHelper.GetLocalizedString("PackageDuration")} ({LocalizationHelper.GetLocalizedString("Hour")})", customerPackage.DurationOfPackage?.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("SubscriptionDate"), customerPackage.ActivationDate?.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("SubscriptionTime"), customerPackage.ActivationTime?.ToString()));
