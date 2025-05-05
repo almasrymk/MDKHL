@@ -784,8 +784,9 @@
     "HasPackageOnly": "With Package",
     "RoleValidation": "can't role It has been used",
     "BeneficiariesDetials": "Beneficiaries Details",
-    "BeneficiariesDetailsReports": "Beneficiaries Details Reports", 
-    "PaymentCode": "Payment Code"
+    "BeneficiariesDetailsReports": "Beneficiaries Details Reports",
+    "PaymentCode": "Payment Code",
+    "CannotAssignTwoPackageToSameVehicle": "Vehicle has an active package"
 
 
   }
