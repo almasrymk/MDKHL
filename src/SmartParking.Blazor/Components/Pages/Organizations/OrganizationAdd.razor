@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.LookUps
+@using SmartParking.Currency
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.Region
@@ -268,21 +269,73 @@
                             <MudCheckBox @bind-Value="CreateUpdateOrganiztion.HasPackageOnly">@L["HasPackageOnly"]</MudCheckBox>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudNumericField T="decimal" RequiredError="@L["This field is required."]" @bind-Value="CreateUpdateOrganiztion.FirstHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FirstHourPrice"]} ({L["SAR"]})") />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField @bind-Value="CreateUpdateOrganiztion.SecondHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["SecondHourPrice"]} ({L["SAR"]})") />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField @bind-Value="CreateUpdateOrganiztion.ThirdHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["ThirdHourPrice"]} ({L["SAR"]})") />
+                            <div style="display: flex; flex-direction: column; font-weight: bold">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                    @L["FirstHourPrice"]
+                                    @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                                </label>
+                                <MudNumericField T="decimal"
+                                                 @bind-Value="CreateUpdateOrganiztion.FirstHourPrice"
+                                                 HideSpinButtons="true"
+                                                 Required="true"
+                                                 RequiredError="@L["This field is required."]"
+                                                 Placeholder="@L["Type Here"]" />
+                            </div>
                         </MudItem>
 
                         <MudItem sm="4">
-                            <MudNumericField @bind-Value="CreateUpdateOrganiztion.AdditionalHourPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["AdditionalHourPrice"]} ({L["SAR"]})") />
+                            <div style="display: flex; flex-direction: column; font-weight: bold">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                    @L["SecondHourPrice"]
+                                    @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                                </label>
+                                <MudNumericField T="decimal"
+                                                 @bind-Value="CreateUpdateOrganiztion.SecondHourPrice"
+                                                 HideSpinButtons="true"
+                                                 Placeholder="@L["Type Here"]" />
+                            </div>
                         </MudItem>
+
                         <MudItem sm="4">
-                            <MudNumericField @bind-Value="CreateUpdateOrganiztion.FullDayPrice" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FullDayPrice"]} ({L["SAR"]})") />
+                            <div style="display: flex; flex-direction: column; font-weight: bold">
+                                <label  style="font-size: 0.75rem; margin-bottom: 4px;">
+                                    @L["ThirdHourPrice"]
+                                    @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                                </label>
+                                <MudNumericField T="decimal"
+                                                 @bind-Value="CreateUpdateOrganiztion.ThirdHourPrice"
+                                                 HideSpinButtons="true"
+                                                 Placeholder="@L["Type Here"]" />
+                            </div>
                         </MudItem>
+
+                        <MudItem sm="4">
+                            <div style="display: flex; flex-direction: column; font-weight: bold">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                    @L["AdditionalHourPrice"]
+                                    @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                                </label>
+                                <MudNumericField T="decimal"
+                                                 @bind-Value="CreateUpdateOrganiztion.AdditionalHourPrice"
+                                                 HideSpinButtons="true"
+                                                 Placeholder="@L["Type Here"]" />
+                            </div>
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <div style="display: flex; flex-direction: column; font-weight: bold">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                    @L["FullDayPrice"]
+                                    @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                                </label>
+                                <MudNumericField T="decimal"
+                                                 @bind-Value="CreateUpdateOrganiztion.FullDayPrice"
+                                                 HideSpinButtons="true"
+                                                 Placeholder="@L["Type Here"]" />
+                            </div>
+                        </MudItem>
+
+
                         <MudItem sm="4">
                             <MudNumericField @bind-Value="CreateUpdateOrganiztion.FreeMinutes" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["FreeMinutes"]} ({L["Minutes"]})") />
                         </MudItem>
