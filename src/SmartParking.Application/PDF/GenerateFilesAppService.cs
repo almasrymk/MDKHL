@@ -263,6 +263,9 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                         var cellValue = row.Cells?.FirstOrDefault(c => c.Key == header.DisplayName).Value ?? string.Empty;
                         if (row.Cells?.FirstOrDefault(c => c.Key == header.Name).Key != "Id" && header.IsColumnVisible)
                         {
+                          
+                                cellValue = RemoveHtmlTags(cellValue);
+                            
                             Text txt = CellStyling(header, cellValue, font ,  styleBold);
                             if (CultureInfo.CurrentCulture.Name == "ar")
                             {
