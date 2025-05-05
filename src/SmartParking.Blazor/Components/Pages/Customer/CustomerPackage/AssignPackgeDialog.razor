@@ -75,6 +75,8 @@
 
 								@foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
 								{
+									if (category == CustomerCategoryStatus.None)
+										continue;
 									<MudSelectItem Value="@category.ToString()">
 
 										@category.ToString()
@@ -135,33 +137,47 @@
 
 					@if (IsCustom)
 					{
-
-
-						<MudItem sm="4">
+						<MudItem sm="6">
 							<MudDatePicker Label="@L["StartDate"]"
-										   PickerVariant="PickerVariant.Dialog"
-										   ShowToolbar="false"
-										   @bind-Date="ActivationDate"
-										   MinDate="@( DateTime.Today  )"
-										   MaxDate="DectivationDate"
-										   Required="true"
-										   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+							PickerVariant="PickerVariant.Dialog"
+							ShowToolbar="false"
+							@bind-Date="ActivationDate"
+							MinDate="@( DateTime.Today  )"
+							MaxDate="DectivationDate"
+							Required="true"
+							RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+						</MudItem>
+						<MudItem sm="6">
+							<MudDatePicker Label="@L["EndDate"]"
+							PickerVariant="PickerVariant.Dialog"
+							ShowToolbar="false"
+							@bind-Date="DectivationDate"
+							MinDate="@( ActivationDate is not null  ? ActivationDate : DateTime.Today )"
+							MaxDate="DectivationDate"
+							Required="true"
+							RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 						</MudItem>
 						<MudItem sm="4">
-							<MudDatePicker Label="@L["EndDate"]"
-										   PickerVariant="PickerVariant.Dialog"
-										   ShowToolbar="false"
-										   @bind-Date="DectivationDate"
-										   MinDate="@( ActivationDate is not null  ? ActivationDate : DateTime.Today )"
-										   MaxDate="DectivationDate"
-										   Required="true"
-										   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+							<MudTimePicker Label="@L["StartTime"]"
+							PickerVariant="PickerVariant.Dialog"
+							
+							@bind-Time="startTime"
+							Required="true"
+							RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+						</MudItem>
+						<MudItem sm="4">
+							<MudTimePicker Label="@L["EndTime"]"
+							PickerVariant="PickerVariant.Dialog"
+							
+							@bind-Time="endTime"
+							Required="true"
+							RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 						</MudItem>
 						<MudItem sm="4">
 							<MudNumericField 
-								@bind-value="_customerPackageDto.PriceOfPackage" HideSpinButtons Min="0" Label="@L["Price"]"
-							    Required ="true"
-							    RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"/>
+							@bind-value="_customerPackageDto.PriceOfPackage" HideSpinButtons Min="0" Label="@L["Price"]"
+							Required ="true"
+							RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"/>
 						</MudItem>
 
 
@@ -244,6 +260,8 @@
 	private DateTime?  ActivationDate { get; set; }
 	private DateTime? DectivationDate { get; set; }
 
+	public TimeSpan? startTime { get; set; }
+    public TimeSpan? endTime { get; set; }
 
 	private async Task getPackage(string customerCategory)
 	{
@@ -287,13 +305,19 @@
 			{
 				_customerPackageDto.CustomerCategory = Customercategory;
 				_customerPackageDto.publishedOfPackage = true;
-				_customerPackageDto.ActivationDateOfPackage = ActivationDate.Value.Date;
-				_customerPackageDto.ExpiryDate = DectivationDate.Value.Date;
+				_customerPackageDto.ActivationDateOfPackage = ActivationDate.HasValue && startTime.HasValue
+															? ActivationDate.Value.Date + startTime.Value
+															: ActivationDate.Value.Date;
+				_customerPackageDto.ExpiryDate = DectivationDate.HasValue && endTime.HasValue
+												? DectivationDate.Value.Date + endTime.Value
+												: DectivationDate.Value.Date;
 				_customerPackageDto.IsCustomPackage = true;
 				_customerPackageDto.DurationOfPackage = DectivationDate.Value.DayOfYear - ActivationDate.Value.DayOfYear;
 				CustomerPackage.Id = default;
 				_customerPackageDto.PackageArabicName = AlertMessages.AlertMessages.PackageNameAr;
 				_customerPackageDto.PackageEnglishName = AlertMessages.AlertMessages.PackageNameEn;
+				_customerPackageDto.PublishFromOfPackage = startTime.HasValue ? TimeOnly.FromTimeSpan(startTime.Value) : null;
+				_customerPackageDto.PublishToOfPackage = endTime.HasValue ? TimeOnly.FromTimeSpan(endTime.Value) : null;
 			}
 			if (CurrentTenant.Id is null)
 			{
@@ -340,8 +364,4 @@
 		CustomerPackage = Packages.Find(x => x.Id == value);
 
 	}
-
-
-
-
 }

@@ -320,9 +320,20 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private async Task<CreateUpdateInvoiceDto> CalculateInvoiceForCustomerPackage(DateTime EntranceTime, Organization organization, Customer exsitCustomer, CustomerPackageDto packageDto, CreateUpdateGarageTransactionDto GarageTransaction,int TotalHours,CustomerCategoryStatus customerCategory)
     {
 
-        var THoursOutPackage = _calculationsEndPointAppService.CalculateTimeDependsOnPackage(EntranceTime, GarageTransaction.AccurateTime, packageDto);
+        decimal price;
 
-        var price = THoursOutPackage * organization.AdditionalHourPrice;
+
+        if (packageDto.IsCustomPackage) {
+            var totaldays = _calculationsEndPointAppService.CalculateTimeForCustomPackage(GarageTransaction.AccurateTime, packageDto);
+            price = totaldays * organization.FullDayPrice; ;
+        }
+        else
+        {
+            var THoursOutPackage = _calculationsEndPointAppService.CalculateTimeDependsOnPackage(EntranceTime, GarageTransaction.AccurateTime, packageDto);
+            price  = THoursOutPackage * organization.AdditionalHourPrice;
+        }
+
+
 
         CreateUpdateInvoiceDto invoice = await GenrateInvoiceNumberAndInitiateInvoice(EntranceTime, exsitCustomer, GarageTransaction, TotalHours, price, true);
 
@@ -377,10 +388,10 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     private async Task<CreateUpdateInvoiceDto> CalculateStayingHoursForCustomer(DateTime EntranceTime, CreateUpdateGarageTransactionDto GarageTransaction, Customer customer, Organization organization, int totalHours, CustomerPackageDto packageDto)
     {
-        return (packageDto, packageDto?.Package) switch
+        return (packageDto, packageDto?.Package , packageDto?.IsCustomPackage) switch
         {
-            (null, _) or (not null, null) => await CalculateInvoiceForCustomerWithoutPackage(EntranceTime, totalHours, customer, GarageTransaction, CustomerCategoryStatus.Customer),
-            (not null, not null) => await CalculateInvoiceForCustomerPackage(EntranceTime, organization, customer, packageDto, GarageTransaction, totalHours, (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packageDto.Package.CustomerCategory)),
+            (null, _ , _ ) or (not null, null , false ) => await CalculateInvoiceForCustomerWithoutPackage(EntranceTime, totalHours, customer, GarageTransaction, CustomerCategoryStatus.Customer),
+            (not null, not null,_ ) or (not null, null, true) => await CalculateInvoiceForCustomerPackage(EntranceTime, organization, customer, packageDto, GarageTransaction, totalHours, packageDto.CustomerCategory),
 
         };
     }
@@ -427,7 +438,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var EntranceTime = EntryTransaction?.AccurateTime;
         var garage = await GetGarage(garageId);
         var customer = await CheckVehicle(GarageTransaction.PlateNumber);
-        CustomerPackageDto? packageDto = await GetCustomerWithItsFirstActivePackage(GarageTransaction, customer);
+        CustomerPackageDto? packageDto = await GetCustomerWithItsFirstActivePackage(GarageTransaction, EntranceTime.Value, customer);
         GarageTransaction.CustomerCategory = packageDto is null ? CustomerCategoryStatus.Customer : packageDto.CustomerCategory;
 
 
@@ -562,12 +573,12 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
     }
 
-    private async Task<CustomerPackageDto> GetCustomerWithItsFirstActivePackage(CreateUpdateGarageTransactionDto GarageTransaction, string? customer)
+    private async Task<CustomerPackageDto> GetCustomerWithItsFirstActivePackage(CreateUpdateGarageTransactionDto GarageTransaction,DateTime entryTransaction ,string? customer)
     {
         CustomerPackageDto package = null;
         if (customer != null)
         {
-            package = await CheckActivePackageForPlateNumber(GarageTransaction.PlateNumber, GarageTransaction.OrganizationID,GarageTransaction.AccurateTime.Value);
+            package = await CheckActivePackageForPlateNumber(GarageTransaction.PlateNumber, GarageTransaction.OrganizationID,entryTransaction);
             GarageTransaction.CustomerCategory = package is null ? CustomerCategoryStatus.Customer : package.CustomerCategory;
 
         }
@@ -910,7 +921,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             return await GenrateInvoiceNumberAndInitiateInvoice(result.EntryGarageTransaction.AccurateTime.Value, null, result.ExitGarageTransaction, totalHours, price, false);
 
         }
-        CustomerPackageDto? packageDto = await GetCustomerWithItsFirstActivePackage(result.ExitGarageTransaction, customer);
+        CustomerPackageDto? packageDto = await GetCustomerWithItsFirstActivePackage(result.ExitGarageTransaction, result.EntryGarageTransaction.AccurateTime.Value, customer);
         Customer exsitCustomer = await GetCustomer(customer);
 
         return await CalculateStayingHoursForCustomer(result.EntryGarageTransaction.AccurateTime.Value, result.ExitGarageTransaction,exsitCustomer,org,totalHours,packageDto);

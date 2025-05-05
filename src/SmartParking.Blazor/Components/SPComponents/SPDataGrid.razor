@@ -285,17 +285,17 @@
                         @header.DisplayName
                         @if (header.IsSortable)
                         {
-                            <MudIconButton OnClick="()=> SortTable(header.PropertyName)" Size="MudBlazor.Size.Small" ClickPropagation="_ascending" Icon="@(_ascending ? Icons.Material.Filled.ArrowUpward : Icons.Material.Filled.ArrowDownward)">
-                            </MudIconButton>
+                            <MudIconButton OnClick="()=> SortTable(header.PropertyName)" Size="MudBlazor.Size.Small" ClickPropagation="_ascending" Icon="@(_ascending ? Icons.Material.Filled.ArrowUpward : Icons.Material.Filled.ArrowDownward)"></MudIconButton>
                         }
                     </HeaderTemplate>
                     <CellTemplate>
                         @{
                             var cell = @context.Item.Cells.FirstOrDefault(c => c.Key == header.DisplayName).Value;
                         }
-                        @cell
+                        @((MarkupString)cell)
                     </CellTemplate>
                 </TemplateColumn>
+
 
                 @if (Data.Columns.Last().DisplayName == header.DisplayName)
                 {

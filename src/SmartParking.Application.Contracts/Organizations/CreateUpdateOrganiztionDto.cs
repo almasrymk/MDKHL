@@ -53,6 +53,8 @@ public class CreateUpdateOrganiztionDto
     public string TenantName { get; set; }
     public bool HasFreeSlots { get; set; }
     public bool HasPackageOnly { get; set; }
+    public string PaymentCode { get; set; }
+
 
 
 }

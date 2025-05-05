@@ -1,6 +1,6 @@
 ﻿<MudItem sm="12" Class="d-flex flex-row justify-content-around">
     <MudItem FullWidth="true" sm="7" Class="d-flex flex-row align-items-center justify-content-start" Style="flex: 1;">
-        <MudText Class="mx-4 fw-bold">@Key</MudText>
+        <MudText Class="mx-4 fw-bold">@Key @CurrencyKey</MudText>
     </MudItem>
     <MudItem FullWidth="true" sm="5" Class="d-flex flex-row align-items-center justify-content-start" Style="flex: 1;">
         <MudText Class="mx-4">@Value</MudText>
@@ -8,6 +8,7 @@
 </MudItem>
 
 @code {
+    [Parameter] public MarkupString CurrencyKey { get; set; }
 	[Parameter] public string Key { get; set; }
 	[Parameter] public string Value { get; set; }
 

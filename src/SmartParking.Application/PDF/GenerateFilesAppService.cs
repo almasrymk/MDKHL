@@ -12,6 +12,7 @@ using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Font;
 using iText.Layout.Properties;
+using Microsoft.AspNetCore.Components;
 using Microsoft.CodeAnalysis.Elfie.Model;
 using OfficeOpenXml;
 using SmartParking.DataTable;
@@ -93,10 +94,10 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
             worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.WrapText = true;
             worksheet.Row(1).Height = 30;
             worksheet.Row(2).Height = 30;
-            
-           
 
-            
+
+
+
 
             foreach (var row in Data.Rows)
             {
@@ -104,21 +105,31 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
 
                 foreach (var cell in row.Cells)
                 {
-                    if (cell.Key == "Id" || !Data.Columns.FirstOrDefault(_ => _.DisplayName == cell.Key).IsColumnVisible) 
+                    // Skip columns that should not be visible or are "Id"
+                    if (cell.Key == "Id" || !Data.Columns.FirstOrDefault(_ => _.DisplayName == cell.Key).IsColumnVisible)
                         continue;
-                    if(CultureInfo.CurrentCulture.Name == "ar" && (cell.Key.Contains("وقت") || cell.Key.Contains("تاريخ")))
+
+                    string cellValue = cell.Value?.ToString() ?? string.Empty;
+
+                    // Remove any HTML tags (like the iconHtml) from the value if needed
+                    cellValue = RemoveHtmlTags(cellValue);
+
+                    // Check if the culture is Arabic and if the cell key contains "وقت" or "تاريخ"
+                    if (CultureInfo.CurrentCulture.Name == "ar" && (cell.Key.Contains("وقت") || cell.Key.Contains("تاريخ")))
                     {
-                        dataRow[cell.Key] = cell.Value.ToString();
+                        // Render as MarkupString for Arabic date/time columns
+                        dataRow[cell.Key] = new MarkupString(cellValue); // HTML will be rendered here
                     }
                     else
                     {
-                        dataRow[cell.Key] = cell.Value ?? string.Empty;
+                        // Default rendering as MarkupString for all other cells
+                        dataRow[cell.Key] = new MarkupString(cellValue); // HTML will be rendered here as well
                     }
-                    
-                    
                 }
+
                 table.Rows.Add(dataRow);
             }
+
 
             worksheet.Cells["A4"].LoadFromDataTable(table, true);
 
@@ -161,6 +172,21 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
 
         }
     }
+
+    private string RemoveHtmlTags(string input)
+    {
+        const string iconHtml = "<i class='icon-Saudi_Riyal_Symbolsvg' style='font-size: 15px;'></i>";
+
+        if (input.Contains(iconHtml))
+        {
+            return input.Replace(iconHtml, string.Empty);
+        }
+        else
+        {
+            return input;
+        }
+    }
+
 
     public async Task ExportToPdf(TableData Data, string fileName)
     {
@@ -237,6 +263,9 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                         var cellValue = row.Cells?.FirstOrDefault(c => c.Key == header.DisplayName).Value ?? string.Empty;
                         if (row.Cells?.FirstOrDefault(c => c.Key == header.Name).Key != "Id" && header.IsColumnVisible)
                         {
+                          
+                                cellValue = RemoveHtmlTags(cellValue);
+                            
                             Text txt = CellStyling(header, cellValue, font ,  styleBold);
                             if (CultureInfo.CurrentCulture.Name == "ar")
                             {

@@ -388,7 +388,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
            var organization = await organizationsAppService.GetAsync(organizationId);
 
             var currentYearSuffix = DateTime.Now.Year % 100;  // Last 2 digits of the year
-            var prefix = organization.EnglishName.Substring(0, 3).ToUpper();
+            var prefix = organization.PaymentCode ?? organization.EnglishName.Substring(0, 3).ToUpper();
 
             // Fetch the last invoice for the current year and organization
             var invoices = await _repository.GetListAsync(i => i.OrganizationId == organizationId);

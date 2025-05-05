@@ -806,12 +806,14 @@
     "AccurateDate": "تاريخ الفعلي",
     "SubscriptionTime": "وقت الاشتراك",
     "ExpiryTime": "وقت إنتهاء",
-
     "BeneficiariesVehiclesReport": "تقرير مركبات المستفيدين",
     "CustomPackage": "باقة مخصصه",
     "IsCustom": "تخصيص",
     "HasPackageOnly": "له باقة",
-    "RoleValidation": "لا يمكن حذف الدور لانه مستخدم"
+    "RoleValidation": "لا يمكن حذف الدور لانه مستخدم",
+    "BeneficiariesDetails": "تفاصيل المستفدين",
+    "BeneficiariesDetailsReports": "تقرير بتفاصيل المستفدين",
+     "PaymentCode": "كود الفواتير"
 
   }
 }

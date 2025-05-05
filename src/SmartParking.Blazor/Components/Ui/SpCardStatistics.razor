@@ -1,14 +1,15 @@
 ﻿<MudItem sm="@grid">
     <MudPaper class="custom-rounded px-4 py-2 bg-white d-flex justify-content-between align-items-center">
         <div>
-            <MudText Class="fw-bold" Typo="Typo.h6">
+            <MudText Class="fw-bold d-flex align-items-center gap-1" Typo="Typo.h6">
                 @Header
             </MudText>
             <MudText>
                 @HeaderText1 @BodyText1
             </MudText>
             <MudText>
-                @HeaderText2 @BodyText2
+                @HeaderText2 @BodyText2 @Currency
+
             </MudText>
         </div>
     </MudPaper>
@@ -20,5 +21,6 @@
     [Parameter] public string BodyText1 { get; set; }
     [Parameter] public string HeaderText2 { get; set; }
     [Parameter] public string BodyText2 { get; set; }
+    [Parameter] public MarkupString Currency { get; set; }
     [Parameter] public int grid{ get; set; }
 }

@@ -58,4 +58,6 @@ public class Organization : BaseEntity
     public bool HasFreeSlots { get; set; }
 
     public bool HasPackageOnly { get; set; }
+
+    public string PaymentCode { get; set; }
 }
