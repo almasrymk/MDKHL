@@ -1,4 +1,5 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Currency
 @using SmartParking.Localization
 @using SmartParking.Packages
 @using System.Globalization
@@ -39,15 +40,21 @@
                                       Label=@L["EnglishName"] />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudTextField @bind-Value="Package.Price"
-                                      For="@(() => Package.Price)"
-                                      Variant="Variant.Text"
-                                      Min="0"
-                                      HideSpinButtons="true"       
-                                      Class="w-100"
-                                      Disabled='true'
-                                      Label="@($"{L["Price"]} ({L["SAR"]})")" />
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; margin-bottom: 4px; color: rgba(0, 0, 0, 0.38); cursor: default;">
+                                @L["Price"]
+                                @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                            </label>
+                            <MudTextField @bind-Value="Package.Price"
+                                          For="@(() => Package.Price)"
+                                          Variant="Variant.Text"
+                                          Class="w-100"
+                                          Disabled="true"
+                                          HideSpinButtons="true" />
+                        </div>
                     </MudItem>
+
+
 
                     <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="Package.DurationOfPackage"
