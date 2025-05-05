@@ -945,8 +945,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var userQuery = await _myUserRepository.GetQueryableAsync();
 
             var result = from customer in queryCustomer
-                         where tenantId.HasValue ? customer.TenantId == tenantId.Value : true
                          join cp in queryCustomer on customer.Id equals cp.Id
+                         where tenantId.HasValue ? cp.TenantId == tenantId.Value : true
                          select new CustomerAnalysis
                          {
                              BeneficiaryNameAr = customer.ArabicName,
