@@ -4,6 +4,7 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Analysis
 @using SmartParking.Blazor.Components.Shared
+@using SmartParking.Currency
 @using SmartParking.Cutomers
 @using SmartParking.Enums
 @using SmartParking.Garages
@@ -140,13 +141,17 @@
 
 
     }
-    @if(IsShowCollectedMoneyTodayCard){
+    @if(IsShowCollectedMoneyTodayCard)
+    {
         <SpCardStatistics grid="12"
         Header="@L["CollectedMoneyToday"]"
         HeaderText1="@L["Day"]"
         BodyText1="@Day"
         HeaderText2="@L["Collected"]"
-        BodyText2=@collectedMoneyToday></SpCardStatistics>
+        BodyText2=@collectedMoneyToday
+        Currency=@((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+        >
+    </SpCardStatistics>
     }
 
 

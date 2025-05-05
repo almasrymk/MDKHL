@@ -5,6 +5,7 @@ using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Currency;
 using SmartParking.Cutomers;
 using SmartParking.Enums;
 using SmartParking.Localization;
@@ -219,7 +220,7 @@ public partial class Package
 		{
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
 		}
-        tableData.Columns.Add(new ColumnDef() {DisplayName = $"{_localizer["Price"]} ({_localizer["SAR"]})", Name = "Price", IsFilterable = false, PropertyName = "Price", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() {DisplayName = $"{_localizer["Price"]}", Name = "Price", IsFilterable = false, PropertyName = "Price", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Published"], Name = "published", IsFilterable = false, PropertyName = "published", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Subscribers"], Name = "Subscribers", IsFilterable = false, PropertyName = "CustomerPackages.Count", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CurrentTenant.Id == null)
@@ -249,7 +250,10 @@ public partial class Package
 			{
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
 			}
-            rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Price"]} ({_localizer["SAR"]})", $"{item.Price} "));
+            var IconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+                $"{_localizer["Price"]}",
+                $"{item.Price} {IconHtml}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.Published ? 24 + _localizer[$"Hour"] : $" {item.PublishFrom} " + " - " + $" {item.PublishTo}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Subscribers"], item.SubscribersInPackages.ToString()));
             if (CurrentTenant.Id == null)

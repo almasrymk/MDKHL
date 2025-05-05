@@ -102,7 +102,7 @@ public partial class Index
 
             var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyMdKhlAsync();
             Day = dataForToday.Day;
-            collectedMoneyToday = $"{Math.Round((decimal)dataForToday.totalAmounts, 2).ToString()} {@L["SAR"]}";
+            collectedMoneyToday = $"{Math.Round((decimal)dataForToday.totalAmounts, 2).ToString()}";
         }
         else
         {
@@ -119,7 +119,7 @@ public partial class Index
 
             var dataForToday = await AnalysisAppService.CalculateDailyCollectedMoneyOrganizationAsync(organization.Id);
             Day = dataForToday.Day;
-            collectedMoneyToday = $"{Math.Round((decimal)dataForToday.totalAmounts, 2).ToString()} {@L["SAR"]}";
+            collectedMoneyToday = $"{Math.Round((decimal)dataForToday.totalAmounts, 2).ToString()}";
         }
 
         

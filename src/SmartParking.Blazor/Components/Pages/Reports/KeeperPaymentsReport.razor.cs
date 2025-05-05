@@ -126,7 +126,9 @@ partial class KeeperPaymentsReport
             itemDataIsExport.Columns = itemData.Columns;
             if (CurrentTenant.Id == null)
             {
+
                 itemData = await CreateTableHelper.CreateDataTableForPaymentUserShift(keeperPaymentAnalyses.Items.ToList(),null);
+                
             }
             else
             {

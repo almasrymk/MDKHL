@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.Shared
+@using SmartParking.Currency
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Lookups
@@ -48,15 +49,21 @@
                         Label="@L["EnglishName"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudNumericField @bind-Value="Package.Price"
-                        For="@(() => Package.Price)"
-                        Variant="Variant.Text"
-                        Required="true"
-                        Min="0" 
-                        HideSpinButtons="true"
-                        class="@(CultureInfo.CurrentCulture.Name=="ar" ? "custom-numeric-field" : "")" 
-                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        Label="@($"{L["Price"]} ({L["SAR"]})")" />
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                @L["Price"]
+                                @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                            </label>
+
+                            <MudNumericField @bind-Value="Package.Price"
+                                             For="@(() => Package.Price)"
+                                             Variant="Variant.Text"
+                                             Required="true"
+                                             Min="0"
+                                             HideSpinButtons="true"
+                                             class="@(CultureInfo.CurrentCulture.Name == "ar" ? "custom-numeric-field" : "")"
+                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                        </div>
                     </MudItem>
 
                     <MudItem sm="6" md="6">

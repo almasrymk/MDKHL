@@ -1,5 +1,6 @@
 ﻿@page "/invoices/details/{Id:int}"
 @using Microsoft.Extensions.Localization
+@using SmartParking.Currency
 @using SmartParking.Discounts
 @using SmartParking.Garages
 @using SmartParking.Invoices
@@ -49,12 +50,22 @@
                             Disabled />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField @bind-Value="Invoice.InvoicePrice"
-                            Immediate="true"
-                            Variant="Variant.Text"
-                            Label="@($"{L["InvoicePrice"]} ({L["SAR"]})")"
-                            Disabled />
+                            <div style="display: flex; flex-direction: column;">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px; color: rgba(0, 0, 0, 0.38); cursor: default;">
+                                    @L["InvoicePrice"]
+                                    @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                                </label>
+                                <MudTextField @bind-Value="Invoice.InvoicePrice"
+                                              For="@(() => Invoice.InvoicePrice)"
+                                              Variant="Variant.Text"
+                                              Disabled="true"
+                                              HideSpinButtons="true"
+                                              Placeholder="@L["Type Here"]" />
+                            </div>
                         </MudItem>
+
+
+
                         <MudItem sm="4">
                             <MudTextField @bind-Value="LocalizedInvoiceType"
                             Immediate="true"

@@ -2,6 +2,7 @@
 @using SmartParking.Blazor.Components.Pages.Invoices
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Cameras
+@using SmartParking.Currency
 @using SmartParking.Discounts
 @using SmartParking.Enums
 @using SmartParking.GarageTransactions
@@ -48,9 +49,9 @@
 			<LastInvoiceOnGateDetails Key="@L["GarageName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.GarageEnglishName:Invoice?.GarageArabicName)" />
 			<LastInvoiceOnGateDetails Key="@L["CustomerName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.CustomerEnName:Invoice?.CustomerArName)" />
 			<LastInvoiceOnGateDetails Key="@($"{L["TotalHours"]} ({L["Hour"]})")" Value="@Invoice?.TotalHours.ToString()" />
-			<LastInvoiceOnGateDetails Key="@($"{L["Price"]} ({L["SAR"]})")" Value="@Invoice?.InvoicePrice.ToString()" />
+			<LastInvoiceOnGateDetails CurrencyKey="@((MarkupString)$"{L["Price"]}{CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px")}")"
+									  Value="@Invoice?.InvoicePrice.ToString()"   />
 		</div>
-
 
 	</MudItem>
 

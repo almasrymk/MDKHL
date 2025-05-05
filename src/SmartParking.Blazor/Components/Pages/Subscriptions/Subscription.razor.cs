@@ -20,6 +20,7 @@ using SmartParking.Permissions.SubsctriptionPermissions;
 using SmartParking.Blazor.Components.Shared;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Permissions.GarageTransactionPermissions;
+using SmartParking.Currency;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
@@ -121,15 +122,23 @@ public partial class Subscription
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
 
+        string sort;
+        if (pageInfo.SortColumn == "Id")
+            sort = "Id";
+        else
+            sort = pageInfo.SortColumn;
+
+        termSearch = pageInfo.SearchTerm;
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        Console.WriteLine(RowPerPage);
-        // Create a request object for paged and sorted data
-        var input = new PagedAndSortedResultRequestDto
+      
+
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
-            MaxResultCount = pageInfo.RowsPerPage,
-            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
+            MaxResultCount = RowPerPage,
+            SkipCount = (CurrentPage - 1) * pageInfo.RowsPerPage,
+            Sorting = sort,
+            SearchingTerm = termSearch
         };
 
         // Retrieve the list of cities from the server
@@ -163,7 +172,7 @@ public partial class Subscription
         }
         tableData.Columns.Add(new ColumnDef()
         {
-            DisplayName = $"{_localizer["SubscriptionPrice"]} ({_localizer["SAR"]})", Name = "SubscriptionPrice", IsFilterable = false, PropertyName = "SubscriptionPrice", IsSortable = true, TypeFilter = TypeFilter.Text });
+            DisplayName = $"{_localizer["SubscriptionPrice"]}", Name = "SubscriptionPrice", IsFilterable = false, PropertyName = "SubscriptionPrice", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
 
@@ -184,8 +193,12 @@ public partial class Subscription
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["SubscriptionPrice"]} ({_localizer["SAR"]})", $"{item.SubscriptionPrice.ToString()}"
-            ));
+
+            var IconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+                $"{_localizer["SubscriptionPrice"]}",
+                $"{item.SubscriptionPrice.ToString()} {IconHtml}"));
+
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
 
 
