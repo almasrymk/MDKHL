@@ -1,5 +1,6 @@
 ﻿@page "/payments/view/{Id}"
 @using Microsoft.Extensions.Localization
+@using SmartParking.Currency
 @using SmartParking.Invoices
 @using SmartParking.Localization
 @using System.Globalization
@@ -54,7 +55,14 @@
                 </MudItem>
 
             <MudItem sm="4">
-                <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Amount" Label="@($"{L["Amount"]} ({L["SAR"]})")" />
+                   <div style="display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                        @L["Amount"]
+                                @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                            </label>
+                <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Amount" />
+                </div>
+
             </MudItem>
             <MudItem sm="4">
                 <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" Label=@L["PaymentStatus"] @bind-Value="LocalizedPaymentStatus"/>
@@ -64,7 +72,14 @@
                @if (Payment.Invoice is not null)
                    {
                 <MudItem sm="4">
-                    <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" Label="@($"{L["Discount"]} ({L["SAR"]})")" Value="Payment.Invoice.Discount.ToString()" />
+                     <div style="display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                        @L["Discount"]
+                                @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                            </label>
+                    <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" Value="Payment.Invoice.Discount.ToString()" />
+                    </div>
+
                 </MudItem>
                                
                        <MudItem sm="4">
