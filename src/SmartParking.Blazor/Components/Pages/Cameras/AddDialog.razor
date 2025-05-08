@@ -15,6 +15,12 @@
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IGarageAppService GaragesAppService
+@inject ISnackbar Snackbar
+@inject  ICamerasAppService CamerasAppService 
+@inject ICameraBrandAppService CameraBrandAppService 
+@inject ICameraModelAppService CameraModelAppService 
+@inject ICameraMainTypeAppService CameraMainTypeAppService 
+
 <PageTitle>@L["New Cameras"]</PageTitle>
 @inject NavigationManager Navigation
 
@@ -263,88 +269,3 @@
     border-radius: 0 20px 0 20px;
     }
 </style>
-
-@code {
-    [Inject] ISnackbar Snackbar { get; set; }
-    [Inject] ICamerasAppService CamerasAppService { get; set; } // Assuming you have a service to handle the camera creation
-    [Inject] ICameraBrandAppService CameraBrandAppService { get; set; }
-    [Inject] ICameraModelAppService CameraModelAppService { get; set; }
-    [Inject] ICameraMainTypeAppService CameraMainTypeAppService { get; set; }
-
-    private MudForm form;
-    private CreateUpdateCameraDto cameraDto = new CreateUpdateCameraDto();
-    [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; }
-    bool _clearable;
-    public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
-
-    IList<CameraBrandDto> CameraBrands = new List<CameraBrandDto>();
-    IList<CameraModelDto> CameraModels = new List<CameraModelDto>();
-    IList<CameraMainTypeDto> CameraMainTypes = new List<CameraMainTypeDto>();
-
-
-    protected override async Task OnInitializedAsync()
-    {
-        CameraBrands = await CameraBrandAppService.GetAllCameraBrandsAsync();
-        CameraModels = await CameraModelAppService.GetAllCameraModelsAsync();
-        CameraMainTypes = await CameraMainTypeAppService.GetAllCameraMainTypesAsync();
-        var result = await GaragesAppService.GetListAsync(new PagedAndSortedResultRequestDto
-            {
-                MaxResultCount = 100,
-                SkipCount = (1 - 1) * 100
-            });
-        Garages = result.Items.ToList();
-        await base.OnInitializedAsync();
-    }
-    private async Task Submit()
-    {
-        try
-        {
-            var garage = Garages.Find(x => x.Id == cameraDto.GarageId);
-            if (garage == null)
-            {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {L["ChooseGarage"]}", Severity.Error);
-            }
-            else
-            {
-                cameraDto.TenantId = garage.TenantId;
-                cameraDto.OrganizationId = garage.OrganizationId;
-                var createdCameraDto = await CamerasAppService.CreateAsync(cameraDto);
-                MudDialog.Close(DialogResult.Ok(true));
-                SnackBar.ShowSnackbar(Snackbar, $"{createdCameraDto.Name} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
-                await Task.Delay(1000);
-                Navigation.NavigateTo("/cameras", forceLoad: true);
-            }
-
-               
-            }
-            catch (AbpValidationException validationException)
-            {
-                foreach (var validationError in validationException.ValidationErrors)
-                {
-                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
-                }
-            }
-            catch (BusinessException ex)
-            {
-
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}{L[AlertMessages.AlertMessages.ADD]} : {ex.Code}", Severity.Error);
-            }
-            catch (AuthenticationException ex)
-            {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}{L[AlertMessages.AlertMessages.ADD]}: {ex.Message} ", Severity.Error);
-            }
-            catch (Exception ex)
-            {
-
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
-            }
-        
-    }
-        
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
-    
-}
