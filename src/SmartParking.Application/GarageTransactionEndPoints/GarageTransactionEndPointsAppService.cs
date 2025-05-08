@@ -153,8 +153,21 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                         (false, false , true , _) => true,
                         (false, false , false , _) => false,
                     };
-                    if(finalResult)
+                    if (finalResult)
+                    {
+
                         await _garageTransactionsAppService.CreateAsync(GarageTransaction);
+                    }
+                    else
+                    {
+                        if (canEnter)
+                        {
+                            var garage =await GetGarage(garageId);
+                            await FreeSlots(garage, GarageTransaction.CustomerCategory);
+
+                        }
+                        await CreateUnLinkedTransaction(input);
+                    }
 
                     _logger.LogInformation($"{DateTime.Now} ====> Get Response {finalResult}");
 
