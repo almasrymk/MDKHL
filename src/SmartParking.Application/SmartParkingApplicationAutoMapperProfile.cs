@@ -129,6 +129,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         .ForMember(dest => dest.GarageNameAr, opt => opt.MapFrom(src => src.Garage.NameAr))
         .ForMember(dest => dest.GarageNameEn, opt => opt.MapFrom(src => src.Garage.NameEn));
         CreateMap<CreateUpdateCameraDto, Camera>();
+        CreateMap<CameraDto, CreateUpdateCameraDto>();
 
         CreateMap<PlateColor, PlateColorDto>();
 		CreateMap<CreateUpdatePlateColorDto, PlateColor>();
