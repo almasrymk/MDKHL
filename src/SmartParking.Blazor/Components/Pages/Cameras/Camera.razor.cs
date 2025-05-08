@@ -6,16 +6,12 @@ using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Cameras;
-using SmartParking.Cutomers;
-using SmartParking.Garages;
 using SmartParking.Localization;
 using SmartParking.Permissions.CameraPermissions;
-using SmartParking.Permissions.GaragePermissions;
 using System.Globalization;
 using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.MultiTenancy;
 using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Cameras;
@@ -30,9 +26,7 @@ public partial class Camera
     private string sortColumn;
     private string ValueOfMenue = "";
     private TableData itemData = new TableData();
-
     private string termSearch;
-
     private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
@@ -43,19 +37,15 @@ public partial class Camera
         UpdatePolicyName = CameraPermissions.Edit;
         DeletePolicyName = CameraPermissions.Delete;
     }
-
     protected async override Task OnInitializedAsync()
     {
         if (!await AuthorizationService.IsGrantedAsync(CameraPermissions.Default))
         {
-
             Navigation.NavigateTo("/Account/AccessDenied", true);
         }
         await CreateMenue();
         await base.OnInitializedAsync();
-
     }
-
     /// <summary>
     /// filter for cameras on the server side using the camera columns.
     /// </summary>
@@ -63,8 +53,6 @@ public partial class Camera
     /// <returns>Returns a task that represents the asynchronous operation.</returns>
     private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-
         // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndFilteredResultRequestDto
         {
@@ -77,7 +65,6 @@ public partial class Camera
         // Call the service to perform the search based on the input parameters
         if (CurrentTenant.Id != null)
         {
-
             var camerassDto = await CamerasAppService.Filter(input);
             // Calculate the total number of pages required to display all results
             TotalItem = (int)camerassDto.TotalCount;
@@ -85,17 +72,12 @@ public partial class Camera
         }
         else
         {
-
             var camerassDto = await CamerasAppService.FilterForMDKHL(input);
             // Calculate the total number of pages required to display all results
             TotalItem = (int)camerassDto.TotalCount;
             await CreateTable(camerassDto);
         }
-
-
-
     }
-
     private async Task CreateMenue()
     {
         var itemsOrganizations = new List<MenuItem>();
@@ -115,7 +97,6 @@ public partial class Camera
                 itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
             }
         }
-
         MenuDatas = new List<MudMenuData>
         { 
             new MudMenuData
@@ -171,7 +152,6 @@ public partial class Camera
        await CreateTable(camerassDto);
 
     }
-   
     private async Task CreateTable(PagedResultDto<CameraDto> cameras)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
@@ -180,8 +160,6 @@ public partial class Camera
             Name = L["Cameras"],
             ShowHeader = true
         };
-
-
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = true, PropertyName = "DeviceId", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CameraName"], Name = "CameraName", IsFilterable = true, PropertyName = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -191,10 +169,8 @@ public partial class Camera
         }
         else
         {
-
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArGarageName"], Name = "NameAr", IsFilterable = true, PropertyName = "Garage.NameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
         }
-
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CameraIP"], Name = "CameraIP", IsFilterable = true, PropertyName = "CameraIP", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["MacAddress"], Name = "MacAddress", IsFilterable = true, PropertyName = "MacAddress", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CameraType"], Name = "CameraType", IsFilterable = true, PropertyName = "CameraType", IsSortable = true, TypeFilter = TypeFilter.Enum });
@@ -216,16 +192,10 @@ public partial class Camera
                 else
                 {
                     rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArGarageName"], item.Garage.NameAr));
-
-
                 }
-
             }
-
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CameraType"], _localizer[$"{item.CameraType.ToString()}"]));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
-
-
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
@@ -240,27 +210,7 @@ public partial class Camera
     {
         var Gid = int.Parse(id);
         var cameraDto = await CamerasAppService.GetAsync(Gid);
-
-        var createUpdateCamera = new CreateUpdateCameraDto
-        {
-            Name = cameraDto.Name,
-            DeviceId = cameraDto.DeviceId,
-            Status = cameraDto.Status,
-            BrandNameId = cameraDto.Id,
-            CameraIP = cameraDto.CameraIP,
-            GarageId = cameraDto.GarageId,
-            MacAddress = cameraDto.MacAddress,
-            MainTypeId = cameraDto.MainType.Id,
-            ModelId = cameraDto.Model.Id,
-            TenantId = cameraDto.TenantId,
-            CameraType = cameraDto.CameraType,
-            UserName = cameraDto.UserName,
-            Password = cameraDto.Password, 
-
-        };
-
-
-
+        var createUpdateCamera  =  _mapper.Map<CreateUpdateCameraDto>(cameraDto);
         var parameters = new DialogParameters
         {
             ["UpdatedId"] = Gid,
@@ -273,56 +223,27 @@ public partial class Camera
     private async Task<IDialogReference> OnClickRowEdit(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
-
         var cameraDto = await CamerasAppService.GetAsync(id);
-
-        var createUpdateCamera = new CreateUpdateCameraDto
-        {
-            Name = cameraDto.Name,
-            DeviceId = cameraDto.DeviceId,
-            Status = cameraDto.Status,
-            BrandNameId = cameraDto.BrandName.Id,
-            CameraIP = cameraDto.CameraIP,
-            GarageId = cameraDto.GarageId,
-            MacAddress = cameraDto.MacAddress,
-            MainTypeId = cameraDto.MainType.Id,
-            ModelId = cameraDto.Model.Id,
-            TenantId = cameraDto.TenantId,
-            UserName = cameraDto.UserName,
-            Password = cameraDto.Password,
-            CameraType = cameraDto.CameraType
-
-        };
+        var createUpdateCamera = _mapper.Map<CreateUpdateCameraDto>(cameraDto);
         var parameters = new DialogParameters
         {
             ["Camera"] = createUpdateCamera,
             ["UpdatedId"] = id
         };
-
-
         return await Dialog.ShowAsync<EditCamera>("Edit Camera", parameters);
-
     }
-
     private async Task<IDialogReference> OnClickRowView(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
-
         var cameraDto = await CamerasAppService.GetAsync(id);
-
-
-
         var parameters = new DialogParameters
         {
             ["Camera"] = cameraDto,
             ["UpdatedId"] = id
 
         };
-
-
         return await Dialog.ShowAsync<ViewCameraDialog>("CameraView", parameters);
     }
-
     private async Task OnClickRowDelete(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
@@ -330,9 +251,7 @@ public partial class Camera
         var parameters = new DialogParameters
         {
             ["Name"] = Name,
-
         };
-
         var dialog = await Dialog.ShowAsync<SPDialogDelete>("DeleteCamera", parameters);
         var result = await dialog.Result;
         try
@@ -354,7 +273,6 @@ public partial class Camera
         }
         catch (BusinessException ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
@@ -363,9 +281,7 @@ public partial class Camera
         }
         catch (Exception ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
-
     }
 }
