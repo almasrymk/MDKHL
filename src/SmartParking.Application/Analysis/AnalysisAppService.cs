@@ -557,6 +557,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
                                  InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
+                                 PaymentStatus = payment.PaymentStatus
                              };
             resultJoin = ApplySortPayment(input, resultJoin);
             resultJoin = ApplyFilterPayment(input, resultJoin);
@@ -589,7 +590,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                              {
                                  Amount = payment.Amount,
                                  Currency = payment.Currency,
-                                 Invoice = payment.Invoice,
+                                 Invoice = payment.Invoice == null ? null : payment.Invoice,
                                  CheckoutId = payment.CheckoutId,
                                  Date = DateOnly.FromDateTime(payment.CreationTime),
                                  Time = TimeOnly.FromDateTime(payment.CreationTime),
@@ -603,7 +604,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  QrCodeInvoice = payment.QrCodeInvoice,
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
-                                 InvoiceId = payment.InvoiceId
+                                 InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
+                                 PaymentStatus = payment.PaymentStatus
                              };
             //  resultJoin = CheckTenantPayment(tenantId, resultJoin);
             resultJoin = ApplySortPayment(input, resultJoin);
@@ -638,7 +640,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                              {
                                  Amount = payment.Amount,
                                  Currency = payment.Currency,
-                                 Invoice = payment.Invoice,
+                                 Invoice = payment.Invoice == null ? null : payment.Invoice,
                                  CheckoutId = payment.CheckoutId,
                                  Date = DateOnly.FromDateTime(payment.CreationTime),
                                  Time = TimeOnly.FromDateTime(payment.CreationTime),
@@ -652,8 +654,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  QrCodeInvoice = payment.QrCodeInvoice,
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
-                                 InvoiceId = payment.InvoiceId
-
+                                 InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
+                                 PaymentStatus = payment.PaymentStatus
                              };
 
             //resultJoin = CheckTenantPayment(tenantId, resultJoin);
