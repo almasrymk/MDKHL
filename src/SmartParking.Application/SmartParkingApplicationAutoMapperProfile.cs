@@ -123,6 +123,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
        .ForMember(dest => dest.OrganizationNameAr, opt => opt.MapFrom(src => src.Organization.ArabicName))
        .ForMember(dest => dest.OrganizationNameEn, opt => opt.MapFrom(src => src.Organization.EnglishName)).ReverseMap();
         CreateMap<CreateUpdateGarageDto, Garage>().ReverseMap();
+        CreateMap<GarageDto, CreateUpdateGarageDto>();
 
         CreateMap<Camera, CameraDto>()
         .ForMember(dest => dest.GarageNameAr, opt => opt.MapFrom(src => src.Garage.NameAr))
