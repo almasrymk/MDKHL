@@ -66,13 +66,5 @@
     </MudItem>
 </MudGrid>
 
-@code {
-    public KeeperShiftDto KeeperShiftDto { get; set; } = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        KeeperShiftDto = await KeeperShiftsAppService.GetAsync(1);
-        await base.OnInitializedAsync();
-    }
-}
 
