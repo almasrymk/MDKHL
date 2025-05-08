@@ -148,22 +148,4 @@
 	</MudDialog>
 
 </div>
-@code {
-	[CascadingParameter]
-	private IMudDialogInstance MudDialogAdd { get; set; }
-	[Parameter] public DailyShiftDto DailyShiftDto { get; set; }
-	private MudForm form;
-	string KeeperShiftRequestType = "";
 
-	protected override Task OnInitializedAsync()
-	{
-		KeeperShiftRequestType = DailyShiftDto.KeeperShiftRequestType.ToString();
-		return base.OnInitializedAsync();
-	}
-
-	private void OnCloseViewOnly()
-	{
-		MudDialogAdd.Cancel();
-
-	}
-}
