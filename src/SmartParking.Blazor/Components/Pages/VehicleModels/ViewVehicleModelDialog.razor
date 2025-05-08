@@ -61,27 +61,3 @@
 		border-radius: 0 20px 0 20px;
 	}
 </style>
-
-@code {
-	[CascadingParameter]
-	private IMudDialogInstance MudDialogAdd { get; set; }
-	[Parameter] public CreateUpdateVehicleModelDto VehicleModel { get; set; }
-
-	bool _clearable;
-	private MudForm form;
-
-	protected override async Task OnInitializedAsync()
-	{
-
-		await base.OnInitializedAsync();
-	}
-
-
-
-	private void OnCloseViewOnly()
-	{
-		MudDialogAdd.Cancel();
-
-	}
-
-}
