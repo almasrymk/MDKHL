@@ -151,16 +151,3 @@
 		border-radius: 0 20px 0 20px;
 	}
 </style>
-@code {
-	[CascadingParameter]
-	private IMudDialogInstance MudDialog { get; set; }
-	[Parameter]
-	public ShiftDto shiftDto { get; set; }
-
-	private void OnCloseViewOnly()
-	{
-		MudDialog.Cancel();
-
-	}
-
-}
