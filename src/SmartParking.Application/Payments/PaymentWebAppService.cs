@@ -72,7 +72,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                         InvoiceId = payment.InvoiceId,
                         OrganizationId = payment.OrganizationId,
                         PaymentCategory = payment.PaymentCategory,
-                        PaymentMethod = (PaymentMethod)Enum.Parse(typeof(PaymentMethod), payment.PaymentMethod.ToString()),
+                        PaymentMethod = payment.PaymentMethod,
                         PaymentStatus = payment.PaymentStatus,
                         PackageId = payment.PackageId,
                         QrCodeInvoice = payment.QrCodeInvoice,
