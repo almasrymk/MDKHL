@@ -44,11 +44,11 @@ public class StateAppService : CrudAppService<State, StateDto,
         _stateRepository = stateRepository;
         _regionRepository = regionRepository;
     }
-
+    #region Public Methods
     ///<inheritdoc/>
     public override async Task<StateDto> CreateAsync(CreateUpdateStateDto input)
     {
-        await CheckStateUniquness(input);
+        await ValidateStateUniqunessAsync(input);
         await ValidateRegionExistsAsync(input.RegionId);
         ValidateStatus(input.Status);
 
@@ -60,46 +60,14 @@ public class StateAppService : CrudAppService<State, StateDto,
         var existingState = await _stateRepository.GetAsync(id)
             ?? throw new InvalidOperationException("State not found");
 
-        await CheckStateUniquness(input, id);
+        await ValidateStateUniqunessAsync(input, id);
         await ValidateRegionExistsAsync(input.RegionId);
         ValidateStatus(input.Status);
 
         return await base.UpdateAsync(id, input);
     }
 
-    private async Task CheckStateUniquness(CreateUpdateStateDto input, int? id = null)
-    {
-        string normalizedEnglish = input.EnglishName?.Trim().ToLowerInvariant();
-        string normalizedArabic = input.ArabicName?.Trim().ToLowerInvariant();
-
-        var state = await _stateRepository.FirstOrDefaultAsync(s =>
-            s.RegionId == input.RegionId &&
-            (s.EnglishName.ToLower() == normalizedEnglish ||
-             s.ArabicName.ToLower() == normalizedArabic) &&
-            (!id.HasValue || s.Id != id.Value));
-
-        if (state == null) return;
-
-        if (state.EnglishName.Trim().ToLowerInvariant() == normalizedEnglish)
-            throw new InvalidOperationException("State english name already exists");
-
-        if (state.ArabicName.Trim().ToLowerInvariant() == normalizedArabic)
-            throw new InvalidOperationException("State arabic name already exists");
-    }
-
-    private async Task ValidateRegionExistsAsync(int regionId)
-    {
-        var region = await _regionRepository.FindAsync(regionId);
-        if (region is null)
-            throw new InvalidOperationException("Region does not exist");
-    }
-
-    private void ValidateStatus(Status status)
-    {
-        if (status != Status.Active && status != Status.Inactive && status != Status.Deleted)
-            throw new InvalidOperationException("Invalid status value.");
-    }
-
+    
     ///<inheritdoc/>
 
     public async Task<PagedResultDto<StateDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
@@ -238,11 +206,42 @@ public class StateAppService : CrudAppService<State, StateDto,
         {
             throw new EntityNotFoundException(typeof(State), id);
         }
-
-
-
-        
-
         await _stateRepository.HardDeleteAsync(state);
     }
+    #endregion
+
+    #region Private Methods
+    private async Task ValidateStateUniqunessAsync(CreateUpdateStateDto input, int? id = null)
+    {
+        string normalizedEnglish = input.EnglishName?.Trim().ToLowerInvariant();
+        string normalizedArabic = input.ArabicName?.Trim().ToLowerInvariant();
+
+        var state = await _stateRepository.FirstOrDefaultAsync(s =>
+            s.RegionId == input.RegionId &&
+            (s.EnglishName.ToLower() == normalizedEnglish ||
+             s.ArabicName.ToLower() == normalizedArabic) &&
+            (!id.HasValue || s.Id != id.Value));
+
+        if (state == null) return;
+
+        if (state.EnglishName.Trim().ToLowerInvariant() == normalizedEnglish)
+            throw new InvalidOperationException("State english name already exists");
+
+        if (state.ArabicName.Trim().ToLowerInvariant() == normalizedArabic)
+            throw new InvalidOperationException("State arabic name already exists");
+    }
+
+    private async Task ValidateRegionExistsAsync(int regionId)
+    {
+        var region = await _regionRepository.FindAsync(regionId);
+        if (region is null)
+            throw new InvalidOperationException("Region does not exist");
+    }
+
+    private void ValidateStatus(Status status)
+    {
+        if (status != Status.Active && status != Status.Inactive && status != Status.Deleted)
+            throw new InvalidOperationException("Invalid status value.");
+    }
+    #endregion
 }
