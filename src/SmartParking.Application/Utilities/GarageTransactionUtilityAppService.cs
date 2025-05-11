@@ -135,9 +135,9 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         }
     }
 
-    public async Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId, CustomerCategoryStatus category)
+    public async Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(Garage garage, CustomerCategoryStatus category)
     {
-        var garage = await GetGarageByIdAsync(garageId);
+        //var garage = await GetGarageByIdAsync(garageId);
         bool flag = false;
         if (category == CustomerCategoryStatus.Customer )
         {
