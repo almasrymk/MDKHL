@@ -47,7 +47,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         _organizationsAppService = organizationsAppService;
         _organizationRepository = organizationRepository;
     }
-
+    #region public methods 
     public async Task<PagedResultDto<PaymentDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -101,7 +101,158 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 
         }
     }
+    public async Task<PagedResultDto<PaymentDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
+            var query = await _paymentRepository.GetQueryableAsync();
+            query = query.Where(x => x.OrganizationId == organization.Id);
+            query = query.OrderByDescending(x => x.CreationTime);
+            query = query.Include(x => x.Customers).ThenInclude(c => c.IdentityUser);
+            query = query.Include(x => x.Invoice);
+            query = ApplySearch(input, query);
+            query = ApplySort(input, query);
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+            var payments = await AsyncExecuter.ToListAsync(query);
+            var paymentDtos = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(payments);
 
+            return new PagedResultDto<PaymentDto>
+            {
+                TotalCount = totalCount,
+                Items = paymentDtos
+            };
+        }
+
+    }
+
+    public async Task<PaymentGetResponseDto> GetMdkhlAsync(Guid paymentId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var payment = await CheckPayment(paymentId);
+            var paymentMap = ObjectMapper.Map<Payment, PaymentGetResponseDto>(payment);
+            paymentMap.Organization = await CheckOrganization(payment);
+            paymentMap.Invoice = await CheckInvoice(payment);
+            paymentMap.Package = await CheckPackage(payment);
+            return paymentMap;
+
+        }
+    }
+
+    public async Task<PagedResultDto<PaymentDto>> SearchMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            // Get the IQueryable<garage> from the repository
+            var queryable = await _paymentRepository.GetQueryableAsync();
+
+            // Apply search filtering
+            queryable = ApplySearch(input, queryable);
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+
+            }
+            queryable = queryable.OrderByDescending(x => x.Id);
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of hotel entities
+            var payments = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the hotel entities to hotelDto objects
+            var paymentResponseDtos = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(payments);
+            // Return the paginated result
+            return new PagedResultDto<PaymentDto>(
+                totalCount,
+                paymentResponseDtos
+            );
+        }
+    }
+    public async Task<PagedResultDto<PaymentDto>> SearchOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            // Get the IQueryable<garage> from the repository
+            var queryable = await _paymentRepository.GetQueryableAsync();
+            queryable = queryable.Where(x => x.OrganizationId == organization.Id);
+            // Apply search filtering
+            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
+
+
+                queryable = queryable.Where(or =>
+                    or.Amount.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.PaymentMethod.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.PaymentStatus.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.PaymentCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Currency.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Customers.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Customers.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Customers.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    (or.InvoiceId != null && or.Invoice.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()))
+
+                // full date-time or includes hour
+                );
+
+            }
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+
+            }
+            queryable = queryable.OrderByDescending(x => x.Id);
+
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of hotel entities
+            var payments = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the hotel entities to hotelDto objects
+            var paymentResponseDtos = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(payments);
+            // Return the paginated result
+            return new PagedResultDto<PaymentDto>(
+                totalCount,
+                paymentResponseDtos
+            );
+        }
+    }
+
+    public async Task<PaymentDto> GetPaymentForInvoice(int invoiceId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            return ObjectMapper.Map<Payment, PaymentDto>(await _paymentRepository.FirstOrDefaultAsync(x => x.InvoiceId == invoiceId));
+        }
+    }
+    #endregion
+    #region private methods 
     private static IQueryable<PaymentDto> ApplyFilterTenant(Guid? tenantId, IQueryable<PaymentDto> query)
     {
         if (tenantId.HasValue)
@@ -147,46 +298,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         return query;
     }
 
-    public async Task<PagedResultDto<PaymentDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
-            var query = await _paymentRepository.GetQueryableAsync();
-            query =query.Where(x => x.OrganizationId == organization.Id);
-            query=query.OrderByDescending(x=>x.CreationTime);
-            query = query.Include(x => x.Customers).ThenInclude(c=>c.IdentityUser);
-            query = query.Include(x => x.Invoice);
-            query = ApplySearch(input, query);
-            query = ApplySort(input, query);
-            var totalCount = await AsyncExecuter.CountAsync(query);
-            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
-            var payments = await AsyncExecuter.ToListAsync(query);
-            var paymentDtos = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(payments);
-
-            return new PagedResultDto<PaymentDto>
-            {
-                TotalCount = totalCount,
-                Items = paymentDtos
-            };
-        }
-        
-    }
-
-    public async Task<PaymentGetResponseDto> GetMdkhlAsync(Guid paymentId)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var payment = await CheckPayment(paymentId);
-            var paymentMap = ObjectMapper.Map<Payment, PaymentGetResponseDto>(payment);
-            paymentMap.Organization = await CheckOrganization(payment);
-            paymentMap.Invoice = await CheckInvoice(payment);
-            paymentMap.Package=await CheckPackage(payment);
-            return paymentMap;
-
-        }
-    }
-
+   
     private async Task<PackageDto> CheckPackage(Payment payment)
     {
         int? packageId = payment.PackageId ;
@@ -230,53 +342,10 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 
     }
 
-    public async Task<PagedResultDto<PaymentDto>> SearchMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            // Get the IQueryable<garage> from the repository
-            var queryable = await _paymentRepository.GetQueryableAsync();
-
-            // Apply search filtering
-            queryable = ApplySearch(input, queryable);
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    queryable = queryable.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    queryable = queryable.OrderBy(input.Sorting);
-                }
-
-            }
-            queryable = queryable.OrderByDescending(x => x.Id);
-            // Get the total count of filtered records
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-            // Apply pagination
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            // Execute the query and get the list of hotel entities
-            var payments = await AsyncExecuter.ToListAsync(queryable);
-
-            // Map the hotel entities to hotelDto objects
-            var paymentResponseDtos = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(payments);
-            // Return the paginated result
-            return new PagedResultDto<PaymentDto>(
-                totalCount,
-                paymentResponseDtos
-            );
-        }
-    }
-
     private static IQueryable<Payment> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Payment> queryable)
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
-
-
             queryable = queryable.Where(or =>
                 or.Amount.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.PaymentMethod.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
@@ -289,13 +358,9 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) || 
                 or.Invoice.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) 
-
-
             // full date-time or includes hour
             );
-
         }
-
         return queryable;
     }
     
@@ -303,8 +368,6 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
-
-
             queryable = queryable.Where(or =>
                 or.Amount.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.PaymentMethod.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
@@ -316,84 +379,10 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) || 
                 or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) 
-
-
             // full date-time or includes hour
             );
-
         }
-
         return queryable;
     }
-
-    public async Task<PagedResultDto<PaymentDto>> SearchOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
-    {
-        var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            // Get the IQueryable<garage> from the repository
-            var queryable = await _paymentRepository.GetQueryableAsync();
-            queryable = queryable.Where(x => x.OrganizationId == organization.Id);
-            // Apply search filtering
-            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-            {
-
-
-                queryable = queryable.Where(or =>
-                    or.Amount.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.PaymentMethod.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.PaymentStatus.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.PaymentCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Currency.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Customers.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Customers.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Customers.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    (or.InvoiceId !=null && or.Invoice.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()))
-
-                // full date-time or includes hour
-                );
-
-            }
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    queryable = queryable.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    queryable = queryable.OrderBy(input.Sorting);
-                }
-
-            }
-            queryable = queryable.OrderByDescending(x => x.Id);
-
-            // Get the total count of filtered records
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-            // Apply pagination
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            // Execute the query and get the list of hotel entities
-            var payments = await AsyncExecuter.ToListAsync(queryable);
-
-            // Map the hotel entities to hotelDto objects
-            var paymentResponseDtos = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(payments);
-            // Return the paginated result
-            return new PagedResultDto<PaymentDto>(
-                totalCount,
-                paymentResponseDtos
-            );
-        }
-    }
-
-    public async Task<PaymentDto> GetPaymentForInvoice(int invoiceId)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            return ObjectMapper.Map<Payment,PaymentDto>(await _paymentRepository.FirstOrDefaultAsync(x => x.InvoiceId == invoiceId));
-        }
-    }
+    #endregion
 }
