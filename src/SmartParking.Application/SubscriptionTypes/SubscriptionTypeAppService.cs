@@ -31,6 +31,7 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
         _subscriptionTypeRepository = subscriptionTypeRepository;
         _dataFilter = dataFilter;
     }
+    #region Public Methods
     /// <inheritdoc/>
     public override async Task<SubscriptionTypeDto> CreateAsync(CreateUpdateSubscriptionTypeDto input)
     {
@@ -41,15 +42,7 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
         }
     }
 
-    private async Task CheckSubscrtiptionTypeUniquness(CreateUpdateSubscriptionTypeDto input)
-    {
-        var existingSubscriptionType = await _subscriptionTypeRepository.FirstOrDefaultAsync(x => x.TypeEn == input.TypeEn);
-
-        if (existingSubscriptionType != null)
-        {
-            throw new InvalidOperationException("subscription type with the same name already exists !");
-        }
-    }
+   
 
     /// <inheritdoc/>
     public override async Task<SubscriptionTypeDto> UpdateAsync(int id, CreateUpdateSubscriptionTypeDto input)
@@ -181,4 +174,16 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
 			);
 		}
 	}
+#endregion
+    #region Private Methods
+    private async Task CheckSubscrtiptionTypeUniquness(CreateUpdateSubscriptionTypeDto input)
+    {
+        var existingSubscriptionType = await _subscriptionTypeRepository.FirstOrDefaultAsync(x => x.TypeEn == input.TypeEn);
+
+        if (existingSubscriptionType != null)
+        {
+            throw new InvalidOperationException("subscription type with the same name already exists !");
+        }
+    }
+    #endregion
 }
