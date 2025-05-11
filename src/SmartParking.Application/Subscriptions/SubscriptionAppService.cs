@@ -36,18 +36,9 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
     public override async Task<SubscriptionDto> CreateAsync(CreateUpdateSubscriptionDto input)
     {
         if(input.Status != SubscriptionStatus.Draft && input.Status !=SubscriptionStatus.Inactive && input.Status != SubscriptionStatus.Active)
-        {
             throw new InvalidOperationException("Invalid status value.");
-
-        }
         else
-        {
             input.Status = SubscriptionStatus.Draft;
-        }
-
-
-        
-
         if (CurrentUser.IsInRole("MdkhlAdmin"))
         {
             using (_dataFilter.Disable<IMultiTenant>())
@@ -65,33 +56,23 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         var existingSubscription = await _subscriptionRepository.GetAsync(id);
 
         if (input.Status != SubscriptionStatus.Draft && input.Status != SubscriptionStatus.Inactive && input.Status != SubscriptionStatus.Active)
-        {
             throw new InvalidOperationException("Invalid status value.");
-
-        }
         
         // If the current status is Draft, allow it to change to Active or Inactive
         if (existingSubscription.StatusSubscription == SubscriptionStatus.Draft)
         {
             if (input.Status == SubscriptionStatus.Active || input.Status == SubscriptionStatus.Inactive)
-            {
-                // Change status to the new value (Active or Inactive)
                 existingSubscription.StatusSubscription = input.Status;
-            }
+            
             
         }
         // If the current status is Active or Inactive, prevent it from changing back to Draft
         else if (existingSubscription.StatusSubscription == SubscriptionStatus.Active || existingSubscription.StatusSubscription == SubscriptionStatus.Inactive)
         {
             if (input.Status == SubscriptionStatus.Draft)
-            {
                 throw new InvalidOperationException("Cannot change from Active/Inactive back to Draft.");
-            }
             else
-            {
-                // Allow other status changes
                 existingSubscription.StatusSubscription = input.Status;
-            }
         }
 
         if (existingSubscription.StatusSubscription != input.Status)
@@ -99,31 +80,20 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             existingSubscription.StatusSubscription = input.Status;
 
             if (input.Status == SubscriptionStatus.Active)
-            {
                 existingSubscription.ActivationDate = DateOnly.FromDateTime(DateTime.Now);
-
-            }
             else if (input.Status == SubscriptionStatus.Inactive)
-            {
                 existingSubscription.InActivationDate = DateOnly.FromDateTime(DateTime.Now);
-            }
         }
-
         return await base.UpdateAsync(id, input);
-        
-    
     }
 
     /// <inheritdoc/>
     public override async Task<SubscriptionDto> GetAsync(int id)
     {
-       
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                return await base.GetAsync(id);
-            }
-        
-   
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            return await base.GetAsync(id);
+        }
     }
     /// <inheritdoc/>
     public async Task<PagedResultDto<SubscriptionDto>> GetAllListAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
@@ -142,18 +112,12 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
                 subscriptionsDto
             );
         }
-
-
-
     }
 
     private static IQueryable<Subscription> ApplyFilterTenant(Guid? tenantId, IQueryable<Subscription> queryable)
     {
         if (tenantId.HasValue)
-        {
             queryable = queryable.Where(x => x.TenantId == tenantId);
-        }
-
         return queryable;
     }
 
@@ -174,26 +138,16 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
                 queryable = queryable.OrderBy(sorting[0] + " descending");
             }
             else
-            {
                 queryable = queryable.OrderBy(input.Sorting);
-            }
-
         }
-
         return queryable;
     }
-
     /// <inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
         var subscription =  await _subscriptionRepository.FindAsync(id);
-
         if (subscription is null)
-        {
             throw new EntityNotFoundException(typeof(Subscription), id);
-        }
-
-
         await _subscriptionRepository.HardDeleteAsync(subscription);
     }
 
@@ -205,22 +159,8 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         // Apply filtering
         var filterExpression = BuildExpression<Subscription>.BuildFilterExpression(input.filters);
         if (filterExpression is not null)
-        {
             queryable = queryable.Where(filterExpression);
-        }
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-                queryable = queryable.OrderBy(input.Sorting);
-            }
-
-        }
+      queryable = ApplySort(input, queryable);
         // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
 
@@ -245,19 +185,7 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         var queryable = await _subscriptionRepository.GetQueryableAsync();
         // Apply search filtering
         queryable = ApplySearch(input, queryable);
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-                queryable = queryable.OrderBy(input.Sorting);
-            }
-
-        }
+        queryable = ApplySort(input, queryable);
         // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
 
@@ -303,7 +231,6 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             var subscriptions = await _subscriptionRepository.GetListAsync();
             var subscriptionsMap = ObjectMapper.Map<List<Subscription>, List<SubscriptionDto>>(subscriptions);
             return subscriptionsMap;
-        }
-            
+        }    
     }
 }
