@@ -18,6 +18,7 @@ public class CustomPermissionAppService : PermissionAppService, ITransientDepend
     public CustomPermissionAppService(IPermissionManager permissionManager, IPermissionDefinitionManager permissionDefinitionManager, IOptions<PermissionManagementOptions> options, ISimpleStateCheckerManager<PermissionDefinition> simpleStateCheckerManager) : base(permissionManager, permissionDefinitionManager, options, simpleStateCheckerManager)
     {
     }
+    #region Public Methods
     public override async Task UpdateAsync(string providerName, string providerKey, UpdatePermissionsDto input)
     {
         
@@ -102,7 +103,8 @@ public class CustomPermissionAppService : PermissionAppService, ITransientDepend
 
         return result;
     }
-
+#endregion
+    #region Private Methods
     private PermissionGrantInfoDto CreatePermissionGrantInfoDto(PermissionDefinition permission)
     {
         return new PermissionGrantInfoDto
@@ -130,5 +132,6 @@ public class CustomPermissionAppService : PermissionAppService, ITransientDepend
             Permissions = new List<PermissionGrantInfoDto>()
         };
     }
+    #endregion
 
 }
