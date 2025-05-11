@@ -36,13 +36,18 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var existingSubscriptionType = await _subscriptionTypeRepository.FirstOrDefaultAsync(x => x.TypeEn == input.TypeEn );
+            await CheckSubscrtiptionTypeUniquness(input);
+            return await base.CreateAsync(input);
+        }
+    }
 
-            if (existingSubscriptionType != null)
-            {
-                throw new InvalidOperationException("subscription type with the same name already exists !");
-            }
-                return await base.CreateAsync(input);
+    private async Task CheckSubscrtiptionTypeUniquness(CreateUpdateSubscriptionTypeDto input)
+    {
+        var existingSubscriptionType = await _subscriptionTypeRepository.FirstOrDefaultAsync(x => x.TypeEn == input.TypeEn);
+
+        if (existingSubscriptionType != null)
+        {
+            throw new InvalidOperationException("subscription type with the same name already exists !");
         }
     }
 
@@ -52,13 +57,7 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
         using (_dataFilter.Disable<IMultiTenant>())
         {
 
-            var existingSubscriptionType = await _subscriptionTypeRepository.FirstOrDefaultAsync(x => x.TypeEn == input.TypeEn);
-
-            if (existingSubscriptionType != null)
-            {
-                throw new InvalidOperationException("subscription type with the same name already exists !");
-            }
-
+            await CheckSubscrtiptionTypeUniquness(input);
             return await base.UpdateAsync(id, input);
         }
     }
