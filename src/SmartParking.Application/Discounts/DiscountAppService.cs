@@ -27,7 +27,7 @@ public class DiscountAppService : CrudAppService<Discount, DiscountDto, int, Pag
     {
         _repository = repository;
     }
-
+    #region Public Methods
     public override async Task<PagedResultDto<DiscountDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
         var query = await _repository.GetQueryableAsync();
@@ -43,6 +43,42 @@ public class DiscountAppService : CrudAppService<Discount, DiscountDto, int, Pag
         );
     }
 
+   
+
+    public async Task<Result<List<DiscountDto>>> GetListMobileAsync()
+    {
+        var query = await _repository.GetQueryableAsync();
+        var discounts = await AsyncExecuter.ToListAsync(query);
+        var discountsDto = ObjectMapper.Map<List<Discount>, List<DiscountDto>>(discounts);
+        return Result<List<DiscountDto>>.Success(discountsDto);
+    }
+
+   
+
+    public async Task<DiscountDto> DeleteDiscountAsync(int id)
+    {
+        var discount = await _repository.FirstOrDefaultAsync(_ => _.Id == id);
+        var discountsDto = ObjectMapper.Map<Discount,DiscountDto>(discount);
+        await _repository.HardDeleteAsync(discount);
+        return discountsDto;
+    }
+    #endregion
+    #region Private Methods
+    private static IQueryable<Discount> SearchCriteria(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Discount> queryable)
+    {
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+
+            queryable = queryable.Where(_ =>
+                _.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.DiscountPercent.ToString().Contains(input.SearchingTerm.ToLower())
+            );
+        }
+
+        return queryable;
+    }
     private static IQueryable<Discount>? ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Discount>? query)
     {
         var sorting = input.Sorting;
@@ -58,36 +94,5 @@ public class DiscountAppService : CrudAppService<Discount, DiscountDto, int, Pag
 
         return query;
     }
-
-    public async Task<Result<List<DiscountDto>>> GetListMobileAsync()
-    {
-        var query = await _repository.GetQueryableAsync();
-        var discounts = await AsyncExecuter.ToListAsync(query);
-        var discountsDto = ObjectMapper.Map<List<Discount>, List<DiscountDto>>(discounts);
-        return Result<List<DiscountDto>>.Success(discountsDto);
-    }
-
-    private static IQueryable<Discount> SearchCriteria(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Discount> queryable)
-    {
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
-
-            queryable = queryable.Where(_ =>
-                _.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                _.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) || 
-                _.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) || 
-                _.DiscountPercent.ToString().Contains(input.SearchingTerm.ToLower())
-            );
-        }
-
-        return queryable;
-    }
-
-    public async Task<DiscountDto> DeleteDiscountAsync(int id)
-    {
-        var discount = await _repository.FirstOrDefaultAsync(_ => _.Id == id);
-        var discountsDto = ObjectMapper.Map<Discount,DiscountDto>(discount);
-        await _repository.HardDeleteAsync(discount);
-        return discountsDto;
-    }
+    #endregion
 }
