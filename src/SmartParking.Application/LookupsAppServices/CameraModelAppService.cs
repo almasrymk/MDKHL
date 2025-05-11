@@ -42,10 +42,17 @@ public class CameraModelAppService : CrudAppService<CameraModel, CameraModelDto,
     ///<inheritdoc/>
     public override async Task<CameraModelDto> CreateAsync(CreateUpdateCameraModelDto input)
     {
+        await CheckCameraModelUniquness(input);
+        return await base.CreateAsync(input);
+
+    }
+
+    private async Task CheckCameraModelUniquness(CreateUpdateCameraModelDto input)
+    {
         var cameraModel = await _repository.FirstOrDefaultAsync
-           (camera =>
-           camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-           camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+                   (camera =>
+                   camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                   camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
 
 
         if (cameraModel != null)
@@ -63,8 +70,6 @@ public class CameraModelAppService : CrudAppService<CameraModel, CameraModelDto,
 
 
         }
-        return await base.CreateAsync(input);
-
     }
 
     ///<inheritdoc/>
@@ -77,27 +82,7 @@ public class CameraModelAppService : CrudAppService<CameraModel, CameraModelDto,
             throw new InvalidOperationException("Camera model not found");
         }
 
-        var cameraModel = await _repository.FirstOrDefaultAsync
-                (camera =>
-                camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-
-        if (cameraModel != null)
-        {
-            if (cameraModel.EnglishName == input.EnglishName.Trim(' ') && cameraModel.Id != id)
-            {
-                throw new InvalidOperationException("Camera model english name already exists");
-
-            }
-            else if (cameraModel.ArabicName == input.ArabicName.Trim(' ') && cameraModel.Id != id)
-            {
-                throw new InvalidOperationException("Camera model arabic name already exists");
-
-            }
-
-
-        }
+        await CheckCameraModelUniquness(input);
         return await base.UpdateAsync(id, input);
     }
     public async Task<PagedResultDto<CameraModelDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
