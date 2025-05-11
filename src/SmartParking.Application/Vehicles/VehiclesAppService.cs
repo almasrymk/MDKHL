@@ -50,34 +50,12 @@ public class VehiclesAppService:
     public override async Task<VehicleDto> CreateAsync(CreateUpdateVehicleDto input)
     {
         input.CreatorId = _currentUser.Id;
-        // check plate number must include both plate letters and plate numbers, either in Arabic or English.
 
-        //input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
-        //input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
-        if(!VehicleValidation.CheckPlateNumberCriteria(input.FullArPlate, input.FullEnPlate))
-        {
-            input.ArPlateNumber = input.EnPlateNumber=null;
-            throw new InvalidOperationException("Plate Numbers are Missing");
-        }
-        
-        if(VehicleValidation.ValidateYear(input.ModelYear) is not null)
-        {
-            throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("NotValidYear"));
-        }
-        await CheckVehicleIfFound(input);
+        ValidatePlateNumbers(input);
+        ValidateModelYear(input.ModelYear);
 
-        LicenceType licenceType;
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            licenceType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.Id == input.LicenceTypeId);
-        }
-
-        if (licenceType == null)
-        {
-            throw new InvalidOperationException("licence type not found");
-
-        }
-        input.PlateColorId = licenceType.PlateColorId;
+        await CheckVehicleIfExistsAsync(input);
+        await AssignPlateColorFromLicenceTypeAsync(input);
 
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {
@@ -86,67 +64,101 @@ public class VehiclesAppService:
                 return await base.CreateAsync(input);
             }
         }
-        else
-            return await base.CreateAsync(input);
+
+        return await base.CreateAsync(input);
     }
-    private async Task CheckVehicleIfFound(CreateUpdateVehicleDto input)
+
+    public override async Task<VehicleDto> UpdateAsync(int id, CreateUpdateVehicleDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var existVehicle = await _repository.FirstOrDefaultAsync(_ => (_.ArPlateNumber == input.FullArPlate || _.EnPlateNumber == input.FullEnPlate));
-            if (existVehicle is not null)
+            var vehicle = await _repository.GetAsync(id) ?? throw new InvalidOperationException("Vehicle not found");
+
+            ValidatePlateNumbers(input);
+            ValidateModelYear(input.ModelYear);
+
+            await AssignPlateColorFromLicenceTypeAsync(input);
+
+            var existingVehicle = await _repository.FirstOrDefaultAsync(x =>
+                x.ArPlateNumber == input.FullArPlate &&
+                x.EnPlateNumber == input.FullEnPlate &&
+                x.Id != id &&
+                x.LicenceTypeId == input.LicenceTypeId &&
+                x.PlateColorId == input.PlateColorId &&
+                x.VehicleBrandId == input.VehicleBrandId &&
+                x.BelongToCompany == input.BelongToCompany &&
+                x.CompanyName == input.CompanyName
+            );
+
+            if (existingVehicle != null)
             {
-                throw new InvalidOperationException("this vehicle is exist");
+                throw new InvalidOperationException("Plate number already exists");
             }
+
+            input.LastModificationTime = DateTime.Now;
+            input.LastModifierId = _currentUser.Id;
+
+            return await base.UpdateAsync(id, input);
         }
     }
 
     public override async Task<PagedResultDto<VehicleDto>> GetListAsync(PagedAndSortedResultRequestDto input)
-	{
+    {
         if (CurrentTenant.Id == null)
         {
             using (_dataFilter.Disable<IMultiTenant>())
-			{
-				return await base.GetListAsync(input);
-			}
-		}
-		else
-			return await base.GetListAsync(input);
-	}
-	public override async Task<VehicleDto> UpdateAsync(int id, CreateUpdateVehicleDto input)
-	{
+            {
+                return await base.GetListAsync(input);
+            }
+        }
+
+        return await base.GetListAsync(input);
+    }
+
+    private async Task CheckVehicleIfExistsAsync(CreateUpdateVehicleDto input)
+    {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var vehicle = await _repository.GetAsync(id);
-            //input.ArPlateNumber = input.ArPlateNumber.Replace(" ", string.Empty) + input.ArPlateLetters.Replace(" ", string.Empty);
-           // input.EnPlateNumber = input.EnPlateNumber.Replace(" ", string.Empty) + input.EnPlateLetters.Replace(" ", string.Empty);
-            if (!VehicleValidation.CheckPlateNumberCriteria(input.FullArPlate, input.FullEnPlate))
-            {
-                input.ArPlateNumber = input.EnPlateNumber = null;
-                throw new InvalidOperationException("Plate Numbers are Missing");
-            }
-            var licenceType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.Id == input.LicenceTypeId);
+            var existingVehicle = await _repository.FirstOrDefaultAsync(_ =>
+                _.ArPlateNumber == input.FullArPlate || _.EnPlateNumber == input.FullEnPlate);
 
-            if (licenceType == null)
+            if (existingVehicle is not null)
             {
-                throw new InvalidOperationException("licence type not found");
-
+                throw new InvalidOperationException("This vehicle already exists");
             }
-            if (VehicleValidation.ValidateYear(input.ModelYear) is not null)
-            {
-                throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("NotValidYear"));
-            }
-            var existingPlatNumber = await _repository.FirstOrDefaultAsync(x => x.ArPlateNumber == input.FullArPlate && x.EnPlateNumber == input.FullEnPlate);
-            input.PlateColorId = licenceType.PlateColorId;
-            if (existingPlatNumber != null&& existingPlatNumber.Id != id && existingPlatNumber.LicenceTypeId == input.LicenceTypeId && existingPlatNumber.PlateColorId == input.PlateColorId && existingPlatNumber.VehicleBrandId == input.VehicleBrandId && existingPlatNumber.BelongToCompany == input.BelongToCompany && existingPlatNumber.CompanyName == input.CompanyName)
-            {
-                throw new InvalidOperationException("PlatNumber already exists");
-            }
-            input.LastModificationTime = DateTime.Now;
-            input.LastModifierId = _currentUser.Id;
-            return await base.UpdateAsync(id,input);
         }
     }
+
+    private void ValidatePlateNumbers(CreateUpdateVehicleDto input)
+    {
+        if (!VehicleValidation.CheckPlateNumberCriteria(input.FullArPlate, input.FullEnPlate))
+        {
+            throw new InvalidOperationException("Plate numbers are missing or invalid");
+        }
+    }
+
+    private void ValidateModelYear(string year)
+    {
+        if (VehicleValidation.ValidateYear(year) is not null)
+        {
+            throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("NotValidYear"));
+        }
+    }
+
+    private async Task AssignPlateColorFromLicenceTypeAsync(CreateUpdateVehicleDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var licenceType = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.Id == input.LicenceTypeId);
+            if (licenceType == null)
+            {
+                throw new InvalidOperationException("Licence type not found");
+            }
+
+            input.PlateColorId = licenceType.PlateColorId;
+        }
+    }
+
     [RemoteService(IsEnabled = false)]
     public async Task<(string numbers, string letters)> SplitPlateAsync(string plate)
     {
