@@ -54,6 +54,7 @@ public class DailyShiftAppService :
         _shiftRepository = shiftRepository;
         _keeperShiftRepository = keeperShiftRepository;
     }
+    #region public methods 
     public override async Task<DailyShiftDto> CreateAsync(CreateUpdateDailyShiftDto input)
     {
         KeeperShift? assignShift = await GetAssignShift(input) ?? throw new Exception(LocalizationHelper.GetLocalizedString("NotAssignShift"));
@@ -81,6 +82,185 @@ public class DailyShiftAppService :
         };
 
     }
+
+
+    public override async Task<DailyShiftDto> UpdateAsync(int id, CreateUpdateDailyShiftDto input)
+    {
+        return await base.UpdateAsync(id, input);
+    }
+    public override Task DeleteAsync(int id)
+    {
+        return base.DeleteAsync(id);
+    }
+    public override async Task<DailyShiftDto?> GetAsync(int id)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var queryDailyShift = await _repository.GetQueryableAsync();
+            var queryGarge = await _garageRepository.GetQueryableAsync();
+            var queryOrganization = await _organizationRepository.GetQueryableAsync();
+            var queryUser = await _userRepository.GetQueryableAsync();
+            var queryShift = await _shiftRepository.GetQueryableAsync();
+            var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
+            var IsFounddailyShift = await _repository.FirstOrDefaultAsync(_ => _.Id == id);
+            if (IsFounddailyShift is null)
+                throw new Exception("NotFoundValidation");
+            var result = from dailyShift in queryDailyShift
+                         where dailyShift.Id == id
+                         join user in queryUser
+                         on dailyShift.KeeperId equals user.Id
+                         join organization in queryOrganization
+                         on dailyShift.OrganizationId equals organization.Id
+                         join garage in queryGarge
+                         on dailyShift.GarageId equals garage.Id
+                         join keeperShift in queryKeeperShift
+                         on new { dailyShift.KeeperId, dailyShift.ShiftId }
+                         equals new { keeperShift.KeeperId, keeperShift.ShiftId }
+                         join shift in queryShift
+                         on dailyShift.ShiftId equals shift.Id
+                         select new DailyShiftDto
+                         {
+                             Id = dailyShift.Id,
+                             KeeperId = dailyShift.KeeperId,
+                             OrganizationId = dailyShift.OrganizationId,
+                             OrganizationNameAr = organization.ArabicName,
+                             OrganizationNameEn = organization.EnglishName,
+                             GarageNameAr = garage.NameAr,
+                             GarageNameEn = garage.NameEn,
+                             RequestTime = dailyShift.RequestTime,
+                             KeeperShiftRequestType = dailyShift.KeeperShiftRequestType,
+                             KeeperName = user.Name,
+                             ShiftId = dailyShift.ShiftId,
+                             ShiftNameAr = shift.ArabicName,
+                             ShiftNameEn = shift.EnglishName,
+                             StartDate = keeperShift.StartDate,
+                             EndDate = keeperShift.EndDate,
+                             StartTime = keeperShift.StartTime,
+                             EndTime = keeperShift.EndTime
+                         };
+            return await result.FirstOrDefaultAsync();
+        }
+
+    }
+    public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId, Guid? userId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var queryDailyShift = await _repository.GetQueryableAsync();
+            var queryGarge = await _garageRepository.GetQueryableAsync();
+            var queryOrganization = await _organizationRepository.GetQueryableAsync();
+            var queryUser = await _userRepository.GetQueryableAsync();
+            var queryShift = await _shiftRepository.GetQueryableAsync();
+            var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
+            if (userId.HasValue)
+                queryDailyShift = queryDailyShift.Where(_ => _.KeeperId == userId);
+            var result = from dailyShift in queryDailyShift
+                         where
+                         TenantId.HasValue ? dailyShift.TenantId == TenantId : true
+                         join user in queryUser
+                         on dailyShift.KeeperId equals user.Id
+                         join organization in queryOrganization
+                         on dailyShift.OrganizationId equals organization.Id
+                         join garage in queryGarge
+                         on dailyShift.GarageId equals garage.Id
+                         join keeperShift in queryKeeperShift
+                         on new { dailyShift.KeeperId, dailyShift.ShiftId }
+                         equals new { keeperShift.KeeperId, keeperShift.ShiftId }
+                         join shift in queryShift
+                         on dailyShift.ShiftId equals shift.Id
+                         select new DailyShiftDto
+                         {
+                             Id = dailyShift.Id,
+                             KeeperId = dailyShift.KeeperId,
+                             OrganizationId = dailyShift.OrganizationId,
+                             OrganizationNameAr = organization.ArabicName,
+                             OrganizationNameEn = organization.EnglishName,
+                             GarageNameAr = garage.NameAr,
+                             GarageNameEn = garage.NameEn,
+                             RequestTime = dailyShift.RequestTime,
+                             KeeperShiftRequestType = dailyShift.KeeperShiftRequestType,
+                             KeeperName = user.Name,
+                             ShiftId = dailyShift.ShiftId,
+                             ShiftNameAr = shift.ArabicName,
+                             ShiftNameEn = shift.EnglishName,
+                             StartDate = keeperShift.StartDate,
+                             EndDate = keeperShift.EndDate,
+                             StartTime = keeperShift.StartTime,
+                             EndTime = keeperShift.EndTime
+
+                         };
+            result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
+
+            result = ApplySorting(input, result);
+            result = await ApplySearch(input, result);
+
+            return new PagedResultDto<DailyShiftDto>
+            {
+                TotalCount = result.Count(),
+                Items = result.ToList()
+            };
+        }
+    }
+
+    public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId, Guid? userId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var queryDailyShift = await _repository.GetQueryableAsync();
+            var queryGarge = await _garageRepository.GetQueryableAsync();
+            var queryOrganization = await _organizationRepository.GetQueryableAsync();
+            var queryUser = await _userRepository.GetQueryableAsync();
+            var queryShift = await _shiftRepository.GetQueryableAsync();
+            var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
+            if (userId.HasValue)
+                queryDailyShift = queryDailyShift.Where(_ => _.KeeperId == userId);
+
+            var result = from dailyShift in queryDailyShift
+                         where TenantId.HasValue ? dailyShift.TenantId == TenantId : true
+                         join user in queryUser
+                         on dailyShift.KeeperId equals user.Id
+                         join garage in queryGarge
+                         on dailyShift.GarageId equals garage.Id
+                         join keeperShift in queryKeeperShift
+                         on new { dailyShift.KeeperId, dailyShift.ShiftId }
+                         equals new { keeperShift.KeeperId, keeperShift.ShiftId }
+                         join shift in queryShift
+                         on dailyShift.ShiftId equals shift.Id
+                         select new DailyShiftDto
+                         {
+                             Id = dailyShift.Id,
+                             KeeperId = dailyShift.KeeperId,
+                             OrganizationId = dailyShift.OrganizationId,
+                             OrganizationNameAr = string.Empty,
+                             OrganizationNameEn = string.Empty,
+                             GarageNameAr = garage.NameAr,
+                             GarageNameEn = garage.NameEn,
+                             RequestTime = dailyShift.RequestTime,
+                             KeeperShiftRequestType = dailyShift.KeeperShiftRequestType,
+                             KeeperName = user.Name,
+                             ShiftId = dailyShift.ShiftId,
+                             ShiftNameAr = shift.ArabicName,
+                             ShiftNameEn = shift.EnglishName,
+                             StartDate = keeperShift.StartDate,
+                             EndDate = keeperShift.EndDate,
+                             StartTime = keeperShift.StartTime,
+                             EndTime = keeperShift.EndTime
+                         };
+
+            result = ApplySorting(input, result);
+            result = await ApplySearch(input, result);
+            var total = await result.CountAsync();
+            result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
+            return new PagedResultDto<DailyShiftDto>
+            {
+                Items = result.ToList(),
+                TotalCount = total
+            };
+        }
+    }
+    #endregion
+
+    #region Private Methods
     private async Task<bool> HandleStartShift (CreateUpdateDailyShiftDto input ,   KeeperShift assignShift)
     {
         if(assignShift.EndTime < assignShift.StartTime)
@@ -94,7 +274,6 @@ public class DailyShiftAppService :
 
         return true;
     }
-
     private async Task<KeeperShift?> GetAssignShift(CreateUpdateDailyShiftDto input)
     {
         return await _keeperShiftRepository.FirstOrDefaultAsync(_ => _.KeeperId == input.KeeperId && _.ShiftId == input.ShiftId);
@@ -120,7 +299,6 @@ public class DailyShiftAppService :
         if (assignShift.StartTime < assignShift.EndTime  && currentTime < assignShift.StartTime || currentTime >= assignShift.EndTime)
             throw new Exception(LocalizationHelper.GetLocalizedString("CannotStartShift"));
     }
-
     private async Task CheckIfAnotherKeeperInSameShift(KeeperShift assignShift, CreateUpdateDailyShiftDto request)
     {
        
@@ -143,7 +321,6 @@ public class DailyShiftAppService :
             }
         }
     }
-
     private async Task CheckIfKeeperInShiftInSameDay(CreateUpdateDailyShiftDto request)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -156,12 +333,10 @@ public class DailyShiftAppService :
             return;
         }
     }
-
     private static void ThrowCantEndShiftException()
     {
         throw new Exception(LocalizationHelper.GetLocalizedString("CannotEndShift"));
     }
-
     private async Task<bool> HandleEndShift(CreateUpdateDailyShiftDto input , KeeperShift assignShift)
     {
         //check if keeper hasn't shift now.
@@ -250,180 +425,6 @@ public class DailyShiftAppService :
         }
     }
 
-    public override async Task<DailyShiftDto> UpdateAsync(int id, CreateUpdateDailyShiftDto input)
-    {
-        return await base.UpdateAsync(id, input);
-    }
-    public override  Task DeleteAsync(int id)
-    {
-        return  base.DeleteAsync(id);
-    }
-    public override async Task<DailyShiftDto?> GetAsync(int id)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var queryDailyShift = await _repository.GetQueryableAsync();
-            var queryGarge = await _garageRepository.GetQueryableAsync();
-            var queryOrganization = await _organizationRepository.GetQueryableAsync();
-            var queryUser = await _userRepository.GetQueryableAsync();
-            var queryShift = await _shiftRepository.GetQueryableAsync();
-            var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
-            var IsFounddailyShift = await _repository.FirstOrDefaultAsync(_ => _.Id == id);
-            if (IsFounddailyShift is null)
-                throw new Exception("NotFoundValidation"); 
-            var result = from dailyShift in queryDailyShift
-                         where dailyShift.Id == id
-                         join user in queryUser
-                         on dailyShift.KeeperId equals user.Id
-                         join organization in queryOrganization
-                         on dailyShift.OrganizationId equals organization.Id
-                         join garage in queryGarge
-                         on dailyShift.GarageId equals garage.Id
-                         join keeperShift in queryKeeperShift
-                         on new { dailyShift.KeeperId, dailyShift.ShiftId }
-                         equals new { keeperShift.KeeperId, keeperShift.ShiftId }
-                         join shift in queryShift
-                         on dailyShift.ShiftId equals shift.Id
-                         select new DailyShiftDto
-                         {
-                             Id = dailyShift.Id,
-                             KeeperId = dailyShift.KeeperId,
-                             OrganizationId = dailyShift.OrganizationId,
-                             OrganizationNameAr = organization.ArabicName,
-                             OrganizationNameEn = organization.EnglishName,
-                             GarageNameAr = garage.NameAr,
-                             GarageNameEn = garage.NameEn,
-                             RequestTime = dailyShift.RequestTime,
-                             KeeperShiftRequestType = dailyShift.KeeperShiftRequestType,
-                             KeeperName = user.Name,
-                             ShiftId = dailyShift.ShiftId,
-                             ShiftNameAr = shift.ArabicName,
-                             ShiftNameEn = shift.EnglishName,
-                             StartDate = keeperShift.StartDate,
-                             EndDate = keeperShift.EndDate,
-                             StartTime = keeperShift.StartTime,
-                             EndTime = keeperShift.EndTime
-                         };
-            return await result.FirstOrDefaultAsync();
-        }
-        
-    }
-    public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsAsync (PagedAndSortedAndSearchResultRequestDto input ,Guid?  TenantId ,Guid? userId )
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var queryDailyShift = await _repository.GetQueryableAsync();
-            var queryGarge = await _garageRepository.GetQueryableAsync();
-            var queryOrganization = await _organizationRepository.GetQueryableAsync();
-            var queryUser = await _userRepository.GetQueryableAsync();
-            var queryShift = await _shiftRepository.GetQueryableAsync();
-            var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
-            if (userId.HasValue)
-                queryDailyShift = queryDailyShift.Where(_ => _.KeeperId == userId);
-            var result = from dailyShift in queryDailyShift
-                         where
-                         TenantId.HasValue ? dailyShift.TenantId == TenantId : true
-                         join user in queryUser
-                         on dailyShift.KeeperId equals user.Id
-                         join organization in queryOrganization
-                         on dailyShift.OrganizationId equals organization.Id
-                         join garage in queryGarge
-                         on dailyShift.GarageId equals garage.Id
-                         join keeperShift in queryKeeperShift
-                         on new { dailyShift.KeeperId, dailyShift.ShiftId }
-                         equals new { keeperShift.KeeperId, keeperShift.ShiftId }
-                         join shift in queryShift
-                         on dailyShift.ShiftId equals shift.Id
-                         select new DailyShiftDto
-                         {
-                             Id = dailyShift.Id,
-                             KeeperId = dailyShift.KeeperId,
-                             OrganizationId = dailyShift.OrganizationId,
-                             OrganizationNameAr = organization.ArabicName,
-                             OrganizationNameEn = organization.EnglishName,
-                             GarageNameAr = garage.NameAr,
-                             GarageNameEn = garage.NameEn,
-                             RequestTime = dailyShift.RequestTime,
-                             KeeperShiftRequestType = dailyShift.KeeperShiftRequestType,
-                             KeeperName = user.Name,
-                             ShiftId = dailyShift.ShiftId,
-                             ShiftNameAr = shift.ArabicName , 
-                             ShiftNameEn = shift.EnglishName ,
-                             StartDate = keeperShift.StartDate,
-                             EndDate = keeperShift.EndDate,
-                             StartTime = keeperShift.StartTime,
-                             EndTime = keeperShift.EndTime
-                             
-                         };
-            result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
-           
-            result = ApplySorting(input, result);
-            result = await ApplySearch(input, result);
-          
-            return new PagedResultDto<DailyShiftDto>
-            {
-                TotalCount = result.Count(),
-                Items = result.ToList()
-            };
-        }
-    }
-
-    public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId , Guid? userId)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var queryDailyShift = await _repository.GetQueryableAsync();
-            var queryGarge = await _garageRepository.GetQueryableAsync();
-            var queryOrganization = await _organizationRepository.GetQueryableAsync();
-            var queryUser = await _userRepository.GetQueryableAsync();
-            var queryShift = await _shiftRepository.GetQueryableAsync();
-            var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
-            if (userId.HasValue)
-                queryDailyShift = queryDailyShift.Where(_ => _.KeeperId == userId);
-           
-            var result = from dailyShift in queryDailyShift
-                         where TenantId.HasValue ? dailyShift.TenantId == TenantId : true
-                         join user in queryUser
-                         on dailyShift.KeeperId equals user.Id
-                         join garage in queryGarge
-                         on dailyShift.GarageId equals garage.Id
-                         join keeperShift in queryKeeperShift
-                         on new { dailyShift.KeeperId, dailyShift.ShiftId }
-                         equals new { keeperShift.KeeperId, keeperShift.ShiftId }
-                         join shift in queryShift
-                         on dailyShift.ShiftId equals shift.Id
-                         select new DailyShiftDto
-                         {
-                             Id = dailyShift.Id,
-                             KeeperId = dailyShift.KeeperId,
-                             OrganizationId = dailyShift.OrganizationId,
-                             OrganizationNameAr = string.Empty,
-                             OrganizationNameEn = string.Empty,
-                             GarageNameAr = garage.NameAr,
-                             GarageNameEn = garage.NameEn,
-                             RequestTime = dailyShift.RequestTime,
-                             KeeperShiftRequestType = dailyShift.KeeperShiftRequestType,
-                             KeeperName = user.Name,
-                             ShiftId = dailyShift.ShiftId,
-                             ShiftNameAr = shift.ArabicName,
-                             ShiftNameEn = shift.EnglishName,
-                             StartDate = keeperShift.StartDate,
-                             EndDate = keeperShift.EndDate,
-                             StartTime = keeperShift.StartTime,
-                             EndTime = keeperShift.EndTime
-                         };
-
-            result = ApplySorting(input, result);
-            result = await ApplySearch(input, result);
-            var total = await result.CountAsync();
-            result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
-            return new PagedResultDto<DailyShiftDto>
-            {
-                Items = result.ToList(), 
-                TotalCount = total
-            };
-        }
-    }
     private static IQueryable<DailyShiftDto>? ApplySorting(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto>? result)
     {
         var sorting = input.Sorting;
@@ -464,5 +465,5 @@ public class DailyShiftAppService :
         }
         
     }
-    
+    #endregion
 }
