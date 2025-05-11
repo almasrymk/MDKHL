@@ -51,8 +51,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private readonly ICurrentUser _currentUser; // Inject ICurrentUser
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     private readonly IRepository<UnLinkedTransaction> _unLinkedTransactionRepository;
-    string customerEnName = null;
-    string customerArName =null;
+    private string customerEnName { get; set; } = "unknown";
+    private string customerArName { get; set; } = "غير معرف";
 
 
     public GarageTransactionEndPointsAppService(
@@ -82,8 +82,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         _localizer = localizer;
         _unLinkedTransactionRepository = unLinkedTransactionRepository;
         _paymentAppService = paymentAppService;
-        customerEnName = "unknown";
-        customerArName = "غير معرف";
         _calculationsEndPointAppService = calculationsEndPointAppService;
         _unlinkedGarageTransactionsAppService = unlinkedGarageTransactionsAppService;
         _garageTransactionUtilityAppService = garageTransactionUtilityAppService;
