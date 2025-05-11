@@ -54,64 +54,47 @@ namespace SmartParking.Vehicles.LookUps
         ///<inheritdoc/>
         public override async Task<VehicleBrandDto> CreateAsync(CreateUpdateVehicleBrandDto input)
         {
-            var vehicleBrand = await _repository.FirstOrDefaultAsync
-               (vehicle =>
-               vehicle.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-               vehicle.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-
-            if (vehicleBrand != null)
-            {
-                if (vehicleBrand.EnglishName == input.EnglishName.Trim(' '))
-                {
-                    throw new InvalidOperationException("Vehicle brand english name already exists");
-
-                }
-                else if (vehicleBrand.ArabicName == input.ArabicName.Trim(' '))
-                {
-                    throw new InvalidOperationException("Vehicle brand  arabic name already exists");
-
-                }
-
-
-            }
+            await ValidateVehicleBrandNameUniquenessAsync(input);
             return await base.CreateAsync(input);
-
         }
 
         ///<inheritdoc/>
         public override async Task<VehicleBrandDto> UpdateAsync(int id, CreateUpdateVehicleBrandDto input)
         {
             var existingVehicleBrand = await _repository.GetAsync(id);
-
             if (existingVehicleBrand is null)
             {
                 throw new InvalidOperationException("Vehicle brand not found");
             }
 
-            var vehicleBrand = await _repository.FirstOrDefaultAsync
-                    (vehicle =>
-                    vehicle.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                    vehicle.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+            await ValidateVehicleBrandNameUniquenessAsync(input, id);
+            return await base.UpdateAsync(id, input);
+        }
 
+        /// <summary>
+        /// Validates whether the English or Arabic name already exists in another vehicle brand.
+        /// </summary>
+        private async Task ValidateVehicleBrandNameUniquenessAsync(CreateUpdateVehicleBrandDto input, int? currentId = null)
+        {
+            var vehicleBrand = await _repository.FirstOrDefaultAsync(
+                brand =>
+                    brand.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                    brand.ArabicName.ToLower().Contains(input.ArabicName.ToLower())
+            );
 
             if (vehicleBrand != null)
             {
-                if (vehicleBrand.EnglishName == input.EnglishName.Trim(' ') && vehicleBrand.Id != id)
+                if (vehicleBrand.EnglishName == input.EnglishName.Trim() && vehicleBrand.Id != currentId)
                 {
-                    throw new InvalidOperationException("Vehicle brand english name already exists");
-
+                    throw new InvalidOperationException("Vehicle brand English name already exists");
                 }
-                else if (vehicleBrand.ArabicName == input.ArabicName.Trim(' ') && vehicleBrand.Id != id)
+                else if (vehicleBrand.ArabicName == input.ArabicName.Trim() && vehicleBrand.Id != currentId)
                 {
-                    throw new InvalidOperationException("Vehicle brand arabic name already exists");
-
+                    throw new InvalidOperationException("Vehicle brand Arabic name already exists");
                 }
-
-
             }
-            return await base.UpdateAsync(id, input);
         }
+
         public async Task<PagedResultDto<VehicleBrandDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
         {
             // Get the IQueryable<camera> from the repository

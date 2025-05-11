@@ -43,10 +43,17 @@ public class CameraBrandAppService : CrudAppService<CameraBrand, CameraBrandDto,
     ///<inheritdoc/>
     public override async Task<CameraBrandDto> CreateAsync(CreateUpdateCameraBrandDto input)
     {
+        await CheckCameraBrandUniqnuess(input);
+        return await base.CreateAsync(input);
+
+    }
+
+    private async Task CheckCameraBrandUniqnuess(CreateUpdateCameraBrandDto input)
+    {
         var cameraBrand = await _repository.FirstOrDefaultAsync
-           (camera =>
-           camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-           camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+                   (camera =>
+                   camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                   camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
 
 
         if (cameraBrand != null)
@@ -64,8 +71,6 @@ public class CameraBrandAppService : CrudAppService<CameraBrand, CameraBrandDto,
 
 
         }
-        return await base.CreateAsync(input);
-
     }
 
     ///<inheritdoc/>
@@ -78,27 +83,7 @@ public class CameraBrandAppService : CrudAppService<CameraBrand, CameraBrandDto,
             throw new InvalidOperationException("Camera brand not found");
         }
 
-        var cameraBrand = await _repository.FirstOrDefaultAsync
-                (camera =>
-                camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-
-        if (cameraBrand != null)
-        {
-            if (cameraBrand.EnglishName == input.EnglishName.Trim(' ') && cameraBrand.Id != id)
-            {
-                throw new InvalidOperationException("Camera brand english name already exists");
-
-            }
-            else if (cameraBrand.ArabicName == input.ArabicName.Trim(' ') && cameraBrand.Id != id)
-            {
-                throw new InvalidOperationException("Camera brand arabic name already exists");
-
-            }
-
-
-        }
+        await CheckCameraBrandUniqnuess(input);
         return await base.UpdateAsync(id, input);
     }
     public async Task<PagedResultDto<CameraBrandDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)

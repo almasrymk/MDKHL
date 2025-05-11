@@ -34,33 +34,38 @@ public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto
         /// <inheritdoc/>
 
         public override async Task<PackageTypeDto> CreateAsync(CreateUpdatePackageTypeDto input)
+    {
+        await CheckPackageTypeUniquness(input);
+        return await base.CreateAsync(input);
+    }
+
+    private async Task CheckPackageTypeUniquness(CreateUpdatePackageTypeDto input)
+    {
+        var packageType = await _packageTypeRepository.FirstOrDefaultAsync
+            (type =>
+            type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+            type.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+
+        if (packageType != null)
         {
-            var packageType = await _packageTypeRepository.FirstOrDefaultAsync
-                (type =>
-                type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                type.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-         
-
-            if (packageType != null)
+            if (packageType.EnglishName == input.EnglishName.Trim(' '))
             {
-                if (packageType.EnglishName == input.EnglishName.Trim(' ') )
-                {
-                    throw new InvalidOperationException("package english name already exists");
-
-                }
-                else if (packageType.ArabicName == input.ArabicName.Trim(' ') )
-                {
-                    throw new InvalidOperationException("Package arabic name already exists");
-
-                }
-           
+                throw new InvalidOperationException("package english name already exists");
 
             }
-               return await base.CreateAsync(input);
-        }
+            else if (packageType.ArabicName == input.ArabicName.Trim(' '))
+            {
+                throw new InvalidOperationException("Package arabic name already exists");
 
-        /// <inheritdoc/>
-        public override async Task<PackageTypeDto> UpdateAsync(int id, CreateUpdatePackageTypeDto input)
+            }
+
+
+        }
+    }
+
+    /// <inheritdoc/>
+    public override async Task<PackageTypeDto> UpdateAsync(int id, CreateUpdatePackageTypeDto input)
         {
             var existingPackage= await _packageTypeRepository.GetAsync(id);
 
@@ -69,28 +74,8 @@ public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto
                 throw new InvalidOperationException("Package Type not found");
             }
 
-            var packageType = await _packageTypeRepository.FirstOrDefaultAsync
-                    (type =>
-                    type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                    type.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-
-            if (packageType != null)
-            {
-                if (packageType.EnglishName == input.EnglishName.Trim(' ') && packageType.Id != id)
-                {
-                    throw new InvalidOperationException("package english name already exists");
-
-                }
-                else if (packageType.ArabicName == input.ArabicName.Trim(' ') && packageType.Id != id)
-                {
-                    throw new InvalidOperationException("Package arabic name already exists");
-
-                }
-
-
-            }
-                return await base.UpdateAsync(id,input);
+        await CheckPackageTypeUniquness(input);
+        return await base.UpdateAsync(id,input);
         }
         /// <summary>
         /// method used to get list of package Types

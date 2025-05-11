@@ -54,21 +54,6 @@ partial class Roles
         }
         await base.OnInitializedAsync();
     }
-    protected override async Task SetPermissionsAsync()
-    {
-        await base.SetPermissionsAsync();
-
-        HasManagePermissionsPermission =
-            await AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.ManagePermissions);
-    }
-
-    public async Task AddPermission(RowDef row)
-    {
-        var role = await RoleAppService.GetIdentityRoleById(Guid.Parse(row.Cells[0].Value));
-        await PermissionRolesManagementModal.OpenAsync(PermissionProviderName,
-                            role.Name,
-                            role.TenantId);
-    }
     public async Task HandleView(RowDef row)
     {
         var role = await RoleAppService.GetIdentityRoleById(Guid.Parse(row.Cells[0].Value));
@@ -93,8 +78,6 @@ partial class Roles
             Sorting = pageInfo.SortColumn,
             SearchingTerm = termSearch 
         };
-        //if (pageInfo.SortColumn == "Id")
-        //    pageInfo.SortColumn = "Role.Id";
         var contactInfosDto = await RoleAppService.SearchOrganization(input,CurrentTenant.Id);
 
         TotalItem = (int)contactInfosDto.TotalCount;
@@ -110,8 +93,6 @@ partial class Roles
 
        CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        //if(pageInfo.SortColumn == "Id")
-        //  pageInfo.SortColumn = "Role.Id";
         var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
@@ -151,20 +132,7 @@ partial class Roles
         }
         itemData = tableData;
     }
-    private async Task HandleAdd()
-    {
-        await DialogService.ShowAsync<AddRoleDialog>("Simple Dialog");
-    }
-    private async Task HandleEdit(RowDef row)
-    {
-        var id = Guid.Parse(row.Cells[0].Value);
-        var role = await RoleAppService.GetRoleById(id);
-        var parameters = new DialogParameters
-        {
-            ["RoleDto"] = role
-        };
-        await DialogService.ShowAsync<UpdateRoleDialog>("Simple Dialog" , parameters);
-    }
+  
 
     public override bool Equals(object obj)
     {

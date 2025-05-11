@@ -43,6 +43,13 @@ public class CameraMainTypeAppService : CrudAppService<CameraMainType, CameraMai
     ///<inheritdoc/>
     public override async Task<CameraMainTypeDto> CreateAsync(CreateUpdateCameraMainTypeDto input)
     {
+        await CheckCameraMainTypeUniqnuess(input);
+        return await base.CreateAsync(input);
+
+    }
+
+    private async Task CheckCameraMainTypeUniqnuess(CreateUpdateCameraMainTypeDto input)
+    {
         var cameraMainType = await _repository.FirstOrDefaultAsync
            (camera =>
            camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
@@ -64,8 +71,6 @@ public class CameraMainTypeAppService : CrudAppService<CameraMainType, CameraMai
 
 
         }
-        return await base.CreateAsync(input);
-
     }
 
     ///<inheritdoc/>
@@ -77,29 +82,7 @@ public class CameraMainTypeAppService : CrudAppService<CameraMainType, CameraMai
         {
             throw new InvalidOperationException("Camera maintype not found");
         }
-
-        var cameraMainType = await _repository.FirstOrDefaultAsync
-                (camera =>
-                camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-
-        if (cameraMainType != null)
-        {
-            if (cameraMainType.EnglishName == input.EnglishName.Trim(' ') && cameraMainType.Id != id)
-            {
-                throw new InvalidOperationException(
-                                        $"{LocalizationHelper.GetLocalizedString("EnglishName")} {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
-            }
-            else if (cameraMainType.ArabicName == input.ArabicName.Trim(' ') && cameraMainType.Id != id)
-            {
-                throw new InvalidOperationException(
-                            $"{LocalizationHelper.GetLocalizedString("ArabicName")} {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
-
-            }
-
-
-        }
+        await CheckCameraMainTypeUniqnuess(input);
         return await base.UpdateAsync(id, input);
     }
     public async Task<PagedResultDto<CameraMainTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)

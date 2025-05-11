@@ -40,87 +40,62 @@ public class CountriesAppService : CrudAppService<Country,
 
         ///<inheritdoc/>
         public override async Task<CountryDto> CreateAsync(CreateUpdateCountryDto input)
+    {
+        await CheckCountryUniquness(input);
+        return await base.CreateAsync(input);
+
+    }
+
+    private async Task CheckCountryUniquness(CreateUpdateCountryDto input)
+    {
+        var country = await _countryRepository.FirstOrDefaultAsync
+            (country =>
+            country.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+            country.ArabicName.ToLower().Contains(input.ArabicName.ToLower()) ||
+            country.EnglishCapital.ToLower().Contains(input.EnglishCapital.ToLower()) ||
+            country.ArabicCapital.ToLower().Contains(input.ArabicCapital.ToLower()));
+
+        if (country != null)
         {
-            var country = await _countryRepository.FirstOrDefaultAsync
-                (country =>
-                country.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                country.ArabicName.ToLower().Contains(input.ArabicName.ToLower()) ||
-                country.EnglishCapital.ToLower().Contains (input.EnglishCapital.ToLower()) ||
-                country.ArabicCapital.ToLower().Contains (input.ArabicCapital.ToLower()));
-
-            if (country != null)
+            if (country.EnglishName == input.EnglishName.Trim(' '))
             {
-                        if (country.EnglishName == input.EnglishName.Trim(' ') )
-                        {
-                            throw new InvalidOperationException("country english name already exists");
-
-                        }
-                        else if (country.ArabicName == input.ArabicName.Trim(' ') )
-                        {
-                            throw new InvalidOperationException("country arabic name already exists");
-
-                        }
-                        else if(country.ArabicCapital == input.ArabicCapital.Trim(' ') )
-                        {
-                            throw new InvalidOperationException("country  arabic capital  already exists");
-
-                        }
-                        else if(country.EnglishCapital == input.EnglishCapital.Trim(' ') )
-                        {
-                            throw new InvalidOperationException("country  english capital  already exists");
-
-                        }
+                throw new InvalidOperationException("country english name already exists");
 
             }
-              return await base.CreateAsync(input);
-            
-        }
-        ///<inheritdoc/>
-        public override async Task<CountryDto> UpdateAsync(int id, CreateUpdateCountryDto input)
-        {
-
-                var existingCountry = await _countryRepository.GetAsync(id);
-
-                if (existingCountry is null)
-                {
-                    throw new InvalidOperationException("Country not found");
-                }
-
-
-                var country = await _countryRepository.FirstOrDefaultAsync
-                (country =>
-                country.EnglishName.ToLower().Contains( input.EnglishName.ToLower())||
-                country.ArabicName.ToLower().Contains ( input.ArabicName.ToLower()) ||
-                country.EnglishCapital.ToLower().Contains(input.EnglishCapital.ToLower()) ||
-                country.ArabicCapital.ToLower().Contains(input.ArabicCapital.ToLower()));
-
-            if (country != null)
+            else if (country.ArabicName == input.ArabicName.Trim(' '))
             {
-                    if (country.EnglishName == input.EnglishName.Trim(' ') && country.Id != id)
-                    {
-                        throw new InvalidOperationException("country english name already exists");
-
-                    }
-                    else if (country.ArabicName == input.ArabicName.Trim(' ') && country.Id != id)
-                    {
-                        throw new InvalidOperationException("country arabic name already exists");
-
-                    }
-                    else if (country.ArabicCapital == input.ArabicCapital.Trim(' ') && country.Id != id)
-                    {
-                        throw new InvalidOperationException("country  arabic capital  already exists");
-
-                    }
-                    else if (country.EnglishCapital== input.EnglishCapital.Trim(' ') && country.Id != id)
-                    {
-                        throw new InvalidOperationException("country  english capital  already exists");
-
-                    }
+                throw new InvalidOperationException("country arabic name already exists");
 
             }
-             return await base.UpdateAsync(id, input);
+            else if (country.ArabicCapital == input.ArabicCapital.Trim(' '))
+            {
+                throw new InvalidOperationException("country  arabic capital  already exists");
+
+            }
+            else if (country.EnglishCapital == input.EnglishCapital.Trim(' '))
+            {
+                throw new InvalidOperationException("country  english capital  already exists");
+
+            }
 
         }
+    }
+
+    ///<inheritdoc/>
+    public override async Task<CountryDto> UpdateAsync(int id, CreateUpdateCountryDto input)
+    { 
+
+        var existingCountry = await _countryRepository.GetAsync(id);
+
+        if (existingCountry is null)
+        {
+            throw new InvalidOperationException("Country not found");
+        }
+
+        await CheckCountryUniquness(input);
+        return await base.UpdateAsync(id, input);
+
+    }
 
     /// <inheritdoc/>
     public override async Task DeleteAsync(int id)

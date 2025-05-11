@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -12,15 +11,12 @@ using System.Linq.Dynamic.Core;
 using Volo.Abp.Data;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Identity;
-using SmartParking.Entities.Customers;
 using SmartParking.Organizations;
 using Microsoft.EntityFrameworkCore;
-using Volo.Abp.Uow;
 using Volo.Abp;
 using SmartParking.Localization;
 using Volo.Abp.Domain.Repositories;
 using SmartParking.Entities.Organizations;
-using Volo.Abp.ObjectMapping;
 using SmartParking.Entities.Authentication;
 namespace SmartParking.Authentication;
 using IdentityRole = Volo.Abp.Identity.IdentityRole;
@@ -75,9 +71,8 @@ public class RoleAppService : ApplicationService, IRoleAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var queryable = await _roleReository.GetQueryableAsync();
-            var organizationQueryable = await _organizationRepository.GetQueryableAsync();
-            IQueryable<RoleWithOrganization> query = CreateQueryForMdkhl(input, queryable, organizationQueryable);
+
+            IQueryable<RoleWithOrganization> query = await CreateQueryForMdkhl(input);
             query = ApplyFilterTenant(tenantId, query);
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
             {
@@ -102,8 +97,10 @@ public class RoleAppService : ApplicationService, IRoleAppService
         return query;
     }
 
-    private static IQueryable<RoleWithOrganization> CreateQueryForMdkhl(PagedAndSortedResultRequestDto input, IQueryable<IdentityRole> queryable, IQueryable<Organization> organizationQueryable)
+    private async Task<IQueryable<RoleWithOrganization>> CreateQueryForMdkhl(PagedAndSortedResultRequestDto input)
     {
+        var queryable = await _roleReository.GetQueryableAsync();
+        var organizationQueryable = await _organizationRepository.GetQueryableAsync();
         var query = queryable
             .GroupJoin(
                  organizationQueryable,
@@ -326,7 +323,6 @@ public class RoleAppService : ApplicationService, IRoleAppService
         
         await _userManager.RemovePasswordAsync(user);
         await _userManager.AddPasswordAsync(user, "P@ssw0rd");
-       // user.SetConcurrencyStampIfNotNull(user.SecurityStamp);
         user.SetProperty("OrganizationId", org.Id);
         await _userManager.UpdateAsync(user);
     }
@@ -350,9 +346,8 @@ public class RoleAppService : ApplicationService, IRoleAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var queryable = await _roleReository.GetQueryableAsync();
-            var organizationQueryable = await _organizationRepository.GetQueryableAsync();
-            IQueryable<RoleWithOrganization> query = CreateQueryForMdkhl(input, queryable, organizationQueryable);
+
+            IQueryable<RoleWithOrganization> query = await CreateQueryForMdkhl(input);
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
             {
                 query = ApplySearchFilterForMdkhl(query, input.SearchingTerm);
