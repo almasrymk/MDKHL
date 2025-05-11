@@ -24,41 +24,25 @@ using Volo.Abp.ObjectMapping;
 namespace SmartParking.Vehicles.LookUps
 {
     [Authorize]
-	public class VehicleBrandsAppService : CrudAppService<VehicleBrand, VehicleBrandDto, int, PagedAndSortedResultRequestDto, CreateUpdateVehicleBrandDto>, IVehicleBrandsAppService
-	{
+    public class VehicleBrandsAppService : CrudAppService<VehicleBrand, VehicleBrandDto, int, PagedAndSortedResultRequestDto, CreateUpdateVehicleBrandDto>, IVehicleBrandsAppService
+    {
         private readonly IRepository<VehicleBrand, int> _repository;
         private readonly IDataFilter _dataFilter;
 
-        public VehicleBrandsAppService(IRepository<VehicleBrand, int> repository,IDataFilter dataFilter) : base(repository)
-		{
-           _repository = repository;
+        public VehicleBrandsAppService(IRepository<VehicleBrand, int> repository, IDataFilter dataFilter) : base(repository)
+        {
+            _repository = repository;
             _dataFilter = dataFilter;
         }
-        ///<inheritdoc/>
-        public override async Task DeleteAsync(int id)
-        {
-            
-                var vehicleBrand = await _repository.FindAsync(id);
 
-                if (vehicleBrand is null)
-                {
-                    throw new EntityNotFoundException(typeof(VehicleBrand), id);
-                }
+        #region Public Methods
 
-                await _repository.HardDeleteAsync(vehicleBrand);
-                //await CurrentUnitOfWork.SaveChangesAsync();
-            
-             
-        }
-
-        ///<inheritdoc/>
         public override async Task<VehicleBrandDto> CreateAsync(CreateUpdateVehicleBrandDto input)
         {
             await ValidateVehicleBrandNameUniquenessAsync(input);
             return await base.CreateAsync(input);
         }
 
-        ///<inheritdoc/>
         public override async Task<VehicleBrandDto> UpdateAsync(int id, CreateUpdateVehicleBrandDto input)
         {
             var existingVehicleBrand = await _repository.GetAsync(id);
@@ -71,9 +55,83 @@ namespace SmartParking.Vehicles.LookUps
             return await base.UpdateAsync(id, input);
         }
 
-        /// <summary>
-        /// Validates whether the English or Arabic name already exists in another vehicle brand.
-        /// </summary>
+        public override async Task DeleteAsync(int id)
+        {
+            var vehicleBrand = await _repository.FindAsync(id);
+            if (vehicleBrand is null)
+            {
+                throw new EntityNotFoundException(typeof(VehicleBrand), id);
+            }
+
+            await _repository.HardDeleteAsync(vehicleBrand);
+        }
+
+        public async Task<PagedResultDto<VehicleBrandDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+        {
+            var queryable = await _repository.GetQueryableAsync();
+
+            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
+                queryable = queryable.Where(or =>
+                    or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()));
+            }
+
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+
+            var vehicleBrands = await AsyncExecuter.ToListAsync(queryable);
+            var vehicleBrandsDto = ObjectMapper.Map<List<VehicleBrand>, List<VehicleBrandDto>>(vehicleBrands);
+
+            return new PagedResultDto<VehicleBrandDto>(totalCount, vehicleBrandsDto);
+        }
+
+        public async Task<PagedResultDto<VehicleBrandDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+        {
+            var queryable = await _repository.GetQueryableAsync();
+            var filterExpression = BuildExpression<VehicleBrand>.BuildFilterExpression(input.filters);
+
+            if (filterExpression is not null)
+            {
+                queryable = queryable.Where(filterExpression);
+            }
+
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+
+            var vehicleBrands = await AsyncExecuter.ToListAsync(queryable);
+            var vehicleBrandsDto = ObjectMapper.Map<List<VehicleBrand>, List<VehicleBrandDto>>(vehicleBrands);
+
+            return new PagedResultDto<VehicleBrandDto>(totalCount, vehicleBrandsDto);
+        }
+
+        [RemoteService(IsEnabled = false)]
+        public async Task<Result<List<VehicleBrandDto>>> GetbrandsAsync()
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var brands = await _repository.GetListAsync();
+                if (brands.Count == 0)
+                    return Result<List<VehicleBrandDto>>.NotFound();
+
+                var brandsMap = ObjectMapper.Map<List<VehicleBrand>, List<VehicleBrandDto>>(brands);
+                return Result<List<VehicleBrandDto>>.Success(brandsMap);
+            }
+        }
+
+        public async Task<List<VehicleBrandDto>> GetAllVehicleBrandsAsync()
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var brands = await _repository.GetListAsync();
+                return ObjectMapper.Map<List<VehicleBrand>, List<VehicleBrandDto>>(brands);
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
         private async Task ValidateVehicleBrandNameUniquenessAsync(CreateUpdateVehicleBrandDto input, int? currentId = null)
         {
             var vehicleBrand = await _repository.FirstOrDefaultAsync(
@@ -95,86 +153,6 @@ namespace SmartParking.Vehicles.LookUps
             }
         }
 
-        public async Task<PagedResultDto<VehicleBrandDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
-        {
-            // Get the IQueryable<camera> from the repository
-            var queryable = await _repository.GetQueryableAsync();
-            // Apply search filtering
-            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-            {
-
-                queryable = queryable.Where(or =>
-                    or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                    or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
-                    
-
-                );
-            }
-            // Get the total count of filtered records
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-            // Apply pagination
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            // Execute the query and get the list of camera entities
-            var vehicleBrands = await AsyncExecuter.ToListAsync(queryable);
-
-            // Map the hotel entities to cameraDto objects
-            var vehicleBrandsDto = ObjectMapper.Map<List<VehicleBrand>, List<VehicleBrandDto>>(vehicleBrands);
-            // Return the paginated result
-            return new PagedResultDto<VehicleBrandDto>(
-                totalCount,
-                vehicleBrandsDto
-            );
-        }
-
-
-        public async Task<PagedResultDto<VehicleBrandDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
-        {
-            // Get the IQueryable<camera> from the repository
-            var queryable = await _repository.GetQueryableAsync();
-            // Apply filtering
-            var filterExpression = BuildExpression<VehicleBrand>.BuildFilterExpression(input.filters);
-            if (filterExpression is not null)
-            {
-                queryable = queryable.Where(filterExpression);
-            }
-            // Get the total count of filtered records
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-            // Apply pagination
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            // Execute the query and get the list of organizations entities
-            var vehicleBrands = await AsyncExecuter.ToListAsync(queryable);
-
-            // Map the organizations entities to organizationsDto objects
-            var vehicleBrandsDto = ObjectMapper.Map<List<VehicleBrand>, List<VehicleBrandDto>>(vehicleBrands);
-            // Return the paginated result
-            return new PagedResultDto<VehicleBrandDto>(
-                totalCount,
-                vehicleBrandsDto
-            );
-        }
-        [RemoteService(IsEnabled =false)]
-        public async Task<Result<List<VehicleBrandDto>>> GetbrandsAsync()
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                var brands = await _repository.GetListAsync();
-                if (brands.Count == 0)
-                    return Result<List<VehicleBrandDto>>.NotFound();
-                var brandsMap = ObjectMapper.Map<List<VehicleBrand>, List<VehicleBrandDto>>(brands);
-                return Result<List<VehicleBrandDto>>.Success(brandsMap);
-            }
-            
-        }
-
-        public async Task<List<VehicleBrandDto>> GetAllVehicleBrandsAsync()
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                 var brands = await _repository.GetListAsync();
-                return ObjectMapper.Map<List<VehicleBrand>, List<VehicleBrandDto>>(brands);
-            }
-        }
+        #endregion
     }
 }
