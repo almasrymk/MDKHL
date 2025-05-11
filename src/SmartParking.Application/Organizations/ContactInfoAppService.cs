@@ -26,6 +26,7 @@ public class ContactInfoAppService : CrudAppService<ContactInfo, ContactInfoDto,
     {
         _repository = repository;
     }
+    #region public methods 
 
     /// <inheritdoc/>
     public async Task<PagedResultDto<ContactInfoDto>> GetContactInfoByOrganization(PagedAndSortedResultRequestDto input, int organizationId)
@@ -175,5 +176,5 @@ public class ContactInfoAppService : CrudAppService<ContactInfo, ContactInfoDto,
             );
         }
     }
-
+    #endregion
 }
