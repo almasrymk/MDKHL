@@ -48,6 +48,8 @@ public class CamerasAppService :
         _garageAppService = garageAppService;
         _subscriptionRepository = subscriptionRepository;
     }
+
+    #region public methods
     /// <summary>
     /// method gets list of cameras
     /// </summary>
@@ -66,26 +68,7 @@ public class CamerasAppService :
             cameraesDto
         );
     }
-    /// <summary>
-    /// this method applies sorting
-    /// </summary>
-    /// <param name="input"></param>
-    /// <param name="queryable"></param>
-    /// <returns></returns>
-    private static IQueryable<Camera> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Camera> queryable)
-    {
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
-            }
-            else
-                queryable = queryable.OrderBy(input.Sorting);
-        }
-        return queryable;
-    }
+   
     /// <summary>
     /// method gets list of cameras for mdkhl
     /// </summary>
@@ -109,18 +92,7 @@ public class CamerasAppService :
             );
         }
     }
-    /// <summary>
-    /// method to add tenant to query use for search 
-    /// </summary>
-    /// <param name="tenantId"></param>
-    /// <param name="queryable"></param>
-    /// <returns>IQueryable<Camera></returns>
-    private static IQueryable<Camera> ApplyTenant(Guid? tenantId, IQueryable<Camera> queryable)
-    {
-        if (tenantId.HasValue)
-            queryable = queryable.Where(_ => _.TenantId == tenantId);
-        return queryable;
-    }
+
     /// <summary>
     /// update camera 
     /// </summary>
@@ -145,44 +117,7 @@ public class CamerasAppService :
             return await base.UpdateAsync(id, input);
         }
     }
-    /// <summary>
-    /// method to check old and new camera status
-    /// </summary>
-    /// <param name="input"></param>
-    /// <param name="organization"></param>
-    /// <param name="subscription"></param>
-    /// <param name="existingCamera"></param>
-    /// <returns></returns>
-    private async Task CheckOldAndNewCameraStatus(CreateUpdateCameraDto input, Organization? organization, Subscription? subscription, Camera existingCamera)
-    {
-        if (input.Status == Enums.Status.Active && existingCamera.Status != Enums.Status.Active)
-        {
-            var result = await CheckSubscriptionLimitsCamerasAsync(organization, 1, subscription);
-            if (result)
-                organization.ActiveCameras++;
-            await CurrentUnitOfWork.SaveChangesAsync();
-        }
-    }
-
-    /// <summary>
-    /// method to validate update camera input 
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="input"></param>
-    /// <param name="existingCamera"></param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
-    private async Task ValidateUpdateInput(int id, CreateUpdateCameraDto input, Camera existingCamera)
-    {
-        if (await CheckIPUnique(input.CameraIP) == 1 && existingCamera.Id != id)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("CameraIP") + ' ' + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
-        }
-        if (await CheckMacAddressUnique(input.MacAddress) == 1 && existingCamera.Id != id)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("MacAddress") + ' ' + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
-        }
-    }
+    
     /// <inheritdoc/>
     public async Task<string> GenerateCameraCode(string OrgEnglishName, string GarageEnglishName, string CameraEnglishName)
     {
@@ -272,76 +207,7 @@ public class CamerasAppService :
             return await base.CreateAsync(input);
         }
     }
-    /// <summary>
-    /// method used to assign camera code
-    /// </summary>
-    /// <param name="input"></param>
-    /// <param name="garage"></param>
-    /// <param name="organization"></param>
-    /// <param name="numberOfCamerasForOrganization"></param>
-    /// <returns>CreateUpdateCameraDto</returns>
-    private async Task<CreateUpdateCameraDto> AssignCameraCode(CreateUpdateCameraDto input, GarageDto garage, Organization organization, string numberOfCamerasForOrganization)
-    {
-        input.DeviceId = await GenerateCameraCode(organization.EnglishName, garage.NameEn, input.Name);
-        input.DeviceId += numberOfCamerasForOrganization;
-        input.OrganizationId = organization.Id;
-        return input;
-    }
-
-    /// <summary>
-    /// method used to validate create input
-    /// </summary>
-    /// <param name="input"></param>
-    private async Task ValidateCreateInput(CreateUpdateCameraDto input)
-    {
-        if (await CheckIPUnique(input.CameraIP) == 1)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("CameraIP") + ' ' + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
-        }
-        if (await CheckMacAddressUnique(input.MacAddress) == 1)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("MacAddress") + ' ' + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
-        }
-    }
-    /// <summary>
-    /// method used to check if organization has enough cameras
-    /// </summary>
-    /// <param name="organization"></param>
-    /// <param name="camerasCout"></param>
-    /// <param name="subscription"></param>
-    /// <returns>bool</returns>
-    [RemoteService(isEnabled: false)]
-
-    private async Task<bool> CheckSubscriptionLimitsCamerasAsync(Organization organization, int camerasCout, Subscription subscription)
-    {
-        if (organization.ActiveCameras + camerasCout > subscription.NumberOfCameras)
-            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
-        return true;
-    }
-    /// <summary>
-    /// method used to Check if IP is unqiue or not
-    /// </summary>
-    /// <param name="cameraIP">Added Camera IP</param>
-    /// <returns>1 if IP Exists</returns>
-    private async Task<int> CheckIPUnique(string cameraIP)
-    {
-        var camera = await _repository.FirstOrDefaultAsync(x => x.CameraIP.Equals(cameraIP));
-        if (camera != null)
-            return 1; // CameraIP exists
-        return -1;
-    }
-    /// <summary>
-    /// method used to Check if IP is unqiue or not
-    /// </summary>
-    /// <param name="cameraIP">Added Camera IP</param>
-    /// <returns>1 if IP Exists</returns>
-    private async Task<int> CheckMacAddressUnique(string MacAddress)
-    {
-        var camera = await _repository.FirstOrDefaultAsync(x => x.MacAddress.Equals(MacAddress));
-        if (camera != null)
-            return 1; // MacAddress exists
-        return -1;
-    }
+    
     /// <summary>
     /// method used to get list of cameraes
     /// </summary>
@@ -360,38 +226,7 @@ public class CamerasAppService :
         );
     }
 
-    /// <summary>
-    /// method to apply paged to camera list 
-    /// </summary>
-    /// <param name="input"></param>
-    /// <param name="queryable"></param>
-    /// <returns></returns>
-   private async Task<List<Camera>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Camera> queryable)
-    {
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        var cameraes = await AsyncExecuter.ToListAsync(queryable);
-        return cameraes;
-    }
-    /// <summary>
-    /// method used to apply search
-    /// </summary>
-    /// <param name="input"></param>
-    /// <param name="queryable"></param>
-    /// <returns>IQueryable<Camera></returns>
-    private static IQueryable<Camera> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Camera> queryable)
-    {
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
-            queryable = queryable.Where(or =>
-                or.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.DeviceId.ToLower().Contains(input.SearchingTerm.ToLower()) |
-                or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Garage.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Garage.NameEn.ToLower().Contains(input.SearchingTerm.ToLower())
-            );
-        }
-        return queryable;
-    }
+  
     /// <inheritdoc/>
     public async Task<PagedResultDto<CameraDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
@@ -460,4 +295,180 @@ public class CamerasAppService :
         }
         return ObjectMapper.Map<Camera, CameraDto>(camera);
     }
+    #endregion
+    #region private methods
+    /// <summary>
+    /// this method applies sorting
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="queryable"></param>
+    /// <returns></returns>
+    private static IQueryable<Camera> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Camera> queryable)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+                queryable = queryable.OrderBy(input.Sorting);
+        }
+        return queryable;
+    }
+    /// <summary>
+    /// method to check old and new camera status
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="organization"></param>
+    /// <param name="subscription"></param>
+    /// <param name="existingCamera"></param>
+    /// <returns></returns>
+    private async Task CheckOldAndNewCameraStatus(CreateUpdateCameraDto input, Organization? organization, Subscription? subscription, Camera existingCamera)
+    {
+        if (input.Status == Enums.Status.Active && existingCamera.Status != Enums.Status.Active)
+        {
+            var result = await CheckSubscriptionLimitsCamerasAsync(organization, 1, subscription);
+            if (result)
+                organization.ActiveCameras++;
+            await CurrentUnitOfWork.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
+    /// method to validate update camera input 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="input"></param>
+    /// <param name="existingCamera"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    private async Task ValidateUpdateInput(int id, CreateUpdateCameraDto input, Camera existingCamera)
+    {
+        if (await CheckIPUnique(input.CameraIP) == 1 && existingCamera.Id != id)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("CameraIP") + ' ' + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+        }
+        if (await CheckMacAddressUnique(input.MacAddress) == 1 && existingCamera.Id != id)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("MacAddress") + ' ' + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+        }
+    }
+    /// <summary>
+    /// method to apply paged to camera list 
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="queryable"></param>
+    /// <returns></returns>
+    private async Task<List<Camera>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Camera> queryable)
+    {
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var cameraes = await AsyncExecuter.ToListAsync(queryable);
+        return cameraes;
+    }
+    /// <summary>
+    /// method used to apply search
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="queryable"></param>
+    /// <returns>IQueryable<Camera></returns>
+    private static IQueryable<Camera> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Camera> queryable)
+    {
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+            queryable = queryable.Where(or =>
+                or.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.DeviceId.ToLower().Contains(input.SearchingTerm.ToLower()) |
+                or.MacAddress.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Garage.NameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Garage.NameEn.ToLower().Contains(input.SearchingTerm.ToLower())
+            );
+        }
+        return queryable;
+    }
+    /// <summary>
+    /// method used to assign camera code
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="garage"></param>
+    /// <param name="organization"></param>
+    /// <param name="numberOfCamerasForOrganization"></param>
+    /// <returns>CreateUpdateCameraDto</returns>
+    private async Task<CreateUpdateCameraDto> AssignCameraCode(CreateUpdateCameraDto input, GarageDto garage, Organization organization, string numberOfCamerasForOrganization)
+    {
+        input.DeviceId = await GenerateCameraCode(organization.EnglishName, garage.NameEn, input.Name);
+        input.DeviceId += numberOfCamerasForOrganization;
+        input.OrganizationId = organization.Id;
+        return input;
+    }
+
+    /// <summary>
+    /// method used to validate create input
+    /// </summary>
+    /// <param name="input"></param>
+    private async Task ValidateCreateInput(CreateUpdateCameraDto input)
+    {
+        if (await CheckIPUnique(input.CameraIP) == 1)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("CameraIP") + ' ' + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+        }
+        if (await CheckMacAddressUnique(input.MacAddress) == 1)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("MacAddress") + ' ' + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+        }
+    }
+    /// <summary>
+    /// method to add tenant to query use for search 
+    /// </summary>
+    /// <param name="tenantId"></param>
+    /// <param name="queryable"></param>
+    /// <returns>IQueryable<Camera></returns>
+    private static IQueryable<Camera> ApplyTenant(Guid? tenantId, IQueryable<Camera> queryable)
+    {
+        if (tenantId.HasValue)
+            queryable = queryable.Where(_ => _.TenantId == tenantId);
+        return queryable;
+    }
+    /// <summary>
+    /// method used to check if organization has enough cameras
+    /// </summary>
+    /// <param name="organization"></param>
+    /// <param name="camerasCout"></param>
+    /// <param name="subscription"></param>
+    /// <returns>bool</returns>
+    [RemoteService(isEnabled: false)]
+
+    private async Task<bool> CheckSubscriptionLimitsCamerasAsync(Organization organization, int camerasCout, Subscription subscription)
+    {
+        if (organization.ActiveCameras + camerasCout > subscription.NumberOfCameras)
+            throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
+        return true;
+    }
+    /// <summary>
+    /// method used to Check if IP is unqiue or not
+    /// </summary>
+    /// <param name="cameraIP">Added Camera IP</param>
+    /// <returns>1 if IP Exists</returns>
+    private async Task<int> CheckIPUnique(string cameraIP)
+    {
+        var camera = await _repository.FirstOrDefaultAsync(x => x.CameraIP.Equals(cameraIP));
+        if (camera != null)
+            return 1; // CameraIP exists
+        return -1;
+    }
+    /// <summary>
+    /// method used to Check if IP is unqiue or not
+    /// </summary>
+    /// <param name="cameraIP">Added Camera IP</param>
+    /// <returns>1 if IP Exists</returns>
+    private async Task<int> CheckMacAddressUnique(string MacAddress)
+    {
+        var camera = await _repository.FirstOrDefaultAsync(x => x.MacAddress.Equals(MacAddress));
+        if (camera != null)
+            return 1; // MacAddress exists
+        return -1;
+    }
+    #endregion
 }
+
