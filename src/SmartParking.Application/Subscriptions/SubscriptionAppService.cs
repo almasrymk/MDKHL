@@ -31,11 +31,12 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         _subscriptionRepository = subscriptionRepository;
        _dataFilter = dataFilter;
     }
+    #region public methods 
 
     /// <inheritdoc/>
     public override async Task<SubscriptionDto> CreateAsync(CreateUpdateSubscriptionDto input)
     {
-        if(input.Status != SubscriptionStatus.Draft && input.Status !=SubscriptionStatus.Inactive && input.Status != SubscriptionStatus.Active)
+        if (input.Status != SubscriptionStatus.Draft && input.Status != SubscriptionStatus.Inactive && input.Status != SubscriptionStatus.Active)
             throw new InvalidOperationException("Invalid status value.");
         else
             input.Status = SubscriptionStatus.Draft;
@@ -57,14 +58,14 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
 
         if (input.Status != SubscriptionStatus.Draft && input.Status != SubscriptionStatus.Inactive && input.Status != SubscriptionStatus.Active)
             throw new InvalidOperationException("Invalid status value.");
-        
+
         // If the current status is Draft, allow it to change to Active or Inactive
         if (existingSubscription.StatusSubscription == SubscriptionStatus.Draft)
         {
             if (input.Status == SubscriptionStatus.Active || input.Status == SubscriptionStatus.Inactive)
                 existingSubscription.StatusSubscription = input.Status;
-            
-            
+
+
         }
         // If the current status is Active or Inactive, prevent it from changing back to Draft
         else if (existingSubscription.StatusSubscription == SubscriptionStatus.Active || existingSubscription.StatusSubscription == SubscriptionStatus.Inactive)
@@ -113,39 +114,16 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             );
         }
     }
-
-    private static IQueryable<Subscription> ApplyFilterTenant(Guid? tenantId, IQueryable<Subscription> queryable)
-    {
-        if (tenantId.HasValue)
-            queryable = queryable.Where(x => x.TenantId == tenantId);
-        return queryable;
-    }
-
     public async Task<List<Subscription>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Subscription> queryable)
     {
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
         var subscriptions = await AsyncExecuter.ToListAsync(queryable);
         return subscriptions;
     }
-
-    private static IQueryable<Subscription> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Subscription> queryable)
-    {
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
-            }
-            else
-                queryable = queryable.OrderBy(input.Sorting);
-        }
-        return queryable;
-    }
     /// <inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
-        var subscription =  await _subscriptionRepository.FindAsync(id);
+        var subscription = await _subscriptionRepository.FindAsync(id);
         if (subscription is null)
             throw new EntityNotFoundException(typeof(Subscription), id);
         await _subscriptionRepository.HardDeleteAsync(subscription);
@@ -160,7 +138,7 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         var filterExpression = BuildExpression<Subscription>.BuildFilterExpression(input.filters);
         if (filterExpression is not null)
             queryable = queryable.Where(filterExpression);
-      queryable = ApplySort(input, queryable);
+        queryable = ApplySort(input, queryable);
         // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
 
@@ -203,7 +181,43 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             subscriptionsDto
         );
     }
+    [RemoteService(IsEnabled = false)]
+    public async Task<List<SubscriptionDto>> GetAllAsync()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var subscriptions = await _subscriptionRepository.GetListAsync();
+            var subscriptionsMap = ObjectMapper.Map<List<Subscription>, List<SubscriptionDto>>(subscriptions);
+            return subscriptionsMap;
+        }
+    }
+    #endregion
 
+    #region Private Methods
+    private static IQueryable<Subscription> ApplyFilterTenant(Guid? tenantId, IQueryable<Subscription> queryable)
+    {
+        if (tenantId.HasValue)
+            queryable = queryable.Where(x => x.TenantId == tenantId);
+        return queryable;
+    }
+
+  
+
+    private static IQueryable<Subscription> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Subscription> queryable)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+                queryable = queryable.OrderBy(input.Sorting);
+        }
+        return queryable;
+    }
+   
     private static IQueryable<Subscription> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Subscription> queryable)
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
@@ -223,14 +237,5 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         return queryable;
     }
 
-    [RemoteService(IsEnabled =false)]
-    public async Task<List<SubscriptionDto>> GetAllAsync()
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var subscriptions = await _subscriptionRepository.GetListAsync();
-            var subscriptionsMap = ObjectMapper.Map<List<Subscription>, List<SubscriptionDto>>(subscriptions);
-            return subscriptionsMap;
-        }    
-    }
+    #endregion
 }
