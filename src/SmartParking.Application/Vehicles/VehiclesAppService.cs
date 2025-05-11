@@ -22,30 +22,35 @@ using Volo.Abp.Users;
 namespace SmartParking.Vehicles;
 
 [Authorize]
-public class VehiclesAppService:
-	CrudAppService<
-		Vehicle,
-		VehicleDto,
-		int,
-		PagedAndSortedResultRequestDto,
-		CreateUpdateVehicleDto
-		>,
-	IVehiclesAppService
+public class VehiclesAppService :
+    CrudAppService<
+        Vehicle,
+        VehicleDto,
+        int,
+        PagedAndSortedResultRequestDto,
+        CreateUpdateVehicleDto
+    >,
+    IVehiclesAppService
 {
-	private readonly IRepository<Vehicle, int> _repository;
-	private IDataFilter _dataFilter;
-	private readonly ICurrentUser _currentUser; // Inject ICurrentUser
+    private readonly IRepository<Vehicle, int> _repository;
+    private IDataFilter _dataFilter;
+    private readonly ICurrentUser _currentUser;
     private readonly IRepository<LicenceType, int> _licenceTypeRepository;
 
-    public VehiclesAppService(IRepository<Vehicle, int> repository,
-		IDataFilter dataFilter, ICurrentUser currentUser,IRepository<LicenceType,int> licenceTypeRepository)
-	   : base(repository)
-	{
-		_repository = repository;
-		_dataFilter = dataFilter;
-		_currentUser = currentUser;
+    public VehiclesAppService(
+        IRepository<Vehicle, int> repository,
+        IDataFilter dataFilter,
+        ICurrentUser currentUser,
+        IRepository<LicenceType, int> licenceTypeRepository)
+        : base(repository)
+    {
+        _repository = repository;
+        _dataFilter = dataFilter;
+        _currentUser = currentUser;
         _licenceTypeRepository = licenceTypeRepository;
     }
+
+    #region Public Methods
 
     public override async Task<VehicleDto> CreateAsync(CreateUpdateVehicleDto input)
     {
@@ -115,6 +120,71 @@ public class VehiclesAppService:
         return await base.GetListAsync(input);
     }
 
+    public override async Task<VehicleDto> GetAsync(int id)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            return await base.GetAsync(id);
+        }
+    }
+
+    public override async Task DeleteAsync(int id)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var vehicle = await _repository.FindAsync(id);
+            if (vehicle == null)
+                throw new EntityNotFoundException(typeof(Vehicle), id);
+
+            await base.DeleteAsync(id);
+        }
+    }
+
+    [RemoteService(IsEnabled = false)]
+    public async Task<(string numbers, string letters)> SplitPlateAsync(string plate)
+    {
+        await Task.Yield();
+
+        var matches = Regex.Matches(plate, @"[\d]+|[\p{L}]+");
+
+        string letters = "";
+        string numbers = "";
+
+        foreach (Match match in matches)
+        {
+            if (Regex.IsMatch(match.Value, @"^[\p{L}]+$"))
+            {
+                letters += match.Value;
+            }
+            else if (Regex.IsMatch(match.Value, @"^\d+$"))
+            {
+                numbers += match.Value;
+            }
+        }
+
+        return (numbers, letters);
+    }
+
+    [RemoteService(IsEnabled = false)]
+    public void SplitPlate(string plate, out string numbers, out string letters)
+    {
+        var match = Regex.Match(plate, @"(?<letters>[A-Za-z\u0600-\u06FF]+)(?<numbers>\d+)|(?<numbers>\d+)(?<letters>[A-Za-z\u0600-\u06FF]+)");
+        if (match.Success)
+        {
+            letters = match.Groups["letters"].Value;
+            numbers = match.Groups["numbers"].Value;
+        }
+        else
+        {
+            letters = "";
+            numbers = plate;
+        }
+    }
+
+    #endregion
+
+    #region Private Methods
+
     private async Task CheckVehicleIfExistsAsync(CreateUpdateVehicleDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -159,69 +229,5 @@ public class VehiclesAppService:
         }
     }
 
-    [RemoteService(IsEnabled = false)]
-    public async Task<(string numbers, string letters)> SplitPlateAsync(string plate)
-    {
-        
-        await Task.Yield();
-
-        // Regex to capture groups of Arabic/English letters and numbers
-        var matches = Regex.Matches(plate, @"[\d]+|[\p{L}]+");
-
-        string letters = "";
-        string numbers = "";
-
-        foreach (Match match in matches)
-        {
-            if (Regex.IsMatch(match.Value, @"^[\p{L}]+$")) // Letters
-            {
-                letters += match.Value; // Append letters
-            }
-            else if (Regex.IsMatch(match.Value, @"^\d+$")) // Numbers
-            {
-                numbers += match.Value; // Append numbers
-            }
-        }
-
-
-        return (numbers, letters);
-    }
-    [RemoteService(IsEnabled = false)]
-    public void SplitPlate(string plate, out string numbers, out string letters)
-    {
-        var match = Regex.Match(plate, @"(?<letters>[A-Za-z\u0600-\u06FF]+)(?<numbers>\d+)|(?<numbers>\d+)(?<letters>[A-Za-z\u0600-\u06FF]+)");
-        if (match.Success)
-        {
-            letters = match.Groups["letters"].Value;
-            numbers = match.Groups["numbers"].Value;
-        }
-        else
-        {
-            letters = "";
-            numbers = plate;
-        }
-    }
-
-
-    public override async Task<VehicleDto> GetAsync(int id)
-	{
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            return await base.GetAsync(id);
-        }
-	}
-
-	public override async Task DeleteAsync(int id)
-	{
-            using (_dataFilter.Disable<IMultiTenant>())
-			{
-		        var vehicle = await _repository.FindAsync(id);
-		        if (vehicle == null )
-		        	throw new EntityNotFoundException(typeof(Vehicle), id);
-
-                await base.DeleteAsync(id);
-            }
-    }
-
-   
+    #endregion
 }
