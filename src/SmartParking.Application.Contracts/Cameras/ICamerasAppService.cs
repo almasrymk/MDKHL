@@ -1,4 +1,5 @@
 ﻿using SmartParking.Cameras;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,6 +68,6 @@ public interface ICamerasAppService :
     /// <returns>cameraeDto List</returns>
     Task<PagedResultDto<CameraDto>> FilterForMDKHL(PagedAndSortedAndFilteredResultRequestDto input);
 
-    Task<CameraDto> GetCameraIPByCameraId(int cameraId);
+    
 
 }

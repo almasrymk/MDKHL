@@ -367,13 +367,5 @@ public class CamerasAppService :
             );
         }
     }
-    public async Task<CameraDto> GetCameraIPByCameraId(int cameraId)
-    {
-        var camera = await _repository.FindAsync(cameraId);
-        if (camera == null)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Camera") + " "+LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-        }
-        return ObjectMapper.Map<Camera, CameraDto>(camera);
-    }
+   
 }
