@@ -109,13 +109,12 @@
 							{
 								@if (CultureInfo.CurrentCulture.Name == "en")
 								{
-									<MudSelectItem ForceLoad="true" Value="cameraModel.Id">@cameraModel.EnglishName</MudSelectItem>
+									<MudSelectItem  Value="cameraModel.Id">@cameraModel.EnglishName</MudSelectItem>
 								}
 								else
 								{
-									<MudSelectItem ForceLoad="true" Value="cameraModel.Id">@cameraModel.ArabicName</MudSelectItem>
+									<MudSelectItem  Value="cameraModel.Id">@cameraModel.ArabicName</MudSelectItem>
 								}
-
 							}
 						</MudSelect>
 					</MudItem>
