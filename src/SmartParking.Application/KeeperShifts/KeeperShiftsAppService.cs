@@ -333,18 +333,6 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         result = result.OrderBy(sorting);
         return result;
     }
-    private async Task<KeeperShift> GetShiftName(KeeperShift result)
-    {
-       
-        var queryShift = await _shiftRepository.GetQueryableAsync();
-        var shift = await queryShift.FirstOrDefaultAsync(x => x.Id == result.ShiftId);
-        if (shift != null)
-        {
-            result.ArabicName = shift.ArabicName;
-            result.EnglishName = shift.EnglishName;
-        }
-        return result;
-    }
     public async Task<KeeperShiftDto?> GetAsync(int id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -425,28 +413,8 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         }
     }
 
-    private static bool BuildExperssionSearchInUser(PagedAndSortedAndSearchResultRequestDto input, IdentityUser user, IdentityRole role)
-    {
-        return !input.SearchingTerm.IsNullOrWhiteSpace() ?
-                                    user.Name.ToLower().Contains(input.SearchingTerm.ToLower())
-                                    || role.Name.ToLower().Contains(input.SearchingTerm.ToLower())
-                                    || user.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower())
-                                    || user.UserName.ToLower().Contains(input.SearchingTerm.ToLower())
-                                    || user.Email.ToLower().Contains(input.SearchingTerm.ToLower())
-                                    : true;
-    }
 
-    private static IQueryable<UserWithRole> ApplySortingForUser(PagedAndSortedResultRequestDto input, IQueryable<UserWithRole> result)
-    {
-        var sorting = input.Sorting;
-        if (!string.IsNullOrEmpty(sorting) && sorting.Contains("DESC"))
-        {
-            var sortingSplit = sorting.Split(' ').ToList();
-            sorting = sortingSplit[0] + " descending";
-        }
 
-        result = result.OrderBy(sorting).Skip(input.SkipCount).Take(input.MaxResultCount);
-        return result;
-    }
+    
 
 }
