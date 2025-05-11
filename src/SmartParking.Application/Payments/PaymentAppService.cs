@@ -77,7 +77,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     }
 
 
-
+    #region public methods 
     public async Task<PaymentCheckoutDto> CreateCheckoutPaymentAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
     {
 
@@ -122,7 +122,159 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
         }
     }
+    public async Task<PaymentDto> GetPaymentStatus(string input, string entityId, string ArabicPlateNumber, string EnglishPlateNumber)
+    {
+        var url = $"{PaymentUrl}/{input}/payment?entityId={entityId}";
 
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(tokenType, token);
+
+        var response = await _httpClient.GetAsync(url);
+        if (response.IsSuccessStatusCode)
+        {
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var responseObject = JObject.Parse(responseContent);
+
+            var resultDescription = responseObject["result"]?["description"]?.ToString();
+            var status = PaymentStatus.Cancelled;
+
+            if (!string.IsNullOrEmpty(resultDescription))
+            {
+                if (resultDescription.Contains("pending", StringComparison.OrdinalIgnoreCase))
+                {
+                    status = PaymentStatus.Pending;
+                    return new PaymentDto
+                    {
+                        CheckoutId = input,
+                        PaymentStatus = status,
+                    };
+                }
+                else if (resultDescription.Contains("successfuly", StringComparison.OrdinalIgnoreCase))
+                {
+                    status = PaymentStatus.Success;
+                }
+            }
+            using (dataFilter.Disable<IMultiTenant>())
+            {
+
+                var payment = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == input);
+                if (payment != null)
+                {
+                    if (payment.PaymentCategory == PaymentCategory.PaymentParking)
+                    {
+
+                        var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
+                        if (invoice != null)
+                        {
+                            invoice.InvoiceType = status == PaymentStatus.Success ? InvoiceType.Paid : InvoiceType.UnPaid;
+                            await _invoiceRepo.UpdateAsync(invoice);
+                        }
+                    }
+                    else if (payment.PaymentCategory == PaymentCategory.Package)
+                    {
+
+                        if (status == PaymentStatus.Success)
+                        {
+                            //package.Status = status == PaymentStatus.Success ? Status.Active : Status.Inactive;
+                            //await _packageRepo.UpdateAsync(package);
+                            var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value,
+
+                                new CustomerPackageDto
+                                {
+                                    OrganizationId = payment.OrganizationId,
+                                    CustomerId = payment.CustomerId.Value,
+                                    ArPlateNumber = ArabicPlateNumber,
+                                    EnPlateNumber = EnglishPlateNumber,
+
+
+                                });
+                            if (!assignStatus)
+                            {
+                                throw new Exception("Can't assign package to customer");
+                            }
+                        }
+                    }
+
+                    // add QrCode
+                    payment.PaymentStatus = status;
+                    //var token = await _invoiceUtility.GetTokenAsync();
+                    var qrCode = await _invoiceUtility.GetQrCodeAsync(payment.Amount, payment.OrganizationId);
+                    payment.QrCodeInvoice = qrCode.QRCode;
+                    await _repository.UpdateAsync(payment);
+                }
+
+                return new PaymentDto
+                {
+                    CheckoutId = payment.CheckoutId,
+                    CustomerId = (Guid)payment.CustomerId,
+                    Id = payment.Id,
+                    PaymentStatus = status,
+                    PaymentCategory = payment.PaymentCategory,
+                    InvoiceId = payment.InvoiceId,
+                    PackageId = payment.PackageId,
+                    OrganizationId = payment.OrganizationId,
+                    QrCodeInvoice = payment.QrCodeInvoice,
+                };
+            }
+        }
+        else
+        {
+            throw new Exception($"Payment status request failed with status: {response.StatusCode}");
+        }
+    }
+    public async Task<Result<PayementPackageDto>> GetPackagePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId)
+    {
+
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var payement = await _repository.GetAsync(x => x.Id == PayemntId && x.OrganizationId == OrganizationId && x.CustomerId == CustomerId);
+            var org = await organizationsAppService.GetAsync(OrganizationId);
+            var customerquery = await _customerRepo.GetQueryableAsync();
+            customerquery = customerquery.Include(cust => cust.IdentityUser);
+            var customer = await AsyncExecuter.FirstAsync(customerquery);
+
+            var package = await _packageRepo.GetAsync(x => x.Id == payement.PackageId);
+            var packagedto = new PayementPackageDto()
+            {
+                OrganizationAddress = org.Address,
+                OrganizationArabicName = org.ArabicName,
+                OrganizationEnglishName = org.EnglishName,
+                CustomerArabicName = customer.ArabicName,
+                CustomerEnglishName = customer.IdentityUser.Name,
+                PayementTime = payement.CreationTime,
+                Price = package.Price,
+                Description = package.Description,
+
+
+
+            };
+            return Result<PayementPackageDto>.Success(packagedto, "Package Details Retrieved Succesuffuly");
+
+
+        }
+    }
+    public async Task<Result<InvoiceDto>> GetInvoicePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId)
+    {
+
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var payement = await _repository.GetAsync(x => x.Id == PayemntId && x.OrganizationId == OrganizationId && x.CustomerId == CustomerId);
+            var invoice = await _invoiceRepo.GetAsync(x => x.Id == payement.InvoiceId);
+            var invoicedto = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+            return Result<InvoiceDto>.Success(invoicedto, "Invoice Details Retrieved Succesuffuly");
+
+        }
+    }
+
+    public async Task<PaymentCheckoutDto?> CreateCheckoutInvoicePaymentWebAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
+    {
+        await UpdateInvoiceStatusAsync(paymentCheckoutRequest.InvoiceId);
+        if (paymentCheckoutRequest.Amount == 0)
+            return null;
+        var paymentCheckoutDto = await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
+        return paymentCheckoutDto;
+    }
+    #endregion
+    #region private methods
     private async Task<PaymentCheckoutDto> SavePaymentRequest(PaymentCheckoutRequestDto paymentCheckoutRequest,
         PaymentStatus paymentStatus,
         Guid? customerId,
@@ -214,158 +366,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         };
     }
 
-    public async Task<PaymentDto> GetPaymentStatus(string input, string entityId,string ArabicPlateNumber , string EnglishPlateNumber)
-    {
-        var url = $"{PaymentUrl}/{input}/payment?entityId={entityId}";
-
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(tokenType, token);
-
-        var response = await _httpClient.GetAsync(url);
-        if (response.IsSuccessStatusCode)
-        {
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var responseObject = JObject.Parse(responseContent);
-
-            var resultDescription = responseObject["result"]?["description"]?.ToString();
-            var status = PaymentStatus.Cancelled;
-
-            if (!string.IsNullOrEmpty(resultDescription))
-            {
-                if (resultDescription.Contains("pending", StringComparison.OrdinalIgnoreCase))
-                {
-                    status = PaymentStatus.Pending;
-                    return new PaymentDto
-                    {
-                        CheckoutId = input,
-                        PaymentStatus = status,
-                    };
-                }
-                else if (resultDescription.Contains("successfuly", StringComparison.OrdinalIgnoreCase))
-                {
-                    status = PaymentStatus.Success;
-                }
-            }
-            using (dataFilter.Disable<IMultiTenant>())
-            {
-
-                var payment = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == input);
-                if (payment != null)
-                {
-                    if (payment.PaymentCategory == PaymentCategory.PaymentParking)
-                    {
-
-                        var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
-                        if (invoice != null)
-                        {
-                            invoice.InvoiceType = status == PaymentStatus.Success ? InvoiceType.Paid : InvoiceType.UnPaid;
-                            await _invoiceRepo.UpdateAsync(invoice);
-                        }
-                    }
-                    else if (payment.PaymentCategory == PaymentCategory.Package)
-                    {
-
-                        if (status == PaymentStatus.Success)
-                        {
-                            //package.Status = status == PaymentStatus.Success ? Status.Active : Status.Inactive;
-                            //await _packageRepo.UpdateAsync(package);
-                            var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value,
-
-                                new CustomerPackageDto
-                                {
-                                    OrganizationId = payment.OrganizationId,
-                                    CustomerId = payment.CustomerId.Value  ,
-                                    ArPlateNumber = ArabicPlateNumber,
-                                    EnPlateNumber = EnglishPlateNumber,
-
-
-                                });
-                            if (!assignStatus)
-                            {
-                                throw new Exception("Can't assign package to customer");
-                            }
-                        }
-                    }
-
-                    // add QrCode
-                    payment.PaymentStatus = status;
-                    //var token = await _invoiceUtility.GetTokenAsync();
-                    var qrCode = await _invoiceUtility.GetQrCodeAsync(payment.Amount, payment.OrganizationId);
-                    payment.QrCodeInvoice = qrCode.QRCode;
-                    await _repository.UpdateAsync(payment);
-                }
-
-                return new PaymentDto
-                {
-                    CheckoutId = payment.CheckoutId,
-                    CustomerId = (Guid)payment.CustomerId,
-                    Id = payment.Id,
-                    PaymentStatus = status,
-                    PaymentCategory = payment.PaymentCategory,
-                    InvoiceId = payment.InvoiceId,
-                    PackageId = payment.PackageId,
-                    OrganizationId = payment.OrganizationId,
-                    QrCodeInvoice = payment.QrCodeInvoice,
-                };
-            }
-        }
-        else
-        {
-            throw new Exception($"Payment status request failed with status: {response.StatusCode}");
-        }
-    }
-    public async Task<Result<PayementPackageDto>> GetPackagePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId)
-    {
-
-        using (dataFilter.Disable<IMultiTenant>())
-        {
-            var payement = await _repository.GetAsync(x => x.Id == PayemntId && x.OrganizationId == OrganizationId && x.CustomerId == CustomerId);
-            var org = await organizationsAppService.GetAsync(OrganizationId);
-            var customerquery = await _customerRepo.GetQueryableAsync();
-            customerquery = customerquery.Include(cust => cust.IdentityUser);
-            var customer = await AsyncExecuter.FirstAsync(customerquery);
-
-            var package = await _packageRepo.GetAsync(x => x.Id == payement.PackageId);
-            var packagedto = new PayementPackageDto()
-            {
-                OrganizationAddress = org.Address,
-                OrganizationArabicName = org.ArabicName,
-                OrganizationEnglishName = org.EnglishName,
-                CustomerArabicName = customer.ArabicName,
-                CustomerEnglishName = customer.IdentityUser.Name,
-                PayementTime = payement.CreationTime,
-                Price = package.Price,
-                Description = package.Description,
-                
-
-
-            };
-            return Result<PayementPackageDto>.Success(packagedto, "Package Details Retrieved Succesuffuly");
-
-
-        }
-    }
-    public async Task<Result<InvoiceDto>> GetInvoicePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId)
-    {
-
-        using (dataFilter.Disable<IMultiTenant>())
-        {
-            var payement = await _repository.GetAsync(x => x.Id == PayemntId && x.OrganizationId == OrganizationId && x.CustomerId == CustomerId);
-            var invoice = await _invoiceRepo.GetAsync(x => x.Id == payement.InvoiceId);
-            var invoicedto = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
-            return Result<InvoiceDto>.Success(invoicedto, "Invoice Details Retrieved Succesuffuly");
-
-        }
-    }
-
-    public async Task<PaymentCheckoutDto?> CreateCheckoutInvoicePaymentWebAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
-    {
-        await UpdateInvoiceStatusAsync(paymentCheckoutRequest.InvoiceId);
-        if (paymentCheckoutRequest.Amount == 0)
-            return null;
-        var paymentCheckoutDto= await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
-        return paymentCheckoutDto;
-    }
-
+    
     private async Task<Result<bool>> UpdateInvoiceStatusAsync(int? InvoiceId)
     {
         using (dataFilter.Disable<IMultiTenant>())
@@ -421,6 +422,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             return $"{prefix}{currentYearSuffix}{formattedSequence}";
         }
     }
+    #endregion
 }
 
 
