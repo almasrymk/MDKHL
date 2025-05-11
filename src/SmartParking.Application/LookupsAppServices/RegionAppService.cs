@@ -44,10 +44,10 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
 	}
 
     ///<inheritdoc/>
-
+    #region Public Methods
     public override async Task<RegionDto> CreateAsync(CreateUpdateRegionDto input)
     {
-        await CheckRegionUniquness(input);
+        await ValidateRegionUniqunessAsync(input);
         await ValidateCountryExistsAsync(input.CountryId);
         ValidateStatus(input.Status);
 
@@ -59,44 +59,14 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
         var existingRegion = await _regionRepository.GetAsync(id)
             ?? throw new InvalidOperationException("Region not found");
 
-        await CheckRegionUniquness(input, id);
+        await ValidateRegionUniqunessAsync(input, id);
         await ValidateCountryExistsAsync(input.CountryId);
         ValidateStatus(input.Status);
 
         return await base.UpdateAsync(id, input);
     }
 
-    private async Task CheckRegionUniquness(CreateUpdateRegionDto input, int? id = null)
-    {
-        string normalizedEnglish = input.EnglishName?.Trim().ToLowerInvariant();
-        string normalizedArabic = input.ArabicName?.Trim().ToLowerInvariant();
-
-        var region = await _regionRepository.FirstOrDefaultAsync(r =>
-            (r.EnglishName.ToLower() == normalizedEnglish ||
-             r.ArabicName.ToLower() == normalizedArabic) &&
-            (!id.HasValue || r.Id != id.Value));
-
-        if (region == null) return;
-
-        if (region.EnglishName?.Trim().ToLowerInvariant() == normalizedEnglish)
-            throw new InvalidOperationException("Region english name already exists");
-
-        if (region.ArabicName?.Trim().ToLowerInvariant() == normalizedArabic)
-            throw new InvalidOperationException("Region arabic name already exists");
-    }
-
-    private async Task ValidateCountryExistsAsync(int countryId)
-    {
-        var existingCountry = await _countryRepository.FindAsync(countryId);
-        if (existingCountry == null)
-            throw new InvalidOperationException("Country does not exist");
-    }
-
-    private void ValidateStatus(Status status)
-    {
-        if (status != Status.Active && status != Status.Inactive && status != Status.Deleted)
-            throw new InvalidOperationException("Invalid status value.");
-    }
+   
 
     /// <summary>
     /// method used to get list of regions
@@ -220,4 +190,38 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
         return regionsList;
         }
     }
+    #endregion
+    #region Private Methods
+    private async Task ValidateRegionUniqunessAsync(CreateUpdateRegionDto input, int? id = null)
+    {
+        string normalizedEnglish = input.EnglishName?.Trim().ToLowerInvariant();
+        string normalizedArabic = input.ArabicName?.Trim().ToLowerInvariant();
+
+        var region = await _regionRepository.FirstOrDefaultAsync(r =>
+            (r.EnglishName.ToLower() == normalizedEnglish ||
+             r.ArabicName.ToLower() == normalizedArabic) &&
+            (!id.HasValue || r.Id != id.Value));
+
+        if (region == null) return;
+
+        if (region.EnglishName?.Trim().ToLowerInvariant() == normalizedEnglish)
+            throw new InvalidOperationException("Region english name already exists");
+
+        if (region.ArabicName?.Trim().ToLowerInvariant() == normalizedArabic)
+            throw new InvalidOperationException("Region arabic name already exists");
+    }
+
+    private async Task ValidateCountryExistsAsync(int countryId)
+    {
+        var existingCountry = await _countryRepository.FindAsync(countryId);
+        if (existingCountry == null)
+            throw new InvalidOperationException("Country does not exist");
+    }
+
+    private void ValidateStatus(Status status)
+    {
+        if (status != Status.Active && status != Status.Inactive && status != Status.Deleted)
+            throw new InvalidOperationException("Invalid status value.");
+    }
+    #endregion
 }
