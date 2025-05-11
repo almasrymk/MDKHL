@@ -14,138 +14,142 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 
-namespace SmartParking.LookupsAppServices;
-
-public class CameraModelAppService : CrudAppService<CameraModel, CameraModelDto, int, PagedAndSortedResultRequestDto, CreateUpdateCameraModelDto>, ICameraModelAppService
+namespace SmartParking.LookupsAppServices
 {
-    private readonly IRepository<CameraModel, int> _repository;
-    private readonly IDataFilter _dataFilter;
-
-    public CameraModelAppService(IRepository<CameraModel, int> repository, IDataFilter dataFilter) : base(repository)
+    #region Public Methods
+    public class CameraModelAppService : CrudAppService<CameraModel, CameraModelDto, int, PagedAndSortedResultRequestDto, CreateUpdateCameraModelDto>, ICameraModelAppService
     {
-        _repository = repository;
-        _dataFilter = dataFilter;
-    }
-    ///<inheritdoc/>
-    public override async Task DeleteAsync(int id)
-    {
-        var cameraModel = await _repository.FindAsync(id);
+        private readonly IRepository<CameraModel, int> _repository;
+        private readonly IDataFilter _dataFilter;
 
-        if (cameraModel is null)
+        public CameraModelAppService(IRepository<CameraModel, int> repository, IDataFilter dataFilter) : base(repository)
         {
-            throw new EntityNotFoundException(typeof(CameraModel), id);
+            _repository = repository;
+            _dataFilter = dataFilter;
         }
 
-        await _repository.HardDeleteAsync(cameraModel);
-    }
-
-    ///<inheritdoc/>
-    public override async Task<CameraModelDto> CreateAsync(CreateUpdateCameraModelDto input)
-    {
-        await CheckCameraModelUniquness(input);
-        return await base.CreateAsync(input);
-
-    }
-
-    private async Task CheckCameraModelUniquness(CreateUpdateCameraModelDto input)
-    {
-        var cameraModel = await _repository.FirstOrDefaultAsync
-                   (camera =>
-                   camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                   camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-
-        if (cameraModel != null)
+        ///<inheritdoc/>
+        public override async Task DeleteAsync(int id)
         {
-            if (cameraModel.EnglishName == input.EnglishName.Trim(' '))
-            {
-                throw new InvalidOperationException("Camera model english name already exists");
+            var cameraModel = await _repository.FindAsync(id);
 
-            }
-            else if (cameraModel.ArabicName == input.ArabicName.Trim(' '))
+            if (cameraModel is null)
             {
-                throw new InvalidOperationException("Camera model  arabic name already exists");
-
+                throw new EntityNotFoundException(typeof(CameraModel), id);
             }
 
-
-        }
-    }
-
-    ///<inheritdoc/>
-    public override async Task<CameraModelDto> UpdateAsync(int id, CreateUpdateCameraModelDto input)
-    {
-        var existingCameraModel = await _repository.GetAsync(id);
-
-        if (existingCameraModel is null)
-        {
-            throw new InvalidOperationException("Camera model not found");
+            await _repository.HardDeleteAsync(cameraModel);
         }
 
-        await CheckCameraModelUniquness(input);
-        return await base.UpdateAsync(id, input);
-    }
-    public async Task<PagedResultDto<CameraModelDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
-    {
-        var queryable = await _repository.GetQueryableAsync();
-        // Apply filtering
-        var filterExpression = BuildExpression<CameraModel>.BuildFilterExpression(input.filters);
-        if (filterExpression is not null)
+        ///<inheritdoc/>
+        public override async Task<CameraModelDto> CreateAsync(CreateUpdateCameraModelDto input)
         {
-            queryable = queryable.Where(filterExpression);
+            await ValidateCameraModelUniqunessAsync(input);
+            return await base.CreateAsync(input);
         }
-        // Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-        // Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of organizations entities
-        var cameraModels = await AsyncExecuter.ToListAsync(queryable);
-
-        var cameraModelsDto = ObjectMapper.Map<List<CameraModel>, List<CameraModelDto>>(cameraModels);
-        // Return the paginated result
-        return new PagedResultDto<CameraModelDto>(
-            totalCount,
-            cameraModelsDto
-        );
-    }
-
-    public async Task<List<CameraModelDto>> GetAllCameraModelsAsync()
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
+        ///<inheritdoc/>
+        public override async Task<CameraModelDto> UpdateAsync(int id, CreateUpdateCameraModelDto input)
         {
-            var models = await _repository.GetListAsync();
-            return ObjectMapper.Map<List<CameraModel>, List<CameraModelDto>>(models);
+            var existingCameraModel = await _repository.GetAsync(id);
+
+            if (existingCameraModel is null)
+            {
+                throw new InvalidOperationException("Camera model not found");
+            }
+
+            await ValidateCameraModelUniqunessAsync(input);
+            return await base.UpdateAsync(id, input);
         }
-    }
 
-    public async Task<PagedResultDto<CameraModelDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
-    {
-        var queryable = await _repository.GetQueryableAsync();
-        // Apply search filtering
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        ///<inheritdoc/>
+        public async Task<PagedResultDto<CameraModelDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
         {
+            var queryable = await _repository.GetQueryableAsync();
+            // Apply filtering
+            var filterExpression = BuildExpression<CameraModel>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
+            {
+                queryable = queryable.Where(filterExpression);
+            }
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-            queryable = queryable.Where(or =>
-                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of organizations entities
+            var cameraModels = await AsyncExecuter.ToListAsync(queryable);
 
-
+            var cameraModelsDto = ObjectMapper.Map<List<CameraModel>, List<CameraModelDto>>(cameraModels);
+            // Return the paginated result
+            return new PagedResultDto<CameraModelDto>(
+                totalCount,
+                cameraModelsDto
             );
         }
 
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        ///<inheritdoc/>
+        public async Task<List<CameraModelDto>> GetAllCameraModelsAsync()
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var models = await _repository.GetListAsync();
+                return ObjectMapper.Map<List<CameraModel>, List<CameraModelDto>>(models);
+            }
+        }
 
-        // Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        var cameraModels = await AsyncExecuter.ToListAsync(queryable);
+        ///<inheritdoc/>
+        public async Task<PagedResultDto<CameraModelDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+        {
+            var queryable = await _repository.GetQueryableAsync();
+            // Apply search filtering
+            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
+                queryable = queryable.Where(or =>
+                    or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
+                );
+            }
 
-        // Map the hotel entities to cameraDto objects
-        var cameraModelsDto = ObjectMapper.Map<List<CameraModel>, List<CameraModelDto>>(cameraModels);
-        // Return the paginated result
-        return new PagedResultDto<CameraModelDto>(
-            totalCount,
-            cameraModelsDto
-        );
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            var cameraModels = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the hotel entities to cameraDto objects
+            var cameraModelsDto = ObjectMapper.Map<List<CameraModel>, List<CameraModelDto>>(cameraModels);
+            // Return the paginated result
+            return new PagedResultDto<CameraModelDto>(
+                totalCount,
+                cameraModelsDto
+            );
+        }
+    
+    #endregion
+
+    #region Private Methods
+
+    private async Task ValidateCameraModelUniqunessAsync(CreateUpdateCameraModelDto input)
+        {
+            var cameraModel = await _repository.FirstOrDefaultAsync
+                       (camera =>
+                       camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                       camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+            if (cameraModel != null)
+            {
+                if (cameraModel.EnglishName == input.EnglishName.Trim(' '))
+                {
+                    throw new InvalidOperationException("Camera model english name already exists");
+                }
+                else if (cameraModel.ArabicName == input.ArabicName.Trim(' '))
+                {
+                    throw new InvalidOperationException("Camera model arabic name already exists");
+                }
+            }
+        }
+
+        #endregion
     }
 }
