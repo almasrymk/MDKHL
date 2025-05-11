@@ -21,7 +21,7 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
 
     Task<Garage> GetGarageByIdAsync(int garageId);
 
-    Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(Garage garage , CustomerCategoryStatus customer);
+    Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId, CustomerCategoryStatus customer);
     Task<bool> ReserverSlotsOfGarageDependsOnCategoryAsync(int garageId , CustomerCategoryStatus customer);
 
     Task<string> CheckPlateNumberBelongsToCustomerToGetHisIdAsync(string plateNumber);
