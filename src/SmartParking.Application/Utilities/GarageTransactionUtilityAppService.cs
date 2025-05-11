@@ -14,6 +14,7 @@ using SmartParking.Entities.GarageTransactions;
 using SmartParking.GarageTransactions;
 using Volo.Abp.MultiTenancy;
 using System.Linq;
+using Volo.Abp.Data;
 
 
 namespace SmartParking.Utilities;
@@ -25,6 +26,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Vehicle, int> _vehicleRepository;
     private readonly IRepository<GarageTransaction, int> _garageTransactionRepoistory;
+    private readonly IDataFilter _dataFilter;
 
 
 
@@ -33,21 +35,22 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         ILogger<GarageTransactionUtilityAppService> logger,
         IRepository<Camera, int> cameraRepository,
         IRepository<Garage, int> garageRepository,
-        IRepository<Vehicle, int> vehicleRepository
-,
-        IRepository<GarageTransaction, int> garageTransactionRepoistory)
+        IRepository<Vehicle, int> vehicleRepository,
+        IRepository<GarageTransaction, int> garageTransactionRepoistory,
+        IDataFilter dataFilter)
     {
         _cameraRepository = cameraRepository;
         _garageRepository = garageRepository;
         _vehicleRepository = vehicleRepository;
         _logger = logger;
         _garageTransactionRepoistory = garageTransactionRepoistory;
+        _dataFilter = dataFilter;
     }
 
     public async Task<GarageTransaction> CheckIfCheckoutFromMobile(string plateNumber)
     {
          using (DataFilter.Disable<IMultiTenant>())
-        {
+         {
 
             var query = await _garageTransactionRepoistory.GetQueryableAsync();
 
@@ -58,7 +61,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
                     .FirstOrDefault();
 
             return latestTransaction;
-        }
+         }
     }
 
     public async Task<string> CheckPlateNumberBelongsToCustomerToGetHisIdAsync(string plateNumber)
@@ -132,8 +135,9 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         }
     }
 
-    public async Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(Garage garage, CustomerCategoryStatus category)
+    public async Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId, CustomerCategoryStatus category)
     {
+        var garage = await GetGarageByIdAsync(garageId);
         bool flag = false;
         if (category == CustomerCategoryStatus.Customer )
         {
@@ -158,12 +162,15 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
 
     public async Task<CameraDto> GetCameraByDeviceIdAsync(string deviceId)
     {
-        var camera = await _cameraRepository.FirstOrDefaultAsync(cam => cam.DeviceId == deviceId);
-        if (camera == null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Camera") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            var camera = await _cameraRepository.FirstOrDefaultAsync(cam => cam.DeviceId == deviceId);
+            if (camera == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("Camera") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            }
+            return ObjectMapper.Map<Camera, CameraDto>(camera);
         }
-        return ObjectMapper.Map<Camera, CameraDto>(camera);
     }
 
 
@@ -179,12 +186,15 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
 
     public async Task<Garage> GetGarageByIdAsync(int garageId)
     {
-        var garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId && x.Status == Status.Active);
-        if (garage == null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Garage") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            var garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId && x.Status == Status.Active);
+            if (garage == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("Garage") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            }
+            return garage;
         }
-        return garage;
 
     }
 
