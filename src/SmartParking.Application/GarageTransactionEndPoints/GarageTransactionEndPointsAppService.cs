@@ -229,8 +229,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
        return result;
         
     }
-
-  
     private async Task<CreateUpdateInvoiceDto> CalculateInvoiceForCustomerWithoutPackage(DateTime EntranceTime, int totalHours, Customer exsitCustomer, CreateUpdateGarageTransactionDto GarageTransaction,CustomerCategoryStatus customerCategoryStatus)
     {
         decimal price = await CalculateInvoiceCases(EntranceTime, totalHours, GarageTransaction);
@@ -621,49 +619,54 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         var customerID = await GetCurrentCustomerId();
         var Customer = await GetCustomer(customerID.ToString());
-        var result= await InitiateGarageTransaction(garageTransactionId);
-        var invoice = await CheckoutMobileProcessWithoutSave( result.EntryGarageTransaction.AccurateTime.Value, result.ExitGarageTransaction, Customer);
+        var entryGarageTransaction = await GetTransactionById(garageTransactionId);
+        var camera = await GetAnExitCameraByGarageId(entryGarageTransaction.GarageId);
+        var createdExitGarageTransaction= await InitiateGarageTransaction(entryGarageTransaction,camera.Id);
+        var invoice = await CheckoutMobileProcessWithoutSave(entryGarageTransaction.AccurateTime.Value, createdExitGarageTransaction, Customer);
         return invoice;
 
     }
     public async Task<Result<InvoiceDto>> CustomerCheckoutFromHisMobile(int garageTransactionId)
     {
-        var result = await InitiateGarageTransaction(garageTransactionId);
-        var lstCheckout = result.EntryGarageTransaction.CheckoutMobile.HasValue ? result.EntryGarageTransaction.CheckoutMobile.Value : DateTime.MinValue;
-        var _garageTransactionDto = ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(result.EntryGarageTransaction);
+        var entryGarageTransaction = await GetTransactionById(garageTransactionId);
+        var camera = await GetAnExitCameraByGarageId(entryGarageTransaction.GarageId);
+        var createdExitGarageTransaction = await InitiateGarageTransaction(entryGarageTransaction,camera.Id);
+        var lstCheckout = entryGarageTransaction.CheckoutMobile.HasValue ? entryGarageTransaction.CheckoutMobile.Value : DateTime.MinValue;
+        var _garageTransactionDto = ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(entryGarageTransaction);
         if (!(_garageTransactionDto.IsIn && _garageTransactionDto.IsPending == false && _garageTransactionDto.CanCheckout == true))
         {
             throw new Exception("Transaction Already Checked-Out");
         }
         var invoice = await CustomerPreCheckoutFromHisMobile(garageTransactionId);
-        await _garageTransactionUtilityAppService.UpdateEntryTransactionCheckouFromMobile(result.EntryGarageTransaction);
-        return await SaveTransactionWithInvoice(invoice, result.ExitGarageTransaction);
+        await _garageTransactionUtilityAppService.UpdateEntryTransactionCheckouFromMobile(entryGarageTransaction);
+        return await SaveTransactionWithInvoice(invoice, createdExitGarageTransaction);
     }
     public async Task<Result<InvoiceDto>> CustomerCheckoutFromKeeperMobile(int garageTransactionId)
     {
-        var result = await InitiateGarageTransaction(garageTransactionId);
-        var lstCheckout = result.EntryGarageTransaction.CheckoutMobile.HasValue ? result.EntryGarageTransaction.CheckoutMobile.Value : DateTime.MinValue;
-        var _garageTransactionDto = ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(result.EntryGarageTransaction);
+        var entryGarageTransaction = await GetTransactionById(garageTransactionId);
+        var camera = await GetAnExitCameraByGarageId(entryGarageTransaction.GarageId);
+        var exitTransaction = await InitiateGarageTransaction(entryGarageTransaction,camera.Id);
+        var lstCheckout = entryGarageTransaction.CheckoutMobile.HasValue ? entryGarageTransaction.CheckoutMobile.Value : DateTime.MinValue;
+        var _garageTransactionDto = ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(entryGarageTransaction);
         if (!(_garageTransactionDto.IsIn && _garageTransactionDto.IsPending == false && _garageTransactionDto.CanCheckout == true))
         {
             throw new Exception("Transaction Already Checked-Out");
         }
         var invoice = await CustomerPreCheckoutFromKeeperMobile(garageTransactionId);
-        await _garageTransactionUtilityAppService.UpdateEntryTransactionCheckouFromMobile(result.EntryGarageTransaction);
-        return await SaveTransactionWithInvoice(invoice, result.ExitGarageTransaction);
+        await _garageTransactionUtilityAppService.UpdateEntryTransactionCheckouFromMobile(entryGarageTransaction);
+        return await SaveTransactionWithInvoice(invoice, exitTransaction);
 
     }
-    private async Task<(CreateUpdateGarageTransactionDto ExitGarageTransaction, GarageTransaction EntryGarageTransaction)> InitiateGarageTransaction(int garageTransactionId)
+    private async Task<CreateUpdateGarageTransactionDto> InitiateGarageTransaction(GarageTransaction entryGarageTransaction,int cameraId)
     {
-        var entryGarageTransaction = await GetTransactionById(garageTransactionId);
-        var camera = await GetAnExitCameraByGarageId(entryGarageTransaction.GarageId);
+        
         var  exitGarageTransaction = new CreateUpdateGarageTransactionDto
         {
             AccurateTime = DateTime.Now,
             PlateNumber = entryGarageTransaction.PlateNumber,
             GarageId = entryGarageTransaction.GarageId,
             OrganizationID = entryGarageTransaction.OrganizationID,
-            CameraId = camera.Id,
+            CameraId = cameraId,
             SnapTime = DateTime.Now,
             TenantId = entryGarageTransaction.TenantId,
             IsIn = true,
@@ -671,24 +674,26 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             VehiclePicture = entryGarageTransaction.VehiclePicture,
             CameraType = CameraType.Exit
        };
-        return (ExitGarageTransaction :exitGarageTransaction, EntryGarageTransaction :entryGarageTransaction);
+        return (exitGarageTransaction);
     }
     public async Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutFromKeeperMobile(int garageTransactionId)
     {
-        var result = await InitiateGarageTransaction(garageTransactionId);
-        var org = await GetOrganization(result.ExitGarageTransaction.OrganizationID);
-        int totalHours = _calculationsEndPointAppService.CalculateTime(result.EntryGarageTransaction.AccurateTime.Value, (DateTime)result.ExitGarageTransaction.AccurateTime, org.FreeMinutes);
-        var customerId = await _garageTransactionUtilityAppService.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(result.ExitGarageTransaction.PlateNumber);
+        var entryGarageTransaction = await GetTransactionById(garageTransactionId);
+        var camera = await GetAnExitCameraByGarageId(entryGarageTransaction.GarageId);
+        var createdExitGarageTransaction = await InitiateGarageTransaction(entryGarageTransaction,camera.Id);
+        var org = await GetOrganization(createdExitGarageTransaction.OrganizationID);
+        int totalHours = _calculationsEndPointAppService.CalculateTime(entryGarageTransaction.AccurateTime.Value, (DateTime)createdExitGarageTransaction.AccurateTime, org.FreeMinutes);
+        var customerId = await _garageTransactionUtilityAppService.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(createdExitGarageTransaction.PlateNumber);
         if (customerId == null) {
 
-            decimal price = await CalculateInvoiceCases(result.EntryGarageTransaction.AccurateTime.Value, totalHours, result.ExitGarageTransaction);
-            return await GenrateInvoiceNumberAndInitiateInvoice(result.EntryGarageTransaction.AccurateTime.Value, null, result.ExitGarageTransaction, totalHours, price, false);
+            decimal price = await CalculateInvoiceCases(entryGarageTransaction.AccurateTime.Value, totalHours, createdExitGarageTransaction);
+            return await GenrateInvoiceNumberAndInitiateInvoice(entryGarageTransaction.AccurateTime.Value, null, createdExitGarageTransaction, totalHours, price, false);
 
         }
-        CustomerPackageDto? packageDto = await GetCustomerWithItsFirstActivePackage(result.ExitGarageTransaction, result.EntryGarageTransaction.AccurateTime.Value, customerId);
+        CustomerPackageDto? packageDto = await GetCustomerWithItsFirstActivePackage(createdExitGarageTransaction, entryGarageTransaction.AccurateTime.Value, customerId);
         Customer exsitCustomer = await GetCustomer(customerId);
 
-        return await CalculateStayingHoursForCustomer(result.EntryGarageTransaction.AccurateTime.Value, result.ExitGarageTransaction,exsitCustomer,org,totalHours,packageDto);
+        return await CalculateStayingHoursForCustomer(entryGarageTransaction.AccurateTime.Value, createdExitGarageTransaction, exsitCustomer,org,totalHours,packageDto);
     }
     private DateTime CalculateRemainingTimeWithGrace(DateTime? checkoutMobile, int gracePeriod)
     {
