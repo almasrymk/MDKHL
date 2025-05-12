@@ -160,7 +160,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         return flag;
     }
 
-    public async Task<CameraDto> GetCameraByDeviceIdAsync(string deviceId)
+    public async Task<Camera> GetCameraByDeviceIdAsync(string deviceId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -169,7 +169,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("Camera") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
             }
-            return ObjectMapper.Map<Camera, CameraDto>(camera);
+            return camera;
         }
     }
 
