@@ -3,6 +3,7 @@ using NuGet.Protocol.Core.Types;
 using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Payments;
 using SmartParking.Entities.Shifts;
 using SmartParking.Enums;
 using SmartParking.KeeperShifts;
@@ -40,11 +41,11 @@ public class DailyShiftAppService :
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly IRepository<Shift, int> _shiftRepository;
     private readonly IRepository<KeeperShift, int> _keeperShiftRepository;
-
+    private readonly IRepository<Payment, Guid> _paymentRepository;
     private IDataFilter _dataFilter;
 
     public DailyShiftAppService(IRepository<DailyShift, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationRepository,
-        IRepository<Garage, int> garageRepository, IMyUserRepository userRepository, IRepository<Shift, int> shiftRepository, IRepository<KeeperShift, int> keeperShiftRepository) : base(repository)
+        IRepository<Garage, int> garageRepository, IMyUserRepository userRepository, IRepository<Shift, int> shiftRepository, IRepository<KeeperShift, int> keeperShiftRepository, IRepository<Payment, Guid> paymentRepository) : base(repository)
     {
         _repository = repository;
         _dataFilter = dataFilter;
@@ -53,6 +54,7 @@ public class DailyShiftAppService :
         _userRepository = userRepository;
         _shiftRepository = shiftRepository;
         _keeperShiftRepository = keeperShiftRepository;
+        _paymentRepository = paymentRepository;
     }
     #region public methods 
     public override async Task<DailyShiftDto> CreateAsync(CreateUpdateDailyShiftDto input)
@@ -102,6 +104,8 @@ public class DailyShiftAppService :
             var queryUser = await _userRepository.GetQueryableAsync();
             var queryShift = await _shiftRepository.GetQueryableAsync();
             var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
+            var queryPayment = await _paymentRepository.GetQueryableAsync();
+
             var IsFounddailyShift = await _repository.FirstOrDefaultAsync(_ => _.Id == id);
             if (IsFounddailyShift is null)
                 throw new Exception("NotFoundValidation");
@@ -136,7 +140,21 @@ public class DailyShiftAppService :
                              StartDate = keeperShift.StartDate,
                              EndDate = keeperShift.EndDate,
                              StartTime = keeperShift.StartTime,
-                             EndTime = keeperShift.EndTime
+                             EndTime = keeperShift.EndTime ,
+                             AmountOfCash = dailyShift.KeeperShiftRequestType == KeeperShiftRequestType.EndShift ? queryPayment.Where
+                                                                                                                    (x => x.PaymentMethod == PaymentMethod.Cash
+                                                                                                                    && x.CreatorId == dailyShift.KeeperId
+                                                                                                                    && x.CreationTime >= queryDailyShift.Where(_ => _.ShiftId == dailyShift.ShiftId && _.KeeperId == dailyShift.KeeperId && _.RequestTime.Date == dailyShift.RequestTime.Date && _.GarageId == dailyShift.GarageId && _.OrganizationId == dailyShift.OrganizationId).Select(_ => _.RequestTime).FirstOrDefault()
+                                                                                                                    && x.CreationTime <= dailyShift.RequestTime
+                                                                                                                    )
+                                                                                                                    .Sum(_ => _.Amount) : 0,
+                             AmountOfVisa = dailyShift.KeeperShiftRequestType == KeeperShiftRequestType.EndShift ? queryPayment.Where
+                                                                                                                    (x => x.PaymentMethod != PaymentMethod.Cash
+                                                                                                                    && x.CreatorId == dailyShift.KeeperId
+                                                                                                                    && x.CreationTime >= queryDailyShift.Where(_ => _.ShiftId == dailyShift.ShiftId && _.KeeperId == dailyShift.KeeperId && _.RequestTime.Date == dailyShift.RequestTime.Date && _.GarageId == dailyShift.GarageId && _.OrganizationId == dailyShift.OrganizationId).Select(_ => _.RequestTime).FirstOrDefault()
+                                                                                                                    && x.CreationTime <= dailyShift.RequestTime)
+                                                                                                                    .Sum(_ => _.Amount) : 0
+
                          };
             return await result.FirstOrDefaultAsync();
         }
@@ -152,6 +170,7 @@ public class DailyShiftAppService :
             var queryUser = await _userRepository.GetQueryableAsync();
             var queryShift = await _shiftRepository.GetQueryableAsync();
             var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
+            var queryPayment = await _paymentRepository.GetQueryableAsync();
             if (userId.HasValue)
                 queryDailyShift = queryDailyShift.Where(_ => _.KeeperId == userId);
             var result = from dailyShift in queryDailyShift
@@ -186,7 +205,20 @@ public class DailyShiftAppService :
                              StartDate = keeperShift.StartDate,
                              EndDate = keeperShift.EndDate,
                              StartTime = keeperShift.StartTime,
-                             EndTime = keeperShift.EndTime
+                             EndTime = keeperShift.EndTime,
+                             AmountOfCash = dailyShift.KeeperShiftRequestType == KeeperShiftRequestType.EndShift ? queryPayment.Where
+                                                                                                                    (x=> x.PaymentMethod == PaymentMethod.Cash
+                                                                                                                    && x.CreatorId == dailyShift.KeeperId
+                                                                                                                    && x.CreationTime >= queryDailyShift.Where(_ => _.ShiftId == dailyShift.ShiftId && _.KeeperId == dailyShift.KeeperId && _.RequestTime.Date == dailyShift.RequestTime.Date && _.GarageId == dailyShift.GarageId && _.OrganizationId == dailyShift.OrganizationId).Select(_ => _.RequestTime).FirstOrDefault()
+                                                                                                                    && x.CreationTime <= dailyShift.RequestTime
+                                                                                                                    )
+                                                                                                                    .Sum(_ => _.Amount) : 0,
+                             AmountOfVisa = dailyShift.KeeperShiftRequestType == KeeperShiftRequestType.EndShift ? queryPayment.Where 
+                                                                                                                    (x => x.PaymentMethod != PaymentMethod.Cash
+                                                                                                                    && x.CreatorId == dailyShift.KeeperId
+                                                                                                                    && x.CreationTime >= queryDailyShift.Where(_ => _.ShiftId == dailyShift.ShiftId && _.KeeperId == dailyShift.KeeperId && _.RequestTime.Date == dailyShift.RequestTime.Date && _.GarageId == dailyShift.GarageId && _.OrganizationId == dailyShift.OrganizationId).Select(_ => _.RequestTime).FirstOrDefault()
+                                                                                                                    && x.CreationTime <= dailyShift.RequestTime)
+                                                                                                                    .Sum(_ => _.Amount) : 0,
 
                          };
             result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
@@ -206,6 +238,7 @@ public class DailyShiftAppService :
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
+            var queryPayment = await _paymentRepository.GetQueryableAsync();
             var queryDailyShift = await _repository.GetQueryableAsync();
             var queryGarge = await _garageRepository.GetQueryableAsync();
             var queryOrganization = await _organizationRepository.GetQueryableAsync();
@@ -244,7 +277,21 @@ public class DailyShiftAppService :
                              StartDate = keeperShift.StartDate,
                              EndDate = keeperShift.EndDate,
                              StartTime = keeperShift.StartTime,
-                             EndTime = keeperShift.EndTime
+                             EndTime = keeperShift.EndTime ,
+                             AmountOfCash = dailyShift.KeeperShiftRequestType == KeeperShiftRequestType.EndShift ? queryPayment.Where
+                                                                                                                    (x => x.PaymentMethod == PaymentMethod.Cash
+                                                                                                                    && x.CreatorId == dailyShift.KeeperId
+                                                                                                                    && x.CreationTime >= queryDailyShift.Where(_ => _.ShiftId == dailyShift.ShiftId && _.KeeperId == dailyShift.KeeperId && _.RequestTime.Date == dailyShift.RequestTime.Date && _.GarageId == dailyShift.GarageId && _.OrganizationId == dailyShift.OrganizationId).Select(_ => _.RequestTime).FirstOrDefault()
+                                                                                                                    && x.CreationTime <= dailyShift.RequestTime
+                                                                                                                    )
+                                                                                                                    .Sum(_ => _.Amount) : 0,
+                             AmountOfVisa = dailyShift.KeeperShiftRequestType == KeeperShiftRequestType.EndShift ? queryPayment.Where
+                                                                                                                    (x => x.PaymentMethod != PaymentMethod.Cash
+                                                                                                                    && x.CreatorId == dailyShift.KeeperId
+                                                                                                                    && x.CreationTime >= queryDailyShift.Where(_ => _.ShiftId == dailyShift.ShiftId && _.KeeperId == dailyShift.KeeperId && _.RequestTime.Date == dailyShift.RequestTime.Date && _.GarageId == dailyShift.GarageId && _.OrganizationId == dailyShift.OrganizationId).Select(_ => _.RequestTime).FirstOrDefault()
+                                                                                                                    && x.CreationTime <= dailyShift.RequestTime)
+                                                                                                                    .Sum(_ => _.Amount) : 0,
+
                          };
 
             result = ApplySorting(input, result);
