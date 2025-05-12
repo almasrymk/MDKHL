@@ -41,7 +41,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         _garageRepository = garageRepository;
         _shiftUserRepository = shiftUserRepository;
     }
-
+    #region public methods
 
     public override async Task<ShiftDto> CreateAsync(CreateUpdateShiftDto input)
     {
@@ -53,19 +53,6 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         }
         return await base.CreateAsync(input);
     }
-
-    private async Task CheckExistanceOfDependencies(CreateUpdateShiftDto input)
-    {
-        if (!await CheckGarageExists(input.GarageId))
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Garage") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-        }
-        if (!await CheckOrganizationExists(input.OrganizationId))
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Organization") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-        }
-    }
-
     public async Task<bool> CheckGarageExists(int GarageId)
     {
         var garage = await _garageRepository.FindAsync(GarageId);
@@ -279,16 +266,6 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             return ProcessingOnShiftsQuery(input, shifts);
         }
     }
-
-    private PagedResultDto<ShiftDto> ProcessingOnShiftsQuery(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> shifts)
-    {
-        var total = shifts.Count();
-        shifts = ApplySort(input, shifts);
-        shifts = shifts.Skip(input.SkipCount).Take(input.MaxResultCount);
-        var result = shifts.ToList();
-        return new PagedResultDto<ShiftDto>(total, result);
-    }
-
     public async Task<PagedResultDto<ShiftDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
         var _shiftQueryable = await _repository.GetQueryableAsync();
@@ -319,65 +296,12 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         var query = ApplySearchOrganization(input, shifts);
         return ProcessingOnShiftsQuery(input, query);
     }
-
-    private IQueryable<ShiftDto> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> queryable)
-    {
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-                queryable = queryable.OrderBy(input.Sorting);
-            }
-
-        }
-
-        return queryable;
-    }
-
-    private IQueryable<ShiftDto> ApplySearchOrganization(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> queryable)
-    {
-        if (!input.SearchingTerm.IsNullOrEmpty())
-        {
-            var searchingItem = input.SearchingTerm.ToLower();
-            queryable = queryable.Where(
-                shift => shift.ArabicName.ToLower().Contains(searchingItem) ||
-                         shift.EnglishName.ToLower().Contains(searchingItem) ||
-                         shift.Description.ToLower().Contains(searchingItem) ||
-                         shift.GarageArabicName.ToLower().Contains(searchingItem) ||
-                         shift.GarageEnglishName.ToLower().Contains(searchingItem)
-            );
-        }
-        return queryable;
-    }
-
-    private IQueryable<ShiftDto> ApplySearchMDKHL(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> queryable)
-    {
-        if (!input.SearchingTerm.IsNullOrEmpty())
-        {
-            queryable = queryable.Where(
-                shift => shift.OrganizationArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                         shift.OrganizationEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                         shift.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                         shift.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                         shift.Description.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                         shift.GarageArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                         shift.GarageEnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
-            );
-
-        }
-        return queryable;
-    }
     public async override Task<ShiftDto> UpdateAsync(int id, CreateUpdateShiftDto input)
     {
         await CheckExistanceOfDependencies(input);
         var _overlapExpression = GetTimeOverlapExpression(input.StartTime, input.EndTime, input.StartDate, input.EndDate, input.GarageId, input.IsFullDay, input.Status);
         var _sameShiftExpression = NotSameEntityExpression(id);
-        if ((await HasOverlappingShift(_overlapExpression.And(_sameShiftExpression)))&&(input.Status==Status.Active))
+        if ((await HasOverlappingShift(_overlapExpression.And(_sameShiftExpression))) && (input.Status == Status.Active))
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("ShiftOverlapValidation"));
         }
@@ -396,7 +320,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
                         on Shifts.GarageId equals Garages.Id
                         join organization in _organizationQueryable
                         on Shifts.OrganizationId equals organization.Id
-                        
+
                         select new ShiftDto
                         {
                             Id = Shifts.Id,
@@ -456,7 +380,70 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             await _repository.HardDeleteAsync(shift);
         }
     }
+    #endregion
+    #region Private Methods
 
+    private IQueryable<ShiftDto> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> queryable)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
+        }
+
+        return queryable;
+    }
+    private PagedResultDto<ShiftDto> ProcessingOnShiftsQuery(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> shifts)
+    {
+        var total = shifts.Count();
+        shifts = ApplySort(input, shifts);
+        shifts = shifts.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var result = shifts.ToList();
+        return new PagedResultDto<ShiftDto>(total, result);
+    }
+
+    private IQueryable<ShiftDto> ApplySearchOrganization(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> queryable)
+    {
+        if (!input.SearchingTerm.IsNullOrEmpty())
+        {
+            var searchingItem = input.SearchingTerm.ToLower();
+            queryable = queryable.Where(
+                shift => shift.ArabicName.ToLower().Contains(searchingItem) ||
+                         shift.EnglishName.ToLower().Contains(searchingItem) ||
+                         shift.Description.ToLower().Contains(searchingItem) ||
+                         shift.GarageArabicName.ToLower().Contains(searchingItem) ||
+                         shift.GarageEnglishName.ToLower().Contains(searchingItem)
+            );
+        }
+        return queryable;
+    }
+
+    private IQueryable<ShiftDto> ApplySearchMDKHL(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> queryable)
+    {
+        if (!input.SearchingTerm.IsNullOrEmpty())
+        {
+            queryable = queryable.Where(
+                shift => shift.OrganizationArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                         shift.OrganizationEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                         shift.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                         shift.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                         shift.Description.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                         shift.GarageArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                         shift.GarageEnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
+            );
+
+        }
+        return queryable;
+    }
+   
     private async Task CheckCountOfUsersAssignedToShift(int id)
     {
         var countOfUserAssignedToShift = await _shiftUserRepository.CountAsync(_ => _.ShiftId == id);
@@ -476,4 +463,17 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
 
         return shift;
     }
+    private async Task CheckExistanceOfDependencies(CreateUpdateShiftDto input)
+    {
+        if (!await CheckGarageExists(input.GarageId))
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("Garage") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+        }
+        if (!await CheckOrganizationExists(input.OrganizationId))
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("Organization") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+        }
+    }
+
+    #endregion
 }

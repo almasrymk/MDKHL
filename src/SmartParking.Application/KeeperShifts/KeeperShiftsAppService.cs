@@ -47,7 +47,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         _dataFilter = dataFilter;
         _mapper = mapper;
     }
-
+    #region public methods
     public async Task<bool> CreateAsync(CreateUpdateKeeperShiftDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -71,130 +71,66 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         }
     }
 
-    private async Task OverlappingValidation(CreateUpdateKeeperShiftDto input, Shift? shift)
-    {
-        bool isOverlapping = await _keeperShiftRepository.AnyAsync(ks =>
-             ks.KeeperId == input.KeeperId &&
-             ks.ShiftId != input.ShiftId &&
-             (
-                 (shift.StartDate <= ks.EndDate && shift.EndDate >= ks.StartDate)
-             ) 
-             &&
-             (
-                 (shift.StartTime < ks.EndTime && shift.EndTime > ks.StartTime)
-             )
-        );
-
-        if (isOverlapping)
-        {
-            throw new BusinessException(LocalizationHelper.GetLocalizedString("Shift overlaps with an existing shift."));
-        }
-    }
-
-
-    private static void CheckShiftStatus(Shift? shift)
-    {
-        if (shift.Status != Status.Active)
-        {
-            throw new BusinessException(LocalizationHelper.GetLocalizedString("ShiftNotActive"));
-        }
-    }
-
-    private static void ValidateDate(CreateUpdateKeeperShiftDto input, Shift shift)
-    {
-        if (input.StartDate == default || input.EndDate == default)
-        {
-            throw new BusinessException(LocalizationHelper.GetLocalizedString("EmptyValidation"));
-        }
-
-        if (input.EndDate < input.StartDate)
-        {
-            throw new BusinessException(LocalizationHelper.GetLocalizedString("EndDateCannotBeBeforeStartDate"));
-        }
-
-        if (input.StartDate < shift.StartDate || input.EndDate > shift.EndDate)
-        {
-            throw new BusinessException(LocalizationHelper.GetLocalizedString("ShiftDateOutOfRange"));
-        }
-        
-    }
-
-
-    private async Task CheckDupplicateShift(CreateUpdateKeeperShiftDto input)
-    {
-        bool alreadyAssigned = await _keeperShiftRepository.AnyAsync(ks =>
-                     ks.KeeperId == input.KeeperId &&
-                     ks.ShiftId == input.ShiftId&&
-                     ks.EndDate >= input.StartDate);
-        if (alreadyAssigned)
-        {
-            throw new BusinessException(LocalizationHelper.GetLocalizedString("KeeperAlreadyAssignedToShift"));
-        }
-    }
-
-
-  
-
     public async Task<PagedResultDto<KeeperShiftDto>> GetMyShiftsForCurrentUser(Guid? userId, PagedAndSortedAndSearchResultRequestDto input)
     {
-            var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
-            var queryGarage = await _garageRepository.GetQueryableAsync();
-            var queryUser = await _userRepository.GetQueryableAsync();
-            var queryShift = await _shiftRepository.GetQueryableAsync();
-            var currentDate = DateOnly.FromDateTime(DateTime.Now);
-            var currentTime = TimeOnly.FromDateTime(DateTime.Now);
-            var currentDateTime = DateTime.Now; 
+        var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
+        var queryGarage = await _garageRepository.GetQueryableAsync();
+        var queryUser = await _userRepository.GetQueryableAsync();
+        var queryShift = await _shiftRepository.GetQueryableAsync();
+        var currentDate = DateOnly.FromDateTime(DateTime.Now);
+        var currentTime = TimeOnly.FromDateTime(DateTime.Now);
+        var currentDateTime = DateTime.Now;
 
-            var result = from keepershift in queryKeeperShift
-                         where userId.HasValue ? keepershift.KeeperId == userId : true
-                         orderby
-                            keepershift.StartDate <= currentDate
-                            && keepershift.EndDate >= currentDate descending , 
-                             keepershift.StartTime <= currentTime
-                            && keepershift.EndTime >= currentTime descending ,
-                            keepershift.StartTime > currentTime descending
-                         join garage in queryGarage
-                         on keepershift.GarageId equals garage.Id
-                         join user in queryUser
-                         on keepershift.KeeperId equals user.Id
-                         join shift in queryShift
-                         on keepershift.ShiftId equals shift.Id
-                         select new KeeperShiftDto
-                         {
-                             Id = keepershift.Id,
-                             KeeperId = keepershift.KeeperId,
-                             KeeperName = user.Name,
-                             GarageNameAr = garage.NameAr,
-                             GarageNameEn = garage.NameEn,
-                             OrganizationId = keepershift.OrganizationId,
-                             OrganizationNameAr = string.Empty,
-                             OrganizationNameEn = string.Empty,
-                             GarageId = keepershift.GarageId,
-                             ShiftId = keepershift.ShiftId,
-                             StartDate = keepershift.StartDate,
-                             EndDate = keepershift.EndDate,
-                             StartTime = keepershift.StartTime,
-                             EndTime = keepershift.EndTime , 
-                             ArabicName = shift.ArabicName,
-                             EnglishName = shift.EnglishName,
-                             TenantId = keepershift.TenantId, 
-                             IsFullDay = keepershift.IsFullDay
+        var result = from keepershift in queryKeeperShift
+                     where userId.HasValue ? keepershift.KeeperId == userId : true
+                     orderby
+                        keepershift.StartDate <= currentDate
+                        && keepershift.EndDate >= currentDate descending,
+                         keepershift.StartTime <= currentTime
+                        && keepershift.EndTime >= currentTime descending,
+                        keepershift.StartTime > currentTime descending
+                     join garage in queryGarage
+                     on keepershift.GarageId equals garage.Id
+                     join user in queryUser
+                     on keepershift.KeeperId equals user.Id
+                     join shift in queryShift
+                     on keepershift.ShiftId equals shift.Id
+                     select new KeeperShiftDto
+                     {
+                         Id = keepershift.Id,
+                         KeeperId = keepershift.KeeperId,
+                         KeeperName = user.Name,
+                         GarageNameAr = garage.NameAr,
+                         GarageNameEn = garage.NameEn,
+                         OrganizationId = keepershift.OrganizationId,
+                         OrganizationNameAr = string.Empty,
+                         OrganizationNameEn = string.Empty,
+                         GarageId = keepershift.GarageId,
+                         ShiftId = keepershift.ShiftId,
+                         StartDate = keepershift.StartDate,
+                         EndDate = keepershift.EndDate,
+                         StartTime = keepershift.StartTime,
+                         EndTime = keepershift.EndTime,
+                         ArabicName = shift.ArabicName,
+                         EnglishName = shift.EnglishName,
+                         TenantId = keepershift.TenantId,
+                         IsFullDay = keepershift.IsFullDay
 
-                         };
+                     };
 
-            result = ApplySearch(input, result);
+        result = ApplySearch(input, result);
 
-            var total = result.Count();
-            result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
-            return new PagedResultDto<KeeperShiftDto>
-            {
-                TotalCount = total,
-                Items = result.ToList()
-            };
-        
+        var total = result.Count();
+        result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
+        return new PagedResultDto<KeeperShiftDto>
+        {
+            TotalCount = total,
+            Items = result.ToList()
+        };
+
     }
 
-    public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForMdkhal(Guid? tenantId, Guid? userId , PagedAndSortedAndSearchResultRequestDto input)
+    public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForMdkhal(Guid? tenantId, Guid? userId, PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -222,8 +158,8 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              KeeperId = keepershift.KeeperId,
                              KeeperName = user.Name,
                              OrganizationId = keepershift.OrganizationId,
-                             OrganizationNameAr = org.ArabicName, 
-                             OrganizationNameEn =  org.EnglishName, 
+                             OrganizationNameAr = org.ArabicName,
+                             OrganizationNameEn = org.EnglishName,
                              GarageNameAr = garage.NameAr,
                              GarageNameEn = garage.NameEn,
                              GarageId = keepershift.GarageId,
@@ -235,8 +171,8 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              ArabicName = shift.ArabicName,
                              EnglishName = shift.EnglishName
                          };
-            
-            result =  ApplySearch(input, result);
+
+            result = ApplySearch(input, result);
             result = ApplySorting(input, result);
             var total = result.Count();
             result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
@@ -247,29 +183,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             };
         }
     }
-    private IQueryable<KeeperShiftDto> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<KeeperShiftDto>? queryable)
-    {
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
-
-            queryable = queryable.Where(or =>
-            or.KeeperName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-            or.GarageNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-            or.GarageNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-            or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-            or.OrganizationNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-            or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-            or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
-
-        );
-
-        }
-            return queryable;
-        
-
-    }
-
-    public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForOrganization(Guid? tenantId , Guid? userId , PagedAndSortedAndSearchResultRequestDto input )
+    public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForOrganization(Guid? tenantId, Guid? userId, PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -278,7 +192,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             var queryGarage = await _garageRepository.GetQueryableAsync();
             var queryUser = await _userRepository.GetQueryableAsync();
             var queryShift = await _shiftRepository.GetQueryableAsync();
-            if(userId.HasValue)
+            if (userId.HasValue)
                 queryKeeperShift = queryKeeperShift.Where(x => x.KeeperId == userId);
 
             var result = from keepershift in queryKeeperShift
@@ -296,8 +210,8 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              KeeperId = keepershift.KeeperId,
                              KeeperName = user.Name,
                              OrganizationId = keepershift.OrganizationId,
-                             OrganizationNameAr = string.Empty, 
-                             OrganizationNameEn = string.Empty, 
+                             OrganizationNameAr = string.Empty,
+                             OrganizationNameEn = string.Empty,
                              GarageNameAr = garage.NameAr,
                              GarageNameEn = garage.NameEn,
                              GarageId = keepershift.GarageId,
@@ -309,7 +223,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              ArabicName = shift.ArabicName,
                              EnglishName = shift.EnglishName
                          };
-            
+
             result = ApplySearch(input, result);
             result = ApplySorting(input, result);
             var total = result.Count();
@@ -320,30 +234,6 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                 Items = result.ToList()
             };
         }
-    }
-
-    private static IQueryable<KeeperShiftDto> ApplySorting(PagedAndSortedResultRequestDto input,  IQueryable<KeeperShiftDto> result)
-    {
-        var sorting = input.Sorting;
-        if (!string.IsNullOrEmpty(sorting) && sorting.Contains("DESC"))
-        {
-            var sortingSplit = sorting.Split(' ').ToList();
-            sorting = sortingSplit[0] + " descending";
-        }
-        result = result.OrderBy(sorting);
-        return result;
-    }
-    private async Task<KeeperShift> GetShiftName(KeeperShift result)
-    {
-       
-        var queryShift = await _shiftRepository.GetQueryableAsync();
-        var shift = await queryShift.FirstOrDefaultAsync(x => x.Id == result.ShiftId);
-        if (shift != null)
-        {
-            result.ArabicName = shift.ArabicName;
-            result.EnglishName = shift.EnglishName;
-        }
-        return result;
     }
     public async Task<KeeperShiftDto?> GetAsync(int id)
     {
@@ -382,7 +272,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
                              EndTime = keepershift.EndTime,
                              ArabicName = shift.ArabicName,
                              EnglishName = shift.EnglishName
-                             
+
                          };
             return await result.FirstOrDefaultAsync();
         }
@@ -403,15 +293,15 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
 
     public async Task<PagedResultDto<UserWithRole>> GetListUserCanAssignShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
-        var users = await _userRepository.FindUserShiftsOrganizationAsync(input.SkipCount,input.MaxResultCount,input.Sorting,input.SearchingTerm);
+        var users = await _userRepository.FindUserShiftsOrganizationAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.SearchingTerm);
         return new PagedResultDto<UserWithRole>
         {
             TotalCount = users.PageSize,
             Items = users.Queryable.ToList()
         };
-    } 
-    
-    public async Task<PagedResultDto<UserWithRole>> GetListUserCanAssignShiftsMdkhlAsync(Guid? tenantId,PagedAndSortedAndSearchResultRequestDto input)
+    }
+
+    public async Task<PagedResultDto<UserWithRole>> GetListUserCanAssignShiftsMdkhlAsync(Guid? tenantId, PagedAndSortedAndSearchResultRequestDto input)
     {
 
         using (_dataFilter.Disable<IMultiTenant>())
@@ -424,19 +314,87 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             };
         }
     }
-
-    private static bool BuildExperssionSearchInUser(PagedAndSortedAndSearchResultRequestDto input, IdentityUser user, IdentityRole role)
+    #endregion
+    #region private methods
+    private async Task OverlappingValidation(CreateUpdateKeeperShiftDto input, Shift? shift)
     {
-        return !input.SearchingTerm.IsNullOrWhiteSpace() ?
-                                    user.Name.ToLower().Contains(input.SearchingTerm.ToLower())
-                                    || role.Name.ToLower().Contains(input.SearchingTerm.ToLower())
-                                    || user.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower())
-                                    || user.UserName.ToLower().Contains(input.SearchingTerm.ToLower())
-                                    || user.Email.ToLower().Contains(input.SearchingTerm.ToLower())
-                                    : true;
+        bool isOverlapping = await _keeperShiftRepository.AnyAsync(ks =>
+             ks.KeeperId == input.KeeperId &&
+             ks.ShiftId != input.ShiftId &&
+             (
+                 (shift.StartDate <= ks.EndDate && shift.EndDate >= ks.StartDate)
+             ) 
+             &&
+             (
+                 (shift.StartTime < ks.EndTime && shift.EndTime > ks.StartTime)
+             )
+        );
+
+        if (isOverlapping)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("Shift overlaps with an existing shift."));
+        }
+    }
+    private static void CheckShiftStatus(Shift? shift)
+    {
+        if (shift.Status != Status.Active)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("ShiftNotActive"));
+        }
+    }
+    private static void ValidateDate(CreateUpdateKeeperShiftDto input, Shift shift)
+    {
+        if (input.StartDate == default || input.EndDate == default)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+        }
+
+        if (input.EndDate < input.StartDate)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("EndDateCannotBeBeforeStartDate"));
+        }
+
+        if (input.StartDate < shift.StartDate || input.EndDate > shift.EndDate)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("ShiftDateOutOfRange"));
+        }
+        
+    }
+    private async Task CheckDupplicateShift(CreateUpdateKeeperShiftDto input)
+    {
+        bool alreadyAssigned = await _keeperShiftRepository.AnyAsync(ks =>
+                     ks.KeeperId == input.KeeperId &&
+                     ks.ShiftId == input.ShiftId&&
+                     ks.EndDate >= input.StartDate);
+        if (alreadyAssigned)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("KeeperAlreadyAssignedToShift"));
+        }
     }
 
-    private static IQueryable<UserWithRole> ApplySortingForUser(PagedAndSortedResultRequestDto input, IQueryable<UserWithRole> result)
+
+  
+
+    private IQueryable<KeeperShiftDto> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<KeeperShiftDto>? queryable)
+    {
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+
+            queryable = queryable.Where(or =>
+            or.KeeperName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.GarageNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.GarageNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.OrganizationNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
+
+        );
+
+        }
+            return queryable;
+    }
+    private static IQueryable<KeeperShiftDto> ApplySorting(PagedAndSortedResultRequestDto input,  IQueryable<KeeperShiftDto> result)
     {
         var sorting = input.Sorting;
         if (!string.IsNullOrEmpty(sorting) && sorting.Contains("DESC"))
@@ -444,9 +402,8 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             var sortingSplit = sorting.Split(' ').ToList();
             sorting = sortingSplit[0] + " descending";
         }
-
-        result = result.OrderBy(sorting).Skip(input.SkipCount).Take(input.MaxResultCount);
+        result = result.OrderBy(sorting);
         return result;
     }
-
+    #endregion
 }

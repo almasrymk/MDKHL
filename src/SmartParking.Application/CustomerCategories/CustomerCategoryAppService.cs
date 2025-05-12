@@ -29,7 +29,7 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
     {
         _repository = repository;
     }
-
+    #region public methods
     public override async Task<CustomerCategoryDto> CreateAsync(CreateUpdateCutomerCategoryDto input)
     {
         if (input.CreatedByOrganization)
@@ -165,4 +165,5 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
             customerCategoriesDto
         );
     }
+    #endregion
 }

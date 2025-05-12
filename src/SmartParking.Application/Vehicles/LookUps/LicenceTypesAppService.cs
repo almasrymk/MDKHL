@@ -25,156 +25,81 @@ using Volo.Abp.ObjectMapping;
 namespace SmartParking.Vehicles.LookUps;
 
 [Authorize]
-public class LicenceTypesAppService: CrudAppService<LicenceType, LicenceTypeDto, int, PagedAndSortedResultRequestDto, CreateUpdateLicenceTypeDto>, ILicenceTypesAppService
+public class LicenceTypesAppService : CrudAppService<LicenceType, LicenceTypeDto, int, PagedAndSortedResultRequestDto, CreateUpdateLicenceTypeDto>, ILicenceTypesAppService
 {
-        private readonly IRepository<LicenceType, int> _repository;
-        private readonly IRepository<PlateColor, int> _plateColorRepository;
+    private readonly IRepository<LicenceType, int> _repository;
+    private readonly IRepository<PlateColor, int> _plateColorRepository;
     private readonly IDataFilter _dataFilter;
 
-    public LicenceTypesAppService(IRepository<LicenceType, int> repository, IRepository<PlateColor, int> plateColorRepository,IDataFilter dataFilter) : base(repository)
+    public LicenceTypesAppService(
+        IRepository<LicenceType, int> repository,
+        IRepository<PlateColor, int> plateColorRepository,
+        IDataFilter dataFilter
+    ) : base(repository)
     {
         _repository = repository;
         _plateColorRepository = plateColorRepository;
         _dataFilter = dataFilter;
     }
 
-    ///<inheritdoc/>
+    #region Public Methods
+
     public override async Task<LicenceTypeDto> CreateAsync(CreateUpdateLicenceTypeDto input)
     {
-        var licenceType = await _repository.FirstOrDefaultAsync
-                (type =>
-                type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                type.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-        var exisitingPlateColor = await _plateColorRepository.FindAsync(input.PlateColorId);
-
-        if (exisitingPlateColor is null)
-        {
-            throw new InvalidOperationException("Plate color doesnot exist");
-        }
-
-        if (licenceType != null)
-        {
-            if (licenceType.EnglishName == input.EnglishName.Trim(' ') )
-            {
-                throw new InvalidOperationException("Licence type english name already exists");
-
-            }
-            else if (licenceType.ArabicName == input.ArabicName.Trim(' ') )
-            {
-                throw new InvalidOperationException("Licence type arabic name already exists");
-
-            }
-
-
-        }
+        await ValidatePlateColorExistsAsync(input.PlateColorId);
+        await ValidateLicenceTypeUniquenessAsync(input);
         return await base.CreateAsync(input);
-
     }
 
-    ///<inheritdoc/>
     public override async Task<LicenceTypeDto> UpdateAsync(int id, CreateUpdateLicenceTypeDto input)
     {
-
         var existingLicence = await _repository.GetAsync(id);
-
         if (existingLicence is null)
         {
             throw new InvalidOperationException("Licence type not found");
         }
 
-        var exisitingPlateColor = await _plateColorRepository.FindAsync(input.PlateColorId);
-
-        if (exisitingPlateColor is null)
-        {
-            throw new InvalidOperationException("Licence type doesnot exist");
-        }
-
-        var LicenceType = await _repository.FirstOrDefaultAsync
-                (type =>
-                type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                type.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-
-        if (LicenceType != null)
-        {
-            if (LicenceType.EnglishName == input.EnglishName.Trim(' ') && LicenceType.Id != id)
-            {
-                throw new InvalidOperationException("Licence type english name already exists");
-
-            }
-            else if (LicenceType.ArabicName == input.ArabicName.Trim(' ') && LicenceType.Id != id)
-            {
-                throw new InvalidOperationException("Licence type arabic name already exists");
-
-            }
-
-
-        }
+        await ValidatePlateColorExistsAsync(input.PlateColorId);
+        await ValidateLicenceTypeUniquenessAsync(input, id);
         return await base.UpdateAsync(id, input);
     }
+
     public async Task<PagedResultDto<LicenceTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
-        // Get the IQueryable<camera> from the repository
         var queryable = await _repository.GetQueryableAsync();
-        // Apply search filtering
+
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
-
             queryable = queryable.Where(or =>
                 or.ArabicName.StartsWith(input.SearchingTerm) ||
                 or.EnglishName.StartsWith(input.SearchingTerm) ||
                 or.Notes.StartsWith(input.SearchingTerm)
-
             );
         }
-        // Get the total count of filtered records
+
         var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of camera entities
         var licenceTypes = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the hotel entities to cameraDto objects
         var licenceTypesDto = ObjectMapper.Map<List<LicenceType>, List<LicenceTypeDto>>(licenceTypes);
-        // Return the paginated result
-        return new PagedResultDto<LicenceTypeDto>(
-            totalCount,
-            licenceTypesDto
-        );
+
+        return new PagedResultDto<LicenceTypeDto>(totalCount, licenceTypesDto);
     }
 
-    /// <summary>
-    /// method used to get list of cameraes
-    /// </summary>
-    /// <param name="input">specifies max number of camera and if it filtered or not</param>
-    /// <returns>cameraeDto List</returns>
     public async Task<PagedResultDto<LicenceTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
-        // Get the IQueryable<camera> from the repository
         var queryable = await _repository.GetQueryableAsync();
-        // Apply filtering
         var filterExpression = BuildExpression<LicenceType>.BuildFilterExpression(input.filters);
         if (filterExpression is not null)
         {
             queryable = queryable.Where(filterExpression);
         }
-        // Get the total count of filtered records
+
         var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of organizations entities
         var licenceTypes = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the organizations entities to organizationsDto objects
         var licenceTypesDto = ObjectMapper.Map<List<LicenceType>, List<LicenceTypeDto>>(licenceTypes);
-        // Return the paginated result
-        return new PagedResultDto<LicenceTypeDto>(
-            totalCount,
-            licenceTypesDto
-        );
+
+        return new PagedResultDto<LicenceTypeDto>(totalCount, licenceTypesDto);
     }
 
     public override async Task DeleteAsync(int id)
@@ -185,6 +110,7 @@ public class LicenceTypesAppService: CrudAppService<LicenceType, LicenceTypeDto,
         {
             throw new EntityNotFoundException(typeof(LicenceType), id);
         }
+
         await _repository.HardDeleteAsync(licenceType);
     }
 
@@ -195,9 +121,7 @@ public class LicenceTypesAppService: CrudAppService<LicenceType, LicenceTypeDto,
             var licenceType = await _repository.GetListAsync();
             return ObjectMapper.Map<List<LicenceType>, List<LicenceTypeDto>>(licenceType);
         }
-           
     }
-
 
     [RemoteService(IsEnabled = false)]
     public async Task<Result<List<LicenceTypeDto>>> GetAllLicenceTypesAsync()
@@ -205,11 +129,45 @@ public class LicenceTypesAppService: CrudAppService<LicenceType, LicenceTypeDto,
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var licenceTypes = await _repository.GetListAsync();
-
             var mappedLicenceType = ObjectMapper.Map<List<LicenceType>, List<LicenceTypeDto>>(licenceTypes);
-
             return Result<List<LicenceTypeDto>>.Success(mappedLicenceType);
         }
-
     }
+
+    #endregion
+
+    #region Private Methods
+
+    private async Task ValidatePlateColorExistsAsync(int plateColorId)
+    {
+        var existingPlateColor = await _plateColorRepository.FindAsync(plateColorId);
+        if (existingPlateColor is null)
+        {
+            throw new InvalidOperationException("Plate color does not exist");
+        }
+    }
+
+    private async Task ValidateLicenceTypeUniquenessAsync(CreateUpdateLicenceTypeDto input, int? currentId = null)
+    {
+        var licenceType = await _repository.FirstOrDefaultAsync(
+            type =>
+                type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                type.ArabicName.ToLower().Contains(input.ArabicName.ToLower())
+        );
+
+        if (licenceType != null)
+        {
+            if (licenceType.EnglishName == input.EnglishName.Trim() && licenceType.Id != currentId)
+            {
+                throw new InvalidOperationException("Licence type English name already exists");
+            }
+            else if (licenceType.ArabicName == input.ArabicName.Trim() && licenceType.Id != currentId)
+            {
+                throw new InvalidOperationException("Licence type Arabic name already exists");
+            }
+        }
+    }
+
+    #endregion
 }
+
