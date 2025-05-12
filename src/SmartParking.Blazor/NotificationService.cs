@@ -13,9 +13,8 @@ public class NotificationService : IAsyncDisposable
 {
     private HubConnection? _hubConnection;
 
-    public async Task<HubConnection?> StartConnectionAsync(NavigationManager navigation,ISnackbar snackbar)
+    public  HubConnection? StartConnectionAsync(NavigationManager navigation,ISnackbar snackbar)
     {
-        await Task.Yield();
         if (_hubConnection is not null && _hubConnection.State == HubConnectionState.Connected)
             return _hubConnection;
 
