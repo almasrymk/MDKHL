@@ -16,6 +16,7 @@ using Volo.Abp.MultiTenancy;
 using System.Linq;
 using Volo.Abp.Data;
 using Microsoft.EntityFrameworkCore;
+using SmartParking.Entities.Customers;
 
 
 namespace SmartParking.Utilities;
@@ -27,6 +28,8 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Vehicle, int> _vehicleRepository;
     private readonly IRepository<GarageTransaction, int> _garageTransactionRepoistory;
+    private readonly IRepository<Customer, Guid> _customerRepoistory;
+    private readonly IRepository<Organization, int> _organizationRepoistory;
     private readonly IDataFilter _dataFilter;
 
 
@@ -38,7 +41,9 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         IRepository<Garage, int> garageRepository,
         IRepository<Vehicle, int> vehicleRepository,
         IRepository<GarageTransaction, int> garageTransactionRepoistory,
-        IDataFilter dataFilter)
+        IDataFilter dataFilter,
+        IRepository<Customer, Guid> customerRepoistory,
+        IRepository<Organization, int> organizationRepoistory)
     {
         _cameraRepository = cameraRepository;
         _garageRepository = garageRepository;
@@ -46,6 +51,8 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         _logger = logger;
         _garageTransactionRepoistory = garageTransactionRepoistory;
         _dataFilter = dataFilter;
+        _customerRepoistory = customerRepoistory;
+        _organizationRepoistory = organizationRepoistory;
     }
 
     public async Task<GarageTransaction> CheckIfCheckoutFromMobile(string plateNumber)
@@ -67,16 +74,18 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
 
     public async Task<string> CheckPlateNumberBelongsToCustomerToGetHisIdAsync(string plateNumber)
     {
-        var Vehicle = await _vehicleRepository.FirstOrDefaultAsync(x => x.ArPlateNumber == plateNumber || x.EnPlateNumber == plateNumber);
-
-        if (Vehicle == null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            _logger.LogError($"{DateTime.Now} ====>  Vehicle Not Found ");
 
-            return null;
+            var Vehicle = await _vehicleRepository.FirstOrDefaultAsync(x => x.ArPlateNumber == plateNumber || x.EnPlateNumber == plateNumber);
+            if (Vehicle == null)
+            {
+                _logger.LogError($"{DateTime.Now} ====>  Vehicle Not Found ");
+                return null;
+            }
+            var CustomerId = Vehicle.CustomerId;
+            return CustomerId.ToString();
         }
-        var CustomerId = Vehicle.CustomerId;
-        return CustomerId.ToString();
     }
 
     public async Task CloseCheckoutMobileTransaction(string? plateNumber)
@@ -178,12 +187,15 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
 
     public async Task<CameraDto> GetCameraByTypeBelongsToGarageAsync(int garageId, CameraType cameraType)
     {
-        var camera = await _cameraRepository.FirstOrDefaultAsync(cam => cam.GarageId == garageId && cam.CameraType == cameraType);
-        if (camera == null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Camera") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            var camera = await _cameraRepository.FirstOrDefaultAsync(cam => cam.GarageId == garageId && cam.CameraType == cameraType);
+            if (camera == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("Camera") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            }
+            return ObjectMapper.Map<Camera, CameraDto>(camera);
         }
-        return ObjectMapper.Map<Camera, CameraDto>(camera);
     }
 
     public async Task<Garage> GetGarageByIdAsync(int garageId)
@@ -202,10 +214,14 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
 
     public async Task<GarageTransaction> GetTransactionById(int garagetransactionId)
     {
-        var query = await _garageTransactionRepoistory.GetQueryableAsync();
-        query = query.Where(transaction => transaction.Id == garagetransactionId);
-        var transaction = await AsyncExecuter.FirstOrDefaultAsync(query);
-        return transaction;
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _garageTransactionRepoistory.GetQueryableAsync();
+            query = query.Where(transaction => transaction.Id == garagetransactionId);
+            var transaction = await AsyncExecuter.FirstOrDefaultAsync(query);
+            return transaction;
+        }
     }
 
     public async Task<bool> ReserverSlotsOfGarageDependsOnCategoryAsync(int garageId, CustomerCategoryStatus customer)
@@ -251,4 +267,35 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         await _garageTransactionRepoistory.UpdateAsync(entryGarageTransaction, true);
 
     }
+
+    public async Task<Guid> GetCurrentCustomerId()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var customer = await _customerRepoistory.GetQueryableAsync();
+            var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).FirstOrDefault();
+            return customerId;
+        }
+    }
+    public async Task<Customer> GetCustomer(Guid customerId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _customerRepoistory.GetQueryableAsync();
+            query = query.Include(x => x.IdentityUser);
+            var customer = await query.FirstOrDefaultAsync(x => x.Id == customerId);
+            return customer;
+        }
+    }
+    public async Task<Organization> GetOrganization(int OrganizationID)
+    {
+
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var organization = await _organizationRepoistory.FirstOrDefaultAsync(x => x.Id == OrganizationID);
+            return organization;
+        }
+
+    }
+
 }

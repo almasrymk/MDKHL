@@ -1,5 +1,6 @@
 ﻿using SmartParking.Cameras;
 using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
@@ -21,10 +22,8 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task<CameraDto> GetCameraByTypeBelongsToGarageAsync(int garageId, CameraType cameraType);
 
     Task<Garage> GetGarageByIdAsync(int garageId);
-
     Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId, CustomerCategoryStatus category);
     Task<bool> ReserverSlotsOfGarageDependsOnCategoryAsync(int garageId , CustomerCategoryStatus customer);
-
     Task<string> CheckPlateNumberBelongsToCustomerToGetHisIdAsync(string plateNumber);
 
     Task<GarageTransactionDto?> FindEntranceTime(string? plateNumber);
@@ -34,6 +33,9 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task CloseEntryTransaction(string? plateNumber);
     Task CloseCheckoutMobileTransaction(string? plateNumber);
     Task UpdateEntryTransactionCheckouFromMobile(GarageTransaction entryGarageTransaction);
+    Task<Guid> GetCurrentCustomerId();
+    Task<Customer> GetCustomer(Guid customerId);
+    Task<Organization> GetOrganization(int OrganizationID);
 
 
 }
