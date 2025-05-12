@@ -82,6 +82,33 @@ public class KeeperController : AbpController
             });
         }
     }
+    [HttpPost("Mdkhl/login")]
+
+    public async Task<Result<LoginAppResultDto>> LoginMdkhlKeeper(LoginMobileInputDto input)
+    {
+        try
+        {
+            
+            if (_currentUser.IsAuthenticated)
+            {
+                return Result<LoginAppResultDto>.Invalid(new ValidationError
+                {
+                    
+                    ErrorCode = "400",
+                    ErrorMessage = "You are already logged in."
+                });
+            }
+            return await _authenticationAppService.LoginAppAsync(input);
+        }
+        catch
+        {
+            return Result<LoginAppResultDto>.Invalid(new Results.ValidationError
+            {
+                ErrorCode = "403",
+                ErrorMessage = "This user not found",
+            });
+        }
+    }
 
     [HttpGet("invoice")]
     [Authorize]
