@@ -26,7 +26,7 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        HubConnection? hub = await NotificationService.StartConnectionAsync(Navigation, snackbar);
+        HubConnection? hub = NotificationService.StartConnectionAsync(Navigation, snackbar);
         hub.On<string, string>("ReceiveExportNotification", (status, message) =>
             {
                
@@ -37,8 +37,11 @@
 
         try
         {
-            await hub.StartAsync();
-            Console.WriteLine("SignalR Connected!");
+            if(hub.State == HubConnectionState.Connected){
+                await hub.StartAsync();
+                Console.WriteLine("SignalR Connected!");
+            }
+           
         }
         catch (Exception ex)
         {
