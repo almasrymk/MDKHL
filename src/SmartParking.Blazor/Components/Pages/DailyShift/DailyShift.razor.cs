@@ -6,6 +6,7 @@ using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.GarageTransactions;
+using SmartParking.Currency;
 using SmartParking.DailyShifts;
 using SmartParking.GarageTransactions;
 using SmartParking.Localization;
@@ -132,6 +133,8 @@ public partial class DailyShift
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EndTime"], Name = "EndTime", IsFilterable = true, PropertyName = "EndTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["RequestTime"], Name = "RequestTime", IsFilterable = true, PropertyName = "RequestTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["KeeperShiftRequestType"], Name = "KeeperShiftRequestType", IsFilterable = true, PropertyName = "KeeperShiftRequestType", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["AmountOfCash"], Name = "AmountOfCash", IsFilterable = true, PropertyName = "AmountOfCash", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["AmountOfVisa"], Name = "AmountOfVisa", IsFilterable = true, PropertyName = "AmountOfVisa", IsSortable = true, TypeFilter = TypeFilter.Number });
         
         foreach (var item in dailyShiftDto.Items)
         {
@@ -166,6 +169,13 @@ public partial class DailyShift
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("EndTime"), item.EndTime.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("RequestTime"), item.RequestTime.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("KeeperShiftRequestType"), LocalizationHelper.GetLocalizedString(item.KeeperShiftRequestType.ToString())));
+            var IconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+                $"{_localizer["AmountOfCash"]}",
+                $"{item.AmountOfCash.ToString()} {IconHtml}")); 
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+                $"{_localizer["AmountOfVisa"]}",
+                $"{item.AmountOfVisa.ToString()} {IconHtml}"));
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
