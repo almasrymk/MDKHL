@@ -1,4 +1,5 @@
 ﻿using SmartParking.Cameras;
+using SmartParking.Entities.Cameras;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
@@ -15,13 +16,13 @@ namespace SmartParking.Utilities;
 
 public interface IGarageTransactionUtilityAppService : IApplicationService
 {
-    Task<CameraDto> GetCameraByDeviceIdAsync(string deviceId);
+    Task<Camera> GetCameraByDeviceIdAsync(string deviceId);
 
     Task<CameraDto> GetCameraByTypeBelongsToGarageAsync(int garageId, CameraType cameraType);
 
     Task<Garage> GetGarageByIdAsync(int garageId);
 
-    Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(Garage garage, CustomerCategoryStatus category);
+    Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId, CustomerCategoryStatus category);
     Task<bool> ReserverSlotsOfGarageDependsOnCategoryAsync(int garageId , CustomerCategoryStatus customer);
 
     Task<string> CheckPlateNumberBelongsToCustomerToGetHisIdAsync(string plateNumber);

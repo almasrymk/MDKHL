@@ -15,6 +15,7 @@ using SmartParking.GarageTransactions;
 using Volo.Abp.MultiTenancy;
 using System.Linq;
 using Volo.Abp.Data;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace SmartParking.Utilities;
@@ -135,9 +136,9 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         }
     }
 
-    public async Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(Garage garage, CustomerCategoryStatus category)
+    public async Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId, CustomerCategoryStatus category)
     {
-        //var garage = await GetGarageByIdAsync(garageId);
+        var garage = await GetGarageByIdAsync(garageId);
         bool flag = false;
         if (category == CustomerCategoryStatus.Customer )
         {
@@ -156,20 +157,21 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             flag = true;
         }
         garage.CurrnetCapicity = Math.Max(0, --garage.CurrnetCapicity);
-
+        await CurrentUnitOfWork.SaveChangesAsync();
         return flag;
     }
 
-    public async Task<CameraDto> GetCameraByDeviceIdAsync(string deviceId)
+    public async Task<Camera> GetCameraByDeviceIdAsync(string deviceId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var camera = await _cameraRepository.FirstOrDefaultAsync(cam => cam.DeviceId == deviceId);
+            var cameraquery = await _cameraRepository.GetQueryableAsync();
+            var camera=await cameraquery.AsNoTracking().FirstOrDefaultAsync(cam => cam.DeviceId == deviceId);
             if (camera == null)
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("Camera") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
             }
-            return ObjectMapper.Map<Camera, CameraDto>(camera);
+            return camera;
         }
     }
 
