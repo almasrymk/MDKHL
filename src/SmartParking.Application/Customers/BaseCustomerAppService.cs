@@ -34,6 +34,7 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
 		_packageRepository = packageRepository;
 		_dataFilter = dataFilter;
 	}
+    #region public methods 
     ///<inheritdoc/>
     public async Task AddCustomerPackage(int organizationId, Guid customerId,int packageId)
     {
@@ -196,5 +197,5 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
         return false;
 
     }
-
+    #endregion
 }

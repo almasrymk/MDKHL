@@ -38,10 +38,5 @@ public class StateManagementAppService : CrudAppService<StateManagement, StateMa
         var result = ObjectMapper.Map<StateManagement, StateManagementDto>(state.FirstOrDefault());
         return result;
     }
-    public override async Task DeleteAsync(int id)
-    {
-        var state = await _repository.FirstOrDefaultAsync(x => x.Id == id);
-        if(state != null)
-        await _repository.HardDeleteAsync(state);
-    }
+    
 }

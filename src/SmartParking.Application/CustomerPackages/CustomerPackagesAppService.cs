@@ -57,8 +57,8 @@ public class CustomerPackagesAppService:
         _subscriptionRepository = subscriptionRepository;
         _organizationsRepository = organizationsRepository;
     }
-
-    public  async Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int OrganizationID,string PlateNumber,DateTime ExitTransaction)
+    #region public methods
+    public async Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int OrganizationID,string PlateNumber,DateTime ExitTransaction)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -134,75 +134,6 @@ public class CustomerPackagesAppService:
             }
     }
 
-    private async Task<Customer> GetCustomerAsync()
-    {
-        return await _customerRepository.FirstOrDefaultAsync(c => c.IdentityUserId == CurrentUser.Id);
-    }
-
-    private async Task<Package> GetPackageAsync(int packageId)
-    {
-            return await _packageRepository.FirstOrDefaultAsync(p => p.Id == packageId);
-       
-    }
-
-    private async Task<bool> CustomerPackageExistsAsync(int? packageId, int organizationId, Guid customerId,string ArabicPlateNumber,string EnglishPlateNumber)
-    {
-        var existingPackage = await _repository.AnyAsync(p =>
-            ((packageId.HasValue && p.PackageId == packageId.Value) || (!packageId.HasValue && p.IsCustomPackage && p.PackageId  == null)) &&
-            p.OrganizationId == organizationId &&
-            p.CustomerId == customerId &&
-            p.ExpiryDate >= DateTime.Today &&
-            p.CustomerPackageStatus == CustomerPackageStatus.Active &&
-            p.ArPlateNumber==ArabicPlateNumber &&
-            p.EnPlateNumber==EnglishPlateNumber
-            );
-        return existingPackage;
-    }
-
-    private async Task<CustomerPackage?> GetExistingPackageAsync(int organizationId)
-    {
-        var query = await _repository.GetQueryableAsync();
-        return await query.AsNoTracking()
-            .FirstOrDefaultAsync(p => p.IsCustomPackage == false && p.PackageId==null &&p.OrganizationId == organizationId);
-    }
-
-    private async Task<Result> UpdateCustomerPackageAsync(CustomerPackage customerPackage)
-    {
-        var updatedPackage = await _repository.UpdateAsync(customerPackage, true);
-        return updatedPackage != null ? Result.Success() : Result.Error("Can't assign package to customer");
-    }
-
-    private async Task<Result> InsertCustomerPackageAsync(CustomerPackage customerPackage)
-    {
-        var assignedPackage = await _repository.InsertAsync(customerPackage, true);
-        return assignedPackage != null ? Result.Success() : Result.Error("Can't assign package to customer");
-    }
-
-    private static CustomerPackage CreateCustomerPackage(int packageId, Guid? customerId, Package package,string arPlateNumber,string enPlateNumber)
-    {
-        return  new CustomerPackage
-        {
-            PackageId = packageId,
-            CustomerId = customerId.Value,
-            OrganizationId = package.OrganizationId,
-            ExpiryDate = DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute),
-            ActivationDateOfPackage = DateTime.Now,
-            DectivationDateOfPackage = package.DectivationDate,
-            DescriptionOfPackage = package.Description,
-            DurationOfPackage = package.DurationOfPackage,
-            PriceOfPackage = package.Price,
-            PublishFromOfPackage = package.PublishFrom,
-            PublishToOfPackage = package.PublishTo,
-            publishedOfPackage = package.published,
-            CustomerCategory = package.CustomerCategory,
-            PackageArabicName = package.ArabicName,
-            PackageEnglishName = package.EnglishName,
-            TenantId = package.TenantId,
-            ArPlateNumber= arPlateNumber,
-            EnPlateNumber= enPlateNumber,
-
-        };
-    }
 
     ///<inheritdoc/>
     public  async Task<bool> AssignPackageToCustomerWebAsync(int? packageId,CustomerPackageDto customerPackageDto)
@@ -212,22 +143,17 @@ public class CustomerPackagesAppService:
             var customer = await _customerRepository.FirstOrDefaultAsync(c => c.Id == customerPackageDto.CustomerId);
             if(customer == null)
                 throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-    
             if (await CustomerPackageExistsAsync(packageId, customerPackageDto.OrganizationId, customer.Id, customerPackageDto.ArPlateNumber, customerPackageDto.EnPlateNumber))
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("DuplicateValidation")
                     + " " + LocalizationHelper.GetLocalizedString("Customer"));
             }
-            //
-
             var activePackage =await  GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(customerPackageDto.OrganizationId, customerPackageDto.EnPlateNumber, DateTime.Now);
             if (activePackage != null)
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("CannotAssignTwoPackageToSameVehicle"));
             }
-
             await CheckSubscriptionCustomersLimitsAsync(customerPackageDto.OrganizationId);
-
             CustomerPackage customerPackage;
 
             if (packageId != 0)
@@ -248,10 +174,7 @@ public class CustomerPackagesAppService:
             {
                 customerPackage = ObjectMapper.Map<CustomerPackageDto, CustomerPackage>(customerPackageDto);
                 customerPackage.PackageId = null;
-
             }
-
-
             // Check Subscription Limit for number Of Customers
             var insertPackage = await InsertCustomerPackageAsync(customerPackage);
             return insertPackage.IsSuccess;
@@ -259,28 +182,7 @@ public class CustomerPackagesAppService:
     }
 
 
-    private async Task<(CustomerPackage,bool)> AssignNormalPackageToCUstomerAsync(int packageId , Guid customerId, string ArabicPlateNumber, string EnglishPlateNumber)
-    {
-        var package = await GetPackageAsync(packageId);
-        if (package == null)
-            throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-        var customerPackage = CreateCustomerPackage(packageId, customerId, package, ArabicPlateNumber, EnglishPlateNumber);
-        var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
-        bool flag=false;
-        if (existingPackage != null)
-        {
-            ObjectHelper.TrySetProperty(
-                customerPackage,
-                x => x.Id,
-                () => existingPackage.Id
-            );
-            // update 
-            await UpdateCustomerPackageAsync(customerPackage);
-            flag=true;
-
-        }
-        return (customerPackage,flag);
-    }
+ 
     public async Task CheckSubscriptionCustomersLimitsAsync(int organizationId)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -309,13 +211,7 @@ public class CustomerPackagesAppService:
             return count;
         }
     }
-    private async Task<Subscription?> GetSubscriptionByOrganizationId(Organization organization)
-    {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            return await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
-        }
-    }
+ 
 
     public async Task<DateTime> GetExpireyDateForPackageSubscripedByCustomerInSpecificOrganization(int OrgId, Guid CustomerId, int PackageId)
    {
@@ -356,30 +252,7 @@ public class CustomerPackagesAppService:
         }
     }
 
-    private async Task<int> CheckCountOfCustomerPackage(CustomerPackage? customerPackage)
-    {
-        var query = await _repository.GetQueryableAsync();
-        int RelatedPackages = await query.CountAsync(p =>
-            p.OrganizationId == customerPackage.OrganizationId &&
-            p.CustomerId == customerPackage.CustomerId);
-        return RelatedPackages;
-    }
-
-    private void ClearPackageDetails(CustomerPackage customerPackage)
-    {
-        customerPackage.PackageArabicName = null;
-        customerPackage.PackageEnglishName = null;
-        customerPackage.PackageId = null;
-        customerPackage.PublishToOfPackage = null;
-        customerPackage.PublishFromOfPackage = null;
-        customerPackage.PriceOfPackage = null;
-        customerPackage.DurationOfPackage = null;
-        customerPackage.DectivationDateOfPackage = null;
-        customerPackage.DescriptionOfPackage = null;
-        customerPackage.IsCustomPackage = false;
-        customerPackage.CustomerPackageStatus = CustomerPackageStatus.InActive;
-    }
-
+  
     public async Task<PagedResultDto<CustomerPackageDto>> GetListPackagesByCustomerMdkl(Guid customerId,PagedAndSortedResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -396,14 +269,6 @@ public class CustomerPackagesAppService:
             };
         }
     }
-
-    private async Task<(IQueryable<CustomerPackage> query, int totalCount)> ApplyPaged(PagedAndSortedResultRequestDto input, IQueryable<CustomerPackage> query)
-    {
-        var totalCount = await AsyncExecuter.CountAsync(query);
-        query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
-        return (query, totalCount);
-    }
-
     public async Task<PagedResultDto<CustomerPackageDto>> GetListPackagesByCustomerOrganization(Guid customerId, PagedAndSortedResultRequestDto input)
     {
         var org = await _organizationsApp.GetOrganizationForCurrentTenatAsync();
@@ -419,7 +284,143 @@ public class CustomerPackagesAppService:
                 Items = packageMap,
                 TotalCount = resultPaged.totalCount
             };
-            
+
         }
     }
+    #endregion
+
+    #region private methods 
+    private async Task<(IQueryable<CustomerPackage> query, int totalCount)> ApplyPaged(PagedAndSortedResultRequestDto input, IQueryable<CustomerPackage> query)
+    {
+        var totalCount = await AsyncExecuter.CountAsync(query);
+        query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+        return (query, totalCount);
+    }
+
+    private async Task<(CustomerPackage, bool)> AssignNormalPackageToCUstomerAsync(int packageId, Guid customerId, string ArabicPlateNumber, string EnglishPlateNumber)
+    {
+        var package = await GetPackageAsync(packageId);
+        if (package == null)
+            throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+        var customerPackage = CreateCustomerPackage(packageId, customerId, package, ArabicPlateNumber, EnglishPlateNumber);
+        var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
+        bool flag = false;
+        if (existingPackage != null)
+        {
+            ObjectHelper.TrySetProperty(
+                customerPackage,
+                x => x.Id,
+                () => existingPackage.Id
+            );
+            // update 
+            await UpdateCustomerPackageAsync(customerPackage);
+            flag = true;
+
+        }
+        return (customerPackage, flag);
+    }
+    private void ClearPackageDetails(CustomerPackage customerPackage)
+    {
+        customerPackage.PackageArabicName = null;
+        customerPackage.PackageEnglishName = null;
+        customerPackage.PackageId = null;
+        customerPackage.PublishToOfPackage = null;
+        customerPackage.PublishFromOfPackage = null;
+        customerPackage.PriceOfPackage = null;
+        customerPackage.DurationOfPackage = null;
+        customerPackage.DectivationDateOfPackage = null;
+        customerPackage.DescriptionOfPackage = null;
+        customerPackage.IsCustomPackage = false;
+        customerPackage.CustomerPackageStatus = CustomerPackageStatus.InActive;
+    }
+
+    private async Task<Subscription?> GetSubscriptionByOrganizationId(Organization organization)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            return await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
+        }
+    }
+
+    private async Task<int> CheckCountOfCustomerPackage(CustomerPackage? customerPackage)
+    {
+        var query = await _repository.GetQueryableAsync();
+        int RelatedPackages = await query.CountAsync(p =>
+            p.OrganizationId == customerPackage.OrganizationId &&
+            p.CustomerId == customerPackage.CustomerId);
+        return RelatedPackages;
+    }
+
+
+    private async Task<Customer> GetCustomerAsync()
+    {
+        return await _customerRepository.FirstOrDefaultAsync(c => c.IdentityUserId == CurrentUser.Id);
+    }
+
+    private async Task<Package> GetPackageAsync(int packageId)
+    {
+        return await _packageRepository.FirstOrDefaultAsync(p => p.Id == packageId);
+
+    }
+
+    private async Task<bool> CustomerPackageExistsAsync(int? packageId, int organizationId, Guid customerId, string ArabicPlateNumber, string EnglishPlateNumber)
+    {
+        var existingPackage = await _repository.AnyAsync(p =>
+            ((packageId.HasValue && p.PackageId == packageId.Value) || (!packageId.HasValue && p.IsCustomPackage && p.PackageId == null)) &&
+            p.OrganizationId == organizationId &&
+            p.CustomerId == customerId &&
+            p.ExpiryDate >= DateTime.Today &&
+            p.CustomerPackageStatus == CustomerPackageStatus.Active &&
+            p.ArPlateNumber == ArabicPlateNumber &&
+            p.EnPlateNumber == EnglishPlateNumber
+            );
+        return existingPackage;
+    }
+
+    private async Task<CustomerPackage?> GetExistingPackageAsync(int organizationId)
+    {
+        var query = await _repository.GetQueryableAsync();
+        return await query.AsNoTracking()
+            .FirstOrDefaultAsync(p => p.IsCustomPackage == false && p.PackageId == null && p.OrganizationId == organizationId);
+    }
+
+    private async Task<Result> UpdateCustomerPackageAsync(CustomerPackage customerPackage)
+    {
+        var updatedPackage = await _repository.UpdateAsync(customerPackage, true);
+        return updatedPackage != null ? Result.Success() : Result.Error("Can't assign package to customer");
+    }
+
+    private async Task<Result> InsertCustomerPackageAsync(CustomerPackage customerPackage)
+    {
+        var assignedPackage = await _repository.InsertAsync(customerPackage, true);
+        return assignedPackage != null ? Result.Success() : Result.Error("Can't assign package to customer");
+    }
+
+    private static CustomerPackage CreateCustomerPackage(int packageId, Guid? customerId, Package package, string arPlateNumber, string enPlateNumber)
+    {
+        return new CustomerPackage
+        {
+            PackageId = packageId,
+            CustomerId = customerId.Value,
+            OrganizationId = package.OrganizationId,
+            ExpiryDate = DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute),
+            ActivationDateOfPackage = DateTime.Now,
+            DectivationDateOfPackage = package.DectivationDate,
+            DescriptionOfPackage = package.Description,
+            DurationOfPackage = package.DurationOfPackage,
+            PriceOfPackage = package.Price,
+            PublishFromOfPackage = package.PublishFrom,
+            PublishToOfPackage = package.PublishTo,
+            publishedOfPackage = package.published,
+            CustomerCategory = package.CustomerCategory,
+            PackageArabicName = package.ArabicName,
+            PackageEnglishName = package.EnglishName,
+            TenantId = package.TenantId,
+            ArPlateNumber = arPlateNumber,
+            EnPlateNumber = enPlateNumber,
+
+        };
+    }
+    #endregion
+
 }

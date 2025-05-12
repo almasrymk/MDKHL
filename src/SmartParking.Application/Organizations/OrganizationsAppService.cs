@@ -58,6 +58,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         _garageRepository = garageRepository;
         _cityAppService = cityAppService;
     }
+    #region public methods
     ///<inheritdoc/>
     public override async Task<OrganizationDto> CreateAsync(CreateUpdateOrganiztionDto input)
     {
@@ -71,96 +72,14 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name = EnumValues.GetEnumDescription(CustomerCategoriesDefaults.Public), Description = EnumValues.GetEnumDescription(CustomerCategoriesDefaults.AllCustomers), Default = true, OrganizationId = organization.Id, CreatedByOrganization = true });
         return ObjectMapper.Map<Organization, OrganizationDto>(organization);
     }
-
-    private async Task<IdentityRole?> AddRole(Guid tenantId)
-    {
-        var roleUser = new IdentityRole(GuidGenerator.Create(), RolesType.Organization.ToString(), tenantId);
-        IEnumerable<IdentityRole> roles = new List<IdentityRole>
-        {
-            roleUser,
-            new IdentityRole(GuidGenerator.Create(),RolesType.Keeper.ToString(), tenantId)
-        };
-        await _identityRole.InsertManyAsync(roles, true);
-        return roleUser;
-    }
-
-    private async Task AddUser(CreateUpdateOrganiztionDto input, Tenant tenant, Organization organization,IdentityRole role)
-    {
-        UserCreateDto user = new UserCreateDto()
-        {
-            UserName = input.UserName,
-            PhoneNumber = input.WhatsAppNum,
-            Email = input.Email,
-            Password = "P@ssw0rd",
-            Name = input.EnglishName,
-            IsActive = true,
-            UserType = 1,
-            OrganizationId = organization.Id,
-            TenantId = tenant.Id,
-            IdentificationTypes=IdentificationTypes.NationalID,
-            NationalId=input.NationalId
-
-        };
-
-        var userCreated = await _usersAppService.CreateWithRoleAsync(user,role.Id);
-    }
-
-    private async Task<Organization> CreateOrganization(CreateUpdateOrganiztionDto input, Tenant tenant)
-    {
-        var city = await _cityAppService.GetAsync(input.CityId);
-        var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto, Organization>(input);
-
-        CheckAdress(input, city, organization);
-        organization.TenantId = tenant.Id;
-        organization.SubscriptionId = input.SubscriptionId;
-        await _repository.InsertAsync(organization, autoSave: true);
-        return organization;
-    }
-
-    private static void CheckAdress(CreateUpdateOrganiztionDto input, CityDto city, Organization organization)
-    {
-        bool containsArabic = Regex.IsMatch(input.StreetName, @"\p{IsArabic}");
-        organization.Address = input.BuildingNumber.ToString() + " ," + input.StreetName + " ," + input.SecondaryNumber.ToString() + " ," + input.District + " ,";
-        organization.Address += containsArabic ? city.ArabicName : city.EnglishName;
-        organization.Address += " , " + input.PostalCode;
-    }
-
-    private async Task CheckCommercial(CreateUpdateOrganiztionDto input)
-    {
-        var query = await _repository.GetListAsync(x => x.CommercialRegistrationNumber == input.CommercialRegistrationNumber);
-        Console.WriteLine($"count of Commercial Registration Number {query.Count}");
-        if (query.Count > 0)
-        {
-            throw new BusinessException(EnumValues.GetEnumDescription(OrganizationCreationValidations.CommercialRegistrationNumber) + query.First().ArabicName);
-
-        }
-    }
-
-    private async Task<Tenant> CreateTenat(CreateUpdateOrganiztionDto input)
-    {
-        var tenant = await _tenantManager.CreateAsync(input.TenantName);
-        var input1 = new TenantCreateDto
-        {
-            Name = input.TenantName,
-            AdminEmailAddress = input.Email,
-            AdminPassword = "P@ssw0rd",
-        };
-        input1.MapExtraPropertiesTo(tenant);
-        await CurrentUnitOfWork.SaveChangesAsync();
-        await _tenantRepository.InsertAsync(tenant);
-        tenant.CreatorId = CurrentUser.Id;
-        await CurrentUnitOfWork.SaveChangesAsync();
-        return tenant;
-    }
-
     ///<inheritdoc/>
     public override async Task<PagedResultDto<OrganizationDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        
-            using (_softDeleteFilter.Disable<IMultiTenant>())
-            {
-                return await base.GetListAsync(input);
-            }
+
+        using (_softDeleteFilter.Disable<IMultiTenant>())
+        {
+            return await base.GetListAsync(input);
+        }
     }
     ///<inheritdoc/>
     public override async Task<OrganizationDto> GetAsync(int id)
@@ -169,27 +88,9 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         {
             var organization = await IsFoundOrganizationAsync(id);
             return ObjectMapper.Map<Organization, OrganizationDto>(organization);
-
         }
-        
-
-    }
-
-
-    [RemoteService(isEnabled:false)]
-    ///<inheritdoc/>
-    private string CodeGenerator(int id)
-    {
-        var idLen =(int) Math.Floor(Math.Log10(id) + 1);
-        int zeros = (6 - idLen);
-        string Code = "O";
-        Code = Code.PadRight(zeros + 1, '0');
-        Code += (id);
-        return Code;
     }
     ///<inheritdoc/>
-
-
     public new async Task<string> DeleteByIdAsync(int id)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -198,37 +99,34 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             var orgaization = await IsFoundOrganizationAsync(id);
             await _repository.HardDeleteAsync(orgaization);
 
-              return EnumValues.GetEnumDescription(OrganizationCreationValidations.OrganizationDeleteion);
-            
+            return EnumValues.GetEnumDescription(OrganizationCreationValidations.OrganizationDeleteion);
+
         }
     }
     ///<inheritdoc/>
-
     public override async Task<OrganizationDto> UpdateAsync(int id, CreateUpdateOrganiztionDto input)
     {
         using (_softDeleteFilter.Disable<IMultiTenant>())
         {
             var organization = await IsFoundOrganizationAsync(id);
             var city = await _cityAppService.GetAsync(input.CityId);
-            if (organization.Address != input.Address || organization.Address==null) {
+            if (organization.Address != input.Address || organization.Address == null)
+            {
                 CheckAdress(input, city, organization);
-                input.Address= organization.Address;
+                input.Address = organization.Address;
             }
-
-
             return await base.UpdateAsync(id, input);
         }
     }
-
     ///<inheritdoc/>
     public async Task<PagedResultDto<OrganizationDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
-            using (_softDeleteFilter.Disable<IMultiTenant>())
+        using (_softDeleteFilter.Disable<IMultiTenant>())
         {
             var queryable = await _repository.GetQueryableAsync();
             queryable = queryable.Include(s => s.Subscription);
             queryable = ApplySearch(input, queryable);
-            var sortAndPaginate = await ApplySortAndpaginate(input,queryable);
+            var sortAndPaginate = await ApplySortAndpaginate(input, queryable);
             var organizations = await AsyncExecuter.ToListAsync(sortAndPaginate.Item2);
             var organizationsDto = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organizations);
             return new PagedResultDto<OrganizationDto>(
@@ -236,50 +134,6 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
                 organizationsDto
             );
         }
-    }
-
-    private static IQueryable<Organization> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Organization> queryable)
-    {
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
-
-            queryable = queryable.Where(or =>
-                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Subscription.ParkingSlot.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Subscription.NumbersOfGarages.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Country.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Country.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.State.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.State.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.City.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.City.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
-            );
-        }
-
-        return queryable;
-    }
-
-    private async Task<(int, IQueryable<Organization>)> ApplySortAndpaginate(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Organization> queryable)
-    {
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-                queryable = queryable.OrderBy(input.Sorting);
-            }
-
-        }
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        return (totalCount,queryable);
     }
 
     ///<inheritdoc/>
@@ -342,26 +196,38 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         }
     }
 
-    private async Task IsFoundSubscriptionAsync(int SubscriptionId)
+    private async Task<IdentityRole?> AddRole(Guid tenantId)
     {
-        var subscription = await _subscriptionAppService.GetAsync(SubscriptionId);
-        if (subscription is null)
+        var roleUser = new IdentityRole(GuidGenerator.Create(), RolesType.Organization.ToString(), tenantId);
+        IEnumerable<IdentityRole> roles = new List<IdentityRole>
         {
-            throw new EntityNotFoundException(typeof(Subscription), SubscriptionId);
-        }
+            roleUser,
+            new IdentityRole(GuidGenerator.Create(),RolesType.Keeper.ToString(), tenantId)
+        };
+        await _identityRole.InsertManyAsync(roles, true);
+        return roleUser;
     }
 
-    private async Task<Organization?> IsFoundOrganizationAsync(int OrganizationId)
+    private async Task AddUser(CreateUpdateOrganiztionDto input, Tenant tenant, Organization organization,IdentityRole role)
     {
-        var organization = await _repository.GetAsync(OrganizationId);
-        if (organization is null)
+        UserCreateDto user = new UserCreateDto()
         {
-            throw new EntityNotFoundException(typeof(Organization), OrganizationId);
-        }
+            UserName = input.UserName,
+            PhoneNumber = input.WhatsAppNum,
+            Email = input.Email,
+            Password = "P@ssw0rd",
+            Name = input.EnglishName,
+            IsActive = true,
+            UserType = 1,
+            OrganizationId = organization.Id,
+            TenantId = tenant.Id,
+            IdentificationTypes=IdentificationTypes.NationalID,
+            NationalId=input.NationalId
 
-        return organization;
+        };
+
+        var userCreated = await _usersAppService.CreateWithRoleAsync(user,role.Id);
     }
-
     ///<inheritdoc/>
     public async Task<int> GetOrganizationsCount()
     {
@@ -376,7 +242,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     ///<inheritdoc/>
     public async Task<int> GetOrganizationIdByTenant(Guid? tenantId)
     {
-        using(DataFilter.Disable<IMultiTenant>())
+        using (DataFilter.Disable<IMultiTenant>())
         {
 
             var query = await _repository.GetQueryableAsync();
@@ -392,10 +258,10 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-        var query = await _repository.GetQueryableAsync();
-        query = query.Where(org => CurrentTenant.IsAvailable? org.TenantId == CurrentTenant.Id : true);
-        var org = await AsyncExecuter.FirstOrDefaultAsync(query);
-        return org;
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(org => CurrentTenant.IsAvailable ? org.TenantId == CurrentTenant.Id : true);
+            var org = await AsyncExecuter.FirstOrDefaultAsync(query);
+            return org;
         }
     }
     ///<inheritdoc/>
@@ -404,38 +270,151 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         using (DataFilter.Disable<IMultiTenant>())
         {
 
-        var orgId=await _usersAppService.GetOrganizationIdByTenantAsync(CurrentTenant.Id);
-        var query =await _repository.GetQueryableAsync();
-        query=query.AsNoTracking();
-        query = query.Include(x => x.Subscription);
-        var organization =await query.FirstOrDefaultAsync(x=>x.Id==orgId);
+            var orgId = await _usersAppService.GetOrganizationIdByTenantAsync(CurrentTenant.Id);
+            var query = await _repository.GetQueryableAsync();
+            query = query.AsNoTracking();
+            query = query.Include(x => x.Subscription);
+            var organization = await query.FirstOrDefaultAsync(x => x.Id == orgId);
 
-        var maxNumberOfGarages=organization?.Subscription?.NumbersOfGarages ?? 0;
-        
-        return maxNumberOfGarages ;
+            var maxNumberOfGarages = organization?.Subscription?.NumbersOfGarages ?? 0;
+
+            return maxNumberOfGarages;
         }
     }
-
     public async Task<int> GetNumberOfActiveGaragesOfOrganization()
     {
-        var query =await _garageRepository.GetQueryableAsync();
+        var query = await _garageRepository.GetQueryableAsync();
         query = query.Where(x => x.Status == Enums.Status.Active);
         var count = query.Count();
         return count;
-        
     }
-
     [RemoteService(isEnabled: false)]
-
     ///<inheritdoc/>
-
-    public async Task<string> GetOrganizationPictureByOrganizationTenant(Guid ?OrganizationTenantId)
+    public async Task<string> GetOrganizationPictureByOrganizationTenant(Guid? OrganizationTenantId)
     {
         var orgId = await GetOrganizationIdByTenant(OrganizationTenantId);
         var organization = await GetAsync(orgId);
         return organization.OrganizationPicture;
     }
+    #endregion
+    #region private methods 
+    private async Task<Organization> CreateOrganization(CreateUpdateOrganiztionDto input, Tenant tenant)
+    {
+        var city = await _cityAppService.GetAsync(input.CityId);
+        var organization = ObjectMapper.Map<CreateUpdateOrganiztionDto, Organization>(input);
 
+        CheckAdress(input, city, organization);
+        organization.TenantId = tenant.Id;
+        organization.SubscriptionId = input.SubscriptionId;
+        await _repository.InsertAsync(organization, autoSave: true);
+        return organization;
+    }
+
+    private static void CheckAdress(CreateUpdateOrganiztionDto input, CityDto city, Organization organization)
+    {
+        bool containsArabic = Regex.IsMatch(input.StreetName, @"\p{IsArabic}");
+        organization.Address = input.BuildingNumber.ToString() + " ," + input.StreetName + " ," + input.SecondaryNumber.ToString() + " ," + input.District + " ,";
+        organization.Address += containsArabic ? city.ArabicName : city.EnglishName;
+        organization.Address += " , " + input.PostalCode;
+    }
+
+    private async Task CheckCommercial(CreateUpdateOrganiztionDto input)
+    {
+        var query = await _repository.GetListAsync(x => x.CommercialRegistrationNumber == input.CommercialRegistrationNumber);
+        Console.WriteLine($"count of Commercial Registration Number {query.Count}");
+        if (query.Count > 0)
+        {
+            throw new BusinessException(EnumValues.GetEnumDescription(OrganizationCreationValidations.CommercialRegistrationNumber) + query.First().ArabicName);
+
+        }
+    }
+    private async Task<Tenant> CreateTenat(CreateUpdateOrganiztionDto input)
+    {
+        var tenant = await _tenantManager.CreateAsync(input.TenantName);
+        var input1 = new TenantCreateDto
+        {
+            Name = input.TenantName,
+            AdminEmailAddress = input.Email,
+            AdminPassword = "P@ssw0rd",
+        };
+        input1.MapExtraPropertiesTo(tenant);
+        await CurrentUnitOfWork.SaveChangesAsync();
+        await _tenantRepository.InsertAsync(tenant);
+        tenant.CreatorId = CurrentUser.Id;
+        await CurrentUnitOfWork.SaveChangesAsync();
+        return tenant;
+    }
+    [RemoteService(isEnabled:false)]
+    ///<inheritdoc/>
+    private string CodeGenerator(int id)
+    {
+        var idLen =(int) Math.Floor(Math.Log10(id) + 1);
+        int zeros = (6 - idLen);
+        string Code = "O";
+        Code = Code.PadRight(zeros + 1, '0');
+        Code += (id);
+        return Code;
+    }
+    private static IQueryable<Organization> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Organization> queryable)
+    {
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+
+            queryable = queryable.Where(or =>
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Subscription.ParkingSlot.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Subscription.NumbersOfGarages.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Country.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Country.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.State.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.State.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.City.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.City.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
+            );
+        }
+
+        return queryable;
+    }
+    private async Task<(int, IQueryable<Organization>)> ApplySortAndpaginate(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Organization> queryable)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+
+        }
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        return (totalCount,queryable);
+    }
+    private async Task IsFoundSubscriptionAsync(int SubscriptionId)
+    {
+        var subscription = await _subscriptionAppService.GetAsync(SubscriptionId);
+        if (subscription is null)
+        {
+            throw new EntityNotFoundException(typeof(Subscription), SubscriptionId);
+        }
+    }
+    private async Task<Organization?> IsFoundOrganizationAsync(int OrganizationId)
+    {
+        var organization = await _repository.GetAsync(OrganizationId);
+        if (organization is null)
+        {
+            throw new EntityNotFoundException(typeof(Organization), OrganizationId);
+        }
+
+        return organization;
+    }
+    #endregion
 
 }
- 

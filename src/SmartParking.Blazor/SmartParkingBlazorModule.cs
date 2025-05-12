@@ -128,7 +128,6 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.AddMiniProfiler(options =>
         {
             options.RouteBasePath = "/profiler";
-            // (Optional) Track EF Core queries
             options.TrackConnectionOpenClose = true;
             options.EnableServerTimingHeader = true;
         }).AddEntityFramework();

@@ -92,6 +92,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _options = options.Value;
     }
     /// <inheritdoc/>
+
+    #region Public Methods
     public async Task<Tenant> GetTenantByNameDtoAsync(string name)
     {
         var query = await _tenantRepository.GetQueryableAsync();
@@ -286,55 +288,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         return user;
     }
 
-    private async Task<IdentityUser?> FindUserAsync(LoginInputDto input)
-    {
-        return await _userRepository.FirstOrDefaultAsync(u =>
-            u.UserName == input.Username || u.PhoneNumber == input.Username);
-    }
-
-    private async Task CheckPassword(LoginInputDto input, IdentityUser user)
-    {
-        if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
-            throw new Exception(LocalizationHelper.GetLocalizedString("InvalidCredentials"));
-        if (user.IsActive == false)
-            throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " + LocalizationHelper.GetLocalizedString("InActive"));
-        return;
-    }
-
-    private async Task CheckRole(IdentityUser user)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var roles = await _userManager.GetRolesAsync(user);
-            if (roles.Contains("Customer") && roles.Count == 1)
-                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " + LocalizationHelper.GetLocalizedString("NotAllowed"));
-            return;
-        }
-       
-    }
-
-    private async Task CheckOrganization(IdentityUser user)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var organizationId = user.GetProperty<int>("OrganizationId");
-
-            if (organizationId == 0) return;
-
-            var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
-
-            if (organization == null || organization.Status == Enums.Status.Inactive || organization.Status == Enums.Status.Deleted)
-            {
-                throw new Exception(LocalizationHelper.GetLocalizedString(
-                    (AlertMessages.AlertMessages.FAILED) + " : " + LocalizationHelper.GetLocalizedString("Organization") + " " +
-                    LocalizationHelper.GetLocalizedString("InActive") + " , " +
-                    LocalizationHelper.GetLocalizedString("Organization") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation")));
-            }
-
-            return;
-        }
-        
-    }
+   
 
     /// <inheritdoc/>
     public async Task<Result<RegisterResultDto>> RegisterAsync(RegisterInputDto input)
@@ -464,14 +418,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             return result;
         }
     }
-    private string GenrateOTP()
-    {
-        int min = 1000;
-        int max = 9999;
-        Random random = new Random();
-        return random.Next(min, max).ToString();
-    }
-
+  
     public async Task<bool> SendSms(string phoneNumber, string message)
     {
 
@@ -506,15 +453,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
     }
 
-    private bool CheckOtp(string Otp, string CurrentOtp, DateTime ExpiryTime)
-    {
-        if (CurrentOtp == Otp && ExpiryTime >= DateTime.Now)
-        {
-            return true;
-        }
-        return false;
-    }
-
+   
     public async Task<Guid> GetCurrentCustomerId()
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -546,4 +485,73 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             return user.UserName;
         }
     }
+    #endregion
+    #region Private Methods
+    private string GenrateOTP()
+    {
+        int min = 1000;
+        int max = 9999;
+        Random random = new Random();
+        return random.Next(min, max).ToString();
+    }
+
+    private async Task<IdentityUser?> FindUserAsync(LoginInputDto input)
+    {
+        return await _userRepository.FirstOrDefaultAsync(u =>
+            u.UserName == input.Username || u.PhoneNumber == input.Username);
+    }
+    private bool CheckOtp(string Otp, string CurrentOtp, DateTime ExpiryTime)
+    {
+        if (CurrentOtp == Otp && ExpiryTime >= DateTime.Now)
+        {
+            return true;
+        }
+        return false;
+    }
+
+
+    private async Task CheckPassword(LoginInputDto input, IdentityUser user)
+    {
+        if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
+            throw new Exception(LocalizationHelper.GetLocalizedString("InvalidCredentials"));
+        if (user.IsActive == false)
+            throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " + LocalizationHelper.GetLocalizedString("InActive"));
+        return;
+    }
+
+    private async Task CheckRole(IdentityUser user)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("Customer") && roles.Count == 1)
+                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " + LocalizationHelper.GetLocalizedString("NotAllowed"));
+            return;
+        }
+
+    }
+
+    private async Task CheckOrganization(IdentityUser user)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var organizationId = user.GetProperty<int>("OrganizationId");
+
+            if (organizationId == 0) return;
+
+            var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
+
+            if (organization == null || organization.Status == Enums.Status.Inactive || organization.Status == Enums.Status.Deleted)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString(
+                    (AlertMessages.AlertMessages.FAILED) + " : " + LocalizationHelper.GetLocalizedString("Organization") + " " +
+                    LocalizationHelper.GetLocalizedString("InActive") + " , " +
+                    LocalizationHelper.GetLocalizedString("Organization") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation")));
+            }
+
+            return;
+        }
+
+    }
+    #endregion
 }

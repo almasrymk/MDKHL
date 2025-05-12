@@ -51,6 +51,8 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         _baseCustomer = baseCustomer;
     }
 
+
+    #region public methods 
     /// <inheritdoc/>
     public async override Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
     {
@@ -354,34 +356,6 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             );
         }
     }
-    /// <summary>
-    /// Asynchronously adds a user based on the provided employee data.
-    /// </summary>
-    /// <param name="input">The DTO containing employee details for user creation.</param>
-    /// <param name="customer">The employee entity to associate with the new user.</param>
-    /// <returns>A task representing the asynchronous operation.</returns>
-    private async Task AddUser(CreateUpdateCustomerDto input, Customer customer)
-    {
-        customer.IdentityUser.Surname = input.FullName;
-        customer.IdentityUser.SetProperty("OtpCode", null);
-        customer.IdentityUser.SetProperty("OtpExpirationDate", DateTime.Now);
-        customer.IdentityUser.SetProperty("UserTypeId", 3);
-        customer.IdentityUser.SetProperty("TenantId", null);
-        customer.TenantId = null;
-        customer.IdentityUser.Name = input.FullName;
-        var createdUser = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
-        await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.PhoneNumber);
-        if (!createdUser.Succeeded)
-        {
-            throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);
-        }
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var output = await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.OrganizationEmployee.ToString()]);
-        }
-    }
-
-
     public async override Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input)
     {
 
@@ -440,9 +414,9 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var query =await _repository.GetQueryableAsync();
-            query=query.Where(x=>x.Id== employeeId && x.IsEmployee==true);
-            var customer =await AsyncExecuter.FirstOrDefaultAsync(query);
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(x => x.Id == employeeId && x.IsEmployee == true);
+            var customer = await AsyncExecuter.FirstOrDefaultAsync(query);
             if (customer == null)
             {
                 throw new Exception("No Customer Found");
@@ -458,6 +432,33 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
     }
 
-
-
+    #endregion
+    #region private methods
+    /// <summary>
+    /// Asynchronously adds a user based on the provided employee data.
+    /// </summary>
+    /// <param name="input">The DTO containing employee details for user creation.</param>
+    /// <param name="customer">The employee entity to associate with the new user.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    private async Task AddUser(CreateUpdateCustomerDto input, Customer customer)
+    {
+        customer.IdentityUser.Surname = input.FullName;
+        customer.IdentityUser.SetProperty("OtpCode", null);
+        customer.IdentityUser.SetProperty("OtpExpirationDate", DateTime.Now);
+        customer.IdentityUser.SetProperty("UserTypeId", 3);
+        customer.IdentityUser.SetProperty("TenantId", null);
+        customer.TenantId = null;
+        customer.IdentityUser.Name = input.FullName;
+        var createdUser = await _userManager.CreateAsync(customer.IdentityUser, input.Password);
+        await _userManager.SetPhoneNumberAsync(customer.IdentityUser, input.PhoneNumber);
+        if (!createdUser.Succeeded)
+        {
+            throw new Exception(message: createdUser.Errors.FirstOrDefault()?.Description);
+        }
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var output = await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.OrganizationEmployee.ToString()]);
+        }
+    }
+    #endregion
 }

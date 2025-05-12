@@ -17,226 +17,178 @@ using SmartParking.Enums;
 using Volo.Abp.MultiTenancy;
 using SmartParking.Filters;
 
-namespace SmartParking.LookupsAppServices;
-[Authorize]
-
-public class CountriesAppService : CrudAppService<Country,
-                                    CountryDto, int,
-                                    PagedAndSortedResultRequestDto,
-                                    CreateUpdateCountryDto>, 
-    ICountriesAppService
+namespace SmartParking.LookupsAppServices
 {
-    private readonly IRepository<Country, int> _countryRepository;
-    private readonly IRepository<Region, int> _regionRepository;
-
-    public CountriesAppService(IRepository<Country, int> countryRepository, IRepository<Region, int> regionRepository) 
-    : base(countryRepository)
+    [Authorize]
+    public class CountriesAppService : CrudAppService<Country,
+                                                CountryDto, int,
+                                                PagedAndSortedResultRequestDto,
+                                                CreateUpdateCountryDto>,
+        ICountriesAppService
     {
-        _regionRepository = regionRepository;
 
-        _countryRepository = countryRepository;
-      
-    }
+        private readonly IRepository<Country, int> _countryRepository;
+        private readonly IRepository<Region, int> _regionRepository;
+
+
+
+        public CountriesAppService(IRepository<Country, int> countryRepository, IRepository<Region, int> regionRepository)
+            : base(countryRepository)
+        {
+            _regionRepository = regionRepository;
+            _countryRepository = countryRepository;
+        }
+
+
+        #region Public Methods
 
         ///<inheritdoc/>
         public override async Task<CountryDto> CreateAsync(CreateUpdateCountryDto input)
         {
-            var country = await _countryRepository.FirstOrDefaultAsync
-                (country =>
-                country.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                country.ArabicName.ToLower().Contains(input.ArabicName.ToLower()) ||
-                country.EnglishCapital.ToLower().Contains (input.EnglishCapital.ToLower()) ||
-                country.ArabicCapital.ToLower().Contains (input.ArabicCapital.ToLower()));
-
-            if (country != null)
-            {
-                        if (country.EnglishName == input.EnglishName.Trim(' ') )
-                        {
-                            throw new InvalidOperationException("country english name already exists");
-
-                        }
-                        else if (country.ArabicName == input.ArabicName.Trim(' ') )
-                        {
-                            throw new InvalidOperationException("country arabic name already exists");
-
-                        }
-                        else if(country.ArabicCapital == input.ArabicCapital.Trim(' ') )
-                        {
-                            throw new InvalidOperationException("country  arabic capital  already exists");
-
-                        }
-                        else if(country.EnglishCapital == input.EnglishCapital.Trim(' ') )
-                        {
-                            throw new InvalidOperationException("country  english capital  already exists");
-
-                        }
-
-            }
-              return await base.CreateAsync(input);
-            
+            await ValidateCountryUniqunessAsync(input);
+            return await base.CreateAsync(input);
         }
+
         ///<inheritdoc/>
         public override async Task<CountryDto> UpdateAsync(int id, CreateUpdateCountryDto input)
         {
+            var existingCountry = await _countryRepository.GetAsync(id);
+            if (existingCountry is null)
+            {
+                throw new InvalidOperationException("Country not found");
+            }
+            await ValidateCountryUniqunessAsync(input);
+            return await base.UpdateAsync(id, input);
+        }
 
-                var existingCountry = await _countryRepository.GetAsync(id);
+        ///<inheritdoc/>
+        public override async Task DeleteAsync(int id)
+        {
+            var country = await _countryRepository.FindAsync(id);
+            if (country is null)
+            {
+                throw new EntityNotFoundException(typeof(Country), id);
+            }
+            await _countryRepository.HardDeleteAsync(country);
+        }
 
-                if (existingCountry is null)
-                {
-                    throw new InvalidOperationException("Country not found");
-                }
+        /// <summary>
+        /// Method used to get a list of countries with optional filtering and sorting.
+        /// </summary>
+        /// <param name="input">The input containing filter, sorting, and pagination data.</param>
+        /// <returns>A paged result of CountryDto objects.</returns>
+        public async Task<PagedResultDto<CountryDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+        {
+            var queryable = await _countryRepository.GetQueryableAsync();
+            var filterExpression = BuildExpression<Country>.BuildFilterExpression(input.filters);
+            if (filterExpression != null)
+            {
+                queryable = queryable.Where(filterExpression);
+            }
 
+            ApplySorting(ref queryable, input.Sorting);
 
-                var country = await _countryRepository.FirstOrDefaultAsync
-                (country =>
-                country.EnglishName.ToLower().Contains( input.EnglishName.ToLower())||
-                country.ArabicName.ToLower().Contains ( input.ArabicName.ToLower()) ||
-                country.EnglishCapital.ToLower().Contains(input.EnglishCapital.ToLower()) ||
-                country.ArabicCapital.ToLower().Contains(input.ArabicCapital.ToLower()));
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            var countries = await AsyncExecuter.ToListAsync(queryable);
+
+            var countriesDto = ObjectMapper.Map<List<Country>, List<CountryDto>>(countries);
+            return new PagedResultDto<CountryDto>(totalCount, countriesDto);
+        }
+
+        ///<inheritdoc/>
+        public async Task<PagedResultDto<CountryDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+        {
+            var queryable = await _countryRepository.GetQueryableAsync();
+            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
+                queryable = queryable.Where(c =>
+                    c.ArabicName.StartsWith(input.SearchingTerm) ||
+                    c.EnglishName.StartsWith(input.SearchingTerm)
+                );
+            }
+
+            ApplySorting(ref queryable, input.Sorting);
+
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            var countries = await AsyncExecuter.ToListAsync(queryable);
+
+            var countryDto = ObjectMapper.Map<List<Country>, List<CountryDto>>(countries);
+            return new PagedResultDto<CountryDto>(totalCount, countryDto);
+        }
+
+        ///<inheritdoc/>
+        public async Task<List<CountryLookupDto>> GetCountryLookupAsync()
+        {
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                var countries = await _countryRepository.GetListAsync();
+                var countryList = ObjectMapper.Map<List<Country>, List<CountryLookupDto>>(countries);
+                return countryList;
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Validates the uniqueness of a country based on various attributes.
+        /// </summary>
+        /// <param name="input">The country DTO to validate.</param>
+        private async Task ValidateCountryUniqunessAsync(CreateUpdateCountryDto input)
+        {
+            var country = await _countryRepository.FirstOrDefaultAsync(c =>
+                c.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                c.ArabicName.ToLower().Contains(input.ArabicName.ToLower()) ||
+                c.EnglishCapital.ToLower().Contains(input.EnglishCapital.ToLower()) ||
+                c.ArabicCapital.ToLower().Contains(input.ArabicCapital.ToLower()));
 
             if (country != null)
             {
-                    if (country.EnglishName == input.EnglishName.Trim(' ') && country.Id != id)
-                    {
-                        throw new InvalidOperationException("country english name already exists");
-
-                    }
-                    else if (country.ArabicName == input.ArabicName.Trim(' ') && country.Id != id)
-                    {
-                        throw new InvalidOperationException("country arabic name already exists");
-
-                    }
-                    else if (country.ArabicCapital == input.ArabicCapital.Trim(' ') && country.Id != id)
-                    {
-                        throw new InvalidOperationException("country  arabic capital  already exists");
-
-                    }
-                    else if (country.EnglishCapital== input.EnglishCapital.Trim(' ') && country.Id != id)
-                    {
-                        throw new InvalidOperationException("country  english capital  already exists");
-
-                    }
-
+                if (country.EnglishName == input.EnglishName.Trim())
+                {
+                    throw new InvalidOperationException("Country English name already exists");
+                }
+                else if (country.ArabicName == input.ArabicName.Trim())
+                {
+                    throw new InvalidOperationException("Country Arabic name already exists");
+                }
+                else if (country.ArabicCapital == input.ArabicCapital.Trim())
+                {
+                    throw new InvalidOperationException("Country Arabic capital already exists");
+                }
+                else if (country.EnglishCapital == input.EnglishCapital.Trim())
+                {
+                    throw new InvalidOperationException("Country English capital already exists");
+                }
             }
-             return await base.UpdateAsync(id, input);
-
         }
 
-    /// <inheritdoc/>
-    public override async Task DeleteAsync(int id)
-    {
-        var country = await _countryRepository.FindAsync(id);
-
-        if (country is null)
+        /// <summary>
+        /// Applies sorting based on the input sorting value.
+        /// </summary>
+        /// <param name="queryable">The queryable collection to apply sorting on.</param>
+        /// <param name="sorting">The sorting string from the input.</param>
+        private void ApplySorting(ref IQueryable<Country> queryable, string sorting)
         {
-            throw new EntityNotFoundException(typeof(Country), id);
-        }
-
-        await _countryRepository.HardDeleteAsync(country);
-
-
-    }
-    /// <summary>
-    /// method used to get list of countries
-    /// </summary>
-    /// <param name="input">specifies max number of country and if it sorted or not</param>
-    /// <returns>CountryDto List</returns>
-    public async Task<PagedResultDto<CountryDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
-    {
-        // Get the IQueryable<country> from the repository
-        var queryable = await _countryRepository.GetQueryableAsync();
-        // Apply filtering
-        var filterExpression = BuildExpression<Country>.BuildFilterExpression(input.filters);
-        if (filterExpression is not null)
-        {
-            queryable = queryable.Where(filterExpression);
-        }
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
+            if (!sorting.IsNullOrEmpty())
             {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
+                if (sorting.Contains("DESC"))
+                {
+                    var sortingFields = sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sortingFields[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(sorting);
+                }
             }
-            else
-            {
-                queryable = queryable.OrderBy(input.Sorting);
-            }
-
         }
-        // Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-        // Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of garages entities
-        var countries = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the garages entities to garagesDto objects
-        var countriesDto = ObjectMapper.Map<List<Country>, List<CountryDto>>(countries);
-        Console.WriteLine(countriesDto.Count);
-        // Return the paginated result
-        return new PagedResultDto<CountryDto>(
-            totalCount,
-            countriesDto
-        );
-    }
-
-    /// <inheritdoc/>
-    public async Task<PagedResultDto<CountryDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
-    {
-        // Get the IQueryable<country> from the repository
-        var queryable = await _countryRepository.GetQueryableAsync();
-        // Apply search filtering
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
-
-            queryable = queryable.Where(c =>
-                c.ArabicName.StartsWith(input.SearchingTerm) ||
-                c.EnglishName.StartsWith(input.SearchingTerm)
-
-            );
-        }
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-                queryable = queryable.OrderBy(input.Sorting);
-            }
-
-        }
-        // Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of hotel entities
-        var countries = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the hotel entities to hotelDto objects
-        var countryDto = ObjectMapper.Map<List<Country>, List<CountryDto>>(countries);
-        Console.WriteLine(countryDto.Count);
-        // Return the paginated result
-        return new PagedResultDto<CountryDto>(
-            totalCount,
-            countryDto
-        );
-    }
-
-    ///<inheritdoc/>
-    public async Task<List<CountryLookupDto>> GetCountryLookupAsync()
-    {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-
-            var countries = await _countryRepository.GetListAsync();
-            var countryList = ObjectMapper.Map<List<Country>, List<CountryLookupDto>>(countries);
-            return countryList;
-        }
+        #endregion
     }
 }

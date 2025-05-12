@@ -59,7 +59,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     }
 
 
-
+    #region public methods
     /// <inheritdoc/>
     public async Task<CustomerDto> CreateMdkhlAsync(CreateUpdateCustomerDto input)
     {
@@ -108,39 +108,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
 
     }
-
-    /// <summary>
-    /// Asynchronously adds a user based on the provided customer data.
-    /// </summary>
-    /// <param name="input">The DTO containing customer details for user creation.</param>
-    /// <param name="customer">The customer entity to associate with the new user.</param>
-    /// <returns>A task representing the asynchronous operation.</returns>
-    private async Task<UserDto> AddUserForCustomer(CreateUpdateCustomerDto input)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var userMap = ObjectMapper.Map<CreateUpdateCustomerDto, UserCreateDto>(input);
-            userMap.TenantId = null;
-            userMap.OrganizationId = 0;
-            var role = await _authenticationUtility.GetRoleByNameAndTenant(RolesType.Customer.ToString(), null);
-            var user = await _usersAppService.CreateWithRoleAsync(userMap, role.Id);
-            return user;
-        }
-    }
-
-    private async Task<UserDto> AddUser(CreateUpdateCustomerDto input)
-    {
-
-        var userMap = ObjectMapper.Map<CreateUpdateCustomerDto, UserCreateDto>(input);
-        userMap.TenantId = input.TenantId;
-        userMap.IsCustomer = true;
-        var user = await _usersAppService.CreateWithRoleWithoutCustomerAsync(userMap, input.RoleId);
-        return user;
-    }
-
-
-
-
 
 
     [RemoteService(false)]
@@ -191,14 +158,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         }
 
     }
-
-    private static IQueryable<Customer> CheckTenant(Guid? tenantId, IQueryable<Customer> query)
-    {
-        if (tenantId.HasValue)
-            query = query.Where(x => x.CustomerPackages.Any(org => org.TenantId == tenantId.Value));
-        return query;
-    }
-
     [RemoteService(false)]
     public async Task<PagedResultDto<CustomerDto>> GetListNoPackageAsync(PagedAndSortedAndSearchResultRequestDto input, int? organizationId, Guid? tenantId)
     {
@@ -225,16 +184,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
         }
 
-    }
-
-    private static IQueryable<Customer> IsOrganization(int? organizationId, IQueryable<Customer> query)
-    {
-        if (organizationId is not null)
-        {
-            query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organizationId));
-        }
-
-        return query;
     }
     [RemoteService(false)]
     public async Task<PagedResultDto<CustomerDto>> GetListForCustomerCategoryAsync(PagedAndSortedAndSearchResultRequestDto input, CustomerCategoryStatus customerCategory, int? organizationId, Guid? tenantId)
@@ -263,7 +212,344 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         }
 
     }
+    /// <inheritdoc/>
+    public override async Task<CustomerDto> GetAsync(Guid id)
+    {
 
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var customer = await _repository.GetAsync(c => c.Id == id);
+            return ObjectMapper.Map<Customer, CustomerDto>(customer);
+
+        }
+    }
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        var organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
+
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var queryable = await _repository.GetQueryableAsync();
+
+            queryable = queryable.Include(x => x.IdentityUser);
+            queryable = queryable.Include(c => c.CustomerPackages);
+            queryable = queryable.Where(x => x.CustomerPackages.Any(cp => cp.OrganizationId == organization.Id));
+
+            queryable = CreateSearchQuery(input, queryable);
+            queryable = AddSortQuery(input, queryable);
+            var paged = await AddPaged(input, queryable);
+            queryable = paged.query;
+            List<CustomerDto> cutomersDtos = await AddMap(queryable, null);
+            return new PagedResultDto<CustomerDto>(
+                paged.totalCount,
+                cutomersDtos
+            );
+        }
+
+    }
+    public async Task<PagedResultDto<CustomerDto>> SearchMDKHL(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var queryable = await _repository.GetQueryableAsync();
+            queryable = queryable.Include(x => x.IdentityUser);
+            queryable = CreateSearchQuery(input, queryable);
+            queryable = AddSortQuery(input, queryable);
+            var paged = await AddPaged(input, queryable);
+            queryable = paged.query;
+            List<CustomerDto> cutomersDtos = await AddMap(queryable, null);
+            return new PagedResultDto<CustomerDto>(
+                paged.totalCount,
+                cutomersDtos
+            );
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<CustomerDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
+            var queryable = await _repository.GetQueryableAsync();
+            queryable = queryable.Include(x => x.IdentityUser);
+            queryable = queryable.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
+            queryable = queryable.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == orgid));
+            var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
+            {
+                queryable = queryable.Where(filterExpression);
+            }
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+            }
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of garages entities
+            var customers = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the garages entities to garagesDto objects
+            var customersDto = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+            Console.WriteLine(customersDto.Count);
+            // Return the paginated result
+            return new PagedResultDto<CustomerDto>(
+                totalCount,
+                customersDto
+            );
+        }
+    }
+    /// <inheritdoc/>
+	public async Task<PagedResultDto<CustomerDto>> FilterMDKHL(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var queryable = await _repository.GetQueryableAsync();
+            var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
+            {
+                queryable = queryable.Where(filterExpression);
+            }
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+
+            }
+            // Get the total count of filtered records
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            // Apply pagination
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of garages entities
+            var customers = await AsyncExecuter.ToListAsync(queryable);
+
+            // Map the garages entities to garagesDto objects
+            var customersDto = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+            Console.WriteLine(customersDto.Count);
+            // Return the paginated result
+            return new PagedResultDto<CustomerDto>(
+                totalCount,
+                customersDto
+            );
+        }
+    }
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<VehicleDto>> GetVehiclesRelatedToSpecificCustomerMdkhl(Guid customerId, PagedAndSortedResultRequestDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var customer = await GetAsync(customerId);
+            if (customer == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " +
+                    LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            }
+
+            var query = await _repositoryVehicle.GetQueryableAsync();
+            query = query.Where(x => x.CustomerId == customerId);
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+            // Execute the query and get the list of garages entities
+            var result = await AsyncExecuter.ToListAsync(query);
+            var output = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(result);
+            return new PagedResultDto<VehicleDto>
+            {
+                Items = output,
+                TotalCount = totalCount
+            };
+        }
+
+    }
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<CustomerDto>> GetCustomerByOrganization(PagedAndSortedResultRequestDto input, int organizationId)
+    {
+        var org = await _organizationAppService.GetAsync(organizationId);
+        if (org == null)
+        {
+            throw new EntityNotFoundException(LocalizationHelper.GetLocalizedString("Organization") + " " +
+                      LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+
+        }
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(c => c.IsEmployee == false);
+            query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organizationId));
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+            query.OrderBy(x => x.Id);
+            var customers = await AsyncExecuter.ToListAsync(query);
+            var customerDtos = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
+            return new PagedResultDto<CustomerDto>(
+               totalCount,
+               customerDtos
+           );
+        }
+    }
+    public async Task<int> GetCountCustomersCountForMDKHL()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(c => !c.IsEmployee);
+            var count = await AsyncExecuter.CountAsync(query);
+            return count;
+        }
+    }
+    public async Task<int> GetCountCustomersCountForOrganization(Guid? CurrentTenantId)
+    {
+        var orgId = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenantId);
+
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(c => !c.IsEmployee);
+            query = query.Include(x => x.CustomerPackages).ThenInclude(c => c.Organization).Where(x => x.CustomerPackages.Any(o => o.OrganizationId == orgId));
+            var count = await AsyncExecuter.CountAsync(query);
+            return count;
+        }
+    }
+
+
+
+    /// <inheritdoc/>
+
+    public async override Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var customer = await _repository.FirstOrDefaultAsync(c => c.Id == id);
+
+            if (customer == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " +
+                    LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+
+            }
+            if (customer.IdentificationTypes != input.IdentificationType || customer.NationalId != input.NationalId)
+            {
+                await _baseCustomer.CheckCustomer(input);
+            }
+            if (customer.IdentityUser.PhoneNumber != input.PhoneNumber)
+            {
+                var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
+                if (!result1)
+                {
+                    throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " +
+                        LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+
+                }
+            }
+            await UpdateUser(input, customer.IdentityUserId);
+            return await base.UpdateAsync(id, input);
+        }
+
+
+    }
+
+    /// <inheritdoc/>
+
+    public override async Task DeleteAsync(Guid id)
+    {
+        var customer = await _repository.FindAsync(x => x.Id == id);
+        if (customer == null)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " +
+                LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+        }
+        await _repository.HardDeleteAsync(customer);
+
+    }
+    public async Task<int> GetNumberOfCustomerAtOrganizationAsync(int organizationId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query = query.Include(x => x.CustomerPackages)
+                         .Where(x => x.CustomerPackages != null && x.CustomerPackages.Any(o => o.OrganizationId == organizationId && o.ExpiryDate >= DateTime.Now
+                         ))
+                         .DistinctBy(x => x.Id);
+            var count = await AsyncExecuter.CountAsync(query);
+            return count;
+        }
+    }
+    #endregion
+
+    #region private methods 
+    /// <summary>
+    /// Asynchronously adds a user based on the provided customer data.
+    /// </summary>
+    /// <param name="input">The DTO containing customer details for user creation.</param>
+    /// <param name="customer">The customer entity to associate with the new user.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    private async Task<UserDto> AddUserForCustomer(CreateUpdateCustomerDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var userMap = ObjectMapper.Map<CreateUpdateCustomerDto, UserCreateDto>(input);
+            userMap.TenantId = null;
+            userMap.OrganizationId = 0;
+            var role = await _authenticationUtility.GetRoleByNameAndTenant(RolesType.Customer.ToString(), null);
+            var user = await _usersAppService.CreateWithRoleAsync(userMap, role.Id);
+            return user;
+        }
+    }
+
+    private async Task<UserDto> AddUser(CreateUpdateCustomerDto input)
+    {
+
+        var userMap = ObjectMapper.Map<CreateUpdateCustomerDto, UserCreateDto>(input);
+        userMap.TenantId = input.TenantId;
+        userMap.IsCustomer = true;
+        var user = await _usersAppService.CreateWithRoleWithoutCustomerAsync(userMap, input.RoleId);
+        return user;
+    }
+
+    private static IQueryable<Customer> CheckTenant(Guid? tenantId, IQueryable<Customer> query)
+    {
+        if (tenantId.HasValue)
+            query = query.Where(x => x.CustomerPackages.Any(org => org.TenantId == tenantId.Value));
+        return query;
+    }
+
+   
+    private static IQueryable<Customer> IsOrganization(int? organizationId, IQueryable<Customer> query)
+    {
+        if (organizationId is not null)
+        {
+            query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organizationId));
+        }
+
+        return query;
+    }
+    
     private async Task<List<CustomerDto>> AddMap(IQueryable<Customer> query, CustomerCategoryStatus? customerCategory)
     {
 
@@ -322,61 +608,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         return query;
     }
 
-    /// <inheritdoc/>
-    public override async Task<CustomerDto> GetAsync(Guid id)
-    {
-
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var customer = await _repository.GetAsync(c => c.Id == id);
-            return ObjectMapper.Map<Customer, CustomerDto>(customer);
-
-        }
-    }
-    /// <inheritdoc/>
-    public async Task<PagedResultDto<CustomerDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
-    {
-        var organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
-
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var queryable = await _repository.GetQueryableAsync();
-
-            queryable = queryable.Include(x => x.IdentityUser);
-            queryable = queryable.Include(c => c.CustomerPackages);
-            queryable = queryable.Where(x => x.CustomerPackages.Any(cp => cp.OrganizationId == organization.Id));
-
-            queryable = CreateSearchQuery(input, queryable);
-            queryable = AddSortQuery(input, queryable);
-            var paged = await AddPaged(input, queryable);
-            queryable = paged.query;
-            List<CustomerDto> cutomersDtos = await AddMap(queryable, null);
-            return new PagedResultDto<CustomerDto>(
-                paged.totalCount,
-                cutomersDtos
-            );
-        }
-
-    }
-    public async Task<PagedResultDto<CustomerDto>> SearchMDKHL(PagedAndSortedAndSearchResultRequestDto input)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-
-            var queryable = await _repository.GetQueryableAsync();
-            queryable = queryable.Include(x => x.IdentityUser);
-            queryable = CreateSearchQuery(input, queryable);
-            queryable = AddSortQuery(input, queryable);
-            var paged = await AddPaged(input, queryable);
-            queryable = paged.query;
-            List<CustomerDto> cutomersDtos = await AddMap(queryable, null);
-            return new PagedResultDto<CustomerDto>(
-                paged.totalCount,
-                cutomersDtos
-            );
-        }
-    }
-
+   
     private static IQueryable<Customer> CreateSearchQuery(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Customer> queryable)
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
@@ -397,258 +629,10 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         return queryable;
     }
 
-    /// <inheritdoc/>
-    public async Task<PagedResultDto<CustomerDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
-    {
-
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-
-            var orgid = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
-            var queryable = await _repository.GetQueryableAsync();
-
-            queryable = queryable.Include(x => x.IdentityUser);
-            queryable = queryable.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
-            queryable = queryable.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == orgid));
-
-
-            var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
-            if (filterExpression is not null)
-            {
-                queryable = queryable.Where(filterExpression);
-            }
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    queryable = queryable.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    queryable = queryable.OrderBy(input.Sorting);
-                }
-
-            }
-            // Get the total count of filtered records
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-            // Apply pagination
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            // Execute the query and get the list of garages entities
-            var customers = await AsyncExecuter.ToListAsync(queryable);
-
-            // Map the garages entities to garagesDto objects
-            var customersDto = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
-            Console.WriteLine(customersDto.Count);
-            // Return the paginated result
-            return new PagedResultDto<CustomerDto>(
-                totalCount,
-                customersDto
-            );
-        }
-    }/// <inheritdoc/>
-	public async Task<PagedResultDto<CustomerDto>> FilterMDKHL(PagedAndSortedAndFilteredResultRequestDto input)
-    {
-
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-
-            var queryable = await _repository.GetQueryableAsync();
-            var filterExpression = BuildExpression<Customer>.BuildFilterExpression(input.filters);
-            if (filterExpression is not null)
-            {
-                queryable = queryable.Where(filterExpression);
-            }
-            if (!input.Sorting.IsNullOrEmpty())
-            {
-                if (input.Sorting.Contains("DESC"))
-                {
-                    var sorting = input.Sorting.Split(' ').ToList();
-                    queryable = queryable.OrderBy(sorting[0] + " descending");
-                }
-                else
-                {
-                    queryable = queryable.OrderBy(input.Sorting);
-                }
-
-            }
-            // Get the total count of filtered records
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-            // Apply pagination
-            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-            // Execute the query and get the list of garages entities
-            var customers = await AsyncExecuter.ToListAsync(queryable);
-
-            // Map the garages entities to garagesDto objects
-            var customersDto = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
-            Console.WriteLine(customersDto.Count);
-            // Return the paginated result
-            return new PagedResultDto<CustomerDto>(
-                totalCount,
-                customersDto
-            );
-        }
-    }
-
-    /// <inheritdoc/>
-    public async Task<PagedResultDto<VehicleDto>> GetVehiclesRelatedToSpecificCustomerMdkhl(Guid customerId, PagedAndSortedResultRequestDto input)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var customer = await GetAsync(customerId);
-            if (customer == null)
-            {
-                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " +
-                    LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-            }
-
-            var query = await _repositoryVehicle.GetQueryableAsync();
-            query = query.Where(x => x.CustomerId == customerId);
-            var totalCount = await AsyncExecuter.CountAsync(query);
-            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
-            // Execute the query and get the list of garages entities
-            var result = await AsyncExecuter.ToListAsync(query);
-            var output = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(result);
-            return new PagedResultDto<VehicleDto>
-            {
-                Items = output,
-                TotalCount = totalCount
-            };
-        }
-
-    }
-
-
-    /// <inheritdoc/>
-    public async Task<PagedResultDto<CustomerDto>> GetCustomerByOrganization(PagedAndSortedResultRequestDto input, int organizationId)
-    {
-        var org = await _organizationAppService.GetAsync(organizationId);
-        if (org == null)
-        {
-            throw new EntityNotFoundException(LocalizationHelper.GetLocalizedString("Organization") + " " +
-                      LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-
-        }
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-
-            var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => c.IsEmployee == false);
-            query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organizationId));
-            var totalCount = await AsyncExecuter.CountAsync(query);
-            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
-            query.OrderBy(x => x.Id);
-            var customers = await AsyncExecuter.ToListAsync(query);
-            var customerDtos = ObjectMapper.Map<List<Customer>, List<CustomerDto>>(customers);
-            return new PagedResultDto<CustomerDto>(
-               totalCount,
-               customerDtos
-           );
-        }
-
-
-    }
-
-
-
-    public async Task<int> GetCountCustomersCountForMDKHL()
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-
-            var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => !c.IsEmployee);
-            var count = await AsyncExecuter.CountAsync(query);
-            return count;
-        }
-    }
-
-
-    public async Task<int> GetCountCustomersCountForOrganization(Guid? CurrentTenantId)
-    {
-        var orgId = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenantId);
-
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-
-            var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => !c.IsEmployee);
-            query = query.Include(x => x.CustomerPackages).ThenInclude(c => c.Organization).Where(x => x.CustomerPackages.Any(o => o.OrganizationId == orgId));
-            var count = await AsyncExecuter.CountAsync(query);
-            return count;
-        }
-    }
-
-
-
-    /// <inheritdoc/>
-
-    public async override Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var customer = await _repository.FirstOrDefaultAsync(c => c.Id == id);
-
-            if (customer == null)
-            {
-                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " +
-                    LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-
-            }
-            if (customer.IdentificationTypes != input.IdentificationType || customer.NationalId != input.NationalId)
-            {
-                await _baseCustomer.CheckCustomer(input);
-            }
-            if (customer.IdentityUser.PhoneNumber != input.PhoneNumber)
-            {
-                var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
-                if (!result1)
-                {
-                    throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " +
-                        LocalizationHelper.GetLocalizedString("DuplicateValidation"));
-
-                }
-            }
-            await UpdateUser(input, customer.IdentityUserId);
-            return await base.UpdateAsync(id, input);
-        }
-
-
-    }
-
     private async Task UpdateUser(CreateUpdateCustomerDto input, Guid userId)
     {
         var user = ObjectMapper.Map<CreateUpdateCustomerDto, UpdateUserDto>(input);
         await _usersAppService.UpdateUserWithoutRoleChangeAsync(userId, user);
     }
-
-    /// <inheritdoc/>
-
-    public override async Task DeleteAsync(Guid id)
-    {
-        var customer = await _repository.FindAsync(x => x.Id == id);
-        if (customer == null)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " +
-                LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-        }
-        await _repository.HardDeleteAsync(customer);
-
-    }
-   public async Task<int> GetNumberOfCustomerAtOrganizationAsync(int organizationId)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var query = await _repository.GetQueryableAsync();
-            query = query.Include(x => x.CustomerPackages)
-                         .Where(x => x.CustomerPackages != null && x.CustomerPackages.Any(o => o.OrganizationId == organizationId && o.ExpiryDate >= DateTime.Now
-                         ))
-                         .DistinctBy(x => x.Id);
-            var count = await AsyncExecuter.CountAsync(query);
-            return count;
-        }
-    }
-
+    #endregion
 }
