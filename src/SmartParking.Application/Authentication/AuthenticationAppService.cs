@@ -14,6 +14,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Mobile.Otps;
+using SmartParking.Organizations;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
@@ -39,6 +40,7 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.Validation;
 using static System.Net.WebRequestMethods;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace SmartParking.Authentication;
@@ -61,6 +63,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly TaqnyatSmsOptionsDto _options;
     private readonly HttpClient _httpClient;
     private readonly ICurrentTenant _currentTenant;
+    private readonly IOrganizationsAppService _organizationsAppService;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
@@ -75,7 +78,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IAuthenticationUtility authenticationUtility,
         IUsersAppService usersAppService,
         HttpClient httpClient,
-        ICurrentTenant currentTenant)
+        ICurrentTenant currentTenant,
+        IOrganizationsAppService organizationsAppService)
     {
         _signInManager = signInManager;
         _userManager = userManager;
@@ -90,6 +94,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _httpClient = httpClient;
         _currentTenant = currentTenant;
         _options = options.Value;
+        _organizationsAppService = organizationsAppService;
     }
     /// <inheritdoc/>
 
@@ -216,7 +221,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 }
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
-
+                CurrentTenant.Change(user.TenantId);
 
                 var roles = await _userManager.GetRolesAsync(user);
                 return Result<LoginResultDto>.Success(new LoginResultDto
@@ -239,7 +244,27 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
 
     }
-    [RemoteService(IsEnabled = false)]
+    public async Task<Result<LoginAppResultDto>> LoginAppAsync(LoginMobileInputDto input)
+    {
+        var LoginResult = await LoginAsync(input);
+        var LoginAppResultDto = new LoginAppResultDto();
+
+        if (LoginResult.IsSuccess)
+        {
+            CurrentTenant.Change( Guid.Parse(LoginResult.Value.TenantId));
+            var tenant = await _tenantRepository.FirstOrDefaultAsync(x => x.Id == Guid.Parse(LoginResult.Value.TenantId));
+            LoginAppResultDto.TenantId = LoginResult.Value.TenantId;
+            LoginAppResultDto.AccessToken = LoginResult.Value.AccessToken;
+            LoginAppResultDto.Role = LoginResult.Value.Role;
+            var organization = await _organizationsAppService.GetOrganizationIdByTenant(new Guid(LoginResult.Value.TenantId));
+            LoginAppResultDto.Baseurl = $"{_httpContext.HttpContext.Request.Scheme}:/{tenant.Name}/{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}";
+            LoginAppResultDto.OrganizationId = organization;
+            LoginAppResultDto.ImageBase64 = await _organizationsAppService.GetOrganizationPictureByOrganizationTenant(new Guid(LoginResult.Value.TenantId));
+            return Result<LoginAppResultDto>.Success(LoginAppResultDto);
+        }
+        return Result<LoginAppResultDto>.Invalid(LoginResult.ValidationErrors);
+    }
+   [RemoteService(IsEnabled = false)]
     public async Task<string> GenerateToken(string userId)
     {
         await Task.Yield();
