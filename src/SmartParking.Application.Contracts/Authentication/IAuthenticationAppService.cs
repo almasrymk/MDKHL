@@ -41,6 +41,12 @@ public interface IAuthenticationAppService : IApplicationService
     /// <returns>A <see cref="LoginResultDto"/> containing the result of the login attempt.</returns>
     Task<Result<LoginResultDto>> LoginAsync(LoginMobileInputDto input);
     /// <summary>
+    /// Logs in a user in app with the provided input.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    Task<Result<LoginAppResultDto>> LoginAppAsync(LoginMobileInputDto input);
+    /// <summary>
     /// Logs in a user with the provided input.
     /// </summary>
     /// <param name="input">The login input containing username and password.</param>
