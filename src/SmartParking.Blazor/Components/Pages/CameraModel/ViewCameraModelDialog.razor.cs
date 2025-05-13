@@ -2,19 +2,25 @@
 using MudBlazor;
 using SmartParking.Lookups.CameraModel;
 
-namespace SmartParking.Blazor.Components.Pages.CameraModel
-{
-    partial class ViewCameraModelDialog
-    {
+namespace SmartParking.Blazor.Components.Pages.CameraModel;
 
-        private MudForm form;
-        [Parameter]
-        public CameraModelDto cameraModel { get; set; } = new CameraModelDto();
-        [CascadingParameter]
-        private IMudDialogInstance MudDialog { get; set; }
-        private void Cancel()
-        {
-            MudDialog.Cancel();
-        }
+/// <summary>
+/// Component for viewing an existing camera model using a dialog form.
+/// </summary>
+partial class ViewCameraModelDialog
+{
+    [Parameter]
+    public CameraModelDto cameraModel { get; set; } = new CameraModelDto();
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    /// <summary>
+    /// Cancels the dialog without saving any changes.
+    /// </summary>
+    private void Cancel()
+    {
+        MudDialog.Cancel();
     }
 }
+
