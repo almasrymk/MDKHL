@@ -10,6 +10,9 @@ using System.Linq;
 using System;
 namespace SmartParking.Packages
 {
+    /// <summary>
+    /// interfact for handle Packages
+    /// </summary>
 	public interface IPackagesAppService:
          ICrudAppService<
         PackageDto,
@@ -39,6 +42,12 @@ namespace SmartParking.Packages
         /// <param name="input">specifies max number of Packages and if it sorted or not</param>
         /// <returns>Package Dto</returns>
         Task<PagedResultDto<PackageDto>> GetAllListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
+        /// <summary>
+        /// method to get list of mdkhl
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="TenantId"></param>
+        /// <returns></returns>
         Task<PagedResultDto<PackageDto>> GetListMDKHLAsync(PagedAndSortedAndSearchResultRequestDto input,Guid?TenantId=null);
 
 
