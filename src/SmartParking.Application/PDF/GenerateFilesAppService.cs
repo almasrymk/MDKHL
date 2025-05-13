@@ -41,6 +41,7 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
     private readonly IOrganizationsAppService _organizationsAppService = organizationsAppService;
     private readonly IDistributedEventBus _eventBus = eventBus;
 
+    #region Public Methods
     public async Task ExportToExcel(TableData Data, string pathFileName)
     {
         await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Started.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
@@ -173,19 +174,7 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
         }
     }
 
-    private string RemoveHtmlTags(string input)
-    {
-        const string iconHtml = "<i class='icon-Saudi_Riyal_Symbolsvg' style='font-size: 15px;'></i>";
-
-        if (input.Contains(iconHtml))
-        {
-            return input.Replace(iconHtml, string.Empty);
-        }
-        else
-        {
-            return input;
-        }
-    }
+  
 
 
     public async Task ExportToPdf(TableData Data, string fileName)
@@ -303,7 +292,8 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
 
 
     }
-
+    #endregion
+    #region Private Methods
     private static Table CreateHeaderTable(TableData Data, PdfFont font, Organization? organization)
     {
         Table headerTable = new Table(3);
@@ -445,4 +435,18 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
         }
 
     }
+    private string RemoveHtmlTags(string input)
+    {
+        const string iconHtml = "<i class='icon-Saudi_Riyal_Symbolsvg' style='font-size: 15px;'></i>";
+
+        if (input.Contains(iconHtml))
+        {
+            return input.Replace(iconHtml, string.Empty);
+        }
+        else
+        {
+            return input;
+        }
+    }
+    #endregion
 }
