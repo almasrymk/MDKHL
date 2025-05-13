@@ -54,6 +54,7 @@ public class StateAppService : CrudAppService<State, StateDto,
 
         return await base.CreateAsync(input);
     }
+    ///<inheritdoc/>
 
     public override async Task<StateDto> UpdateAsync(int id, CreateUpdateStateDto input)
     {
@@ -110,6 +111,7 @@ public class StateAppService : CrudAppService<State, StateDto,
             stateDto
         );
     }
+    ///<inheritdoc/>
 
     public async Task<List<RegionLookupDto>> GetRegionLookupAsync()
     {
@@ -121,6 +123,7 @@ public class StateAppService : CrudAppService<State, StateDto,
         return regionsList;
         }
     }
+    ///<inheritdoc/>
 
     public async Task<List<StateLookupDto>> GetStateLookupAsync()
     {
@@ -132,6 +135,7 @@ public class StateAppService : CrudAppService<State, StateDto,
         return statesList;
         }
     }
+    ///<inheritdoc/>
 
     public async Task<List<StateLookupDto>> GetStateLookupByRegionAsync(int regionId)
     {
@@ -145,11 +149,8 @@ public class StateAppService : CrudAppService<State, StateDto,
 
         }
     }
-    /// <summary>
-    /// method used to get list of states
-    /// </summary>
-    /// <param name="input">specifies max number of state and if it filtered or not</param>
-    /// <returns>StateDto List</returns>
+    ///<inheritdoc/>
+
     public async Task<PagedResultDto<StateDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<state> from the repository
@@ -211,6 +212,12 @@ public class StateAppService : CrudAppService<State, StateDto,
     #endregion
 
     #region Private Methods
+    /// <summary>
+    /// Validates the uniqueness of a state by checking if the English or Arabic names already exist for the specified region in the repository, excluding the current state (if specified by ID).
+    /// </summary>
+    /// <param name="input">The DTO containing the state details to validate.</param>
+    /// <param name="id">The ID of the state to exclude from the check (optional).</param>
+    /// <exception cref="InvalidOperationException">Thrown when the English or Arabic name of the state already exists in the repository for the given region.</exception>
     private async Task ValidateStateUniqunessAsync(CreateUpdateStateDto input, int? id = null)
     {
         string normalizedEnglish = input.EnglishName?.Trim().ToLowerInvariant();
@@ -231,6 +238,11 @@ public class StateAppService : CrudAppService<State, StateDto,
             throw new InvalidOperationException("State arabic name already exists");
     }
 
+    /// <summary>
+    /// Validates if a region with the specified ID exists in the repository.
+    /// </summary>
+    /// <param name="regionId">The ID of the region to validate.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the region with the given ID does not exist.</exception>
     private async Task ValidateRegionExistsAsync(int regionId)
     {
         var region = await _regionRepository.FindAsync(regionId);
@@ -238,6 +250,11 @@ public class StateAppService : CrudAppService<State, StateDto,
             throw new InvalidOperationException("Region does not exist");
     }
 
+    /// <summary>
+    /// Validates that the given status is one of the valid status values: Active, Inactive, or Deleted.
+    /// </summary>
+    /// <param name="status">The status to validate.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the status is invalid.</exception>
     private void ValidateStatus(Status status)
     {
         if (status != Status.Active && status != Status.Inactive && status != Status.Deleted)

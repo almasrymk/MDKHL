@@ -13,29 +13,45 @@ public interface ICameraBrandAppService : ICrudAppService<CameraBrandDto, int, P
 {
 
     /// <summary>
-    /// abstract method to create camera brand
+    /// Abstract method to create a new camera brand.
     /// </summary>
-    /// <param name="input">camera brand create dto</param>
-    /// <returns>camera brandDto</returns>
+    /// <param name="input">Camera brand creation DTO.</param>
+    /// <returns>The created <see cref="CameraBrandDto"/>.</returns>
     public Task<CameraBrandDto> CreateAsync(CreateUpdateCameraBrandDto input);
 
     /// <summary>
-    /// abstract method to update specific camera brand
+    /// Abstract method to update an existing camera brand by ID.
     /// </summary>
-    /// <param name="input">camera brand create dto</param>
-    /// <param name="id">id of specific camera brand</param>
-    /// <returns>camera brandDto</returns>
+    /// <param name="id">The ID of the camera brand to update.</param>
+    /// <param name="input">Camera brand update DTO.</param>
+    /// <returns>The updated <see cref="CameraBrandDto"/>.</returns>
     public Task<CameraBrandDto> UpdateAsync(int id, CreateUpdateCameraBrandDto input);
+
+    /// <summary>
+    /// Abstract method to search camera brands using pagination, sorting, and a search query.
+    /// </summary>
+    /// <param name="input">DTO containing pagination, sorting, and search parameters.</param>
+    /// <returns>A paged result of <see cref="CameraBrandDto"/>.</returns>
     public Task<PagedResultDto<CameraBrandDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
 
     /// <summary>
-    /// abstract method to filter of cameras
+    /// Abstract method to filter camera brands based on provided criteria such as filters, sorting, and pagination.
     /// </summary>
-    /// <param name="input">specifies max number of camera and if it sorted or not and filter</param>
-    /// <returns>Camera Dto</returns>
+    /// <param name="input">DTO specifying filtering, sorting, and pagination parameters.</param>
+    /// <returns>A paged result of <see cref="CameraBrandDto"/> that matches the filter criteria.</returns>
     public Task<PagedResultDto<CameraBrandDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
+    /// <summary>
+    /// Abstract method to delete a specific camera brand by ID.
+    /// </summary>
+    /// <param name="id">The ID of the camera brand to delete.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public Task DeleteAsync(int id);
 
-    Task<List<CameraBrandDto>> GetAllCameraBrandsAsync();
+    /// <summary>
+    /// Abstract method to retrieve all camera brands without pagination or filtering.
+    /// </summary>
+    /// <returns>A list of all <see cref="CameraBrandDto"/>.</returns>
+    public Task<List<CameraBrandDto>> GetAllCameraBrandsAsync();
+
 }

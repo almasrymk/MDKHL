@@ -62,6 +62,7 @@ public class CameraBrandAppService : CrudAppService<CameraBrand, CameraBrandDto,
         await ValidateCameraBrandUniqnuessAsync(input);
         return await base.UpdateAsync(id, input);
     }
+    ///<inheritdoc/>
 
     public async Task<PagedResultDto<CameraBrandDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
@@ -81,6 +82,7 @@ public class CameraBrandAppService : CrudAppService<CameraBrand, CameraBrandDto,
 
         return new PagedResultDto<CameraBrandDto>(totalCount, cameraBrandsDto);
     }
+    ///<inheritdoc/>
 
     public async Task<List<CameraBrandDto>> GetAllCameraBrandsAsync()
     {
@@ -90,6 +92,7 @@ public class CameraBrandAppService : CrudAppService<CameraBrand, CameraBrandDto,
             return ObjectMapper.Map<List<CameraBrand>, List<CameraBrandDto>>(brands);
         }
     }
+    ///<inheritdoc/>
 
     public async Task<PagedResultDto<CameraBrandDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
@@ -115,6 +118,15 @@ public class CameraBrandAppService : CrudAppService<CameraBrand, CameraBrandDto,
 
     #region Private Methods
 
+    /// <summary>
+    /// Validates the uniqueness of the camera brand's English and Arabic names before creating or updating a brand.
+    /// Throws an <see cref="InvalidOperationException"/> if a brand with the same English or Arabic name already exists.
+    /// </summary>
+    /// <param name="input">The camera brand DTO containing English and Arabic names to be validated.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if a camera brand with the same English name or Arabic name already exists.
+    /// </exception>
     private async Task ValidateCameraBrandUniqnuessAsync(CreateUpdateCameraBrandDto input)
     {
         var cameraBrand = await _repository.FirstOrDefaultAsync(camera =>
@@ -133,6 +145,7 @@ public class CameraBrandAppService : CrudAppService<CameraBrand, CameraBrandDto,
             }
         }
     }
+
 
     #endregion
 }

@@ -39,12 +39,14 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
     }
 
     #region Public Methods
+    ///<inheritdoc/>
 
     public override async Task<PlateColorDto> CreateAsync(CreateUpdatePlateColorDto input)
     {
         await ValidatePlateColorUniquenessAsync(input);
         return await base.CreateAsync(input);
     }
+    ///<inheritdoc/>
 
     public override async Task<PlateColorDto> UpdateAsync(int id, CreateUpdatePlateColorDto input)
     {
@@ -57,6 +59,7 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
         await ValidatePlateColorUniquenessAsync(input, id);
         return await base.UpdateAsync(id, input);
     }
+    ///<inheritdoc/>
 
     public async Task<PagedResultDto<PlateColorDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
@@ -77,6 +80,7 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
 
         return new PagedResultDto<PlateColorDto>(totalCount, plateColorsDto);
     }
+    ///<inheritdoc/>
 
     public async Task<PagedResultDto<PlateColorDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
@@ -95,6 +99,7 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
 
         return new PagedResultDto<PlateColorDto>(totalCount, plateColorsDto);
     }
+    ///<inheritdoc/>
 
     public override async Task DeleteAsync(int id)
     {
@@ -107,6 +112,7 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
 
         await _repository.HardDeleteAsync(plateColor);
     }
+    ///<inheritdoc/>
 
     public async Task<List<PlateColorDto>> GetAllPlateColorsAsync()
     {
@@ -122,8 +128,12 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
     #region Private Methods
 
     /// <summary>
-    /// Validates whether the English or Arabic name already exists in another plate color.
+    /// Validates if the plate color's English or Arabic name is unique.
     /// </summary>
+    /// <param name="input">The plate color create/update DTO containing the English and Arabic names to check for uniqueness.</param>
+    /// <param name="currentId">The ID of the current plate color being updated (optional). If provided, it will be excluded from the uniqueness check.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the plate color with the same English or Arabic name already exists.</exception>
     private async Task ValidatePlateColorUniquenessAsync(CreateUpdatePlateColorDto input, int? currentId = null)
     {
         var plateColor = await _repository.FirstOrDefaultAsync(

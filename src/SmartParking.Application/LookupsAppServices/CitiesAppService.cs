@@ -77,11 +77,8 @@ namespace SmartParking.LookupsAppServices
             }
         }
 
-        ///<summary>
-        /// method used to get list of cities
-        ///</summary>
-        ///<param name="input">specifies max number of city and if it sorted or not</param>
-        ///<returns>CityDto List</returns>
+        ///<inheritdoc/>
+
         public async Task<PagedResultDto<CityDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
         {
             var queryable = await _repository.GetQueryableAsync();
@@ -120,11 +117,8 @@ namespace SmartParking.LookupsAppServices
             return new PagedResultDto<CityDto>(totalCount, cityDto);
         }
 
-        ///<summary>
-        /// method used to get list of cities
-        ///</summary>
-        ///<param name="input">specifies max number of city and if it filtered or not</param>
-        ///<returns>CityDto List</returns>
+        ///<inheritdoc/>
+
         public async Task<PagedResultDto<CityDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
         {
             var queryable = await _repository.GetQueryableAsync();
@@ -172,7 +166,15 @@ namespace SmartParking.LookupsAppServices
         #endregion
 
         #region Private Methods
-
+        /// <summary>
+        /// Validates the uniqueness of a city's English and Arabic names before creation or update.
+        /// Throws an exception if a city with the same English or Arabic name already exists.
+        /// </summary>
+        /// <param name="input">The input DTO containing the city names to validate.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when a city with the same English or Arabic name already exists.
+        /// </exception>
         private async Task ValidateCityUniqunessAsync(CreateUpdateCityDto input)
         {
             var city = await _repository.FirstOrDefaultAsync(c =>

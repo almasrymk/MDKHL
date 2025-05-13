@@ -43,6 +43,7 @@ public class LicenceTypesAppService : CrudAppService<LicenceType, LicenceTypeDto
     }
 
     #region Public Methods
+    ///<inheritdoc/>
 
     public override async Task<LicenceTypeDto> CreateAsync(CreateUpdateLicenceTypeDto input)
     {
@@ -50,6 +51,7 @@ public class LicenceTypesAppService : CrudAppService<LicenceType, LicenceTypeDto
         await ValidateLicenceTypeUniquenessAsync(input);
         return await base.CreateAsync(input);
     }
+    ///<inheritdoc/>
 
     public override async Task<LicenceTypeDto> UpdateAsync(int id, CreateUpdateLicenceTypeDto input)
     {
@@ -63,6 +65,7 @@ public class LicenceTypesAppService : CrudAppService<LicenceType, LicenceTypeDto
         await ValidateLicenceTypeUniquenessAsync(input, id);
         return await base.UpdateAsync(id, input);
     }
+    ///<inheritdoc/>
 
     public async Task<PagedResultDto<LicenceTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
@@ -84,6 +87,7 @@ public class LicenceTypesAppService : CrudAppService<LicenceType, LicenceTypeDto
 
         return new PagedResultDto<LicenceTypeDto>(totalCount, licenceTypesDto);
     }
+    ///<inheritdoc/>
 
     public async Task<PagedResultDto<LicenceTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
@@ -101,6 +105,7 @@ public class LicenceTypesAppService : CrudAppService<LicenceType, LicenceTypeDto
 
         return new PagedResultDto<LicenceTypeDto>(totalCount, licenceTypesDto);
     }
+    ///<inheritdoc/>
 
     public override async Task DeleteAsync(int id)
     {
@@ -113,6 +118,7 @@ public class LicenceTypesAppService : CrudAppService<LicenceType, LicenceTypeDto
 
         await _repository.HardDeleteAsync(licenceType);
     }
+    ///<inheritdoc/>
 
     public async Task<List<LicenceTypeDto>> GetAllLicencesAsync()
     {
@@ -122,6 +128,7 @@ public class LicenceTypesAppService : CrudAppService<LicenceType, LicenceTypeDto
             return ObjectMapper.Map<List<LicenceType>, List<LicenceTypeDto>>(licenceType);
         }
     }
+    ///<inheritdoc/>
 
     [RemoteService(IsEnabled = false)]
     public async Task<Result<List<LicenceTypeDto>>> GetAllLicenceTypesAsync()
@@ -138,6 +145,11 @@ public class LicenceTypesAppService : CrudAppService<LicenceType, LicenceTypeDto
 
     #region Private Methods
 
+    /// <summary>
+    /// Validates whether a plate color with the specified ID exists in the repository.
+    /// </summary>
+    /// <param name="plateColorId">The ID of the plate color to validate.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the plate color with the given ID does not exist.</exception>
     private async Task ValidatePlateColorExistsAsync(int plateColorId)
     {
         var existingPlateColor = await _plateColorRepository.FindAsync(plateColorId);
@@ -147,6 +159,12 @@ public class LicenceTypesAppService : CrudAppService<LicenceType, LicenceTypeDto
         }
     }
 
+    /// <summary>
+    /// Validates the uniqueness of a license type by checking if the English or Arabic names already exist in the repository, excluding the current license type (if specified by ID).
+    /// </summary>
+    /// <param name="input">The DTO containing the license type details to validate.</param>
+    /// <param name="currentId">The ID of the license type to exclude from the check (optional).</param>
+    /// <exception cref="InvalidOperationException">Thrown when the English or Arabic name of the license type already exists in the repository.</exception>
     private async Task ValidateLicenceTypeUniquenessAsync(CreateUpdateLicenceTypeDto input, int? currentId = null)
     {
         var licenceType = await _repository.FirstOrDefaultAsync(
@@ -167,6 +185,7 @@ public class LicenceTypesAppService : CrudAppService<LicenceType, LicenceTypeDto
             }
         }
     }
+
 
     #endregion
 }

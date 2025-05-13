@@ -43,8 +43,9 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
         _countryRepository = countryRepository;
 	}
 
-    ///<inheritdoc/>
     #region Public Methods
+    ///<inheritdoc/>
+
     public override async Task<RegionDto> CreateAsync(CreateUpdateRegionDto input)
     {
         await ValidateRegionUniqunessAsync(input);
@@ -53,6 +54,7 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
 
         return await base.CreateAsync(input);
     }
+    ///<inheritdoc/>
 
     public override async Task<RegionDto> UpdateAsync(int id, CreateUpdateRegionDto input)
     {
@@ -66,14 +68,7 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
         return await base.UpdateAsync(id, input);
     }
 
-   
-
-    /// <summary>
-    /// method used to get list of regions
-    /// </summary>
-    /// <param name="input">specifies max number of region and if it filtered or not</param>
-    /// <returns>RegionDto List</returns>
-
+    ///<inheritdoc/>
     public async Task<PagedResultDto<RegionDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<state> from the repository
@@ -115,11 +110,8 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
         );
     }
 
-    /// <summary>
-    /// method used to get list of regions
-    /// </summary>
-    /// <param name="input">specifies max number of region and if it filtered or not</param>
-    /// <returns>RegionDto List</returns>
+    ///<inheritdoc/>
+
     public async Task<PagedResultDto<RegionDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<state> from the repository
@@ -177,6 +169,7 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
         
 
     }
+    ///<inheritdoc/>
 
     public async Task<List<RegionLookupDto>> GetRegionByCountry(int countryId)
     {
@@ -192,6 +185,12 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
     }
     #endregion
     #region Private Methods
+    /// <summary>
+    /// Validates the uniqueness of a region by checking if the English or Arabic names already exist in the repository, excluding the current region (if specified by ID).
+    /// </summary>
+    /// <param name="input">The DTO containing the region details to validate.</param>
+    /// <param name="id">The ID of the region to exclude from the check (optional).</param>
+    /// <exception cref="InvalidOperationException">Thrown when the English or Arabic name of the region already exists in the repository.</exception>
     private async Task ValidateRegionUniqunessAsync(CreateUpdateRegionDto input, int? id = null)
     {
         string normalizedEnglish = input.EnglishName?.Trim().ToLowerInvariant();
@@ -211,6 +210,11 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
             throw new InvalidOperationException("Region arabic name already exists");
     }
 
+    /// <summary>
+    /// Validates if a country with the specified ID exists in the repository.
+    /// </summary>
+    /// <param name="countryId">The ID of the country to validate.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the country with the given ID does not exist.</exception>
     private async Task ValidateCountryExistsAsync(int countryId)
     {
         var existingCountry = await _countryRepository.FindAsync(countryId);
@@ -218,10 +222,16 @@ public class RegionAppService : CrudAppService<Region, RegionDto,
             throw new InvalidOperationException("Country does not exist");
     }
 
+    /// <summary>
+    /// Validates that the given status is one of the valid status values: Active, Inactive, or Deleted.
+    /// </summary>
+    /// <param name="status">The status to validate.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the status is invalid.</exception>
     private void ValidateStatus(Status status)
     {
         if (status != Status.Active && status != Status.Inactive && status != Status.Deleted)
             throw new InvalidOperationException("Invalid status value.");
     }
+
     #endregion
 }
