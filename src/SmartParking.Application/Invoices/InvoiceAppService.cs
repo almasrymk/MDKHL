@@ -291,7 +291,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         return new PagedResultDto<InvoiceDto>(totalCount, incoicesDtos);
     }
 
-    public async Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(string PlateNumber, int OrganizationId, int GarageId)
+    public async Task<Result<InvoiceDto>> GetLatestInvoiceForPlateInOrganizationGarage(string PlateNumber, int OrganizationId, int GarageId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {

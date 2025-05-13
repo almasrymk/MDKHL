@@ -55,7 +55,7 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
 	/// <returns>PagedResultDto of Invoice Dto</returns>
     Task<PagedResultDto<InvoiceDto>> GetAllInvoicesByOrganizationAsync(PagedAndSortedResultRequestDto input,Guid? tenantId);
 
-    Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(string PlateNumber,int OrganizationId,int GarageId);
+    Task<Result<InvoiceDto>> GetLatestInvoiceForPlateInOrganizationGarage(string PlateNumber,int OrganizationId,int GarageId);
 
     Task<PagedResultDto<InvoiceDto>> GetInvoiceForCustomer(Guid customerId, PagedResultRequestDto input);
     Task<Result<List<InvoiceDto>>> GetUnpaidInvoiceForKeeperInHisOrganization(int OrganizationId,string plateNumber);
