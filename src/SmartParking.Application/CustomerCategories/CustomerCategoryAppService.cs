@@ -30,47 +30,8 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
         _repository = repository;
     }
     #region public methods
-    public override async Task<CustomerCategoryDto> CreateAsync(CreateUpdateCutomerCategoryDto input)
-    {
-        if (input.CreatedByOrganization)
-        {
-            return await base.CreateAsync(input);
-        }
-        var query = await  _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
-        if(query.Count == 0)
-        {
-            throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
-        }
-        else if(input.Default == true)
-        {
-            if(query.Count > 0)
-            {
-                var customerCategory = query.First(x => x.Default == true);
-                customerCategory.Default = false;
 
-            }
-
-        }
-        return await base.CreateAsync(input);
-    }
-    public override async Task<CustomerCategoryDto> UpdateAsync(int id, CreateUpdateCutomerCategoryDto input)
-    {
-        //object has been set to be Default is true (true in database) , and in update operation is set Default to be false
-        var customerCategoryById = await _repository.FindAsync(x => x.Id == id);
-        if(input.Default==false && customerCategoryById.Default == true)
-        {
-            throw new BusinessException(EnumValues.GetEnumDescription(CustomerCategoryValidations.DefaultIsTrueAndUpdatedToBeFalse) + " " + customerCategoryById.Organization.EnglishName);
-        }
-
-
-        if (input.Default==true) {
-            var query = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
-            var customerCategory = query.FirstOrDefault(x => x.Default == true);
-            customerCategory.Default = false;
-        }
-        
-        return await base.UpdateAsync(id, input);
-    }
+    /// <inheritdoc/>
 
     public async Task<PagedResultDto<CustomerCategoryDto>> GetCustomerCategoriesByOrganizationId(int OrganizationId)
     {
@@ -94,14 +55,10 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
         }
 
         await _repository.HardDeleteAsync(customerCategory);
-        //await base.DeleteAsync(id);
     }
 
-    /// <summary>
-    /// method used to get list of customer category
-    /// </summary>
-    /// <param name="input">specifies max number of customer category and if it sorted or not</param>
-    /// <returns>customer categoryDto List</returns>
+    /// <inheritdoc/>
+
     public async Task<PagedResultDto<CustomerCategoryDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<customer category> from the repository
@@ -133,12 +90,7 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
             customerCategoriesDto
         );
     }
-
-    /// <summary>
-    /// method used to get list of customerCategories
-    /// </summary>
-    /// <param name="input">specifies max number of customerCategories and if it filtered or not</param>
-    /// <returns>customerCategoriesDto List</returns>
+    /// <inheritdoc/>
     public async Task<PagedResultDto<CustomerCategoryDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<customerCategories> from the repository
@@ -164,6 +116,52 @@ public class CustomerCategoryAppService : CrudAppService<CustomerCategory, Custo
             totalCount,
             customerCategoriesDto
         );
+    }
+    #endregion
+    #region UnUsed Methods 
+    /// <inheritdoc/>
+    public override async Task<CustomerCategoryDto> CreateAsync(CreateUpdateCutomerCategoryDto input)
+    {
+        if (input.CreatedByOrganization)
+        {
+            return await base.CreateAsync(input);
+        }
+        var query = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
+        if (query.Count == 0)
+        {
+            throw new EntityNotFoundException(typeof(Organization), input.OrganizationId);
+        }
+        else if (input.Default == true)
+        {
+            if (query.Count > 0)
+            {
+                var customerCategory = query.First(x => x.Default == true);
+                customerCategory.Default = false;
+
+            }
+
+        }
+        return await base.CreateAsync(input);
+    }
+    /// <inheritdoc/>
+
+    public override async Task<CustomerCategoryDto> UpdateAsync(int id, CreateUpdateCutomerCategoryDto input)
+    {
+        var customerCategoryById = await _repository.FindAsync(x => x.Id == id);
+        if (input.Default == false && customerCategoryById.Default == true)
+        {
+            throw new BusinessException(EnumValues.GetEnumDescription(CustomerCategoryValidations.DefaultIsTrueAndUpdatedToBeFalse) + " " + customerCategoryById.Organization.EnglishName);
+        }
+
+
+        if (input.Default == true)
+        {
+            var query = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
+            var customerCategory = query.FirstOrDefault(x => x.Default == true);
+            customerCategory.Default = false;
+        }
+
+        return await base.UpdateAsync(id, input);
     }
     #endregion
 }
