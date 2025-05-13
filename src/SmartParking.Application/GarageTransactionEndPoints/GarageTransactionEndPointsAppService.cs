@@ -51,6 +51,11 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
 
     #region public methods web methods
+    /// <summary>
+    /// Method used to recieve transaction request from camera.
+    /// </summary>
+    /// <param name="input">Transaction dto</param>
+    /// <returns>flag if true opens gate </returns>
     public async Task<bool> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)
     {
 
