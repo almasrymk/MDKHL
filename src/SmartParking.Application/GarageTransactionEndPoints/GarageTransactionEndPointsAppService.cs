@@ -221,14 +221,22 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         bool _requestToGate;
         //getting entrance transaction
         var _entryTransaction = await _garageTransactionUtilityAppService.FindEntranceTime(exitTransaction.PlateNumber);
+        //geeting garage
+        var _garage = await _garageTransactionUtilityAppService.GetGarageByIdAsync(exitTransaction.GarageId);
+        if (_entryTransaction == null)
+        {
+            _logger.LogError($"{DateTime.Now} ====>  Entrance Time is null  ");
+            _logger.LogError($"{DateTime.Now} ====> Get Response false");
+            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_garage.Id, CustomerCategoryStatus.Customer);
+            return await Task.FromResult(false);
+        }
         //getting customer id if found
         var _customerId = await _garageTransactionUtilityAppService.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(exitTransaction.PlateNumber);
         //getting package on vehicle if found
         var _packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(exitTransaction.OrganizationID, exitTransaction.PlateNumber, exitTransaction.AccurateTime.Value);
         exitTransaction.CustomerCategory = _packageDto is null ? CustomerCategoryStatus.Customer : _packageDto.CustomerCategory;
-        var _garage = await _garageTransactionUtilityAppService.GetGarageByIdAsync(exitTransaction.GarageId);
         //Check On Entrance Time Validation
-        if ( _entryTransaction.AccurateTime > exitTransaction.AccurateTime)
+        if ( _entryTransaction.AccurateTime > exitTransaction.AccurateTime )
         {
             await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_garage.Id, CustomerCategoryStatus.Customer);
             await InVailedCasesForTransaction(exitTransaction, _entryTransaction.AccurateTime);
@@ -384,8 +392,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         exitTransaction.IsMapped = false;
         await _unlinkedGarageTransactionsAppService.CreateAsync(ObjectMapper.Map<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>(exitTransaction));
 
-        _logger.LogError($"{DateTime.Now} ====>  Entrance Time is null  ");
-        _logger.LogError($"{DateTime.Now} ====> Get Response false");
         if (entranceTime > exitTransaction.AccurateTime)
         {
             _logger.LogError($"{DateTime.Now} ====>  Entrance Time is greater exit time  ");
