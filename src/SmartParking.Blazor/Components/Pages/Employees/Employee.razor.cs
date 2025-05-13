@@ -17,12 +17,14 @@ using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 
 namespace SmartParking.Blazor.Components.Pages.Employees;
-
+/// <summary>
+/// Represents the employee page.
+/// </summary>
 public partial class Employee
 {
     private int TotalItem;
-    public int CurrentPage { get; set; } = 1; // Default current page value is 10
-    public int RowPerPage { get; set; } = 10; // Default value is 10
+    public int CurrentPage { get; set; } = 1;
+    public int RowPerPage { get; set; } = 10; 
 
     private TableData itemData = new TableData();
 
@@ -32,13 +34,20 @@ public partial class Employee
     private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     private readonly ICurrentUser _currentUser;
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Employee"/> class.
+    /// </summary>
+    /// <param name="localizer"></param>
+    /// <param name="currentUser"></param>
     public Employee(IStringLocalizer<SmartParkingResource> localizer, ICurrentUser currentUser)
     {
         _localizer = localizer;
         _currentUser = currentUser;
     }
-
+    /// <summary>
+    /// Initializes the component.
+    /// </summary>
+    /// <returns></returns>
     protected override Task OnInitializedAsync()
     {
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
@@ -55,29 +64,23 @@ public partial class Employee
     /// <returns>Returns a task that represents the asynchronous operation.</returns>
     private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-
-        // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndFilteredResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch, // The term to use for filtering results
+            SearchingTerm = termSearch, 
             filters = pageInfo.Filters
         };
         if (currrentTenant.Id == null)
         {
             var customersDto = await EmployeeAppService.FilterMDKHL(input);
-
             TotalItem = (int)customersDto.TotalCount;
             CreateTable(customersDto);
         }
         else
         {
-
             var customersDto = await EmployeeAppService.Filter(input);
-
             TotalItem = (int)customersDto.TotalCount;
             CreateTable(customersDto);
         }
@@ -90,19 +93,13 @@ public partial class Employee
     /// <returns>Returns a task that represents the asynchronous operation.</returns>
     private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-        Console.WriteLine(pageInfo.SearchTerm);
-
-        // Update the term used for searching with the provided search term
         termSearch = pageInfo.SearchTerm;
-
-        // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch // The term to use for filtering results
+            SearchingTerm = termSearch 
         };
 
         if (currrentTenant.Id == null)
@@ -114,9 +111,7 @@ public partial class Employee
         }
         else
         {
-
             var customersDto = await EmployeeAppService.Search(input);
-
             TotalItem = (int)customersDto.TotalCount;
             CreateTable(customersDto);
         }
@@ -131,8 +126,6 @@ public partial class Employee
 
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        Console.WriteLine(RowPerPage);
-        // Create a request object for paged and sorted data
         var input = new PagedAndSortedResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
@@ -150,22 +143,24 @@ public partial class Employee
         CreateTable(customersDto);
 
     }
-
+    /// <summary>
+    /// Navigates to the employee registration page.
+    /// </summary>
     private void HandleAdd()
     {
         Navigation.NavigateTo("/employee/register", true);
     }
-
+    /// <summary>
+    /// Creates a table data object and populates it with the provided customers.
+    /// </summary>
+    /// <param name="customers"></param>
     private void CreateTable(PagedResultDto<CustomerDto> customers)
     {
-        // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
             Name = L["Employees"],
             ShowHeader = true
         };
-
-
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserName"], Name = "UserName", IsFilterable = true, PropertyName = "IdentityUser.UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "FullName", IsFilterable = true, PropertyName = "IdentityUser.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -205,7 +200,11 @@ public partial class Employee
         }
         itemData = tableData;
     }
-
+    /// <summary>
+    /// create vehicle for employee
+    /// </summary>
+    /// <param name="row"></param>
+    /// <returns></returns>
     public async Task<IDialogReference> CreateVehicle(RowDef row)
     {
         var id = Guid.Parse(row.Cells[0].Value);
@@ -220,7 +219,11 @@ public partial class Employee
 
 
     }
-
+    /// <summary>
+    /// view employee's vehicles
+    /// </summary>
+    /// <param name="row"></param>
+    /// <returns></returns>
     public async Task<IDialogReference> ShowVehiclesForCustomer(RowDef row)
     {
         var id = Guid.Parse(row.Cells[0].Value);
@@ -235,7 +238,11 @@ public partial class Employee
 
 
     }
-
+    /// <summary>
+    /// assign package to customer 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public async Task<IDialogReference> AssignPackage(string id)
     {
         var Gid = Guid.Parse(id);
