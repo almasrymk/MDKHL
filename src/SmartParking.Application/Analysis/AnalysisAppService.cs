@@ -40,6 +40,7 @@ using Volo.Abp.ObjectMapping;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SmartParking.Analysis;
+/// <inheritdoc/>
 
 public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 {
@@ -112,6 +113,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     }
 
     #region Public Methods
+    /// <inheritdoc/>
+ 
     public async Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations()
     {
 
@@ -130,6 +133,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
 
     }
+    /// <inheritdoc/>
 
     public async Task<AnalysisNamesCountDto> GetPackageAndNumberOfOrganizationsThatSubscribed()
     {
@@ -169,6 +173,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             return organizationCustomersDto;
         }
     }
+    /// <inheritdoc/>
 
     public async Task<GetNumberOfParkingAndEmptyParkingDto> GetNumberOfParkingSlotsAndEmptySolts(int organizationId)
     {
@@ -200,6 +205,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     }
 
+    /// <inheritdoc/>
 
     public async Task<(string[] Days, double[] AllTotalAmounts, double[] InvoiceTotalAmounts, double[] PackageTotalAmounts)> CalculateWeeklyCollectedMoneyMdkhlAsync()
     {
@@ -220,6 +226,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     }
 
+    /// <inheritdoc/>
 
     public async Task<(string[] Days, double[] AllTotalAmounts, double[] InvoiceTotalAmounts, double[] PackageTotalAmounts)> CalculateWeeklyCollectedMoneyOrganizationAsync(int organizationId)
     {
@@ -237,7 +244,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return PrepareResult(finalResult, culture);
     }
 
-   
+
+    /// <inheritdoc/>
 
     public async Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyMdKhlAsync()
     {
@@ -251,6 +259,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    /// <inheritdoc/>
+
     public async Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync()
     {
 
@@ -263,6 +273,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     }
 
 
+    /// <inheritdoc/>
 
     public async Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync(int organizationId)
     {
@@ -270,6 +281,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         query = query.Where(_ => _.OrganizationId == organizationId);
         return await GetCollectMoneyToday(query);
     }
+    /// <inheritdoc/>
 
     public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus category, Guid? tenantId)
     {
@@ -282,6 +294,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     }
 
+    /// <inheritdoc/>
 
     public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForMDKHLPlateAsync(string PlateNumber)
     {
@@ -291,12 +304,14 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    /// <inheritdoc/>
 
     public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForOrganization(string PlateNumber, Guid? tenantId)
     {
         var result = await _garageTransactionAnalysis.GetGarageTransactionsAnalysisPlate(PlateNumber, tenantId);
         return result;
     }
+    /// <inheritdoc/>
 
     public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionDateCustomerIdAsync(Guid CustomerId, DateTime startDate, DateTime endDate)
     {
@@ -307,6 +322,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    /// <inheritdoc/>
+
     public async Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerNameAsync(string userName, DateTime startDate, DateTime endDate, CustomerCategoryStatus category, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
@@ -316,6 +333,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    /// <inheritdoc/>
 
     public async Task<PagedResultDto<GarageTransactionAnalysis>> ReportGarageTransactionAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
@@ -332,6 +350,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    /// <inheritdoc/>
 
     public async Task<PagedResultDto<PackagePaymentAnalysis>> ReportPackagePaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
@@ -348,6 +367,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    /// <inheritdoc/>
+
     public async Task<List<GarageTransactionAnalysis>> ReportGarageTransactionCustomerIdAsync(Guid CustomerId, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
@@ -357,6 +378,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    /// <inheritdoc/>
+
     public async Task<PagedResultDto<CustomerPackageDto>> ReportCustomerPackage(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
@@ -404,7 +427,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
     }
 
-  
+    /// <inheritdoc/>
+
     public async Task<PagedResultDto<PaymentDto>> ReportPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
@@ -451,6 +475,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    /// <inheritdoc/>
+
     public async Task<PagedResultDto<PaymentDto>> ReportCustomerPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
@@ -499,6 +525,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    /// <inheritdoc/>
 
     public async Task<PagedResultDto<PaymentDto>> ReportCustomerPaymentForPaymentMethod(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
@@ -550,6 +577,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    /// <inheritdoc/>
+
     public async Task<PagedResultDto<GarageAnalysis>> ReportGarageAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
@@ -564,6 +593,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    /// <inheritdoc/>
+
     public async Task<PagedResultDto<ShiftAnalysis>> ReportNumberOfTransactionsWhileKeeperShift(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
@@ -578,9 +609,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
-
-
-
+    /// <inheritdoc/>
 
     public async Task<PagedResultDto<PaymentUserShift>> ReportPaymentCollectedMoneyWithKeeperAndShiftAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
@@ -599,6 +628,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     }
 
 
+    /// <inheritdoc/>
 
     public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl()
     {
@@ -621,6 +651,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    /// <inheritdoc/>
 
     public async Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId)
     {
@@ -652,6 +683,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
     }
 
+    /// <inheritdoc/>
 
     public async Task<PagedResultDto<PaymentAnalysis>> ReportKeeperPaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
@@ -668,6 +700,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    /// <inheritdoc/>
 
     public async Task<PagedResultDto<DiscountPaymentAnalysis>> ReportDiscountPaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
@@ -684,6 +717,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
+    /// <inheritdoc/>
 
     public async Task<PagedResultDto<VehicleCustomerReportDto>> ReportVehicleCustomerAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
@@ -774,6 +808,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             };
         }
     }
+    /// <inheritdoc/>
 
     public async Task<PagedResultDto<CustomerAnalysis>> ReportBeneficiariesDetailsAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
@@ -843,6 +878,12 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     #endregion
     #region Private Methods
 
+    /// <summary>
+    /// Applies filters to the <see cref="PaymentDto"/> query based on the provided filters in the input.
+    /// </summary>
+    /// <param name="input">The input containing the filter criteria.</param>
+    /// <param name="query">The queryable <see cref="PaymentDto"/> collection.</param>
+    /// <returns>The filtered <see cref="PaymentDto"/> query.</returns>
     private static IQueryable<PaymentDto> ApplyFilterPayment(PagedAndSortedAndFilteredResultRequestDto input, IQueryable<PaymentDto> query)
     {
         if (input.filters.Count > 0)
@@ -857,6 +898,12 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return query;
     }
 
+    /// <summary>
+    /// Applies sorting to the <see cref="PaymentDto"/> query based on the sorting criteria in the input.
+    /// </summary>
+    /// <param name="input">The input containing the sorting criteria.</param>
+    /// <param name="query">The queryable <see cref="PaymentDto"/> collection.</param>
+    /// <returns>The sorted <see cref="PaymentDto"/> query.</returns>
     private static IQueryable<PaymentDto> ApplySortPayment(PagedAndSortedAndFilteredResultRequestDto input, IQueryable<PaymentDto> query)
     {
         if (!input.Sorting.IsNullOrEmpty())
@@ -876,9 +923,14 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return query;
     }
 
-   
 
-    
+    /// <summary>
+    /// Retrieves payments for the past week, grouped by date and payment category.
+    /// </summary>
+    /// <param name="query">The queryable <see cref="Payment"/> collection.</param>
+    /// <param name="oneWeekAgo">The date from one week ago.</param>
+    /// <returns>A list of <see cref="PaymentGroup"/> containing aggregated payment data for each day.</returns>
+
     private async Task<List<PaymentGroup>> GetPaymentsInLastWeek(IQueryable<Payment> query, DateTime oneWeekAgo)
     {
         var result =
@@ -895,20 +947,33 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             .ToListAsync();
         return result;
     }
-
+    /// <summary>
+    /// Returns a list of all the dates for the past week, starting from the specified date.
+    /// </summary>
+    /// <param name="oneWeekAgo">The date from which to generate the list of days.</param>
+    /// <returns>A list of <see cref="DateTime"/> objects representing all the days from the specified date.</returns>
     private List<DateTime> GetAllDays(DateTime oneWeekAgo)
     {
         return Enumerable.Range(0, 8)
             .Select(i => oneWeekAgo.AddDays(i).Date)
             .ToList();
     }
-
+    /// <summary>
+    /// Retrieves the current culture info based on the system's current culture.
+    /// </summary>
+    /// <returns>A <see cref="CultureInfo"/> object representing the current culture, either "ar" (Arabic) or "en" (English).</returns>
     private CultureInfo GetCultureInfo()
     {
         var currentCulture = CultureInfo.CurrentCulture;
         return currentCulture.Name == "ar" ? new CultureInfo("ar") : new CultureInfo("en");
     }
-
+    /// <summary>
+    /// Aggregates payments by day, calculating total amounts for different payment categories (e.g., invoice and package) for each day.
+    /// </summary>
+    /// <param name="allDays">A list of all days in the past week.</param>
+    /// <param name="payments">A list of aggregated payments for each day.</param>
+    /// <param name="culture">The <see cref="CultureInfo"/> to format the days of the week.</param>
+    /// <returns>A list of <see cref="FinalResult"/> objects containing the aggregated payment data.</returns>
     private List<FinalResult> AggregatePaymentsByDay(List<DateTime> allDays, List<PaymentGroup> payments, CultureInfo culture)
     {
         var firstDayOfWeek = culture.DateTimeFormat.FirstDayOfWeek;
@@ -932,7 +997,12 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             .ToList();
         return finalResult;
     }
-
+    /// <summary>
+    /// Prepares the result for displaying aggregated payment data by day, adjusting the order based on the culture (right-to-left for Arabic).
+    /// </summary>
+    /// <param name="finalResult">A list of <see cref="FinalResult"/> containing aggregated payment data.</param>
+    /// <param name="culture">The <see cref="CultureInfo"/> used to adjust the order for Arabic culture.</param>
+    /// <returns>A tuple containing arrays of days of the week and the corresponding total amounts for different categories.</returns>
     private (string[] days, double[] allTotalAmounts, double[] invoiceTotalAmounts, double[] packageTotalAmounts) PrepareResult(List<FinalResult> finalResult, CultureInfo culture)
     {
         string[] days = finalResult.Select(r => r.DayOfWeek).ToArray();
@@ -950,6 +1020,11 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
         return (days, allTotalAmounts, invoiceTotalAmounts, packageTotalAmounts);
     }
+    /// <summary>
+    /// Retrieves the total collected money for today.
+    /// </summary>
+    /// <param name="query">The queryable <see cref="Payment"/> collection.</param>
+    /// <returns>A tuple containing the day of the week and the total amount collected today.</returns>
     private async Task<(string? Day, double? totalAmounts)> GetCollectMoneyToday(IQueryable<Payment> query)
     {
         DateTime now = DateTime.Now;
@@ -964,6 +1039,12 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         };
         return (finalResult?.DayOfWeek?.ToString(), finalResult?.AllTotalAmount);
     }
+    /// <summary>
+    /// Applies filters to the <see cref="CustomerPackageDto"/> query based on the provided filters in the input.
+    /// </summary>
+    /// <param name="input">The input containing the filter criteria.</param>
+    /// <param name="query">The queryable <see cref="CustomerPackageDto"/> collection.</param>
+    /// <returns>The filtered <see cref="CustomerPackageDto"/> query.</returns>
     private static IQueryable<CustomerPackageDto> CheckFilter(PagedAndSortedAndFilteredResultRequestDto input, IQueryable<CustomerPackageDto> query)
     {
         if (input.filters.Count > 0)
@@ -979,14 +1060,24 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     }
 
 
-
+    /// <summary>
+    /// Applies a tenant filter to the <see cref="CustomerPackageDto"/> query if a tenant ID is provided.
+    /// </summary>
+    /// <param name="tenantId">The tenant ID to filter by.</param>
+    /// <param name="query">The queryable <see cref="CustomerPackageDto"/> collection.</param>
+    /// <returns>The query with the tenant filter applied.</returns>
     private static IQueryable<CustomerPackageDto> CheckTenant(Guid? tenantId, IQueryable<CustomerPackageDto> query)
     {
         if (tenantId.HasValue)
             query = query.Where(_ => _.TenantId == tenantId.Value);
         return query;
     }
-
+    /// <summary>
+    /// Applies sorting to the <see cref="CustomerPackageDto"/> query based on the sorting criteria in the input.
+    /// </summary>
+    /// <param name="input">The input containing the sorting criteria.</param>
+    /// <param name="query">The queryable <see cref="CustomerPackageDto"/> collection.</param>
+    /// <returns>The sorted <see cref="CustomerPackageDto"/> query.</returns>
     private static IQueryable<CustomerPackageDto> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<CustomerPackageDto> query)
     {
         if (!input.Sorting.IsNullOrEmpty())
@@ -1007,6 +1098,12 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     }
     #endregion
     #region UnUsed Methods
+    /// <summary>
+    /// Applies a tenant filter to the <see cref="PaymentDto"/> query if a tenant ID is provided.
+    /// </summary>
+    /// <param name="tenantId">The tenant ID to filter the <see cref="PaymentDto"/> query by. If null, no filter is applied.</param>
+    /// <param name="query">The queryable <see cref="PaymentDto"/> collection to which the tenant filter will be applied.</param>
+    /// <returns>The query with the tenant filter applied, if a tenant ID is provided. Otherwise, the original query is returned.</returns>
     private static IQueryable<PaymentDto> CheckTenantPayment(Guid? tenantId, IQueryable<PaymentDto> query)
     {
         if (tenantId.HasValue)
