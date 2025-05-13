@@ -45,6 +45,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         _paymentRepository = paymentRepository;
     }
     #region public methods 
+    /// <inheritdoc/>
+
     public override async Task<InvoiceDto> CreateAsync(CreateUpdateInvoiceDto input)
     {
         Organization organization = null;
@@ -69,6 +71,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             return await base.CreateAsync(input);
     }
     [Authorize]
+    /// <inheritdoc/>
+
     public override async Task<PagedResultDto<InvoiceDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
         var queryable = await _invoiceRepository.GetQueryableAsync();
@@ -94,6 +98,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     }
 
     [Authorize]
+    /// <inheritdoc/>
+
     public override async Task<InvoiceDto> GetAsync(int id)
     {
         if (CurrentTenant.Id == null)
@@ -160,6 +166,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     }
 
     [Authorize]
+    /// <inheritdoc/>
+
     public async Task<PagedResultDto<InvoiceDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<garage> from the repository
@@ -198,6 +206,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         );
     }
     [Authorize]
+    /// <inheritdoc/>
+
     public override async Task DeleteAsync(int id)
     {
         var invoice = await _invoiceRepository.FindAsync(id);
@@ -207,6 +217,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         }
         await base.DeleteAsync(id);
     }
+    /// <inheritdoc/>
     public async Task<Result<string>> GetInvoiceQRCodeForOrganization(int invoiceId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -221,6 +232,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             return await GetImage(invoice, qrCode);
         }
     }
+    /// <inheritdoc/>
+
     public async Task<Result<string>> GetInvoiceQRCodeForMDKHL(int invoiceId)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -236,6 +249,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         }
     }
     [RemoteService(false)]
+    /// <inheritdoc/>
+
     public async Task<Result<string>> GetImage(InvoiceDto? invoice, string? qrCodedto)
     {
         if (qrCodedto.IsNullOrEmpty())
@@ -290,6 +305,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         // Return paged result
         return new PagedResultDto<InvoiceDto>(totalCount, incoicesDtos);
     }
+    /// <inheritdoc/>
 
     public async Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(string PlateNumber, int OrganizationId, int GarageId)
     {
@@ -303,6 +319,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             return Result.Success(invoiceDto);
         }
     }
+    /// <inheritdoc/>
 
     public async Task<PagedResultDto<InvoiceDto>> GetInvoiceForCustomer(Guid customerId, PagedResultRequestDto input)
     {
@@ -318,6 +335,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             TotalCount = totalCount
         };
     }
+    /// <inheritdoc/>
+
     public async Task<Result<List<InvoiceDto>>> GetUnpaidInvoiceForKeeperInHisOrganization(int OrganizationId, string plateNumber)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -329,6 +348,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             return Result.Success(invDtos);
         }
     }
+    /// <inheritdoc/>
+
     public async Task<InvoiceDto?> GetLatestInvoiceForOrganization()
     {
         var query = await _invoiceRepository.GetQueryableAsync();
@@ -341,6 +362,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         }
         return ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
     }
+    /// <inheritdoc/>
+
     public async Task<PagedResultDto<InvoiceDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -348,6 +371,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             return await Search(input);
         }
     }
+    /// <inheritdoc/>
+
     public async Task UpdateDiscountForInvoice(int invoiceId, decimal discount)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -374,6 +399,11 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     }
     #endregion
     #region private methods
+    /// <summary>
+    /// Asynchronously retrieves the QR code associated with the specified invoice.
+    /// </summary>
+    /// <param name="invoice">An instance of <see cref="InvoiceDto"/> representing the invoice for which the QR code is being fetched.</param>
+    /// <returns>A string representing the QR code if found, or <c>null</c> if no QR code is associated with the invoice.</returns>
     private async Task<string?> GetQrCodeAsync(InvoiceDto? invoice)
     {
         using (DataFilter.Disable<IMultiTenant>())

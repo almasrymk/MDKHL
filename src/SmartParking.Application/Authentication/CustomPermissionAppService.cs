@@ -12,6 +12,7 @@ using Volo.Abp.PermissionManagement;
 using Volo.Abp.SimpleStateChecking;
 
 namespace SmartParking.Authentication;
+/// <inheritdoc/>
 
 public class CustomPermissionAppService : PermissionAppService, ITransientDependency, ICustomPermissionAppService
 {
@@ -19,6 +20,8 @@ public class CustomPermissionAppService : PermissionAppService, ITransientDepend
     {
     }
     #region Public Methods
+    /// <inheritdoc/>
+
     public override async Task UpdateAsync(string providerName, string providerKey, UpdatePermissionsDto input)
     {
         
@@ -29,6 +32,7 @@ public class CustomPermissionAppService : PermissionAppService, ITransientDepend
             await PermissionManager.SetAsync(permissionDto.Name, providerName, providerKey, permissionDto.IsGranted);
         }
     }
+    /// <inheritdoc/>
 
     public override async Task<GetPermissionListResultDto> GetAsync(string providerName, string providerKey)
     {
@@ -103,8 +107,13 @@ public class CustomPermissionAppService : PermissionAppService, ITransientDepend
 
         return result;
     }
-#endregion
+    #endregion
     #region Private Methods
+    /// <summary>
+    /// Creates a <see cref="PermissionGrantInfoDto"/> from a given <see cref="PermissionDefinition"/>.
+    /// </summary>
+    /// <param name="permission">The <see cref="PermissionDefinition"/> to create the <see cref="PermissionGrantInfoDto"/> from.</param>
+    /// <returns>A new instance of <see cref="PermissionGrantInfoDto"/> populated with values from the given <see cref="PermissionDefinition"/>.</returns>
     private PermissionGrantInfoDto CreatePermissionGrantInfoDto(PermissionDefinition permission)
     {
         return new PermissionGrantInfoDto
@@ -116,7 +125,11 @@ public class CustomPermissionAppService : PermissionAppService, ITransientDepend
             GrantedProviders = new List<ProviderInfoDto>()
         };
     }
-
+    /// <summary>
+    /// Creates a <see cref="PermissionGroupDto"/> from a given <see cref="PermissionGroupDefinition"/>.
+    /// </summary>
+    /// <param name="group">The <see cref="PermissionGroupDefinition"/> to create the <see cref="PermissionGroupDto"/> from.</param>
+    /// <returns>A new instance of <see cref="PermissionGroupDto"/> populated with values from the given <see cref="PermissionGroupDefinition"/>.</returns>
     private PermissionGroupDto CreatePermissionGroupDto(PermissionGroupDefinition group)
     {
         var localizableDisplayName = group.DisplayName as LocalizableString;

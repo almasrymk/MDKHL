@@ -96,9 +96,10 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _options = options.Value;
         _organizationsAppService = organizationsAppService;
     }
-    /// <inheritdoc/>
 
     #region Public Methods
+    /// <inheritdoc/>
+
     public async Task<Tenant> GetTenantByNameDtoAsync(string name)
     {
         var query = await _tenantRepository.GetQueryableAsync();
@@ -107,6 +108,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         return tenant;
 
     }
+    /// <inheritdoc/>
+
     public async Task<UserDataDto> UpdateUser(string phone, string password)
     {
         var user = await _userRepository.FirstOrDefaultAsync(u => u.Id == CurrentUser.Id);
@@ -244,6 +247,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
 
     }
+    /// <inheritdoc/>
+
     public async Task<Result<LoginAppResultDto>> LoginAppAsync(LoginMobileInputDto input)
     {
         var LoginResult = await LoginAsync(input);
@@ -265,6 +270,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         return Result<LoginAppResultDto>.Invalid(LoginResult.ValidationErrors);
     }
    [RemoteService(IsEnabled = false)]
+    /// <inheritdoc/>
+
     public async Task<string> GenerateToken(string userId)
     {
         await Task.Yield();
@@ -380,6 +387,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         });
 
     }
+    /// <inheritdoc/>
 
     public async Task<bool> SetNewPasswordWeb(string UserName, string NewPassword)
     {
@@ -413,6 +421,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     {
         await _signInManager.SignOutAsync();
     }
+    /// <inheritdoc/>
 
     public async Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum)
     {
@@ -426,6 +435,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
 
     }
+    /// <inheritdoc/>
+
     public async Task<bool> GenerateOTPForUser(string UserName)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -443,7 +454,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             return result;
         }
     }
-  
+    /// <inheritdoc/>
+
     public async Task<bool> SendSms(string phoneNumber, string message)
     {
 
@@ -464,6 +476,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         return response.IsSuccessStatusCode;
 
     }
+    /// <inheritdoc/>
+
     public async Task<bool> VerifyOtp(string UserName, string Otp)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -478,7 +492,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
     }
 
-   
+    /// <inheritdoc/>
+
     public async Task<Guid> GetCurrentCustomerId()
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -490,6 +505,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
 
     }
+    /// <inheritdoc/>
 
     public async Task<IdentityUser?> IsUserFoundAsync(string Id)
     {
@@ -498,6 +514,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             return await _userManager.FindByIdAsync(Id);
         }
     }
+    /// <inheritdoc/>
+
     public async Task<string> GetUserNameByPhoneNumber(string phone)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -512,6 +530,10 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     }
     #endregion
     #region Private Methods
+    /// <summary>
+    /// Generates a 4-digit One-Time Password (OTP).
+    /// </summary>
+    /// <returns>A string representing the generated OTP.</returns>
     private string GenrateOTP()
     {
         int min = 1000;
@@ -519,12 +541,23 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         Random random = new Random();
         return random.Next(min, max).ToString();
     }
-
+    /// <summary>
+    /// Finds a user based on the provided login input, searching by either username or phone number.
+    /// </summary>
+    /// <param name="input">The login input containing the username or phone number to search for.</param>
+    /// <returns>The found <see cref="IdentityUser"/> if found, otherwise null.</returns>
     private async Task<IdentityUser?> FindUserAsync(LoginInputDto input)
     {
         return await _userRepository.FirstOrDefaultAsync(u =>
             u.UserName == input.Username || u.PhoneNumber == input.Username);
     }
+    /// <summary>
+    /// Checks if the provided OTP is valid by comparing it with the current OTP and ensuring it is not expired.
+    /// </summary>
+    /// <param name="Otp">The OTP entered by the user.</param>
+    /// <param name="CurrentOtp">The current OTP stored for the user.</param>
+    /// <param name="ExpiryTime">The expiration time of the OTP.</param>
+    /// <returns>True if the OTP matches and has not expired; otherwise, false.</returns>
     private bool CheckOtp(string Otp, string CurrentOtp, DateTime ExpiryTime)
     {
         if (CurrentOtp == Otp && ExpiryTime >= DateTime.Now)
@@ -534,7 +567,13 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         return false;
     }
 
-
+    /// <summary>
+    /// Verifies the password of the user.
+    /// Throws an exception if the user does not exist or if the password is incorrect or if the user is inactive.
+    /// </summary>
+    /// <param name="input">The login input containing the password to check.</param>
+    /// <param name="user">The <see cref="IdentityUser"/> whose password is being verified.</param>
+    /// <exception cref="Exception">Thrown if the password is incorrect or the user is inactive.</exception>
     private async Task CheckPassword(LoginInputDto input, IdentityUser user)
     {
         if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
@@ -543,7 +582,11 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " + LocalizationHelper.GetLocalizedString("InActive"));
         return;
     }
-
+    /// <summary>
+    /// Verifies if the user's role is allowed. Throws an exception if the user is a "Customer" and the only role.
+    /// </summary>
+    /// <param name="user">The <see cref="IdentityUser"/> whose roles are being checked.</param>
+    /// <exception cref="Exception">Thrown if the user has a role of "Customer" and no other roles.</exception>
     private async Task CheckRole(IdentityUser user)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -555,7 +598,11 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
 
     }
-
+    /// <summary>
+    /// Verifies if the organization associated with the user is active and valid. Throws an exception if the organization is inactive or not found.
+    /// </summary>
+    /// <param name="user">The <see cref="IdentityUser"/> whose organization is being checked.</param>
+    /// <exception cref="Exception">Thrown if the organization is inactive or not found.</exception>
     private async Task CheckOrganization(IdentityUser user)
     {
         using (_dataFilter.Disable<IMultiTenant>())

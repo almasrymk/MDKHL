@@ -23,7 +23,12 @@ public interface ICustomerCategoryAppService : ICrudAppService<CustomerCategoryD
     /// <param name="input">specifies max number of organization and if it sorted or not and filter</param>
     /// <returns>Organization Dto</returns>
     public Task<PagedResultDto<CustomerCategoryDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
-
+    /// <summary>
+    /// Retrieves the customer categories associated with a specific organization.
+    /// </summary>
+    /// <param name="OrganizationId">The ID of the organization to filter the customer categories by.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="PagedResultDto{CustomerCategoryDto}"/> 
+    /// containing the customer categories for the specified organization.</returns>
     public Task<PagedResultDto<CustomerCategoryDto>> GetCustomerCategoriesByOrganizationId(int OrganizationId);
 
     /// <summary>

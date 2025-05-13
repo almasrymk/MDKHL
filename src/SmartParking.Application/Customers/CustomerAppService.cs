@@ -468,18 +468,6 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
     }
     /// <inheritdoc/>
-    public override async Task DeleteAsync(Guid id)
-    {
-        var customer = await _repository.FindAsync(x => x.Id == id);
-        if (customer == null)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " +
-                LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-        }
-        await _repository.HardDeleteAsync(customer);
-
-    }
-    /// <inheritdoc/>
     public async Task<int> GetNumberOfCustomerAtOrganizationAsync(int organizationId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -667,4 +655,18 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         await _usersAppService.UpdateUserWithoutRoleChangeAsync(userId, user);
     }
     #endregion
+    #region UnUsed Methods
+    public override async Task DeleteAsync(Guid id)
+    {
+        var customer = await _repository.FindAsync(x => x.Id == id);
+        if (customer == null)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " +
+                LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+        }
+        await _repository.HardDeleteAsync(customer);
+
+    }
+    #endregion
+
 }

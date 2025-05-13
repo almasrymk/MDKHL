@@ -16,80 +16,236 @@ using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Analysis;
 
+/// <summary>
+/// Interface for analysis service.
+/// </summary>
 public interface IAnalysisAppService : IApplicationService
 {
+
     /// <summary>
-    /// Method that gets total number of customer for each organization.
+    /// Gets the number of customers for organizations.
     /// </summary>
-    /// <returns>List of organizations and number of customers in each</returns>
+    /// <returns>A task that represents the asynchronous operation, containing the number of customers in the <see cref="AnalysisNamesCountDto"/>.</returns>
     Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations();
 
     /// <summary>
-    /// Method that gets Packages and number of organizations subscribed it.
+    /// Gets the number of organizations that have subscribed to a specific package.
     /// </summary>
-    /// <returns>List of Packages and Number of Organizations</returns>
+    /// <returns>A task that represents the asynchronous operation, containing the number of subscribed organizations in the <see cref="AnalysisNamesCountDto"/>.</returns>
     Task<AnalysisNamesCountDto> GetPackageAndNumberOfOrganizationsThatSubscribed();
 
     /// <summary>
-    /// Retrieves the number of organizations  whose license expiry date falls within a specified number of years.
+    /// Gets the number of organizations with license expiry dates within a specific range of years.
     /// </summary>
-    /// <param name="yearsNumber">The number of years from the current date to check for license expiry.</param>
-    /// <returns>
-    /// A task that represents the asynchronous operation. The task result contains the 
-    /// <see cref="AnalysisNamesCountDto"/> which includes the count of organizations with licenses expiring within the specified period.
-    /// </returns>
+    /// <param name="yearsNumber">The number of years within which the license expiry is to be checked.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the number of organizations with license expiry in the <see cref="AnalysisNamesCountDto"/>.</returns>
     Task<AnalysisNamesCountDto> GetNumberOfOrganizationForLicenseExpiryDate(int yearsNumber);
 
+    /// <summary>
+    /// Gets the number of parking slots and empty parking slots for a specific organization.
+    /// </summary>
+    /// <param name="organizationId">The unique identifier of the organization.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the parking slot information in <see cref="GetNumberOfParkingAndEmptyParkingDto"/>.</returns>
     Task<GetNumberOfParkingAndEmptyParkingDto> GetNumberOfParkingSlotsAndEmptySolts(int organizationId);
 
+    /// <summary>
+    /// Calculates the weekly collected money for MDKHL (Main Data Collection Hub).
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation, containing the daily money amounts for all, invoice, and package in a tuple format.</returns>
     Task<(string[] Days, double[] AllTotalAmounts, double[] InvoiceTotalAmounts, double[] PackageTotalAmounts)> CalculateWeeklyCollectedMoneyMdkhlAsync();
+
+    /// <summary>
+    /// Calculates the weekly collected money for a specific organization.
+    /// </summary>
+    /// <param name="organizationId">The unique identifier of the organization.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the daily money amounts for all, invoice, and package in a tuple format.</returns>
     Task<(string[] Days, double[] AllTotalAmounts, double[] InvoiceTotalAmounts, double[] PackageTotalAmounts)> CalculateWeeklyCollectedMoneyOrganizationAsync(int organizationId);
+
+    /// <summary>
+    /// Calculates the daily collected money for MDKHL (Main Data Collection Hub).
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation, containing the daily total money amount in a tuple format.</returns>
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyMdKhlAsync();
+
+    /// <summary>
+    /// Calculates the daily collected money for a specific organization.
+    /// </summary>
+    /// <param name="organizationId">The unique identifier of the organization.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the daily total money amount in a tuple format.</returns>
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync(int organizationId);
 
     /// <summary>
-    /// Get report of garage transaction for mdkhl
+    /// Reports the garage transaction analysis for MDKHL based on the customer category status and tenant ID.
     /// </summary>
-    /// <param name="category"></param>
-    /// <returns> datatable of garage transaction</returns>
+    /// <param name="category">The customer category status.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing a list of <see cref="GarageTransactionAnalysis"/> results.</returns>
     Task<List<GarageTransactionAnalysis>> ReportGarageTransactionMdkhlAsync(CustomerCategoryStatus category, Guid? tenantId);
-    Task<PagedResultDto<PaymentUserShift>> ReportPaymentCollectedMoneyWithKeeperAndShiftAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
     /// <summary>
-    /// Get count of customers and visitors and employees
+    /// Reports the payment collected money with keeper and shift details, based on pagination, sorting, and filtering.
     /// </summary>
-    /// <returns> count of customers and visitors and employees</returns>
-    Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees,int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{PaymentUserShift}"/> result.</returns>
+    Task<PagedResultDto<PaymentUserShift>> ReportPaymentCollectedMoneyWithKeeperAndShiftAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    /// <summary>
+    /// Gets the count of customers, visitors, employees, and those with no package for MDKHL.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation, containing the count in a tuple format.</returns>
+    Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesMdkhl();
+
+    /// <summary>
+    /// Gets the count of customers, visitors, employees, and those with no package for a specific organization.
+    /// </summary>
+    /// <param name="organizationId">The unique identifier of the organization.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the count in a tuple format.</returns>
     Task<(int totalCountOfCustomers, int totalCountOfVisitors, int totalCountOfEmployees, int totalCountOfNoPackage)> GetCountOfCustomersAndVisitorsAndEmployeesOrganization(int organizationId);
+
+    /// <summary>
+    /// Calculates the daily collected money for a specific organization.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation, containing the daily total money amount in a tuple format.</returns>
     Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync();
+
+    /// <summary>
+    /// Reports the garage transaction analysis for a specific customer ID and tenant ID.
+    /// </summary>
+    /// <param name="CustomerId">The unique identifier of the customer.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing a list of <see cref="GarageTransactionAnalysis"/> results.</returns>
     Task<List<GarageTransactionAnalysis>> ReportGarageTransactionCustomerIdAsync(Guid CustomerId, Guid? tenantId);
+
+    /// <summary>
+    /// Reports the garage analysis based on pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{GarageAnalysis}"/> result.</returns>
     Task<PagedResultDto<GarageAnalysis>> ReportGarageAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    /// <summary>
+    /// Reports the garage transaction for a specific organization based on the vehicle plate number and tenant ID.
+    /// </summary>
+    /// <param name="PlateNumber">The plate number of the vehicle.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing a list of <see cref="GarageTransactionAnalysis"/> results.</returns>
     Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForOrganization(string PlateNumber, Guid? tenantId);
+
+    /// <summary>
+    /// Reports the garage transaction for MDKHL based on the vehicle plate number.
+    /// </summary>
+    /// <param name="PlateNumber">The plate number of the vehicle.</param>
+    /// <returns>A task that represents the asynchronous operation, containing a list of <see cref="GarageTransactionAnalysis"/> results.</returns>
     Task<List<GarageTransactionAnalysis>> ReportGarageTransactionForMDKHLPlateAsync(string PlateNumber);
+
+    /// <summary>
+    /// Reports customer payment information based on pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{PaymentDto}"/> result.</returns>
     Task<PagedResultDto<PaymentDto>> ReportCustomerPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    /// <summary>
+    /// Reports payment information based on pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{PaymentDto}"/> result.</returns>
     Task<PagedResultDto<PaymentDto>> ReportPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    /// <summary>
+    /// Reports garage transaction analysis for a specific customer ID within a date range.
+    /// </summary>
+    /// <param name="CustomerId">The unique identifier of the customer.</param>
+    /// <param name="startDate">The start date of the transaction range.</param>
+    /// <param name="endDate">The end date of the transaction range.</param>
+    /// <returns>A task that represents the asynchronous operation, containing a list of <see cref="GarageTransactionAnalysis"/> results.</returns>
     Task<List<GarageTransactionAnalysis>> ReportGarageTransactionDateCustomerIdAsync(Guid CustomerId, DateTime startDate, DateTime endDate);
-    Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerNameAsync(string userName, DateTime startDate, DateTime endDate, CustomerCategoryStatus category, Guid? tenantId);  
-    Task<PagedResultDto<GarageTransactionAnalysis>> ReportGarageTransactionAsync(PagedAndSortedAndFilteredResultRequestDto input,Guid? tenantId);
+
+    /// <summary>
+    /// Gets garage transactions analysis based on a customer name, date range, and category status.
+    /// </summary>
+    /// <param name="userName">The username of the customer.</param>
+    /// <param name="startDate">The start date of the transaction range.</param>
+    /// <param name="endDate">The end date of the transaction range.</param>
+    /// <param name="category">The customer category status.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing a list of <see cref="GarageTransactionAnalysis"/> results.</returns>
+    Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerNameAsync(string userName, DateTime startDate, DateTime endDate, CustomerCategoryStatus category, Guid? tenantId);
+
+    /// <summary>
+    /// Reports garage transaction analysis based on pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{GarageTransactionAnalysis}"/> result.</returns>
+    Task<PagedResultDto<GarageTransactionAnalysis>> ReportGarageTransactionAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    /// <summary>
+    /// Reports customer package information based on pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{CustomerPackageDto}"/> result.</returns>
     Task<PagedResultDto<CustomerPackageDto>> ReportCustomerPackage(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    /// <summary>
+    /// Reports package payment information based on pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{PackagePaymentAnalysis}"/> result.</returns>
     Task<PagedResultDto<PackagePaymentAnalysis>> ReportPackagePaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    /// <summary>
+    /// Reports customer payment information for a specific payment method based on pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{PaymentDto}"/> result.</returns>
     Task<PagedResultDto<PaymentDto>> ReportCustomerPaymentForPaymentMethod(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    /// <summary>
+    /// Reports keeper payment information based on pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{PaymentAnalysis}"/> result.</returns>
     Task<PagedResultDto<PaymentAnalysis>> ReportKeeperPaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    /// <summary>
+    /// Reports the number of transactions while a keeper shift is ongoing based on pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{ShiftAnalysis}"/> result.</returns>
     Task<PagedResultDto<ShiftAnalysis>> ReportNumberOfTransactionsWhileKeeperShift(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
 
     /// <summary>
-    /// Asynchronously generates a report for discount payment analysis, applying filtering, sorting, and pagination.
+    /// Reports discount payment information based on pagination, sorting, and filtering.
     /// </summary>
-    /// <param name="input">An object containing filter, sorting, and pagination parameters for the report query.</param>
-    /// <param name="tenantId">The tenant identifier to filter the report data by. If null, the report includes data for all tenants.</param>
-    /// <returns>
-    /// A <see cref="PagedResultDto{DiscountPaymentAnalysis}"/> containing the filtered, sorted, and paginated discount payment analysis results.
-    /// </returns>
-    /// <remarks>
-    /// This method constructs a filter expression based on the provided filters and then fetches the discount payment report data from the repository.
-    /// The report data is then returned as a paged result with the items and total count.
-    /// </remarks>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{DiscountPaymentAnalysis}"/> result.</returns>
     Task<PagedResultDto<DiscountPaymentAnalysis>> ReportDiscountPaymentAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
 
+    /// <summary>
+    /// Reports vehicle customer information based on pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{VehicleCustomerReportDto}"/> result.</returns>
     Task<PagedResultDto<VehicleCustomerReportDto>> ReportVehicleCustomerAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    /// <summary>
+    /// Reports the beneficiaries' details based on pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{CustomerAnalysis}"/> result.</returns>
     Task<PagedResultDto<CustomerAnalysis>> ReportBeneficiariesDetailsAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
 }
