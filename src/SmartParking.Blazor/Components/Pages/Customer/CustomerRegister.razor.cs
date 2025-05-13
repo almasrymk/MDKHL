@@ -33,7 +33,9 @@ using Volo.Abp.Identity;
 using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
-
+/// <summary>
+/// Customer registration component.
+/// </summary>
 public partial class CustomerRegister
 {
     private MudForm form;
@@ -55,6 +57,11 @@ public partial class CustomerRegister
     private string RoleId = "";
     private int  PackageId { get; set; }
     private CustomerDto Customer = new CustomerDto();
+
+    /// <summary>
+    /// Checks if is user exist
+    /// </summary>
+    /// <param name="organizationId"></param>
     private async void CheckIsUser(int organizationId)
     {
         createUpdateCustomerDto.OrganizationId = organizationId;
@@ -74,9 +81,8 @@ public partial class CustomerRegister
         var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         Organizations = result.Items.ToList();
         if (CurrentTenant.Id is not null)
-            {
+         {
             var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
-
             Roles = await RoleAppService.GetListByTenant(CurrentTenant.Id);   
             createUpdateCustomerDto.OrganizationId = organization.Id;
             createUpdateCustomerDto.TenantId = CurrentTenant.Id;
@@ -86,14 +92,17 @@ public partial class CustomerRegister
         createUpdateVehicle.BelongToCompany = false;
         var resultplate = await PlateColorsAppService.GetAllPlateColorsAsync();
         plateColors = resultplate;
-
-
         var resultLicence = await LicenceTypesAppService.GetAllLicencesAsync();
         LicenceTypes = resultLicence;
-
         var resultVehicleBrand = await VehicleBrandAppService.GetAllVehicleBrandsAsync();
         VehicleBrands = resultVehicleBrand;
     }
+    /// <summary>
+    /// method to select brand 
+    /// </summary>
+    /// <param name="brandId"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     private async Task SelectBrand(int brandId)
     {
         createUpdateVehicle.VehicleBrandId = brandId;
@@ -102,27 +111,26 @@ public partial class CustomerRegister
         if(VehicleModels.Count < 0) 
             throw new Exception(L["Model"] + " " + L["NotSelected"]);
     }
+
+    /// <summary>
+    /// method to handle submit
+    /// </summary>
+    /// <returns></returns>
     public async  Task HandleSubmit()
     {
-		
 		try
         {
             await CreateUser();
-            
             createUpdateCustomerDto.Password = "P@ssw0rd";
             createUpdateCustomerDto.RepeatPassword = "P@ssw0rd";
             createUpdateCustomerDto.UserName = createUpdateCustomerDto.PhoneNumber;
-
             Customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
             if (Customer != null)
             {
                 CustomerId = Customer.Id;
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}  {createUpdateCustomerDto.FullName}", Severity.Success);
-
                 showVehicle = true;
             }
-
-
         }
         catch (AbpValidationException abpValidationException)
         {
@@ -132,23 +140,20 @@ public partial class CustomerRegister
                 errors += error;
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[error.MemberNames.First()]} - {error.ErrorMessage}", Severity.Error);
             }
-            
         }
-   
         catch (BusinessException businessException)
         {
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {businessException.Code}", Severity.Error);
-
         }
         catch (Exception ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
-
         }
 
     }
-
+    /// <summary>
+    /// method to create user
+    /// </summary>
     private async Task CreateUser()
     {
         if (createUpdateCustomerDto.IsUser)
@@ -163,35 +168,27 @@ public partial class CustomerRegister
     public void HandleCancel()
     {
         Navigation.NavigateTo("/customers", true);
-
     }
-
-
+    /// <summary>
+    /// Submits the creation of a new vehicle.
+    /// </summary>
     private async void SubmitCreate()
     {
         try
         {
             createUpdateVehicle.CustomerId = CustomerId;
-            
             var vehichle = await VehicleAppService.CreateAsync(createUpdateVehicle);
             if (vehichle != null)
             {
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]} {L["Vehicle"]} {vehichle.ArPlateNumber}", Severity.Success);
-
                 await Task.Delay(1000);
-               
                 var parameters = new DialogParameters
                 {
                     ["Customer"] = Customer,
                     ["VehicleId"] = vehichle.Id,
                 };
-
-
                 await DialogService.ShowAsync<AssignPackgeDialog>("view customer package", parameters);
-
             }
-
-
         }
         catch (AbpValidationException validationException)
         {
@@ -202,7 +199,6 @@ public partial class CustomerRegister
         }
         catch (BusinessException ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
@@ -211,29 +207,36 @@ public partial class CustomerRegister
         }
         catch (Exception ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
     }
-
+    /// <summary>
+    /// Cancels the customer creation process and navigates back to the customers page.
+    /// </summary>
     private void CancelCreate()
     {
-
         Navigation.NavigateTo("/customers", true);
-
     }
-
+    /// <summary>
+    /// Handles key up event for Arabic plate letters.
+    /// </summary>
+    /// <param name="e">Focus event arguments.</param>
     private void HandleKeyUpLettersArabic(FocusEventArgs e)
     {
         HandleKeyUpLetters(createUpdateVehicle.ArPlateLetters);
-
     }
+    /// <summary>
+    /// Handles key up event for English plate letters.
+    /// </summary>
+    /// <param name="e">Focus event arguments.</param>
     private void HandleKeyUpLettersEnglish(FocusEventArgs e)
     {
         HandleKeyUpLetters(createUpdateVehicle.EnPlateLetters);
-
-
     }
+    /// <summary>
+    /// Handles key up event for plate letters.
+    /// </summary>
+    /// <param name="e">Key up event arguments.</param>
     private void HandleKeyUpLetters(string e)
     {
         try
@@ -245,20 +248,27 @@ public partial class CustomerRegister
             createUpdateVehicle.EnPlateLetters = createUpdateVehicle.ArPlateLetters = "";
             SnackBar.ShowSnackbar(Snackbar,ex.Message, Severity.Error);
         }
-
     }
+    /// <summary>
+    /// Handles key up event for Arabic plate numbers.
+    /// </summary>
+    /// <param name="e">Focus event arguments.</param>
     private void HandleKeyUpArabic(FocusEventArgs e)
     {
         HandleKeyUp(createUpdateVehicle.ArPlateNumber);
-
     }
+    /// <summary>
+    /// Handles key up event for English plate numbers.
+    /// </summary>
+    /// <param name="e">Focus event arguments.</param>
     private void HandleKeyUpEnglish(FocusEventArgs e)
     {
         HandleKeyUp(createUpdateVehicle.EnPlateNumber);
-
-
     }
-
+    /// <summary>
+    /// Handles key up event for plate numbers.
+    /// </summary>
+    /// <param name="PlateNumber"></param>
     private void HandleKeyUp(string PlateNumber)
     {
         try
@@ -270,8 +280,6 @@ public partial class CustomerRegister
             createUpdateVehicle.EnPlateNumber = createUpdateVehicle.ArPlateNumber = "";
             SnackBar.ShowSnackbar(Snackbar, ex.Message, Severity.Error);
         }
-
-
     }
 
 }
