@@ -63,6 +63,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
         _authenticationUtility = authenticationUtility;
     }
 
+    #region Public Methods
     /// <inheritdoc/>
     public async Task<Result<string>> ForgetPasswordOtpAsync(string phoneNumber)
     {
@@ -240,7 +241,8 @@ public class OtpAppService : ApplicationService, IOtpAppService
         }
 
     }
-
+    #endregion
+    #region Private Methods
     /// <summary>
     /// function that send sms 
     /// </summary>
@@ -265,11 +267,15 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
         return response.IsSuccessStatusCode;
     }
-
+    /// <summary>
+    /// Generates a random OTP (One-Time Password) with a fixed length.
+    /// </summary>
+    /// <returns>A string representing the randomly generated OTP.</returns>
     private string GenerateRandomOtp()
     {
         
         return _random.Next(0, (int)Math.Pow(10, OtpLength)).ToString($"D{OtpLength}");
     }
+    #endregion
 
 }
