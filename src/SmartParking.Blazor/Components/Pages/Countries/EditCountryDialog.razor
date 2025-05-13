@@ -1,4 +1,5 @@
-﻿@using Microsoft.Extensions.Localization
+﻿@using AutoMapper
+@using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using System.Globalization
@@ -8,6 +9,7 @@
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
+@inject IMapper Mapper
 <PageTitle>@L["EditCountries"]</PageTitle>
 
 <MudItem class="modal-wrapper">
