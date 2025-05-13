@@ -58,10 +58,34 @@ public interface IKeeperAppService
 	/// <returns>list of GarageTransactionDto</returns>
 	Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId, Guid userId);
 
+    /// <summary>
+    /// Retrieves the tenant associated with the given phone number.
+    /// </summary>
+    /// <param name="phoneNum">The phone number to search for the tenant.</param>
+    /// <returns>A task representing the asynchronous operation, containing the <see cref="Tenant"/> for the provided phone number.</returns>
     Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum);
 
+    /// <summary>
+    /// Initiates the checkout process for a specific invoice, including the application of a discount value.
+    /// </summary>
+    /// <param name="invoiceId">The unique identifier of the invoice to be processed.</param>
+    /// <param name="DiscountValue">The discount value to be applied to the invoice (optional, defaults to 0).</param>
+    /// <returns>A task representing the asynchronous operation, containing the result of type <see cref="InvoiceMobileDto"/>.</returns>
     Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId, decimal DiscountValue = default);
-    Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId, string PaymentType , decimal DiscountValue = default);
 
+    /// <summary>
+    /// Processes a cash payment for the customer request for a specific invoice, including the option for a discount value.
+    /// </summary>
+    /// <param name="invoiceId">The unique identifier of the invoice to be paid.</param>
+    /// <param name="PaymentType">The type of payment being made (e.g., cash, credit, etc.).</param>
+    /// <param name="DiscountValue">The discount value to be applied to the invoice (optional, defaults to 0).</param>
+    /// <returns>A task representing the asynchronous operation, containing the result of type <see cref="InvoiceMobileDto"/> for the payment request.</returns>
+    Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId, string PaymentType, decimal DiscountValue = default);
+
+    /// <summary>
+    /// Retrieves all invoices associated with a specific organization that have been paid.
+    /// </summary>
+    /// <param name="organizationId">The unique identifier of the organization.</param>
+    /// <returns>A task representing the asynchronous operation, containing the result of type <see cref="List{InvoiceDto}"/> for all paid invoices in the organization.</returns>
     Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdPaidAsync(int organizationId);
 }
