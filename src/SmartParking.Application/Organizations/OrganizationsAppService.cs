@@ -32,6 +32,10 @@ using Volo.Abp.ObjectExtending;
 using Volo.Abp.TenantManagement;
 
 namespace SmartParking.Organizations;
+
+/// <summary>
+/// The service class provides methods for managing organizations.
+/// </summary>
 public class OrganizationsAppService : CrudAppService<Organization, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>, IOrganizationsAppService
 {
     private readonly IRepository<Organization, int> _repository;
@@ -95,12 +99,9 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-
             var orgaization = await IsFoundOrganizationAsync(id);
             await _repository.HardDeleteAsync(orgaization);
-
             return EnumValues.GetEnumDescription(OrganizationCreationValidations.OrganizationDeleteion);
-
         }
     }
     ///<inheritdoc/>
@@ -135,7 +136,6 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             );
         }
     }
-
     ///<inheritdoc/>
     public async Task<PagedResultDto<OrganizationDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
@@ -171,13 +171,9 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             {
                 return Result<List<OrganizationDto>>.NotFound();
             }
-
             return Result<List<OrganizationDto>>.Success(organizationsMap);
-
         }
-
     }
-
     ///<inheritdoc/>
     public async Task<SubscriptionDto> AddOrganizationForSubscription(int OrganizationId, int SubscriptionId)
     {
@@ -194,39 +190,6 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             }
             return await _subscriptionAppService.GetAsync(SubscriptionId);
         }
-    }
-
-    private async Task<IdentityRole?> AddRole(Guid tenantId)
-    {
-        var roleUser = new IdentityRole(GuidGenerator.Create(), RolesType.Organization.ToString(), tenantId);
-        IEnumerable<IdentityRole> roles = new List<IdentityRole>
-        {
-            roleUser,
-            new IdentityRole(GuidGenerator.Create(),RolesType.Keeper.ToString(), tenantId)
-        };
-        await _identityRole.InsertManyAsync(roles, true);
-        return roleUser;
-    }
-
-    private async Task AddUser(CreateUpdateOrganiztionDto input, Tenant tenant, Organization organization,IdentityRole role)
-    {
-        UserCreateDto user = new UserCreateDto()
-        {
-            UserName = input.UserName,
-            PhoneNumber = input.WhatsAppNum,
-            Email = input.Email,
-            Password = "P@ssw0rd",
-            Name = input.EnglishName,
-            IsActive = true,
-            UserType = 1,
-            OrganizationId = organization.Id,
-            TenantId = tenant.Id,
-            IdentificationTypes=IdentificationTypes.NationalID,
-            NationalId=input.NationalId
-
-        };
-
-        var userCreated = await _usersAppService.CreateWithRoleAsync(user,role.Id);
     }
     ///<inheritdoc/>
     public async Task<int> GetOrganizationsCount()
@@ -252,8 +215,8 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
         }
     }
-    [RemoteService(isEnabled: false)]
     ///<inheritdoc/>
+    [RemoteService(isEnabled: false)]
     public async Task<Organization> GetOrganizationForCurrentTenatAsync()
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -281,6 +244,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             return maxNumberOfGarages;
         }
     }
+    /// <inheritdoc/>
     public async Task<int> GetNumberOfActiveGaragesOfOrganization()
     {
         var query = await _garageRepository.GetQueryableAsync();
@@ -288,8 +252,8 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         var count = query.Count();
         return count;
     }
-    [RemoteService(isEnabled: false)]
     ///<inheritdoc/>
+    [RemoteService(isEnabled: false)]
     public async Task<string> GetOrganizationPictureByOrganizationTenant(Guid? OrganizationTenantId)
     {
         var orgId = await GetOrganizationIdByTenant(OrganizationTenantId);
@@ -298,6 +262,38 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
     }
     #endregion
     #region private methods 
+    /// <summary>
+    /// Adds a new user associated with the given tenant, organization, and role.
+    /// </summary>
+    /// <param name="input">DTO containing user creation details.</param>
+    /// <param name="tenant">The tenant to which the user will belong.</param>
+    /// <param name="organization">The organization to associate with the user.</param>
+    /// <param name="role">The role to assign to the user.</param>
+    private async Task AddUser(CreateUpdateOrganiztionDto input, Tenant tenant, Organization organization, IdentityRole role)
+    {
+        UserCreateDto user = new UserCreateDto()
+        {
+            UserName = input.UserName,
+            PhoneNumber = input.WhatsAppNum,
+            Email = input.Email,
+            Password = "P@ssw0rd",
+            Name = input.EnglishName,
+            IsActive = true,
+            UserType = 1,
+            OrganizationId = organization.Id,
+            TenantId = tenant.Id,
+            IdentificationTypes = IdentificationTypes.NationalID,
+            NationalId = input.NationalId
+        };
+        var userCreated = await _usersAppService.CreateWithRoleAsync(user, role.Id);
+    }
+
+    /// <summary>
+    /// Creates a new organization and inserts it into the repository.
+    /// </summary>
+    /// <param name="input">DTO containing organization creation data.</param>
+    /// <param name="tenant">The tenant under which the organization is created.</param>
+    /// <returns>The newly created organization entity.</returns>
     private async Task<Organization> CreateOrganization(CreateUpdateOrganiztionDto input, Tenant tenant)
     {
         var city = await _cityAppService.GetAsync(input.CityId);
@@ -310,6 +306,29 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         return organization;
     }
 
+    /// <summary>
+    /// Adds predefined roles (Organization and Keeper) for the specified tenant.
+    /// </summary>
+    /// <param name="tenantId">The ID of the tenant.</param>
+    /// <returns>The created Organization role.</returns>
+    private async Task<IdentityRole?> AddRole(Guid tenantId)
+    {
+        var roleUser = new IdentityRole(GuidGenerator.Create(), RolesType.Organization.ToString(), tenantId);
+        IEnumerable<IdentityRole> roles = new List<IdentityRole>
+    {
+        roleUser,
+        new IdentityRole(GuidGenerator.Create(), RolesType.Keeper.ToString(), tenantId)
+    };
+        await _identityRole.InsertManyAsync(roles, true);
+        return roleUser;
+    }
+
+    /// <summary>
+    /// Builds and assigns the address for the organization based on input and city.
+    /// </summary>
+    /// <param name="input">The DTO containing address information.</param>
+    /// <param name="city">The city object with names in different languages.</param>
+    /// <param name="organization">The organization to update with the address.</param>
     private static void CheckAdress(CreateUpdateOrganiztionDto input, CityDto city, Organization organization)
     {
         bool containsArabic = Regex.IsMatch(input.StreetName, @"\p{IsArabic}");
@@ -318,6 +337,11 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         organization.Address += " , " + input.PostalCode;
     }
 
+    /// <summary>
+    /// Validates that the provided commercial registration number is unique.
+    /// </summary>
+    /// <param name="input">The DTO containing the commercial registration number.</param>
+    /// <exception cref="BusinessException">Thrown if the registration number already exists.</exception>
     private async Task CheckCommercial(CreateUpdateOrganiztionDto input)
     {
         var query = await _repository.GetListAsync(x => x.CommercialRegistrationNumber == input.CommercialRegistrationNumber);
@@ -325,9 +349,14 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         if (query.Count > 0)
         {
             throw new BusinessException(EnumValues.GetEnumDescription(OrganizationCreationValidations.CommercialRegistrationNumber) + query.First().ArabicName);
-
         }
     }
+
+    /// <summary>
+    /// Creates a new tenant and persists it to the repository.
+    /// </summary>
+    /// <param name="input">DTO containing tenant creation information.</param>
+    /// <returns>The newly created tenant.</returns>
     private async Task<Tenant> CreateTenat(CreateUpdateOrganiztionDto input)
     {
         var tenant = await _tenantManager.CreateAsync(input.TenantName);
@@ -344,22 +373,32 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         await CurrentUnitOfWork.SaveChangesAsync();
         return tenant;
     }
-    [RemoteService(isEnabled:false)]
-    ///<inheritdoc/>
+    /// <summary>
+    /// Generates a unique organization code by padding the given ID with leading zeros.
+    /// </summary>
+    /// <param name="id">The organization ID.</param>
+    /// <returns>A formatted organization code (e.g., O000123).</returns>
+    [RemoteService(isEnabled: false)]
     private string CodeGenerator(int id)
     {
-        var idLen =(int) Math.Floor(Math.Log10(id) + 1);
+        var idLen = (int)Math.Floor(Math.Log10(id) + 1);
         int zeros = (6 - idLen);
         string Code = "O";
         Code = Code.PadRight(zeros + 1, '0');
-        Code += (id);
+        Code += id;
         return Code;
     }
+
+    /// <summary>
+    /// Applies a search filter on the given organization queryable based on the search term.
+    /// </summary>
+    /// <param name="input">DTO containing the search term.</param>
+    /// <param name="queryable">The initial organization queryable.</param>
+    /// <returns>A filtered queryable based on the search term.</returns>
     private static IQueryable<Organization> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Organization> queryable)
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
-
             queryable = queryable.Where(or =>
                 or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.Subscription.ParkingSlot.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
@@ -372,12 +411,22 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
                 or.State.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.City.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.City.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
+                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
-
         return queryable;
     }
+
+    /// <summary>
+    /// Applies sorting and pagination to the given organization queryable.
+    /// </summary>
+    /// <param name="input">DTO containing sorting and pagination parameters.</param>
+    /// <param name="queryable">The initial organization queryable.</param>
+    /// <returns>
+    /// A tuple containing:
+    /// - Total count before pagination.
+    /// - Paginated and sorted queryable.
+    /// </returns>
     private async Task<(int, IQueryable<Organization>)> ApplySortAndpaginate(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Organization> queryable)
     {
         if (!input.Sorting.IsNullOrEmpty())
@@ -391,12 +440,18 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             {
                 queryable = queryable.OrderBy(input.Sorting);
             }
-
         }
+
         var totalCount = await AsyncExecuter.CountAsync(queryable);
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        return (totalCount,queryable);
+        return (totalCount, queryable);
     }
+
+    /// <summary>
+    /// Checks if a subscription with the given ID exists.
+    /// </summary>
+    /// <param name="SubscriptionId">The ID of the subscription.</param>
+    /// <exception cref="EntityNotFoundException">Thrown if the subscription is not found.</exception>
     private async Task IsFoundSubscriptionAsync(int SubscriptionId)
     {
         var subscription = await _subscriptionAppService.GetAsync(SubscriptionId);
@@ -405,6 +460,13 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             throw new EntityNotFoundException(typeof(Subscription), SubscriptionId);
         }
     }
+
+    /// <summary>
+    /// Checks if an organization with the given ID exists.
+    /// </summary>
+    /// <param name="OrganizationId">The ID of the organization.</param>
+    /// <returns>The found organization entity.</returns>
+    /// <exception cref="EntityNotFoundException">Thrown if the organization is not found.</exception>
     private async Task<Organization?> IsFoundOrganizationAsync(int OrganizationId)
     {
         var organization = await _repository.GetAsync(OrganizationId);
@@ -415,6 +477,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
         return organization;
     }
+
     #endregion
 
 }
