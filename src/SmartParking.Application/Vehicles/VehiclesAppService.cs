@@ -51,7 +51,8 @@ public class VehiclesAppService :
     }
 
     #region Public Methods
-
+    /// <inheritdoc/>
+ 
     public override async Task<VehicleDto> CreateAsync(CreateUpdateVehicleDto input)
     {
         input.CreatorId = _currentUser.Id;
@@ -72,6 +73,7 @@ public class VehiclesAppService :
 
         return await base.CreateAsync(input);
     }
+    /// <inheritdoc/>
 
     public override async Task<VehicleDto> UpdateAsync(int id, CreateUpdateVehicleDto input)
     {
@@ -106,6 +108,7 @@ public class VehiclesAppService :
             return await base.UpdateAsync(id, input);
         }
     }
+    /// <inheritdoc/>
 
     public override async Task<PagedResultDto<VehicleDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
@@ -119,6 +122,7 @@ public class VehiclesAppService :
 
         return await base.GetListAsync(input);
     }
+    /// <inheritdoc/>
 
     public override async Task<VehicleDto> GetAsync(int id)
     {
@@ -127,6 +131,7 @@ public class VehiclesAppService :
             return await base.GetAsync(id);
         }
     }
+    /// <inheritdoc/>
 
     public override async Task DeleteAsync(int id)
     {
@@ -141,6 +146,8 @@ public class VehiclesAppService :
     }
 
     [RemoteService(IsEnabled = false)]
+    /// <inheritdoc/>
+
     public async Task<(string numbers, string letters)> SplitPlateAsync(string plate)
     {
         await Task.Yield();
@@ -166,6 +173,8 @@ public class VehiclesAppService :
     }
 
     [RemoteService(IsEnabled = false)]
+    /// <inheritdoc/>
+
     public void SplitPlate(string plate, out string numbers, out string letters)
     {
         var match = Regex.Match(plate, @"(?<letters>[A-Za-z\u0600-\u06FF]+)(?<numbers>\d+)|(?<numbers>\d+)(?<letters>[A-Za-z\u0600-\u06FF]+)");
@@ -184,7 +193,11 @@ public class VehiclesAppService :
     #endregion
 
     #region Private Methods
-
+    /// <summary>
+    /// Checks if a vehicle already exists based on its Arabic or English plate number.
+    /// </summary>
+    /// <param name="input">The DTO containing the details of the vehicle to check.</param>
+    /// <exception cref="InvalidOperationException">Thrown if a vehicle with the same plate number already exists.</exception>
     private async Task CheckVehicleIfExistsAsync(CreateUpdateVehicleDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -198,7 +211,11 @@ public class VehiclesAppService :
             }
         }
     }
-
+    /// <summary>
+    /// Validates the vehicle's plate numbers to ensure they meet the required criteria.
+    /// </summary>
+    /// <param name="input">The DTO containing the vehicle's plate numbers.</param>
+    /// <exception cref="InvalidOperationException">Thrown if the plate numbers are missing or invalid.</exception>
     private void ValidatePlateNumbers(CreateUpdateVehicleDto input)
     {
         if (!VehicleValidation.CheckPlateNumberCriteria(input.FullArPlate, input.FullEnPlate))
@@ -206,7 +223,11 @@ public class VehiclesAppService :
             throw new InvalidOperationException("Plate numbers are missing or invalid");
         }
     }
-
+    /// <summary>
+    /// Validates the vehicle's model year.
+    /// </summary>
+    /// <param name="year">The model year to validate.</param>
+    /// <exception cref="UserFriendlyException">Thrown if the model year is invalid.</exception>
     private void ValidateModelYear(string year)
     {
         if (VehicleValidation.ValidateYear(year) is not null)
@@ -214,7 +235,11 @@ public class VehiclesAppService :
             throw new UserFriendlyException(LocalizationHelper.GetLocalizedString("NotValidYear"));
         }
     }
-
+    /// <summary>
+    /// Assigns a plate color to the vehicle based on its licence type.
+    /// </summary>
+    /// <param name="input">The DTO containing the vehicle details and licence type.</param>
+    /// <exception cref="InvalidOperationException">Thrown if the licence type is not found.</exception>
     private async Task AssignPlateColorFromLicenceTypeAsync(CreateUpdateVehicleDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
