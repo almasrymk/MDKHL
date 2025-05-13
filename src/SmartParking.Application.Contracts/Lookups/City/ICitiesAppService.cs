@@ -8,49 +8,52 @@ namespace SmartParking.Lookups;
 
 public interface ICitiesAppService :ICrudAppService<CityDto,int,PagedAndSortedResultRequestDto,CreateUpdateCityDto>
 {
-
     /// <summary>
-    /// abstract method to create city
+    /// Abstract method to create a city.
     /// </summary>
-    /// <param name="input">city create dto</param>
+    /// <param name="input">City create DTO.</param>
     /// <returns>CityDto</returns>
     public Task<CityDto> CreateAsync(CreateUpdateCityDto input);
 
     /// <summary>
-    /// abstract method to update specific city
+    /// Abstract method to update a specific city.
     /// </summary>
-    /// <param name="input">city create dto</param>
-    /// <param name="id">id of specific city</param>
+    /// <param name="input">City create DTO.</param>
+    /// <param name="id">ID of the specific city.</param>
     /// <returns>CityDto</returns>
-    public Task<CityDto> UpdateAsync(int id,CreateUpdateCityDto input);
-
-	/// <summary>
-	/// abstract method to delete specific city
-	/// </summary>
-	/// <param name="id">id of specific city</param>
-	Task DeleteAsync(int id);
-
-	/// <summary>
-	/// abstract method to list all cities
-	/// </summary>
-	/// <returns>Garage Dto</returns>
-	Task<List<CityLookupDto>> GetCityLookupAsync();
+    public Task<CityDto> UpdateAsync(int id, CreateUpdateCityDto input);
 
     /// <summary>
-    /// abstract method to search of cities
+    /// Abstract method to delete a specific city.
     /// </summary>
-    /// <param name="input">specifies max number of city and if it sorted or not and search term</param>
-    /// <returns>City Dto</returns>
+    /// <param name="id">ID of the specific city.</param>
+    Task DeleteAsync(int id);
+
+    /// <summary>
+    /// Abstract method to list all cities for lookup.
+    /// </summary>
+    /// <returns>List of CityLookupDto.</returns>
+    Task<List<CityLookupDto>> GetCityLookupAsync();
+
+    /// <summary>
+    /// Abstract method to search cities.
+    /// </summary>
+    /// <param name="input">Specifies max number of cities, sorting, and search term.</param>
+    /// <returns>Paged result of CityDto.</returns>
     public Task<PagedResultDto<CityDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
 
-
     /// <summary>
-    /// abstract method to filter of cities
+    /// Abstract method to filter cities.
     /// </summary>
-    /// <param name="input">specifies max number of cities and if it sorted or not and filter</param>
-    /// <returns>City Dto</returns>
+    /// <param name="input">Specifies max number of cities, sorting, and filter conditions.</param>
+    /// <returns>Paged result of CityDto.</returns>
     public Task<PagedResultDto<CityDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
-
+    /// <summary>
+    /// Abstract method to get cities by a specific state.
+    /// </summary>
+    /// <param name="stateId">ID of the state.</param>
+    /// <returns>List of CityLookupDto related to the specified state.</returns>
     public Task<List<CityLookupDto>> GetCityByState(int stateId);
+
 }
