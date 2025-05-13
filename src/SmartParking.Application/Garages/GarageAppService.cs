@@ -66,39 +66,6 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             return await base.CreateAsync(input);
         }
     }
-
-
-    [RemoteService(isEnabled: false)]
-    /// <summary>
-    /// Method is used to create a code for garage
-    /// </summary>
-    /// <param name="input">input is garage id which is related to specific organization </param>
-    /// <returns></returns>
-    /// <exception cref="BusinessException">it throws exception when organization tries to add more than 99 garage</exception>
-    public string GetOrganizationCode(int input)
-    {
-        if (input == 99)
-        {
-            throw new BusinessException(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
-        }
-        string Code = "-G-";
-        if (input < 9)
-        {
-            Code += '0';
-        }
-        Code += (input + 1);
-        return Code;
-    }
-    /// <summary>
-    /// Method is used to get cameras related to specific garage
-    /// </summary>
-    /// <param name="garage"></param>
-    /// <returns>List<Camera></returns>
-    public async Task<List<Camera>> GetCamerasRelatedToGarageAsync(Garage garage)
-    {
-        var cameras = await _repositoryCamera.GetListAsync(x => x.GarageId == garage.Id);
-        return cameras;
-    }
     /// <inheritdoc/>
     public async override Task<GarageDto> UpdateAsync(int id, CreateUpdateGarageDto input)
     {
@@ -139,7 +106,6 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             garagesDto
         );
     }
-
 
     /// <inheritdoc/>
     public async Task<PagedResultDto<GarageDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
@@ -255,16 +221,6 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             return await base.GetListAsync(input);
     }
 
-    [RemoteService(IsEnabled = false)]
-    public async Task<int> GetCountWithountMultiTenant()
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var query = await _repository.GetQueryableAsync();
-            var count = await AsyncExecuter.CountAsync(query);
-            return count;
-        }
-    }
     /// <inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
@@ -273,7 +229,6 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         else
             await HandleDeleteForOrganization(id);
     }
-
     /// <inheritdoc/>
     public async Task<int> GetAllGaragesCount()
     {
@@ -319,42 +274,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         await _repositoryCamera.UpdateManyAsync(cameras);
         return true;
     }
-
-    /// <summary>
-    /// Generates a camera code based on the organization name, garage name, and camera name.
-    /// </summary>
-    /// <param name="OrgEnglishName"></param>
-    /// <param name="GarageEnglishName"></param>
-    /// <param name="CameraEnglishName"></param>
-    /// <returns>string</returns>
-    public async Task<string> GenerateCameraCode(string OrgEnglishName, string GarageEnglishName, string CameraEnglishName)
-    {
-        string Code = OrgEnglishName.Substring(0, 3) + '-' + GarageEnglishName.Substring(0, 2) + '-' + CameraEnglishName.Substring(0, 2) + '-';
-        string ncode = Code;
-        Random rnd = new Random();
-        while (true)
-        {
-            ncode = Code;
-            Camera camera = new Camera();
-            ncode += rnd.Next(00, 99).ToString("00");
-            using (DataFilter.Disable<IMultiTenant>())
-            {
-                camera = await _repositoryCamera.FirstOrDefaultAsync(x => x.DeviceId == ncode);
-            }
-            if (camera == null)
-            {
-                Code = ncode;
-                break;
-            }
-        }
-        return Code;
-    }
-
-    /// <summary>
-    /// Retrieves a specific garage by its ID.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns>GarageDto</returns>
+    /// <inheritdoc/>
     public override async Task<GarageDto> GetAsync(int id)
     {
         if (CurrentTenant.Id == null)
@@ -392,11 +312,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             return false;
         }
     }
-
-    /// <summary>
-    /// Retrieves the maximum capacity and count of active garages.
-    /// </summary>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public async Task<Tuple<int, int>> GetMaxCapacityofActiveGaragesAndItsCount()
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -410,11 +326,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         }
 
     }
-    /// <summary>
-    /// Retrieves a list of garages based on the provided input parameters.
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public async Task<PagedResultDto<GarageDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
         var queryable = await _repository.GetQueryableAsync();
@@ -429,8 +341,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             garagesDto
         );
     }
-
-
+    /// <inheritdoc/>
     public async Task<PagedResultDto<GarageDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -451,14 +362,13 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     #endregion
     #region private methods
     /// <summary>
-    /// Method is used to get and validate organization
+    /// Method to get and validate an organization based on its ID.
     /// </summary>
-    /// <param name="organizationId"></param>
-    /// <returns></returns>
-    /// <exception cref="EntityNotFoundException"></exception>
-    /// <exception cref="Exception"></exception>
+    /// <param name="organizationId">The unique identifier of the organization.</param>
+    /// <returns>The <see cref="Organization"/> object if found and valid.</returns>
+    /// <exception cref="EntityNotFoundException">Thrown if the organization is not found.</exception>
+    /// <exception cref="Exception">Thrown if the organization status is not active.</exception>
     [RemoteService(isEnabled: false)]
-
     private async Task<Organization> GetAndValidateOrganizationAsync(int organizationId)
     {
         var query = await _organizationRepository.GetQueryableAsync();
@@ -475,37 +385,49 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
         return organization;
     }
+
+    /// <summary>
+    /// Method to apply a filter to the garage query based on the tenant ID.
+    /// </summary>
+    /// <param name="tenantId">The tenant ID to filter the garages.</param>
+    /// <param name="queryable">The IQueryable of garages to apply the filter on.</param>
+    /// <returns>The filtered IQueryable of garages based on tenant ID.</returns>
     private static IQueryable<Garage> ApplyFilterTenant(Guid? tenantId, IQueryable<Garage> queryable)
     {
         if (tenantId.HasValue)
             queryable = queryable.Where(x => x.TenantId == tenantId);
         return queryable;
     }
+
     /// <summary>
-    /// Method is used to handle delete for organization
+    /// Method to handle the deletion of a garage for an organization.
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
+    /// <param name="id">The unique identifier of the garage to delete.</param>
+    /// <returns>A task representing the asynchronous delete operation.</returns>
+    /// <exception cref="Exception">Thrown if no garage is found with the provided ID or if the garage is already deleted.</exception>
     private async Task HandleDeleteForOrganization(int id)
     {
         var garage = await _repository.FirstOrDefaultAsync(x => x.Id == id);
         if (garage == null)
             throw new Exception("There is no garage related to that id");
+
         var org = await _organizationRepository.GetAsync(garage.OrganizationId);
         if (org != null)
             org.ActiveGarages--;
+
         if (garage.Status == Status.Deleted)
-            throw new Exception("Can't Delete an deleted Garage");
+            throw new Exception("Can't Delete an already deleted Garage");
+
         garage.Status = Status.Deleted;
         await base.DeleteAsync(id);
     }
+
     /// <summary>
-    /// Method is used to handle delete for MDKHL
+    /// Method to handle the deletion of a garage for MDKHL.
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
+    /// <param name="id">The unique identifier of the garage to delete.</param>
+    /// <returns>A task representing the asynchronous delete operation.</returns>
+    /// <exception cref="Exception">Thrown if no garage is found with the provided ID or if the garage is already deleted.</exception>
     private async Task HandleDeleteForMdkhl(int id)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -513,23 +435,26 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             Garage garage = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (garage == null)
                 throw new Exception("There is no garage related to that id");
+
             var org = await _organizationRepository.GetAsync(garage.OrganizationId);
             if (org != null)
                 org.ActiveGarages--;
+
             if (garage.Status == Status.Deleted)
-                throw new Exception("Can't Delete an deleted Garage");
+                throw new Exception("Can't Delete an already deleted Garage");
+
             UpdateOrganizationUsageDelete(org, garage.MaxCapacity);
             await _repository.HardDeleteAsync(garage);
         }
     }
 
     /// <summary>
-    /// Method is used to validate slot capacity
+    /// Method to validate the slot capacity of a garage.
+    /// Ensures that the total number of slots for customers, employees, and free spaces matches the max capacity.
     /// </summary>
-    /// <param name="input"></param>
-    /// <exception cref="Exception"></exception>
+    /// <param name="input">The input data containing the garage slot information.</param>
+    /// <exception cref="Exception">Thrown if the total slot capacity does not match the max capacity.</exception>
     [RemoteService(isEnabled: false)]
-
     private void ValidateSlotCapacity(CreateUpdateGarageDto input)
     {
         if (input.MaxCapacity != input.MaxSlotsForCustomers + input.MaxSlotsForEmployess + input.MaxSlotsForFree)
@@ -537,6 +462,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             throw new Exception(LocalizationHelper.GetLocalizedString("SummationValidation") + ' ' + LocalizationHelper.GetLocalizedString("MaxCapacity"));
         }
     }
+
     /// <summary>
     /// Method is used to check subscription limits
     /// </summary>
@@ -742,15 +668,24 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
         return true;
     }
+    /// <summary>
+    /// Method to generate a unique garage code based on the organization's code and the number of garages.
+    /// </summary>
+    /// <param name="organization">The organization to which the garage belongs.</param>
+    /// <param name="input">The input data for creating or updating a garage.</param>
+    /// <returns>A task that represents the asynchronous operation, with a string containing the generated garage code.</returns>
     [RemoteService(isEnabled: false)]
-
     private async Task<string> GenerateGarageCode(Organization organization, CreateUpdateGarageDto input)
     {
         var numberOfGaragesForOrganization = await _repository.GetListAsync(x => x.OrganizationId == input.OrganizationId);
         return organization.Code + GetOrganizationCode(numberOfGaragesForOrganization.Count);
     }
-    [RemoteService(isEnabled: false)]
 
+    /// <summary>
+    /// Method to update the organization's usage stats when a garage's status is updated to active.
+    /// </summary>
+    /// <param name="organization">The organization to update the usage for.</param>
+    /// <param name="input">The input data containing the garage details to update.</param>
     private void UpdateOrganizationUsage(Organization organization, CreateUpdateGarageDto input)
     {
         if (input.Status == Enums.Status.Active)
@@ -759,16 +694,23 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             organization.ActiveGarages++;
         }
     }
+
+    /// <summary>
+    /// Method to update the organization's usage stats when a garage is deleted.
+    /// </summary>
+    /// <param name="organization">The organization to update the usage for.</param>
+    /// <param name="maxcapacity">The maximum capacity of the garage being deleted.</param>
     private void UpdateOrganizationUsageDelete(Organization organization, int maxcapacity)
     {
         organization.UsedSlots -= maxcapacity;
     }
+
     /// <summary>
-    /// Method is used to get and validate garage
+    /// Method to get and validate a garage based on its ID.
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns>Garage</returns>
-    /// <exception cref="EntityNotFoundException"></exception>
+    /// <param name="id">The unique identifier of the garage to retrieve.</param>
+    /// <returns>A task that represents the asynchronous operation, with the <see cref="Garage"/> object if found.</returns>
+    /// <exception cref="EntityNotFoundException">Thrown if no garage is found with the provided ID.</exception>
     [RemoteService(isEnabled: false)]
     private async Task<Garage> GetAndValidateGarageAsync(int id)
     {
@@ -778,11 +720,13 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
 
         return garage;
     }
+
     /// <summary>
-    /// Method is used to change status of cameras related to garage
+    /// Method to change the status of cameras related to a garage based on the garage's status.
     /// </summary>
-    /// <param name="Garage"></param>
-    /// <param name="cameras"></param>
+    /// <param name="Garage">The garage whose cameras' status will be updated.</param>
+    /// <param name="cameras">A list of cameras related to the garage.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     [RemoteService(isEnabled: false)]
     private async Task ChangeCameraStatusRelatedToGarage(Garage Garage, List<Camera> cameras)
     {
@@ -791,12 +735,14 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             camera.Status = Garage.Status;
         }
     }
+
     /// <summary>
-    /// Method is used to update garage details
+    /// Method to update the garage details based on the input and the current status of the garage.
     /// </summary>
-    /// <param name="input"></param>
-    /// <param name="organization"></param>
-    /// <param name="existingGarage"></param>
+    /// <param name="input">The new details for the garage.</param>
+    /// <param name="organization">The organization associated with the garage.</param>
+    /// <param name="existingGarage">The current garage to update.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     [RemoteService(isEnabled: false)]
     private async Task UpdateGarageDetailsAsync(CreateUpdateGarageDto input, Organization organization, Garage existingGarage)
     {
@@ -807,25 +753,31 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             (Status.Active, Status.Active) => UpdateGarageWhenNewOldActive(input, organization, existingGarage)
         });
     }
+
     /// <summary>
-    /// Method is used to update garage when new is inactive and old is active
+    /// Method to update a garage when the new status is inactive and the old status was active.
     /// </summary>
-    /// <param name="input"></param>
-    /// <param name="organization"></param>
-    /// <param name="existingGarage"></param>
-    private async Task UpdateGarageWhenNewOldActive(CreateUpdateGarageDto input, Organization organization, Garage existingGarage)
+    /// <param name="organization">The organization associated with the garage.</param>
+    /// <param name="existingGarage">The existing garage to update.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    private async Task UpdateGarageWhenNewInActiveOldActive(Organization organization, Garage existingGarage)
     {
-        int usedSlots = organization.UsedSlots - existingGarage.MaxCapacity;
-        var subscription = await CheckSubscriptionLimitsAsync(organization, input, usedSlots);
+        existingGarage.Status = Enums.Status.Inactive;
+        organization.ActiveGarages--;
         organization.UsedSlots -= existingGarage.MaxCapacity;
-        organization.UsedSlots += input.MaxCapacity;
+        existingGarage.CurrnetCapacityEmployees = existingGarage.CurrnetCapacityForFree = existingGarage.CurrnetCapacityForCustomers = 0;
+        var cameras = await GetCamerasRelatedToGarageAsync(existingGarage);
+        await ChangeCameraStatusRelatedToGarage(existingGarage, cameras);
+        organization.ActiveCameras -= cameras.Count;
     }
+
     /// <summary>
-    /// Method is used to update garage when new is active and old is inactive
+    /// Method to update a garage when the new status is active and the old status was inactive.
     /// </summary>
-    /// <param name="input"></param>
-    /// <param name="organization"></param>
-    /// <param name="existingGarage"></param>
+    /// <param name="input">The new input data for the garage.</param>
+    /// <param name="organization">The organization associated with the garage.</param>
+    /// <param name="existingGarage">The existing garage to update.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     private async Task UpdateGarageWhenNewActiveOldInActive(CreateUpdateGarageDto input, Organization organization, Garage existingGarage)
     {
         await CheckSubscriptionGarageLimitAsync(organization, input);
@@ -838,26 +790,29 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         organization.ActiveCameras += cameras.Count;
         organization.UsedSlots += input.MaxCapacity;
     }
+
     /// <summary>
-    /// Method is used to update garage when new is inactive and old is active
+    /// Method to update a garage when both the new and old statuses are active.
     /// </summary>
-    /// <param name="organization"></param>
-    /// <param name="existingGarage"></param>
-    private async Task UpdateGarageWhenNewInActiveOldActive(Organization organization, Garage existingGarage)
+    /// <param name="input">The new input data for the garage.</param>
+    /// <param name="organization">The organization associated with the garage.</param>
+    /// <param name="existingGarage">The existing garage to update.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    private async Task UpdateGarageWhenNewOldActive(CreateUpdateGarageDto input, Organization organization, Garage existingGarage)
     {
-        existingGarage.Status = Enums.Status.Inactive;
-        organization.ActiveGarages--;
+        int usedSlots = organization.UsedSlots - existingGarage.MaxCapacity;
+        var subscription = await CheckSubscriptionLimitsAsync(organization, input, usedSlots);
         organization.UsedSlots -= existingGarage.MaxCapacity;
-        existingGarage.CurrnetCapacityEmployees = existingGarage.CurrnetCapacityForFree = existingGarage.CurrnetCapacityForCustomers = 0;
-        var cameras = await GetCamerasRelatedToGarageAsync(existingGarage);
-        await ChangeCameraStatusRelatedToGarage(existingGarage, cameras);
-        organization.ActiveCameras -= cameras.Count;
+        organization.UsedSlots += input.MaxCapacity;
     }
+
     /// <summary>
-    /// Method is used to update garage
+    /// Method to update the garage details based on the provided ID and input.
+    /// This method handles multi-tenant scenarios and roles for users.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="input"></param>
+    /// <param name="id">The unique identifier of the garage to update.</param>
+    /// <param name="input">The new input data for the garage.</param>
+    /// <returns>A task representing the asynchronous operation, with the updated <see cref="GarageDto"/>.</returns>
     [RemoteService(isEnabled: false)]
     private async Task<GarageDto> UpdateGarageAsync(int id, CreateUpdateGarageDto input)
     {
@@ -871,6 +826,37 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         return await base.UpdateAsync(id, input);
     }
 
+    /// <summary>
+    /// Method is used to create a code for garage
+    /// </summary>
+    /// <param name="input">input is garage id which is related to specific organization </param>
+    /// <returns></returns>
+    /// <exception cref="BusinessException">it throws exception when organization tries to add more than 99 garage</exception>
+    [RemoteService(isEnabled: false)]
+    private string GetOrganizationCode(int input)
+    {
+        if (input == 99)
+        {
+            throw new BusinessException(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidation"));
+        }
+        string Code = "-G-";
+        if (input < 9)
+        {
+            Code += '0';
+        }
+        Code += (input + 1);
+        return Code;
+    }
+    /// <summary>
+    /// Method is used to get cameras related to specific garage
+    /// </summary>
+    /// <param name="garage"></param>
+    /// <returns>List<Camera></returns>
+    private async Task<List<Camera>> GetCamerasRelatedToGarageAsync(Garage garage)
+    {
+        var cameras = await _repositoryCamera.GetListAsync(x => x.GarageId == garage.Id);
+        return cameras;
+    }
     /// <summary>
     /// Method is used to apply search for organization
     /// </summary>
@@ -915,5 +901,56 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         }
         return queryable;
     }
+    /// <summary>
+    /// Method to get the count of records in the repository without considering multi-tenant filtering.
+    /// </summary>
+    /// <returns>
+    /// A task that represents the asynchronous operation, with the result being the count of records in the repository.
+    /// </returns>
+    [RemoteService(IsEnabled = false)]
+    private async Task<int> GetCountWithountMultiTenant()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            var count = await AsyncExecuter.CountAsync(query);
+            return count;
+        }
+    }
+
+    /// <summary>
+    /// Generates a unique camera code based on the organization, garage, and camera names, ensuring it is not already in use.
+    /// The code is generated in the format: 'OrgName(3chars)-GarageName(2chars)-CameraName(2chars)-XX' where XX is a random number.
+    /// </summary>
+    /// <param name="OrgEnglishName">The English name of the organization.</param>
+    /// <param name="GarageEnglishName">The English name of the garage.</param>
+    /// <param name="CameraEnglishName">The English name of the camera.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation, with a string containing the generated camera code.
+    /// </returns>
+    private async Task<string> GenerateCameraCode(string OrgEnglishName, string GarageEnglishName, string CameraEnglishName)
+    {
+        string Code = OrgEnglishName.Substring(0, 3) + '-' + GarageEnglishName.Substring(0, 2) + '-' + CameraEnglishName.Substring(0, 2) + '-';
+        string ncode = Code;
+        Random rnd = new Random();
+        while (true)
+        {
+            ncode = Code;
+            Camera camera = new Camera();
+            ncode += rnd.Next(00, 99).ToString("00");
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                camera = await _repositoryCamera.FirstOrDefaultAsync(x => x.DeviceId == ncode);
+            }
+            if (camera == null)
+            {
+                Code = ncode;
+                break;
+            }
+        }
+        return Code;
+    }
+
+
     #endregion
 }

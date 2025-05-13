@@ -42,7 +42,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         _shiftUserRepository = shiftUserRepository;
     }
     #region public methods
-
+    /// <inheritdoc/>
     public override async Task<ShiftDto> CreateAsync(CreateUpdateShiftDto input)
     {
         await CheckExistanceOfDependencies(input);
@@ -53,177 +53,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         }
         return await base.CreateAsync(input);
     }
-    public async Task<bool> CheckGarageExists(int GarageId)
-    {
-        var garage = await _garageRepository.FindAsync(GarageId);
-        if (garage == null)
-        {
-            return false;
-        }
-        return true;
-
-    }
-    public async Task<bool> CheckOrganizationExists(int OrganizationId)
-    {
-        var organization = await _organizationRepository.FindAsync(OrganizationId);
-        if (organization == null)
-        {
-            return false;
-        }
-        return true;
-
-    }
-    public async Task<bool> HasOverlappingShift(Expression<Func<Shift, bool>> expression)
-    {
-        var result = await _repository.FirstOrDefaultAsync(expression.And(s=>s.Status==Status.Active ));
-        return await _repository.AnyAsync(expression.And(s => s.Status == Status.Active));
-    }
-    public Expression<Func<Shift, bool>> NotSameEntityExpression(int ShiftId)
-    {
-        return s => s.Id != ShiftId;
-    }
-    public Expression<Func<Shift, bool>> GetTimeOverlapExpression(
-     TimeOnly StartTime, TimeOnly EndTime, DateOnly StartDate, DateOnly EndDate, int garageId, bool IsFullday, Status status)
-    {
-
-        // Base condition: Garage ID, date range, and status
-        Expression<Func<Shift, bool>> baseCondition = BaseConditionForCreatingShift(garageId, StartDate, EndDate, status);
-
-        // Case 1: Existing shift is a full-day shift
-        Expression<Func<Shift, bool>> existingShiftIsFullDay = AnExistingShiftIsFullDayOverlapsWithNewShift(StartDate, EndDate);
-
-        Expression<Func<Shift, bool>> overlapingWithMidnigtShift = IfNewNotOvernightOverlapsWithExistingMidnight(StartDate, EndDate, StartTime, EndTime);
-
-        Expression<Func<Shift, bool>> middnighOverlapsWithMidnigtShift = IfNewOvernightOverlapsWithExistingMidnight(StartDate, EndDate, StartTime, EndTime);
-        // Case 2: New shift is a full-day shift
-        Expression<Func<Shift, bool>> currentShiftIsFullDay = CurrentShiftIsFullDayOverlapsWithExistingNotFullDayShift(IsFullday, StartDate, EndDate);
-
-        Expression<Func<Shift, bool>> currentShiftIsFullDayOverlaping = NewShiftFullDayOverlapsWithExistingShiftNotFullDay(StartDate,EndDate);
-        // Case 3a: No midnight shift (StartTime <= EndTime)
-        Expression<Func<Shift, bool>> newShiftIsNotMidnight = NewShiftIsNotMidNightShift(StartTime, EndTime);
-        // Case 3b: Existing shift is a midnight shift (StartTime > EndTime)
-        Expression<Func<Shift, bool>> newShiftIsMidnight = NewShiftIsMidNightShift(StartTime, EndTime);
-
-        if (IsFullday)
-        {
-            return baseCondition.And(existingShiftIsFullDay).Or((baseCondition.And(currentShiftIsFullDay)))
-                .Or(baseCondition.And(currentShiftIsFullDayOverlaping));
-        }
-        else
-        {
-            //var overlapsWithExistingFullDayShift = baseCondition.And(existingShiftIsFullDay);
-
-            if (StartTime < EndTime)
-            {
-                // Case 3a: New shift is not a midnight shift
-                //
-                return baseCondition.And(newShiftIsNotMidnight).Or(baseCondition.And(existingShiftIsFullDay)).Or(baseCondition.And(overlapingWithMidnigtShift));
-            }
-            else
-            {
-                // Case 3b: New shift is a midnight shift
-                return baseCondition.And(newShiftIsMidnight).Or(baseCondition.And(middnighOverlapsWithMidnigtShift));
-            }
-        }
-    }
-
-    public Expression<Func<Shift, bool>> BaseConditionForCreatingShift(int GarageId, DateOnly StartDate, DateOnly EndDate, Status status)
-    {
-        return s =>
-            s.GarageId == GarageId &&
-            (s.Status==Status.Active) &&
-            (StartDate >= s.StartDate && StartDate <= s.EndDate) ||
-            (EndDate >= s.StartDate && EndDate <= s.EndDate) ||
-            (StartDate <= s.StartDate && EndDate >= s.EndDate) ||
-            (StartDate <= s.StartDate && EndDate <= s.EndDate) ||
-            (StartDate >= s.StartDate && EndDate >= s.EndDate)
-          ;
-    }
-    public Expression<Func<Shift, bool>> IfNewNotOvernightOverlapsWithExistingMidnight(DateOnly StartDate, DateOnly EndDate, TimeOnly StartTime, TimeOnly EndTime)
-    {
-        // Existing shift is a midnight shift (StartTime > EndTime)
-        return s => (!s.IsFullDay)
-        &&
-        s.StartTime > s.EndTime
-        &&
-        (
-            (StartTime >= s.StartTime && StartTime > s.EndTime) ||
-
-            (EndTime >= s.StartTime && EndTime > s.EndTime) ||
-
-            (StartTime <= s.EndTime && s.StartTime > StartTime) ||
-
-            (EndTime < s.EndTime && s.StartTime > EndTime)
-
-        );
-    }
-    public Expression<Func<Shift, bool>> IfNewOvernightOverlapsWithExistingMidnight(DateOnly StartDate, DateOnly EndDate, TimeOnly StartTime, TimeOnly EndTime)
-    {
-        return s => (!s.IsFullDay)
-        &&
-        s.StartTime > s.EndTime
-        &&
-        (
-            (StartTime >= s.StartTime && StartTime > s.EndTime && (EndTime > s.EndTime || EndTime <= s.EndTime)) ||
-            (StartTime <= s.StartTime && StartTime > s.EndTime && (EndTime > s.EndTime || EndTime <= s.EndTime))
-
-        );
-    }
-
-    public Expression<Func<Shift, bool>> AnExistingShiftIsFullDayOverlapsWithNewShift(DateOnly StartDate, DateOnly EndDate)
-    {
-        return s => s.IsFullDay && (
-                      (StartDate >= s.StartDate && StartDate <= s.EndDate) ||
-                       (EndDate >= s.StartDate && EndDate <= s.EndDate) ||
-                       (StartDate <= s.StartDate && EndDate >= s.EndDate) ||
-                       (StartDate >= s.StartDate && EndDate <= s.EndDate) ||
-                       (StartDate == s.StartDate && EndDate == s.EndDate)
-                   );
-    }
-
-    public Expression<Func<Shift, bool>> CurrentShiftIsFullDayOverlapsWithExistingNotFullDayShift(bool IsFullday, DateOnly StartDate, DateOnly EndDate)
-    {
-        return s =>  (
-                       (StartDate >= s.StartDate && StartDate <= s.EndDate) ||
-                       (EndDate >= s.StartDate && EndDate <= s.EndDate) ||
-                       (StartDate <= s.StartDate && EndDate >= s.EndDate) ||
-                       (StartDate >= s.StartDate && EndDate <= s.EndDate) 
-                   );
-    }
-
-    public Expression<Func<Shift, bool>> NewShiftIsNotMidNightShift(TimeOnly StartTime, TimeOnly EndTime)
-    {
-        return s => (!s.IsFullDay) && (s.StartTime < s.EndTime) &&                     //ExistingShiftIsNotMidNightOrFullDay
-                       (
-                           (StartTime >= s.StartTime && StartTime < s.EndTime) ||   // New shift starts during existing shift
-                           (EndTime > s.StartTime && EndTime <= s.EndTime) ||       // New shift ends during existing shift
-                           (StartTime <= s.StartTime && EndTime >= s.EndTime)       // New shift completely overlaps existing shift
-                       );
-    }
-
-    public Expression<Func<Shift, bool>> NewShiftFullDayOverlapsWithExistingShiftNotFullDay(DateOnly StartDate, DateOnly EndDate)
-    {
-        return s =>    (StartDate >= s.StartDate && StartDate <= s.EndDate) ||
-                       (EndDate >= s.StartDate && EndDate <= s.EndDate)     ||
-                       (StartDate <= s.StartDate && EndDate >= s.EndDate)   ||
-                       (StartDate >= s.StartDate && EndDate <= s.EndDate)   ||
-                       (StartDate == s.StartDate && EndDate == s.EndDate);
-    }
-
-    public Expression<Func<Shift, bool>> NewShiftIsMidNightShift(TimeOnly StartTime, TimeOnly EndTime)
-    {
-        return s => s.StartTime > s.EndTime && (
-                       // New shift ends before the existing shift starts
-                       (EndTime <= s.StartTime) ||
-                       // New shift starts after the existing shift ends
-                       (StartTime >= s.EndTime) ||
-                       // New shift overlaps with the existing shift
-                       (StartTime < s.StartTime && EndTime > s.EndTime) || // New shift spans the entire existing shift
-                       (StartTime >= s.StartTime && EndTime <= s.EndTime) || // New shift is entirely within the existing shift
-                       (StartTime < s.StartTime && EndTime > s.StartTime) || // New shift starts before and ends during the existing shift
-                       (StartTime < s.EndTime && EndTime > s.EndTime) // New shift starts during and ends after the existing shift
-                     );
-    }
+    /// <inheritdoc/>
     public async Task<PagedResultDto<ShiftDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -266,6 +96,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             return ProcessingOnShiftsQuery(input, shifts);
         }
     }
+    /// <inheritdoc/>
     public async Task<PagedResultDto<ShiftDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
         var _shiftQueryable = await _repository.GetQueryableAsync();
@@ -296,17 +127,20 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         var query = ApplySearchOrganization(input, shifts);
         return ProcessingOnShiftsQuery(input, query);
     }
+    /// <inheritdoc/>
     public async override Task<ShiftDto> UpdateAsync(int id, CreateUpdateShiftDto input)
     {
+        var Shift = await _repository.FirstOrDefaultAsync(_ => _.Id == id);
         await CheckExistanceOfDependencies(input);
         var _overlapExpression = GetTimeOverlapExpression(input.StartTime, input.EndTime, input.StartDate, input.EndDate, input.GarageId, input.IsFullDay, input.Status);
         var _sameShiftExpression = NotSameEntityExpression(id);
-        if ((await HasOverlappingShift(_overlapExpression.And(_sameShiftExpression))) && (input.Status == Status.Active))
+        if ((await HasOverlappingShift(_overlapExpression.And(_sameShiftExpression)))  && (Shift.Status != Status.Active))
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("ShiftOverlapValidation"));
         }
         return await base.UpdateAsync(id, input);
     }
+    /// <inheritdoc/>
     public async Task<ShiftDto> GetShiftAsync(int id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -354,7 +188,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
 
         }
     }
-
+    /// <inheritdoc/>
     public async Task<ShiftDto> CreateForMDKHLAsync(CreateUpdateShiftDto shift)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -362,7 +196,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             return await CreateAsync(shift);
         }
     }
-
+    /// <inheritdoc/>
     public async Task<ShiftDto> UpdateMDKHLAsync(int id, CreateUpdateShiftDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -370,7 +204,6 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             return await UpdateAsync(id, input);
         }
     }
-
     public override async Task DeleteAsync(int id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -382,7 +215,12 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     }
     #endregion
     #region Private Methods
-
+    /// <summary>
+    /// Applies sorting to the provided IQueryable of ShiftDto based on the input.
+    /// </summary>
+    /// <param name="input">The input DTO containing sorting information.</param>
+    /// <param name="queryable">The IQueryable of ShiftDto to sort.</param>
+    /// <returns>A sorted IQueryable of ShiftDto.</returns>
     private IQueryable<ShiftDto> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> queryable)
     {
         if (!input.Sorting.IsNullOrEmpty())
@@ -396,11 +234,16 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             {
                 queryable = queryable.OrderBy(input.Sorting);
             }
-
         }
 
         return queryable;
     }
+    /// <summary>
+    /// Processes the IQueryable of ShiftDto for pagination and sorting.
+    /// </summary>
+    /// <param name="input">The input DTO containing pagination and sorting information.</param>
+    /// <param name="shifts">The IQueryable of ShiftDto to process.</param>
+    /// <returns>A paged result containing ShiftDto entries.</returns>
     private PagedResultDto<ShiftDto> ProcessingOnShiftsQuery(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> shifts)
     {
         var total = shifts.Count();
@@ -409,7 +252,236 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         var result = shifts.ToList();
         return new PagedResultDto<ShiftDto>(total, result);
     }
+    /// <summary>
+    /// Checks whether a garage with the given ID exists.
+    /// </summary>
+    /// <param name="GarageId">The ID of the garage to check.</param>
+    /// <returns>True if the garage exists, otherwise false.</returns>
+    private async Task<bool> CheckGarageExists(int GarageId)
+    {
+        var garage = await _garageRepository.FindAsync(GarageId);
+        return garage != null;
+    }
+    /// <summary>
+    /// Checks whether an organization with the given ID exists.
+    /// </summary>
+    /// <param name="OrganizationId">The ID of the organization to check.</param>
+    /// <returns>True if the organization exists, otherwise false.</returns>
+    private async Task<bool> CheckOrganizationExists(int OrganizationId)
+    {
+        var organization = await _organizationRepository.FindAsync(OrganizationId);
+        return organization != null;
+    }
+    /// <summary>
+    /// Checks if there is any active overlapping shift based on the provided expression.
+    /// </summary>
+    /// <param name="expression">The filter expression to check for overlapping shifts.</param>
+    /// <returns>True if an overlapping active shift exists, otherwise false.</returns>
+    private async Task<bool> HasOverlappingShift(Expression<Func<Shift, bool>> expression)
+    {
+        return await _repository.AnyAsync(expression.And(s => s.Status == Status.Active));
+    }
+    /// <summary>
+    /// Returns an expression that excludes the shift with the given ID.
+    /// </summary>
+    /// <param name="ShiftId">The ID of the shift to exclude.</param>
+    /// <returns>An expression that excludes the specified shift.</returns>
+    private Expression<Func<Shift, bool>> NotSameEntityExpression(int ShiftId)
+    {
+        return s => s.Id != ShiftId;
+    }
+    /// <summary>
+    /// Constructs a complex expression to detect time overlap between a new shift and existing ones.
+    /// </summary>
+    /// <param name="StartTime">The start time of the new shift.</param>
+    /// <param name="EndTime">The end time of the new shift.</param>
+    /// <param name="StartDate">The start date of the new shift.</param>
+    /// <param name="EndDate">The end date of the new shift.</param>
+    /// <param name="garageId">The garage ID to filter shifts.</param>
+    /// <param name="IsFullday">Whether the new shift is a full-day shift.</param>
+    /// <param name="status">The status of shifts to compare with.</param>
+    /// <returns>An expression used to find overlapping shifts.</returns>
+    private Expression<Func<Shift, bool>> GetTimeOverlapExpression(
+        TimeOnly StartTime, TimeOnly EndTime, DateOnly StartDate, DateOnly EndDate, int garageId, bool IsFullday, Status status)
+    {
+        Expression<Func<Shift, bool>> baseCondition = BaseConditionForCreatingShift(garageId, StartDate, EndDate, status);
+        Expression<Func<Shift, bool>> existingShiftIsFullDay = AnExistingShiftIsFullDayOverlapsWithNewShift(StartDate, EndDate);
+        Expression<Func<Shift, bool>> overlapingWithMidnigtShift = IfNewNotOvernightOverlapsWithExistingMidnight(StartDate, EndDate, StartTime, EndTime);
+        Expression<Func<Shift, bool>> middnighOverlapsWithMidnigtShift = IfNewOvernightOverlapsWithExistingMidnight(StartDate, EndDate, StartTime, EndTime);
+        Expression<Func<Shift, bool>> currentShiftIsFullDay = CurrentShiftIsFullDayOverlapsWithExistingNotFullDayShift(IsFullday, StartDate, EndDate);
+        Expression<Func<Shift, bool>> currentShiftIsFullDayOverlaping = NewShiftFullDayOverlapsWithExistingShiftNotFullDay(StartDate, EndDate);
+        Expression<Func<Shift, bool>> newShiftIsNotMidnight = NewShiftIsNotMidNightShift(StartTime, EndTime);
+        Expression<Func<Shift, bool>> newShiftIsMidnight = NewShiftIsMidNightShift(StartTime, EndTime);
 
+        if (IsFullday)
+        {
+            return baseCondition.And(existingShiftIsFullDay)
+                .Or(baseCondition.And(currentShiftIsFullDay))
+                .Or(baseCondition.And(currentShiftIsFullDayOverlaping));
+        }
+        else
+        {
+            if (StartTime < EndTime)
+            {
+                return baseCondition.And(newShiftIsNotMidnight)
+                    .Or(baseCondition.And(existingShiftIsFullDay))
+                    .Or(baseCondition.And(overlapingWithMidnigtShift));
+            }
+            else
+            {
+                return baseCondition.And(newShiftIsMidnight)
+                    .Or(baseCondition.And(middnighOverlapsWithMidnigtShift));
+            }
+        }
+    }
+    /// <summary>
+    /// Constructs a base filter to find shifts that overlap with the given date range and belong to the specified garage and status.
+    /// </summary>
+    /// <param name="GarageId">Garage identifier.</param>
+    /// <param name="StartDate">Start date of the new shift.</param>
+    /// <param name="EndDate">End date of the new shift.</param>
+    /// <param name="status">Status of the shift to match (typically Active).</param>
+    /// <returns>An expression to match overlapping shifts by date and status.</returns>
+    private Expression<Func<Shift, bool>> BaseConditionForCreatingShift(int GarageId, DateOnly StartDate, DateOnly EndDate, Status status)
+    {
+        return s =>
+            s.GarageId == GarageId &&
+            (s.Status == Status.Active) &&
+            (StartDate >= s.StartDate && StartDate <= s.EndDate) ||
+            (EndDate >= s.StartDate && EndDate <= s.EndDate) ||
+            (StartDate <= s.StartDate && EndDate >= s.EndDate) ||
+            (StartDate <= s.StartDate && EndDate <= s.EndDate) ||
+            (StartDate >= s.StartDate && EndDate >= s.EndDate);
+    }
+
+    /// <summary>
+    /// Builds an expression to detect overlaps between a non-midnight new shift and existing midnight shifts.
+    /// </summary>
+    /// <param name="StartDate">Start date of the new shift.</param>
+    /// <param name="EndDate">End date of the new shift.</param>
+    /// <param name="StartTime">Start time of the new shift.</param>
+    /// <param name="EndTime">End time of the new shift.</param>
+    /// <returns>Expression to find conflicting midnight shifts.</returns>
+    private Expression<Func<Shift, bool>> IfNewNotOvernightOverlapsWithExistingMidnight(DateOnly StartDate, DateOnly EndDate, TimeOnly StartTime, TimeOnly EndTime)
+    {
+        return s => (!s.IsFullDay)
+            && s.StartTime > s.EndTime
+            &&
+            (
+                (StartTime >= s.StartTime && StartTime > s.EndTime) ||
+                (EndTime >= s.StartTime && EndTime > s.EndTime) ||
+                (StartTime <= s.EndTime && s.StartTime > StartTime) ||
+                (EndTime < s.EndTime && s.StartTime > EndTime)
+            );
+    }
+
+    /// <summary>
+    /// Builds an expression to detect overlap between a new midnight shift and existing midnight shifts.
+    /// </summary>
+    /// <param name="StartDate">Start date of the new shift.</param>
+    /// <param name="EndDate">End date of the new shift.</param>
+    /// <param name="StartTime">Start time of the new shift.</param>
+    /// <param name="EndTime">End time of the new shift.</param>
+    /// <returns>Expression for midnight shift conflicts.</returns>
+    private Expression<Func<Shift, bool>> IfNewOvernightOverlapsWithExistingMidnight(DateOnly StartDate, DateOnly EndDate, TimeOnly StartTime, TimeOnly EndTime)
+    {
+        return s => (!s.IsFullDay)
+            && s.StartTime > s.EndTime
+            &&
+            (
+                (StartTime >= s.StartTime && StartTime > s.EndTime && (EndTime > s.EndTime || EndTime <= s.EndTime)) ||
+                (StartTime <= s.StartTime && StartTime > s.EndTime && (EndTime > s.EndTime || EndTime <= s.EndTime))
+            );
+    }
+
+    /// <summary>
+    /// Builds an expression to detect overlap between a new shift and existing full-day shifts.
+    /// </summary>
+    /// <param name="StartDate">Start date of the new shift.</param>
+    /// <param name="EndDate">End date of the new shift.</param>
+    /// <returns>Expression to find overlapping full-day shifts.</returns>
+    private Expression<Func<Shift, bool>> AnExistingShiftIsFullDayOverlapsWithNewShift(DateOnly StartDate, DateOnly EndDate)
+    {
+        return s => s.IsFullDay && (
+                      (StartDate >= s.StartDate && StartDate <= s.EndDate) ||
+                      (EndDate >= s.StartDate && EndDate <= s.EndDate) ||
+                      (StartDate <= s.StartDate && EndDate >= s.EndDate) ||
+                      (StartDate >= s.StartDate && EndDate <= s.EndDate) ||
+                      (StartDate == s.StartDate && EndDate == s.EndDate)
+                  );
+    }
+
+    /// <summary>
+    /// Builds an expression to detect whether a full-day new shift overlaps with any existing non-full-day shifts.
+    /// </summary>
+    /// <param name="IsFullday">Indicates whether the new shift is full-day (should be true here).</param>
+    /// <param name="StartDate">Start date of the new shift.</param>
+    /// <param name="EndDate">End date of the new shift.</param>
+    /// <returns>Expression for overlapping full-day shift conflicts.</returns>
+    private Expression<Func<Shift, bool>> CurrentShiftIsFullDayOverlapsWithExistingNotFullDayShift(bool IsFullday, DateOnly StartDate, DateOnly EndDate)
+    {
+        return s =>
+               (StartDate >= s.StartDate && StartDate <= s.EndDate) ||
+               (EndDate >= s.StartDate && EndDate <= s.EndDate) ||
+               (StartDate <= s.StartDate && EndDate >= s.EndDate) ||
+               (StartDate >= s.StartDate && EndDate <= s.EndDate);
+    }
+
+    /// <summary>
+    /// Builds an expression to check for overlap between a non-midnight new shift and an existing non-midnight shift.
+    /// </summary>
+    /// <param name="StartTime">Start time of the new shift.</param>
+    /// <param name="EndTime">End time of the new shift.</param>
+    /// <returns>Expression to match non-midnight overlaps.</returns>
+    private Expression<Func<Shift, bool>> NewShiftIsNotMidNightShift(TimeOnly StartTime, TimeOnly EndTime)
+    {
+        return s => (!s.IsFullDay) && (s.StartTime < s.EndTime) &&
+                       (
+                           (StartTime >= s.StartTime && StartTime < s.EndTime) ||   // New shift starts during existing shift
+                           (EndTime > s.StartTime && EndTime <= s.EndTime) ||       // New shift ends during existing shift
+                           (StartTime <= s.StartTime && EndTime >= s.EndTime)       // New shift completely overlaps existing shift
+                       );
+    }
+
+    /// <summary>
+    /// Checks if a new full-day shift overlaps with any existing non-full-day shifts.
+    /// </summary>
+    /// <param name="StartDate">Start date of the new shift.</param>
+    /// <param name="EndDate">End date of the new shift.</param>
+    /// <returns>Expression to match overlapping shifts.</returns>
+    private Expression<Func<Shift, bool>> NewShiftFullDayOverlapsWithExistingShiftNotFullDay(DateOnly StartDate, DateOnly EndDate)
+    {
+        return s => (StartDate >= s.StartDate && StartDate <= s.EndDate) ||
+                       (EndDate >= s.StartDate && EndDate <= s.EndDate) ||
+                       (StartDate <= s.StartDate && EndDate >= s.EndDate) ||
+                       (StartDate >= s.StartDate && EndDate <= s.EndDate) ||
+                       (StartDate == s.StartDate && EndDate == s.EndDate);
+    }
+
+    /// <summary>
+    /// Determines if a new shift that spans midnight overlaps with an existing midnight shift.
+    /// </summary>
+    /// <param name="StartTime">Start time of the new shift.</param>
+    /// <param name="EndTime">End time of the new shift.</param>
+    /// <returns>Expression to match overlapping midnight shifts.</returns>
+    private Expression<Func<Shift, bool>> NewShiftIsMidNightShift(TimeOnly StartTime, TimeOnly EndTime)
+    {
+        return s => s.StartTime > s.EndTime && (
+                       (EndTime <= s.StartTime) ||
+                       (StartTime >= s.EndTime) ||
+                       (StartTime < s.StartTime && EndTime > s.EndTime) ||
+                       (StartTime >= s.StartTime && EndTime <= s.EndTime) ||
+                       (StartTime < s.StartTime && EndTime > s.StartTime) ||
+                       (StartTime < s.EndTime && EndTime > s.EndTime)
+                     );
+    }
+
+    /// <summary>
+    /// Applies a search filter to a list of shifts based on basic fields like name, description, and garage name.
+    /// </summary>
+    /// <param name="input">Search input containing the search term.</param>
+    /// <param name="queryable">The base queryable of ShiftDto.</param>
+    /// <returns>Filtered queryable based on the search term.</returns>
     private IQueryable<ShiftDto> ApplySearchOrganization(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> queryable)
     {
         if (!input.SearchingTerm.IsNullOrEmpty())
@@ -426,6 +498,12 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         return queryable;
     }
 
+    /// <summary>
+    /// Applies a search filter for MDKHL context, including organization and garage names.
+    /// </summary>
+    /// <param name="input">Search input containing the search term.</param>
+    /// <param name="queryable">The base queryable of ShiftDto.</param>
+    /// <returns>Filtered queryable based on the search term.</returns>
     private IQueryable<ShiftDto> ApplySearchMDKHL(PagedAndSortedAndSearchResultRequestDto input, IQueryable<ShiftDto> queryable)
     {
         if (!input.SearchingTerm.IsNullOrEmpty())
@@ -439,11 +517,14 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
                          shift.GarageArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                          shift.GarageEnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
             );
-
         }
         return queryable;
     }
-   
+    /// <summary>
+    /// Checks if any users are currently assigned to the shift.
+    /// Throws a business exception if users are assigned.
+    /// </summary>
+    /// <param name="id">The shift ID to check.</param>
     private async Task CheckCountOfUsersAssignedToShift(int id)
     {
         var countOfUserAssignedToShift = await _shiftUserRepository.CountAsync(_ => _.ShiftId == id);
@@ -453,6 +534,12 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         }
     }
 
+    /// <summary>
+    /// Checks if a shift with the specified ID exists.
+    /// Throws a business exception if not found.
+    /// </summary>
+    /// <param name="id">The shift ID to find.</param>
+    /// <returns>The found Shift object or throws an exception if not found.</returns>
     private async Task<Shift?> IsFoundShift(int id)
     {
         var shift = await _repository.FirstOrDefaultAsync(_ => _.Id == id);
@@ -460,9 +547,13 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         {
             throw new BusinessException(LocalizationHelper.GetLocalizedString("Shift") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
-
         return shift;
     }
+    /// <summary>
+    /// Validates that both the garage and the organization exist for the given shift input.
+    /// Throws exceptions if either is not found.
+    /// </summary>
+    /// <param name="input">The shift data containing the organization and garage IDs.</param>
     private async Task CheckExistanceOfDependencies(CreateUpdateShiftDto input)
     {
         if (!await CheckGarageExists(input.GarageId))
