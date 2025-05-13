@@ -72,11 +72,8 @@ namespace SmartParking.LookupsAppServices
             await _countryRepository.HardDeleteAsync(country);
         }
 
-        /// <summary>
-        /// Method used to get a list of countries with optional filtering and sorting.
-        /// </summary>
-        /// <param name="input">The input containing filter, sorting, and pagination data.</param>
-        /// <returns>A paged result of CountryDto objects.</returns>
+        ///<inheritdoc/>
+
         public async Task<PagedResultDto<CountryDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
         {
             var queryable = await _countryRepository.GetQueryableAsync();
@@ -136,9 +133,14 @@ namespace SmartParking.LookupsAppServices
         #region Private Methods
 
         /// <summary>
-        /// Validates the uniqueness of a country based on various attributes.
+        /// Validates the uniqueness of a country's English/Arabic name and capital before creation or update.
+        /// Throws an exception if a matching country or capital already exists.
         /// </summary>
-        /// <param name="input">The country DTO to validate.</param>
+        /// <param name="input">The DTO containing country details to validate.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when a country with the same English/Arabic name or capital already exists.
+        /// </exception>
         private async Task ValidateCountryUniqunessAsync(CreateUpdateCountryDto input)
         {
             var country = await _countryRepository.FirstOrDefaultAsync(c =>
@@ -167,12 +169,11 @@ namespace SmartParking.LookupsAppServices
                 }
             }
         }
-
         /// <summary>
-        /// Applies sorting based on the input sorting value.
+        /// Applies dynamic sorting to the provided queryable based on a sorting string.
         /// </summary>
-        /// <param name="queryable">The queryable collection to apply sorting on.</param>
-        /// <param name="sorting">The sorting string from the input.</param>
+        /// <param name="queryable">The queryable to apply sorting on. Passed by reference.</param>
+        /// <param name="sorting">A string representing the sorting field and order (e.g., "Name DESC").</param>
         private void ApplySorting(ref IQueryable<Country> queryable, string sorting)
         {
             if (!sorting.IsNullOrEmpty())
@@ -188,6 +189,7 @@ namespace SmartParking.LookupsAppServices
                 }
             }
         }
+
 
         #endregion
     }
