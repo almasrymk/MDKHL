@@ -125,20 +125,31 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     #endregion
     #region public methods customer Mobile Region
-    public async Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutFromHisMobile(int garageTransactionId)
+    /// <summary>
+    /// Method used to calculate pre invoice for customer
+    /// </summary>
+    /// <param name="entryTransactionId">Entry transaction Id</param>
+    /// <returns>Pre invoice dto</returns>
+    public async Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutFromHisMobile(int entryTransactionId)
     {
         var customerId =await _garageTransactionUtilityAppService.GetCurrentCustomerId(); 
         var Customer = await _garageTransactionUtilityAppService.GetCustomer(customerId);
-        var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(garageTransactionId);
+        var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
         var camera = await _garageTransactionUtilityAppService.GetCameraByTypeBelongsToGarageAsync(entryGarageTransaction.GarageId,CameraType.Exit);
         var createdExitGarageTransaction= await InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction,camera.Id);
         var invoice = await PreCheckoutFlow(entryGarageTransaction.AccurateTime.Value, createdExitGarageTransaction, Customer);
         return invoice;
 
     }
-    public async Task<Result<InvoiceDto>> CustomerCheckoutFromHisMobile(int garageTransactionId)
+    /// <summary>
+    /// Method used to get invoice for customer when he checks iut
+    /// </summary>
+    /// <param name="entryTransactionId">Entry transaction Id</param>
+    /// <returns>Invoice dto</returns>
+    public async Task<Result<InvoiceDto>> CustomerCheckoutFromHisMobile(int entryTransactionId)
     {
-        var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(garageTransactionId);
+
+        var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
         var camera = await _garageTransactionUtilityAppService.GetCameraByTypeBelongsToGarageAsync(entryGarageTransaction.GarageId, CameraType.Exit);
         var createdExitGarageTransaction = await InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction,camera.Id);
         var lstCheckout = entryGarageTransaction.CheckoutMobile.HasValue ? entryGarageTransaction.CheckoutMobile.Value : DateTime.MinValue;
@@ -147,16 +158,20 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         {
             throw new Exception("Transaction Already Checked-Out");
         }
-        var invoice = await CustomerPreCheckoutFromHisMobile(garageTransactionId);
+        var invoice = await CustomerPreCheckoutFromHisMobile(entryTransactionId);
         await _garageTransactionUtilityAppService.UpdateEntryTransactionCheckouFromMobile(entryGarageTransaction);
         var savedExitgarageTransaction = await _garageTransactionsAppService.CreateAsync(createdExitGarageTransaction);
         invoice.Value.GarageTransactionExitId = savedExitgarageTransaction.Id;
         return await _invoiceAppService.CreateAsync(invoice); ;
     }
-
-    public async Task<Result<InvoiceDto>> CustomerCheckoutFromKeeperMobile(int garageTransactionId)
+    /// <summary>
+    /// Method used to calculate pre invoice for keeper depends on transaction 
+    /// </summary>
+    /// <param name="entryTransactionId">Entry transaction Id</param>
+    /// <returns>Pre invoice dto</returns>
+    public async Task<Result<InvoiceDto>> CustomerCheckoutFromKeeperMobile(int entryTransactionId)
     {
-        var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(garageTransactionId);
+        var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
         var camera = await _garageTransactionUtilityAppService.GetCameraByTypeBelongsToGarageAsync(entryGarageTransaction.GarageId, CameraType.Exit);
         var createdExitTransaction = await InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction, camera.Id);
         var lstCheckout = entryGarageTransaction.CheckoutMobile.HasValue ? entryGarageTransaction.CheckoutMobile.Value : DateTime.MinValue;
@@ -165,16 +180,21 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         {
             throw new Exception("Transaction Already Checked-Out");
         }
-        var invoice = await CustomerPreCheckoutFromKeeperMobile(garageTransactionId);
+        var invoice = await CustomerPreCheckoutFromKeeperMobile(entryTransactionId);
         await _garageTransactionUtilityAppService.UpdateEntryTransactionCheckouFromMobile(entryGarageTransaction);
         var garageTransaction = await _garageTransactionsAppService.CreateAsync(createdExitTransaction);
         invoice.Value.GarageTransactionExitId = garageTransaction.Id;
         return await _invoiceAppService.CreateAsync(invoice); ;
 
     }
-    public async Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutFromKeeperMobile(int garageTransactionId)
+    /// <summary>
+    /// Method used to calculate pre invoice for keeper on entry transaction
+    /// </summary>
+    /// <param name="entryTransactionId">Entry transaction Id</param>
+    /// <returns>Pre invoice dto</returns>
+    public async Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutFromKeeperMobile(int entryTransactionId)
     {
-        var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(garageTransactionId);
+        var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
         var camera = await _garageTransactionUtilityAppService.GetCameraByTypeBelongsToGarageAsync(entryGarageTransaction.GarageId, CameraType.Exit);
         var createdExitGarageTransaction = await InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction,camera.Id);
         var organization = await _garageTransactionUtilityAppService.GetOrganization(createdExitGarageTransaction.OrganizationID);
@@ -196,6 +216,10 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     #endregion
     #region private method to handle category changements
+    /// <summary>
+    /// Method updates entry transaction category
+    /// </summary>
+    /// <param name="entryTransaction">Entry Transaction</param>
     private async Task ChangeCategoryForEntryTransaction(GarageTransactionDto entryTransaction)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -203,19 +227,14 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             await _garageTransactionsAppService.UpdateAsync(entryTransaction.Id, ObjectMapper.Map<GarageTransactionDto, CreateUpdateGarageTransactionDto>(entryTransaction));
         }
     }
-    private async Task UpdateSlotsCountIfCategoryChanged(GarageTransactionDto? entryTransaction, bool categoryHasChanged, CustomerCategoryStatus lstCategory)
-    {
-        if (categoryHasChanged)
-        {
-            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(entryTransaction.GarageId, lstCategory);
-        }
-        else
-        {
-            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(entryTransaction.GarageId, entryTransaction.CustomerCategory);
-        }
-    }
     #endregion
     #region private method to handle exit
+    /// <summary>
+    /// Method handles request of exit transaction
+    /// </summary>
+    /// <param name="exitTransaction">Exit transaction dto</param>
+    /// <param name="organization">Organization</param>
+    /// <returns>true to open gate otherwise false</returns>
     private async Task<bool> HandleCameraExit(CreateUpdateGarageTransactionDto exitTransaction,Organization organization)
     {
         bool _requestToGate;
@@ -269,7 +288,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         {
             _customerInvoicePrice= await CalculationForRegisteredCustomer(exitTransaction.AccurateTime.Value, _entryTransaction.AccurateTime, organization, _packageDto, _totalHours);
             //update slots depends on category
-            await UpdateSlotsCountIfCategoryChanged(_entryTransaction, _categoryHasChanged, _lstCategory);
+            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_entryTransaction.GarageId, _entryTransaction.CustomerCategory);
         }
         else
         {
@@ -293,6 +312,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         _logger.LogInformation($"{DateTime.Now} ====> Get Response {_requestToGate}");
         return _requestToGate;
     }
+    /// <summary>
+    /// Method handles exit in free minutes scenario
+    /// Save exit transaction
+    /// Map entry transaction
+    /// </summary>
+    /// <param name="exitTransaction">exit transaction dto</param>
+    /// <returns>true</returns>
     private async Task<bool> ExitsInFreeMinutesPeriod(CreateUpdateGarageTransactionDto exitTransaction)
     {
         await _garageTransactionsAppService.CreateAsync(exitTransaction);
@@ -329,7 +355,11 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     /// <returns>false if passed grace period as new invoice must paid otherwise true</returns>
     private async Task<bool> CheckoutFromMobileSequence(CreateUpdateGarageTransactionDto exitTransaction, Organization organization, GarageTransactionDto? entryTransaction, bool categoryHasChanged, Customer customer)
     {
-       await UpdateSlotsCountIfCategoryChanged(entryTransaction, categoryHasChanged, entryTransaction.CustomerCategory);
+        if (entryTransaction.CustomerCategory != exitTransaction.CustomerCategory)
+        {
+            entryTransaction.CustomerCategory = exitTransaction.CustomerCategory;
+            await ChangeCategoryForEntryTransaction(entryTransaction);
+        }
         var _lastInvoiceForPlateNumber = await _invoiceAppService.GetLatestInvoiceForPlateInOrganizationGarage(exitTransaction.PlateNumber, exitTransaction.OrganizationID, exitTransaction.GarageId);
         await _garageTransactionUtilityAppService.CloseCheckoutMobileTransaction(exitTransaction.PlateNumber);
         _logger.LogInformation($"{DateTime.Now} ====> Customer ID : {customer.Id}");
