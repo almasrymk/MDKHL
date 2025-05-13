@@ -26,67 +26,91 @@ using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 
+/// <summary>
+/// Dialog component to add a new vehicle for a customer.
+/// </summary>
 public partial class AddVehicleDialog
 {
     private MudForm form;
+
+    /// <summary>
+    /// Holds the form input for vehicle creation or update.
+    /// </summary>
     public CreateUpdateVehicleDto createUpdateVehicle = new CreateUpdateVehicleDto();
+
     IReadOnlyList<PlateColorDto> plateColors = new List<PlateColorDto>();
     IReadOnlyList<LicenceTypeDto> LicenceTypes = new List<LicenceTypeDto>();
     IReadOnlyList<VehicleBrandDto> VehicleBrands = new List<VehicleBrandDto>();
     IReadOnlyList<VehicleModelDto> VehicleModels = new List<VehicleModelDto>();
+
     bool _clearable;
+
+    /// <summary>
+    /// Reference to the parent MudDialog instance.
+    /// </summary>
     [CascadingParameter]
     private IMudDialogInstance MudDialogAdd { get; set; }
 
-	[Parameter]
-	public Guid CustomerId { get; set; }
+    /// <summary>
+    /// The ID of the customer the vehicle will be assigned to.
+    /// </summary>
+    [Parameter]
+    public Guid CustomerId { get; set; }
+
     private string plateLetters = "";
     private string plateNumbers = "";
     private string LicenceTypeId { get; set; }
     private string VehicleModelId { get; set; }
 
-
+    /// <summary>
+    /// Initializes the form with dropdown data for vehicle attributes.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         createUpdateVehicle.BelongToCompany = false;
-        var resultplate = await PlateColorsAppService.GetAllPlateColorsAsync();
-        plateColors= resultplate;
 
+        var resultplate = await PlateColorsAppService.GetAllPlateColorsAsync();
+        plateColors = resultplate;
 
         var resultLicence = await LicenceTypesAppService.GetAllLicencesAsync();
-        LicenceTypes= resultLicence;
+        LicenceTypes = resultLicence;
 
         var resultVehicleBrand = await VehicleBrandAppService.GetAllVehicleBrandsAsync();
         VehicleBrands = resultVehicleBrand;
-
-        
-
     }
+
+    /// <summary>
+    /// Loads vehicle models when a brand is selected.
+    /// </summary>
+    /// <param name="brandId">The selected vehicle brand ID.</param>
     private async Task SelectBrand(string brandId)
     {
         createUpdateVehicle.VehicleBrandId = int.Parse(brandId);
         var resultVehicleModel = await VehicleModelAppService.GetModelsByBrandAsync(createUpdateVehicle.VehicleBrandId);
         VehicleModels = resultVehicleModel.Value;
     }
+
+    /// <summary>
+    /// Submits the form to create a vehicle.
+    /// </summary>
     private async void SubmitCreate()
     {
-
         try
         {
             createUpdateVehicle.CustomerId = CustomerId;
             createUpdateVehicle.VehicleModelId = int.Parse(VehicleModelId);
             createUpdateVehicle.LicenceTypeId = int.Parse(LicenceTypeId);
+
             var vehichle = await VehicleAppService.CreateAsync(createUpdateVehicle);
+
             if (vehichle != null)
             {
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]} {L["Vehicle"]} {vehichle.ArPlateNumber}", Severity.Success);
                 MudDialogAdd.Close(DialogResult.Ok(true));
-                
+
                 await Task.Delay(1000);
                 Navigation.Refresh(true);
             }
-
-
         }
         catch (AbpValidationException validationException)
         {
@@ -97,7 +121,6 @@ public partial class AddVehicleDialog
         }
         catch (BusinessException ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
@@ -106,23 +129,32 @@ public partial class AddVehicleDialog
         }
         catch (Exception ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
     }
 
-
+    /// <summary>
+    /// Handles key input for Arabic plate letters.
+    /// </summary>
+    /// <param name="e">Focus event arguments.</param>
     private void HandleKeyUpLettersArabic(FocusEventArgs e)
     {
         HandleKeyUpLetters(createUpdateVehicle.ArPlateLetters);
-
     }
+
+    /// <summary>
+    /// Handles key input for English plate letters.
+    /// </summary>
+    /// <param name="e">Focus event arguments.</param>
     private void HandleKeyUpLettersEnglish(FocusEventArgs e)
     {
         HandleKeyUpLetters(createUpdateVehicle.EnPlateLetters);
-
-
     }
+
+    /// <summary>
+    /// Validates and syncs plate letters in both Arabic and English.
+    /// </summary>
+    /// <param name="e">The entered plate letters.</param>
     private void HandleKeyUpLetters(string e)
     {
         try
@@ -134,20 +166,30 @@ public partial class AddVehicleDialog
             createUpdateVehicle.EnPlateLetters = createUpdateVehicle.ArPlateLetters = "";
             SnackBar.ShowSnackbar(Snackbar, ex.Message, Severity.Error);
         }
-
     }
+
+    /// <summary>
+    /// Handles key input for Arabic plate numbers.
+    /// </summary>
+    /// <param name="e">Focus event arguments.</param>
     private void HandleKeyUpArabic(FocusEventArgs e)
     {
         HandleKeyUp(createUpdateVehicle.ArPlateNumber);
-
     }
+
+    /// <summary>
+    /// Handles key input for English plate numbers.
+    /// </summary>
+    /// <param name="e">Focus event arguments.</param>
     private void HandleKeyUpEnglish(FocusEventArgs e)
     {
         HandleKeyUp(createUpdateVehicle.EnPlateNumber);
-
-
     }
 
+    /// <summary>
+    /// Validates and syncs plate numbers in both Arabic and English.
+    /// </summary>
+    /// <param name="PlateNumber">The entered plate number.</param>
     private void HandleKeyUp(string PlateNumber)
     {
         try
@@ -159,17 +201,13 @@ public partial class AddVehicleDialog
             createUpdateVehicle.EnPlateNumber = createUpdateVehicle.ArPlateNumber = "";
             SnackBar.ShowSnackbar(Snackbar, ex.Message, Severity.Error);
         }
-
-
     }
 
+    /// <summary>
+    /// Cancels the vehicle creation and closes the dialog.
+    /// </summary>
     private async Task CancelCreate()
     {
-
         MudDialogAdd.Cancel();
-
     }
-
-
-
 }
