@@ -41,142 +41,15 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
     private readonly IOrganizationsAppService _organizationsAppService = organizationsAppService;
     private readonly IDistributedEventBus _eventBus = eventBus;
 
+    
+
+
+
     #region Public Methods
-    public async Task ExportToExcel(TableData Data, string pathFileName)
-    {
-        await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Started.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
-        await Task.Yield();
-        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-        using (ExcelPackage package = new ExcelPackage())
-        {
-            ExcelWorksheet worksheet = package.Workbook.Worksheets.Add(Data.Name);
-            System.Data.DataTable table = new System.Data.DataTable();
-            string leftImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
-            
-            var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
-            string rightImagePath = organization != null  && !string.IsNullOrEmpty(organization?.OrganizationPicture) ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
-                                                         : System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
-            string title = Data.Name;
-            foreach (var columns in Data.Columns)
-            {
-                if (columns.Name == "Id" || !columns.IsColumnVisible)
-                    continue;
-
-                table.Columns.Add(columns.DisplayName, typeof(string));
-            }
-
-
-            int columnCount = table.Columns.Count;
-            if (columnCount < 4)
-            {
-                columnCount = 4;
-            }
-            int leftImageStart = 1;
-
-            int rightImageStart = columnCount;
-
-            int titleStart = leftImageStart + 1;
-           
-
-         
-
-
-            worksheet.Cells[1, leftImageStart, 2, leftImageStart].Merge = true;
-
-            worksheet.Cells[FromRow: 1, rightImageStart, 2, rightImageStart].Merge = true;
-
-            worksheet.Cells[1, titleStart, 2, columnCount - 1].Merge = true;
-            worksheet.Cells[1, titleStart, 2, columnCount - 1].Value = title;
-            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center; 
-            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.Font.Size = 12;
-            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.Font.Bold = true;
-            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.WrapText = true;
-            worksheet.Row(1).Height = 30;
-            worksheet.Row(2).Height = 30;
-
-
-
-
-
-            foreach (var row in Data.Rows)
-            {
-                var dataRow = table.NewRow();
-
-                foreach (var cell in row.Cells)
-                {
-                    // Skip columns that should not be visible or are "Id"
-                    if (cell.Key == "Id" || !Data.Columns.FirstOrDefault(_ => _.DisplayName == cell.Key).IsColumnVisible)
-                        continue;
-
-                    string cellValue = cell.Value?.ToString() ?? string.Empty;
-
-                    // Remove any HTML tags (like the iconHtml) from the value if needed
-                    cellValue = RemoveHtmlTags(cellValue);
-
-                    // Check if the culture is Arabic and if the cell key contains "وقت" or "تاريخ"
-                    if (CultureInfo.CurrentCulture.Name == "ar" && (cell.Key.Contains("وقت") || cell.Key.Contains("تاريخ")))
-                    {
-                        // Render as MarkupString for Arabic date/time columns
-                        dataRow[cell.Key] = new MarkupString(cellValue); // HTML will be rendered here
-                    }
-                    else
-                    {
-                        // Default rendering as MarkupString for all other cells
-                        dataRow[cell.Key] = new MarkupString(cellValue); // HTML will be rendered here as well
-                    }
-                }
-
-                table.Rows.Add(dataRow);
-            }
-
-
-            worksheet.Cells["A4"].LoadFromDataTable(table, true);
-
-           
-
-            worksheet.Cells.AutoFitColumns();
-
-            // Can Error ! 
-            worksheet.Cells[4, 1, 4 + table.Rows.Count, columnCount ]
-               .Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-
-            using (var headerRange = worksheet.Cells[4, 1, 4, table.Columns.Count])
-            {
-                headerRange.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                headerRange.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray); 
-                headerRange.Style.Font.Bold = true;
-            }
-            if (File.Exists(leftImagePath))
-            {
-                var leftImage = worksheet.Drawings.AddPicture("LeftImage", new FileInfo(leftImagePath));
-                var width = worksheet.Column(leftImageStart).Width;
-                worksheet.Column(leftImageStart).Width = Math.Max(width, 10);
-                double leftColWidthPixels = worksheet.Column(leftImageStart).Width * 7;
-                leftImage.SetSize(60,(int)(50 * 1.33));
-                int leftOffsetX = (int)((leftColWidthPixels - 60) / 2);
-                leftImage.SetPosition(0, 6, leftImageStart - 1, leftOffsetX);
-            }
-            if (File.Exists(rightImagePath))
-            {
-                var rightImage = worksheet.Drawings.AddPicture("RightImage", new FileInfo(rightImagePath));
-                worksheet.Column(rightImageStart).Width = Math.Max(worksheet.Column(rightImageStart).Width, 10);
-                double rightColWidthPixels = worksheet.Column(rightImageStart).Width * 7;
-                rightImage.SetSize(60, (int)(50 * 1.33));
-                int rightOffsetX = (int)((rightColWidthPixels - 60) / 2);
-                rightImage.SetPosition(0, RowOffsetPixels: 6, rightImageStart - 1, rightOffsetX);
-            }
-            FileInfo excelFile = new FileInfo(pathFileName);
-            package.SaveAs(excelFile);
-            await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Complete.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
-
-        }
-    }
-
-  
-
-
+    /// <summary>
+    /// Exports the provided table data to an pdf file at the specified path.
+    /// </summary>
+    /// <returns>Returns a Task that represents the asynchronous operation.</returns>
     public async Task ExportToPdf(TableData Data, string fileName)
     {
         //await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Started.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
@@ -292,8 +165,149 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
 
 
     }
+    /// <summary>
+    /// Exports the provided table data to an Excel file at the specified path.
+    /// </summary>
+    /// <returns>Returns a Task that represents the asynchronous operation.</returns>
+    public async Task ExportToExcel(TableData Data, string pathFileName)
+    {
+        await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Started.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
+        await Task.Yield();
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+        using (ExcelPackage package = new ExcelPackage())
+        {
+            ExcelWorksheet worksheet = package.Workbook.Worksheets.Add(Data.Name);
+            System.Data.DataTable table = new System.Data.DataTable();
+            string leftImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
+
+            var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
+            string rightImagePath = organization != null && !string.IsNullOrEmpty(organization?.OrganizationPicture) ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
+                                                         : System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
+            string title = Data.Name;
+            foreach (var columns in Data.Columns)
+            {
+                if (columns.Name == "Id" || !columns.IsColumnVisible)
+                    continue;
+
+                table.Columns.Add(columns.DisplayName, typeof(string));
+            }
+
+
+            int columnCount = table.Columns.Count;
+            if (columnCount < 4)
+            {
+                columnCount = 4;
+            }
+            int leftImageStart = 1;
+
+            int rightImageStart = columnCount;
+
+            int titleStart = leftImageStart + 1;
+
+
+
+
+
+            worksheet.Cells[1, leftImageStart, 2, leftImageStart].Merge = true;
+
+            worksheet.Cells[FromRow: 1, rightImageStart, 2, rightImageStart].Merge = true;
+
+            worksheet.Cells[1, titleStart, 2, columnCount - 1].Merge = true;
+            worksheet.Cells[1, titleStart, 2, columnCount - 1].Value = title;
+            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.Font.Size = 12;
+            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.Font.Bold = true;
+            worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.WrapText = true;
+            worksheet.Row(1).Height = 30;
+            worksheet.Row(2).Height = 30;
+
+
+
+
+
+            foreach (var row in Data.Rows)
+            {
+                var dataRow = table.NewRow();
+
+                foreach (var cell in row.Cells)
+                {
+                    // Skip columns that should not be visible or are "Id"
+                    if (cell.Key == "Id" || !Data.Columns.FirstOrDefault(_ => _.DisplayName == cell.Key).IsColumnVisible)
+                        continue;
+
+                    string cellValue = cell.Value?.ToString() ?? string.Empty;
+
+                    // Remove any HTML tags (like the iconHtml) from the value if needed
+                    cellValue = RemoveHtmlTags(cellValue);
+
+                    // Check if the culture is Arabic and if the cell key contains "وقت" or "تاريخ"
+                    if (CultureInfo.CurrentCulture.Name == "ar" && (cell.Key.Contains("وقت") || cell.Key.Contains("تاريخ")))
+                    {
+                        // Render as MarkupString for Arabic date/time columns
+                        dataRow[cell.Key] = new MarkupString(cellValue); // HTML will be rendered here
+                    }
+                    else
+                    {
+                        // Default rendering as MarkupString for all other cells
+                        dataRow[cell.Key] = new MarkupString(cellValue); // HTML will be rendered here as well
+                    }
+                }
+
+                table.Rows.Add(dataRow);
+            }
+
+
+            worksheet.Cells["A4"].LoadFromDataTable(table, true);
+
+
+
+            worksheet.Cells.AutoFitColumns();
+
+            // Can Error ! 
+            worksheet.Cells[4, 1, 4 + table.Rows.Count, columnCount]
+               .Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+            using (var headerRange = worksheet.Cells[4, 1, 4, table.Columns.Count])
+            {
+                headerRange.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                headerRange.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                headerRange.Style.Font.Bold = true;
+            }
+            if (File.Exists(leftImagePath))
+            {
+                var leftImage = worksheet.Drawings.AddPicture("LeftImage", new FileInfo(leftImagePath));
+                var width = worksheet.Column(leftImageStart).Width;
+                worksheet.Column(leftImageStart).Width = Math.Max(width, 10);
+                double leftColWidthPixels = worksheet.Column(leftImageStart).Width * 7;
+                leftImage.SetSize(60, (int)(50 * 1.33));
+                int leftOffsetX = (int)((leftColWidthPixels - 60) / 2);
+                leftImage.SetPosition(0, 6, leftImageStart - 1, leftOffsetX);
+            }
+            if (File.Exists(rightImagePath))
+            {
+                var rightImage = worksheet.Drawings.AddPicture("RightImage", new FileInfo(rightImagePath));
+                worksheet.Column(rightImageStart).Width = Math.Max(worksheet.Column(rightImageStart).Width, 10);
+                double rightColWidthPixels = worksheet.Column(rightImageStart).Width * 7;
+                rightImage.SetSize(60, (int)(50 * 1.33));
+                int rightOffsetX = (int)((rightColWidthPixels - 60) / 2);
+                rightImage.SetPosition(0, RowOffsetPixels: 6, rightImageStart - 1, rightOffsetX);
+            }
+            FileInfo excelFile = new FileInfo(pathFileName);
+            package.SaveAs(excelFile);
+            await _eventBus.PublishAsync(new FileExportEvent(EventStatus.Complete.ToString(), LocalizationHelper.GetLocalizedString("exportstarted")));
+
+        }
+    }
+
     #endregion
     #region Private Methods
+    /// <summary>
+    /// Creates the header table for the report, including left and right logos and a centered title.
+    /// </summary>
+    /// <returns>A <see cref="Table"/> representing the header of the report.</returns>
+
     private static Table CreateHeaderTable(TableData Data, PdfFont font, Organization? organization)
     {
         Table headerTable = new Table(3);
@@ -353,7 +367,10 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
         headerTable.AddCell(rightCell);
         return headerTable;
     }
-
+    /// <summary>
+    /// Creates a table with column headers based on the provided data.
+    /// </summary>
+    /// <returns>A <see cref="Table"/> representing the column headers for the report.</returns>
     private static Table GetColumnHeader(TableData Data, PdfFont font, Style styleBold, int NumberOfColumns)
     {
         Table columntable = new Table(NumberOfColumns);
@@ -386,7 +403,10 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
 
         return columntable;
     }
-
+    /// <summary>
+    /// Adds a footer to the report, including contact information, address, and page number.
+    /// </summary>
+    /// <returns>A <see cref="Table"/> representing the footer of the report.</returns>
     private static Table AddFooter(PdfDocument pdfDoc, PdfFont font, string contactMail, string phoneNum, string address, int pageNumber)
     {
         Table footerTable = new Table(2).SetWidth(UnitValue.CreatePercentValue(100))
@@ -410,6 +430,10 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
         }
         return footerTable;
     }
+    /// <summary>
+    /// Applies styling to a table cell based on column definitions and value.
+    /// </summary>
+    /// <returns>A <see cref="Text"/> object representing the styled cell content.</returns>
     private static Text CellStyling(ColumnDef header, string cellValue , PdfFont font, Style  styleBold )
     {
         if (CultureInfo.CurrentCulture.Name == "ar")
@@ -435,6 +459,10 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
         }
 
     }
+    /// <summary>
+    /// Removes HTML tags from a string, specifically targeting a known icon pattern.
+    /// </summary>
+    /// <returns>A cleaned string with HTML tags removed.</returns>
     private string RemoveHtmlTags(string input)
     {
         const string iconHtml = "<i class='icon-Saudi_Riyal_Symbolsvg' style='font-size: 15px;'></i>";
