@@ -125,12 +125,21 @@ namespace SmartParking.LookupsAppServices
                 cameraModelsDto
             );
         }
-    
-    #endregion
 
-    #region Private Methods
+        #endregion
 
-    private async Task ValidateCameraModelUniqunessAsync(CreateUpdateCameraModelDto input)
+        #region Private Methods
+
+        /// <summary>
+        /// Validates that the camera model's English and Arabic names are unique.
+        /// Throws an exception if a camera model with the same name already exists.
+        /// </summary>
+        /// <param name="input">The DTO containing the English and Arabic names of the camera model to validate.</param>
+        /// <returns>A task representing the asynchronous validation operation.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when a camera model with the same English or Arabic name already exists.
+        /// </exception>
+        private async Task ValidateCameraModelUniqunessAsync(CreateUpdateCameraModelDto input)
         {
             var cameraModel = await _repository.FirstOrDefaultAsync
                        (camera =>
