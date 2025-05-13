@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Lookups.CameraBrands;
@@ -20,7 +19,8 @@ public partial class UpdateCameraModelDialog
 
     [Parameter]
     public int Id { get; set; }
-
+    private MudForm form;
+    private bool _clearable;
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; }
 

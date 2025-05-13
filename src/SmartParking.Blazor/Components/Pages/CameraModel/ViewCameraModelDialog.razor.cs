@@ -14,6 +14,8 @@ partial class ViewCameraModelDialog
 
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; }
+    private MudForm form;
+    private bool _clearable;
 
     /// <summary>
     /// Cancels the dialog without saving any changes.
