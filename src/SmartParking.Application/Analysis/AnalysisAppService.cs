@@ -111,6 +111,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         _myUserRepository = myUserRepository;
     }
 
+    #region Public Methods
     public async Task<AnalysisNamesCountDto> GetNumberOfCustomerForOrganizations()
     {
 
@@ -236,77 +237,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         return PrepareResult(finalResult, culture);
     }
 
-    private async Task<List<PaymentGroup>> GetPaymentsInLastWeek(IQueryable<Payment> query, DateTime oneWeekAgo)
-    {
-        var result =
-            await query
-            .Where(payment => payment.CreationTime >= oneWeekAgo.Date)
-            .GroupBy(payment => new { payment.CreationTime.Date, payment.PaymentCategory })
-            .Select(group => new PaymentGroup
-            {
-                Date = group.Key.Date,
-                PaymentCategory = group.Key.PaymentCategory,
-                DayOfWeek = group.Key.Date.DayOfWeek,
-                TotalAmount = group.Sum(payment => (double)payment.Amount)
-            })
-            .ToListAsync();
-        return result;
-    }
-
-    private List<DateTime> GetAllDays(DateTime oneWeekAgo)
-    {
-        return Enumerable.Range(0, 8)
-            .Select(i => oneWeekAgo.AddDays(i).Date)
-            .ToList();
-    }
-
-    private CultureInfo GetCultureInfo()
-    {
-        var currentCulture = CultureInfo.CurrentCulture;
-        return currentCulture.Name == "ar" ? new CultureInfo("ar") : new CultureInfo("en");
-    }
-
-    private List<FinalResult> AggregatePaymentsByDay(List<DateTime> allDays, List<PaymentGroup> payments, CultureInfo culture)
-    {
-        var firstDayOfWeek = culture.DateTimeFormat.FirstDayOfWeek;
-
-        var finalResult = allDays
-            .GroupJoin(
-                payments,
-                day => day,
-                payment => payment.Date,
-                (day, paymentGroup) => new FinalResult
-                {
-                    Day = day,
-                    DayOfWeek = day.ToString("dddd"),
-                    AllTotalAmount = paymentGroup.Sum(p => p.TotalAmount),
-                    InvoiceTotalAmount = paymentGroup.Where(p => p.PaymentCategory == PaymentCategory.PaymentParking).Sum(p => p.TotalAmount),
-                    PackageTotalAmount = paymentGroup.Where(p => p.PaymentCategory == PaymentCategory.Package).Sum(p => p.TotalAmount)
-                })
-            .GroupBy(d => d.DayOfWeek)
-            .Select(g => g.OrderByDescending(d => d.Day).First())
-            .OrderBy(d => ((int)d.Day.DayOfWeek - (int)firstDayOfWeek + 7) % 7)
-            .ToList();
-        return finalResult;
-    }
-
-    private (string[] days, double[] allTotalAmounts, double[] invoiceTotalAmounts, double[] packageTotalAmounts) PrepareResult(List<FinalResult> finalResult, CultureInfo culture)
-    {
-        string[] days = finalResult.Select(r => r.DayOfWeek).ToArray();
-        double[] allTotalAmounts = finalResult.Select(r => (double)r.AllTotalAmount).ToArray();
-        double[] invoiceTotalAmounts = finalResult.Select(r => (double)r.InvoiceTotalAmount).ToArray();
-        double[] packageTotalAmounts = finalResult.Select(r => (double)r.PackageTotalAmount).ToArray();
-
-        if (culture.Name == "ar")
-        {
-            Array.Reverse(days);
-            Array.Reverse(allTotalAmounts);
-            Array.Reverse(invoiceTotalAmounts);
-            Array.Reverse(packageTotalAmounts);
-        }
-
-        return (days, allTotalAmounts, invoiceTotalAmounts, packageTotalAmounts);
-    }
+   
 
     public async Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyMdKhlAsync()
     {
@@ -331,20 +262,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     }
 
-    private async Task<(string? Day, double? totalAmounts)> GetCollectMoneyToday(IQueryable<Payment> query)
-    {
-        DateTime now = DateTime.Now;
-        var culture = GetCultureInfo();
-        query = query.Where(payment => payment.CreationTime.DayOfYear == now.DayOfYear);
-        var result = await query.FirstOrDefaultAsync();
-        var finalResult = new FinalResult
-        {
 
-            DayOfWeek = result?.CreationTime.ToString("dddd", culture),
-            AllTotalAmount = query.Sum(payment => (double)payment.Amount)
-        };
-        return (finalResult?.DayOfWeek?.ToString(), finalResult?.AllTotalAmount);
-    }
 
     public async Task<(string? Day, double? totalAmounts)> CalculateDailyCollectedMoneyOrganizationAsync(int organizationId)
     {
@@ -486,47 +404,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
     }
 
-    private static IQueryable<CustomerPackageDto> CheckFilter(PagedAndSortedAndFilteredResultRequestDto input, IQueryable<CustomerPackageDto> query)
-    {
-        if (input.filters.Count > 0)
-        {
-            var filterExpression = BuildExpression<CustomerPackageDto>.BuildFilterExpression(input.filters);
-            if (filterExpression is not null)
-            {
-                query = query.Where(filterExpression);
-            }
-        }
-
-        return query;
-    }
-
-
-
-    private static IQueryable<CustomerPackageDto> CheckTenant(Guid? tenantId, IQueryable<CustomerPackageDto> query)
-    {
-        if (tenantId.HasValue)
-            query = query.Where(_ => _.TenantId == tenantId.Value);
-        return query;
-    }
-
-    private static IQueryable<CustomerPackageDto> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<CustomerPackageDto> query)
-    {
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                query = query.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-                query = query.OrderBy(input.Sorting);
-            }
-
-        }
-
-        return query;
-    }
+  
     public async Task<PagedResultDto<PaymentDto>> ReportPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
@@ -672,47 +550,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
 
     }
-
-    private static IQueryable<PaymentDto> ApplyFilterPayment(PagedAndSortedAndFilteredResultRequestDto input, IQueryable<PaymentDto> query)
-    {
-        if (input.filters.Count > 0)
-        {
-            var filterExpression = BuildExpression<PaymentDto>.BuildFilterExpression(input.filters);
-            if (filterExpression is not null)
-            {
-                query = query.Where(filterExpression);
-            }
-        }
-
-        return query;
-    }
-
-    private static IQueryable<PaymentDto> ApplySortPayment(PagedAndSortedAndFilteredResultRequestDto input, IQueryable<PaymentDto> query)
-    {
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                query = query.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-                query = query.OrderBy(input.Sorting);
-            }
-
-        }
-
-        return query;
-    }
-
-    private static IQueryable<PaymentDto> CheckTenantPayment(Guid? tenantId, IQueryable<PaymentDto> query)
-    {
-        if (tenantId.HasValue)
-            query = query.Where(_ => _.TenantId == tenantId.Value);
-        return query;
-    }
-
     public async Task<PagedResultDto<GarageAnalysis>> ReportGarageAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
@@ -1001,6 +838,180 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 TotalCount = totalCount
             };
         }
-       
+
     }
+    #endregion
+    #region Private Methods
+
+    private static IQueryable<PaymentDto> ApplyFilterPayment(PagedAndSortedAndFilteredResultRequestDto input, IQueryable<PaymentDto> query)
+    {
+        if (input.filters.Count > 0)
+        {
+            var filterExpression = BuildExpression<PaymentDto>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
+            {
+                query = query.Where(filterExpression);
+            }
+        }
+
+        return query;
+    }
+
+    private static IQueryable<PaymentDto> ApplySortPayment(PagedAndSortedAndFilteredResultRequestDto input, IQueryable<PaymentDto> query)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                query = query.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                query = query.OrderBy(input.Sorting);
+            }
+
+        }
+
+        return query;
+    }
+
+   
+
+    
+    private async Task<List<PaymentGroup>> GetPaymentsInLastWeek(IQueryable<Payment> query, DateTime oneWeekAgo)
+    {
+        var result =
+            await query
+            .Where(payment => payment.CreationTime >= oneWeekAgo.Date)
+            .GroupBy(payment => new { payment.CreationTime.Date, payment.PaymentCategory })
+            .Select(group => new PaymentGroup
+            {
+                Date = group.Key.Date,
+                PaymentCategory = group.Key.PaymentCategory,
+                DayOfWeek = group.Key.Date.DayOfWeek,
+                TotalAmount = group.Sum(payment => (double)payment.Amount)
+            })
+            .ToListAsync();
+        return result;
+    }
+
+    private List<DateTime> GetAllDays(DateTime oneWeekAgo)
+    {
+        return Enumerable.Range(0, 8)
+            .Select(i => oneWeekAgo.AddDays(i).Date)
+            .ToList();
+    }
+
+    private CultureInfo GetCultureInfo()
+    {
+        var currentCulture = CultureInfo.CurrentCulture;
+        return currentCulture.Name == "ar" ? new CultureInfo("ar") : new CultureInfo("en");
+    }
+
+    private List<FinalResult> AggregatePaymentsByDay(List<DateTime> allDays, List<PaymentGroup> payments, CultureInfo culture)
+    {
+        var firstDayOfWeek = culture.DateTimeFormat.FirstDayOfWeek;
+
+        var finalResult = allDays
+            .GroupJoin(
+                payments,
+                day => day,
+                payment => payment.Date,
+                (day, paymentGroup) => new FinalResult
+                {
+                    Day = day,
+                    DayOfWeek = day.ToString("dddd"),
+                    AllTotalAmount = paymentGroup.Sum(p => p.TotalAmount),
+                    InvoiceTotalAmount = paymentGroup.Where(p => p.PaymentCategory == PaymentCategory.PaymentParking).Sum(p => p.TotalAmount),
+                    PackageTotalAmount = paymentGroup.Where(p => p.PaymentCategory == PaymentCategory.Package).Sum(p => p.TotalAmount)
+                })
+            .GroupBy(d => d.DayOfWeek)
+            .Select(g => g.OrderByDescending(d => d.Day).First())
+            .OrderBy(d => ((int)d.Day.DayOfWeek - (int)firstDayOfWeek + 7) % 7)
+            .ToList();
+        return finalResult;
+    }
+
+    private (string[] days, double[] allTotalAmounts, double[] invoiceTotalAmounts, double[] packageTotalAmounts) PrepareResult(List<FinalResult> finalResult, CultureInfo culture)
+    {
+        string[] days = finalResult.Select(r => r.DayOfWeek).ToArray();
+        double[] allTotalAmounts = finalResult.Select(r => (double)r.AllTotalAmount).ToArray();
+        double[] invoiceTotalAmounts = finalResult.Select(r => (double)r.InvoiceTotalAmount).ToArray();
+        double[] packageTotalAmounts = finalResult.Select(r => (double)r.PackageTotalAmount).ToArray();
+
+        if (culture.Name == "ar")
+        {
+            Array.Reverse(days);
+            Array.Reverse(allTotalAmounts);
+            Array.Reverse(invoiceTotalAmounts);
+            Array.Reverse(packageTotalAmounts);
+        }
+
+        return (days, allTotalAmounts, invoiceTotalAmounts, packageTotalAmounts);
+    }
+    private async Task<(string? Day, double? totalAmounts)> GetCollectMoneyToday(IQueryable<Payment> query)
+    {
+        DateTime now = DateTime.Now;
+        var culture = GetCultureInfo();
+        query = query.Where(payment => payment.CreationTime.DayOfYear == now.DayOfYear);
+        var result = await query.FirstOrDefaultAsync();
+        var finalResult = new FinalResult
+        {
+
+            DayOfWeek = result?.CreationTime.ToString("dddd", culture),
+            AllTotalAmount = query.Sum(payment => (double)payment.Amount)
+        };
+        return (finalResult?.DayOfWeek?.ToString(), finalResult?.AllTotalAmount);
+    }
+    private static IQueryable<CustomerPackageDto> CheckFilter(PagedAndSortedAndFilteredResultRequestDto input, IQueryable<CustomerPackageDto> query)
+    {
+        if (input.filters.Count > 0)
+        {
+            var filterExpression = BuildExpression<CustomerPackageDto>.BuildFilterExpression(input.filters);
+            if (filterExpression is not null)
+            {
+                query = query.Where(filterExpression);
+            }
+        }
+
+        return query;
+    }
+
+
+
+    private static IQueryable<CustomerPackageDto> CheckTenant(Guid? tenantId, IQueryable<CustomerPackageDto> query)
+    {
+        if (tenantId.HasValue)
+            query = query.Where(_ => _.TenantId == tenantId.Value);
+        return query;
+    }
+
+    private static IQueryable<CustomerPackageDto> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<CustomerPackageDto> query)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                query = query.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                query = query.OrderBy(input.Sorting);
+            }
+
+        }
+
+        return query;
+    }
+    #endregion
+    #region UnUsed Methods
+    private static IQueryable<PaymentDto> CheckTenantPayment(Guid? tenantId, IQueryable<PaymentDto> query)
+    {
+        if (tenantId.HasValue)
+            query = query.Where(_ => _.TenantId == tenantId.Value);
+        return query;
+    }
+    #endregion
 }
