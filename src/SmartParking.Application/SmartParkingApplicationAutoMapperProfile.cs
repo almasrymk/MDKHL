@@ -275,11 +275,15 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         .ReverseMap();
 
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>().ReverseMap();        
-        CreateMap<CreateUpdateGarageTransactionDto, GarageTransactionDto>().ReverseMap();        
+        CreateMap<CreateUpdateGarageTransactionDto, GarageTransactionDto>().ReverseMap();       
+        
+        CreateMap<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>().ReverseMap();        
 
         // unLinked transaction 
         CreateMap<UnLinkedTransaction, UnLinkedTransactionDto>();
         CreateMap<CreateUpdateGarageTransactionEndPointDto, UnLinkedTransaction>();
+
+
 
         CreateMap<CustomerPackage, CustomerPackageDto>();
         CreateMap<CreateUpdateCustomerPackageDto, CustomerPackage>();

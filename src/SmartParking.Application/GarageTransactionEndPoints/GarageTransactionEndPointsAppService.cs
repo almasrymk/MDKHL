@@ -233,7 +233,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (packageDto.IsCustomPackage)
         {
             var totaldays = _calculationsEndPointAppService.CalculateTimeForCustomPackage(exitTime, packageDto);
-            price = totaldays * organization.FullDayPrice; ;
+            price = totaldays * organization.FullDayPrice;
         }
         else
         {
@@ -321,7 +321,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if ( _entryTransaction.AccurateTime > exitTransaction.AccurateTime)
         {
             await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_garage.Id, CustomerCategoryStatus.Customer);
-            await InVailedCasesForTransacrion(exitTransaction, _entryTransaction.AccurateTime);
+            await InVailedCasesForTransaction(exitTransaction, _entryTransaction.AccurateTime);
             return await Task.FromResult(false);
         }
         var _lstCategory = _entryTransaction.CustomerCategory;
@@ -446,11 +446,11 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         return true;
     }
 
-    private async Task InVailedCasesForTransacrion(CreateUpdateGarageTransactionDto exitTransaction, DateTime? entranceTime)
+    private async Task InVailedCasesForTransaction(CreateUpdateGarageTransactionDto exitTransaction, DateTime? entranceTime)
     {
         exitTransaction.IsIn = false;
         exitTransaction.IsMapped = false;
-        await _garageTransactionsAppService.CreateAsync(exitTransaction);
+        await _unlinkedGarageTransactionsAppService.CreateAsync(ObjectMapper.Map<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>(exitTransaction));
 
         _logger.LogError($"{DateTime.Now} ====>  Entrance Time is null  ");
         _logger.LogError($"{DateTime.Now} ====> Get Response false");
