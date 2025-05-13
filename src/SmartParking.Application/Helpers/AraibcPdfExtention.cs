@@ -19,10 +19,37 @@ namespace AraibcPdfUnicodeGlyphsResharper
         {
             _ArabicGlyphs = InitializeTableUnicode();
         }
+        #region Public Methods
+        /// <summary>
+        /// Retrieves a dictionary containing Arabic glyphs and their corresponding values.
+        /// </summary>
+        /// <returns>
+        /// A dictionary where the key is the glyph string, and the value is an array of strings representing the glyphs.
+        /// </returns>
         public static Dictionary<string, string[]> GetArabicGlyphs()
         {
             return _ArabicGlyphs;
         }
+        /// <summary>
+        /// Converts the given Arabic string with font glyphs to a properly encoded PDF string.
+        /// </summary>
+        /// <param name="source">The Arabic string containing font glyphs to be converted.</param>
+        /// <returns>
+        /// A string representing the Arabic text with properly shaped glyphs and characters.
+        /// </returns>
+        public static string ArabicWithFontGlyphsToPDF(this string source)
+        {
+            return source.GetUnShapedUnicode().DecodeEncodedNonAsciiCharacters().ReverseString();
+        }
+        #endregion
+        #region Private Methods
+        /// <summary>
+        /// Initializes and returns a dictionary that maps Arabic shaped Unicode characters to their respective Unicode values for different cases.
+        /// The dictionary's key is the character shaped Unicode, and the value is an array of Unicode values for the character in four different cases.
+        /// </summary>
+        /// <returns>
+        /// A dictionary where the key is the shaped Unicode character, and the value is an array of strings representing the Unicode values for that character's four cases.
+        /// </returns>
         private static Dictionary<string, string[]> InitializeTableUnicode()
         {
             //For more information https://en.wikipedia.org/wiki/Arabic_script_in_Unicode
@@ -72,22 +99,18 @@ namespace AraibcPdfUnicodeGlyphsResharper
             return xGlyphs;
         }
 
-        private static string GetAsUnicode(this string xShapedText)
-        {
-            xShapedText = Regex.Unescape(xShapedText.Trim());
-            var xWords = xShapedText.Split(' ');
-            StringBuilder xBuilder = new StringBuilder();
-            foreach (var iWord in xWords)
-            {
-                for (int i = 0; i < iWord.Length; i++)
-                {
-                    string xShapedUnicode = @"\u" + ((int)iWord[i]).ToString("X4");
-                    xBuilder.Append(xShapedUnicode);
-                }
-            }
-            return xBuilder.ToString();
-        }
 
+        /// <summary>
+        /// Converts a string of Arabic text with shaped Unicode characters to a string with unshaped Unicode characters.
+        /// The method processes each word in the input string, and for each character, it determines the appropriate Unicode value
+        /// based on its context (e.g., beginning of a word, middle, end, or isolated character).
+        /// </summary>
+        /// <param name="original">
+        /// The original string containing Arabic text with shaped Unicode characters.
+        /// </param>
+        /// <returns>
+        /// A string where each Arabic character has been converted to unshaped Unicode, using the appropriate shape based on its position in the word.
+        /// </returns>
         private static string GetUnShapedUnicode(this string original)
         {
             //remove escape characters
@@ -151,8 +174,15 @@ namespace AraibcPdfUnicodeGlyphsResharper
 
             return xBuilder.ToString();
         }
-        // static Regex reUnicode = new Regex(@"\\u([0-9a-fA-F]{4})", RegexOptions.Compiled);
-
+        /// <summary>
+        /// Decodes Unicode-encoded escape sequences (e.g., \uXXXX) in a string into their corresponding characters.
+        /// </summary>
+        /// <param name="value">
+        /// The input string containing Unicode escape sequences (e.g., \uXXXX).
+        /// </param>
+        /// <returns>
+        /// A new string where all Unicode escape sequences are replaced with their respective characters.
+        /// </returns>
         private static string DecodeEncodedNonAsciiCharacters(this string value)
         {
             //static Regex reUnicode = new Regex(@"\\u([0-9a-fA-F]{4})", RegexOptions.Compiled);
@@ -162,6 +192,15 @@ namespace AraibcPdfUnicodeGlyphsResharper
                 @"\\u(?<Value>[a-zA-Z0-9]{4})",
                 m => ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString());
         }
+        /// <summary>
+        /// Reverses the characters in each word of the input string while leaving English words in their original order.
+        /// </summary>
+        /// <param name="original">
+        /// The original string to be reversed. Words in the string are split by spaces, and only non-English words are reversed.
+        /// </param>
+        /// <returns>
+        /// A new string where non-English words are reversed, but English words remain in their original order.
+        /// </returns>
         private static string ReverseString(this string original)
         {
             //to check each word as alone may contain english word and may not
@@ -182,9 +221,25 @@ namespace AraibcPdfUnicodeGlyphsResharper
 
             return string.Join(' ', xWords);
         }
-        public static string ArabicWithFontGlyphsToPDF(this string source)
+
+
+        #endregion
+        #region UnUsed Methods
+        private static string GetAsUnicode(this string xShapedText)
         {
-            return source.GetUnShapedUnicode().DecodeEncodedNonAsciiCharacters().ReverseString();
+            xShapedText = Regex.Unescape(xShapedText.Trim());
+            var xWords = xShapedText.Split(' ');
+            StringBuilder xBuilder = new StringBuilder();
+            foreach (var iWord in xWords)
+            {
+                for (int i = 0; i < iWord.Length; i++)
+                {
+                    string xShapedUnicode = @"\u" + ((int)iWord[i]).ToString("X4");
+                    xBuilder.Append(xShapedUnicode);
+                }
+            }
+            return xBuilder.ToString();
         }
+        #endregion
     }
 }
