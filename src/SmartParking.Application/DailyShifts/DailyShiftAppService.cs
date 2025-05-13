@@ -25,6 +25,9 @@ using Volo.Abp.MultiTenancy;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SmartParking.DailyShifts;
+/// <summary>
+/// Service to handle DailyShift
+/// </summary>
 public class DailyShiftAppService :
       CrudAppService<
         DailyShift,
@@ -57,6 +60,7 @@ public class DailyShiftAppService :
         _paymentRepository = paymentRepository;
     }
     #region public methods 
+    /// <inheritdoc/>
     public override async Task<DailyShiftDto> CreateAsync(CreateUpdateDailyShiftDto input)
     {
         KeeperShift? assignShift = await GetAssignShift(input) ?? throw new Exception(LocalizationHelper.GetLocalizedString("NotAssignShift"));
@@ -70,6 +74,7 @@ public class DailyShiftAppService :
             input.TenantId = CurrentTenant.Id;
         return await base.CreateAsync(input);
     }
+    /// <inheritdoc/>
     public async Task<CreateUpdateDailyShiftDto> CreateDailyShiftDto(KeeperShiftDto input, KeeperShiftRequestType keeperShiftRequestType)
     {
         return new CreateUpdateDailyShiftDto() 
@@ -84,16 +89,17 @@ public class DailyShiftAppService :
         };
 
     }
-
-
+    /// <inheritdoc/>
     public override async Task<DailyShiftDto> UpdateAsync(int id, CreateUpdateDailyShiftDto input)
     {
         return await base.UpdateAsync(id, input);
     }
+    /// <inheritdoc/>>
     public override Task DeleteAsync(int id)
     {
         return base.DeleteAsync(id);
     }
+    /// <inheritdoc/>
     public override async Task<DailyShiftDto?> GetAsync(int id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -158,8 +164,8 @@ public class DailyShiftAppService :
                          };
             return await result.FirstOrDefaultAsync();
         }
-
     }
+    /// <inheritdoc/>
     public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId, Guid? userId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -233,7 +239,7 @@ public class DailyShiftAppService :
             };
         }
     }
-
+    /// <inheritdoc/>
     public async Task<PagedResultDto<DailyShiftDto>> GetListDailyShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId, Guid? userId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -392,8 +398,6 @@ public class DailyShiftAppService :
         DailyShift nextDailyShift = new DailyShift();
         if (assignShift.StartTime < assignShift.EndTime)
             dailyShift = await HandleEndShiftInSameDay(input, dailyShift);
-
-
         
         //if current shift is midnight shift
         if (assignShift.StartTime > assignShift.EndTime)
@@ -471,7 +475,12 @@ public class DailyShiftAppService :
             return dailyShift;
         }
     }
-
+    /// <summary>
+    /// Applies sorting to the given query based on the provided sorting string in the input.
+    /// </summary>
+    /// <param name="input">The request input containing the sorting parameter.</param>
+    /// <param name="result">The queryable list of <see cref="DailyShiftDto"/> to apply sorting on.</param>
+    /// <returns>The sorted <see cref="IQueryable{DailyShiftDto}"/> or the original if no sorting is applied.</returns>
     private static IQueryable<DailyShiftDto>? ApplySorting(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto>? result)
     {
         var sorting = input.Sorting;
@@ -487,30 +496,36 @@ public class DailyShiftAppService :
         return result;
     }
 
+    /// <summary>
+    /// Applies a search filter to the given query based on the provided search term in the input.
+    /// </summary>
+    /// <param name="input">The request input containing the search term.</param>
+    /// <param name="queryable">The queryable list of <see cref="DailyShiftDto"/> to apply search filtering on.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation, with the filtered <see cref="IQueryable{DailyShiftDto}"/> result.
+    /// </returns>
     private async Task<IQueryable<DailyShiftDto>?> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DailyShiftDto>? queryable)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
             {
-
                 queryable = queryable.Where(or =>
-                or.KeeperName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.GarageNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.GarageNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.KeeperShiftRequestType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.ShiftNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.ShiftNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.RequestTime.ToString().Contains(input.SearchingTerm)
-            );
-
+                    or.KeeperName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.GarageNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.GarageNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.OrganizationNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.KeeperShiftRequestType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.ShiftNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.ShiftNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    or.RequestTime.ToString().Contains(input.SearchingTerm)
+                );
             }
-            await Task.Yield();
+            await Task.Yield(); // Placeholder to keep the method signature async
             return queryable;
         }
-        
     }
+
     #endregion
 }
