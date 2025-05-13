@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Lookups.CameraBrands;
@@ -7,64 +8,68 @@ using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Validation;
 
-namespace SmartParking.Blazor.Components.Pages.CameraModel
+namespace SmartParking.Blazor.Components.Pages.CameraModel;
+
+/// <summary>
+ /// Component for updating an existing camera model using a dialog form.
+ /// </summary>
+public partial class UpdateCameraModelDialog
 {
-    partial class UpdateCameraModelDialog
+    [Parameter]
+    public CreateUpdateCameraModelDto cameraModel { get; set; } = new CreateUpdateCameraModelDto();
+
+    [Parameter]
+    public int Id { get; set; }
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    private IList<CameraBrandDto> CameraBrands = new List<CameraBrandDto>();
+    protected override async Task OnInitializedAsync()
     {
-        private MudForm form;
-        [Parameter]
-        public CreateUpdateCameraModelDto cameraModel { get; set; } = new CreateUpdateCameraModelDto();
-        [Parameter]
-        public int Id { get; set; }
-        [CascadingParameter]
-        private IMudDialogInstance MudDialog { get; set; }
-        bool _clearable;
-        IList<CameraBrandDto> CameraBrands = new List<CameraBrandDto>();
+        CameraBrands = await CameraBrandAppService.GetAllCameraBrandsAsync();
+        await base.OnInitializedAsync();
+    }
 
-        protected override async Task OnInitializedAsync()
+    /// <summary>
+    /// Submits the updated camera model data to the server and handles validation or business errors.
+    /// </summary>
+    private async Task Submit()
+    {
+        try
         {
-            CameraBrands = await CameraBrandAppService.GetAllCameraBrandsAsync();
-            await base.OnInitializedAsync();
+            await CameraModelsAppService.UpdateAsync(Id, cameraModel);
+            SnackBar.ShowSnackbar(Snackbar, $"{cameraModel.ArabicName} {L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
+            await Task.Delay(1000);
+            MudDialog.Close(DialogResult.Ok(true));
+            Navigation.NavigateTo("/Cameramodels", true);
         }
-        private async Task Submit()
+        catch (AbpValidationException validationException)
         {
-
-            try
+            foreach (var validationError in validationException.ValidationErrors)
             {
-                await CameraModelsAppService.UpdateAsync(Id, cameraModel);
-                SnackBar.ShowSnackbar(Snackbar, $"{cameraModel.ArabicName} {L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
-                await Task.Delay(1000);
-                MudDialog.Close(DialogResult.Ok(true));
-                Navigation.NavigateTo("/Cameramodels", true);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
-            catch (AbpValidationException validationException)
-            {
-                foreach (var validationError in validationException.ValidationErrors)
-                {
-                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
-                }
-            }
-            catch (BusinessException ex)
-            {
-
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Code}", Severity.Error);
-            }
-            catch (AuthenticationException ex)
-            {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
-            }
-            catch (Exception ex)
-            {
-
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
-            }
-
-
-
         }
-        private void Cancel()
+        catch (BusinessException ex)
         {
-            MudDialog.Cancel();
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Code}", Severity.Error);
         }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
+        }
+    }
+
+    /// <summary>
+    /// Cancels the dialog without saving any changes.
+    /// </summary>
+    private void Cancel()
+    {
+        MudDialog.Cancel();
     }
 }
