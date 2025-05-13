@@ -20,12 +20,13 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
-
 using System.Linq.Dynamic.Core;
 using SmartParking.Vehicles;
 using SmartParking.Filters;
 namespace SmartParking.Customers;
-
+/// <summary>
+/// Employee App Service class responsible for managing employee-related operations.
+/// </summary>
 [Authorize]
 public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCustomerDto>, IEmployeeAppService
 {
@@ -213,6 +214,7 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             );
         }
     }
+    /// <inheritdoc/>
     public async Task<PagedResultDto<CustomerDto>> SearchMDKHL(PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -356,6 +358,7 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             );
         }
     }
+    /// <inheritdoc/>
     public async override Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input)
     {
 
@@ -386,7 +389,6 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
     }
     /// <inheritdoc/>
-
     public override async Task DeleteAsync(Guid id)
     {
         var customer = await _repository.FindAsync(x => x.Id == id);
@@ -397,6 +399,7 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         await _repository.HardDeleteAsync(customer);
 
     }
+    /// <inheritdoc/>
     public override async Task<CustomerDto> GetAsync(Guid id)
     {
         var orgId = await _organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
@@ -407,8 +410,6 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
         }
     }
-
-
     /// <inheritdoc/>
     public async Task<List<VehicleDto>> GetVehiclesRelatedToSpecificEmployee(Guid employeeId)
     {
@@ -429,9 +430,7 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var output = ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(result);
             return output;
         }
-
     }
-
     #endregion
     #region private methods
     /// <summary>
