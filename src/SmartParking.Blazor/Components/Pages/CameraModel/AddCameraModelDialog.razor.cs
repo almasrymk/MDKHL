@@ -9,23 +9,31 @@ using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.CameraModel
 {
+    /// <summary>
+    /// Dialog component for adding a new camera model.
+    /// </summary>
     partial class AddCameraModelDialog
     {
         private MudForm form;
         private CreateUpdateCameraModelDto cameraModel = new CreateUpdateCameraModelDto();
+        private bool _clearable;
+        private IList<CameraBrandDto> CameraBrands = new List<CameraBrandDto>();
         [CascadingParameter]
         private IMudDialogInstance MudDialog { get; set; }
-        bool _clearable;
-        IList<CameraBrandDto> CameraBrands = new List<CameraBrandDto>();
-
         protected override async Task OnInitializedAsync()
         {
             CameraBrands = await CameraBrandAppService.GetAllCameraBrandsAsync();
             await base.OnInitializedAsync();
         }
+        #region private method
+
+        /// <summary>
+        /// Handles form submission for creating a new camera model.
+        /// Displays success or error notifications based on the outcome.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous submit operation.</returns>
         private async Task Submit()
         {
-
             try
             {
                 await CameraModelsAppService.CreateAsync(cameraModel);
@@ -43,7 +51,6 @@ namespace SmartParking.Blazor.Components.Pages.CameraModel
             }
             catch (BusinessException ex)
             {
-
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Code}", Severity.Error);
             }
             catch (AuthenticationException ex)
@@ -52,19 +59,20 @@ namespace SmartParking.Blazor.Components.Pages.CameraModel
             }
             catch (Exception ex)
             {
-
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
             }
-
-
-
-
         }
 
-
+        /// <summary>
+        /// Cancels the dialog without saving changes.
+        /// </summary>
         private void Cancel()
         {
             MudDialog.Cancel();
         }
+
+        #endregion
     }
+
 }
+
