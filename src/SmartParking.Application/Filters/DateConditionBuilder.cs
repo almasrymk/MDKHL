@@ -10,6 +10,8 @@ namespace SmartParking.Filters;
 public class DateConditionBuilder : ConditionBuilder
 {
     public override TypeFilter SupportedType => TypeFilter.Date;
+    #region Public Methods
+     /// <inheritdoc/>
     public override Expression BuildCondition(Expression property, FilterRequestDto filter)
     {
         switch (filter.FilterOperator)
@@ -26,20 +28,38 @@ public class DateConditionBuilder : ConditionBuilder
                 return BuildDateBetweenCondition(property, filter);
         }
     }
-
+    #endregion
+    #region Private Methods
+    /// <summary>
+    /// Builds an expression for a "LessThanOrEqual" condition comparing a property with a date value.
+    /// </summary>
+    /// <param name="property">The property expression to be evaluated in the condition.</param>
+    /// <param name="filter">The filter request that contains the date value for comparison.</param>
+    /// <returns>An expression representing the "LessThanOrEqual" condition.</returns>
     private static Expression BuildDateLessThanOrEqualCondition(Expression property, FilterRequestDto filter)
     {
         Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
         ConstantExpression DateValueExpression = Expression.Constant(filter.Date.AddDays(1), typeof(DateTime));
         return Expression.LessThanOrEqual(DateNonNullableProperty, DateValueExpression);
     }
-
+    /// <summary>
+    /// Builds an expression for a "LessThan" condition comparing a property with a date value.
+    /// </summary>
+    /// <param name="property">The property expression to be evaluated in the condition.</param>
+    /// <param name="filter">The filter request that contains the date value for comparison.</param>
+    /// <returns>An expression representing the "LessThan" condition.</returns>
     private static Expression BuildDateLessThanCondition(Expression property, FilterRequestDto filter)
     {
         Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
         ConstantExpression DateValueExpression = Expression.Constant(filter.Date, typeof(DateTime));
         return Expression.LessThan(DateNonNullableProperty, DateValueExpression);
     }
+    /// <summary>
+    /// Builds an expression for a "Between" condition comparing a property with a date range.
+    /// </summary>
+    /// <param name="property">The property expression to be evaluated in the condition.</param>
+    /// <param name="filter">The filter request that contains the start and end date values for comparison.</param>
+    /// <returns>An expression representing the "Between" condition.</returns>
     private static Expression BuildDateBetweenCondition(Expression property, FilterRequestDto filter)
     {
         Expression startDateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
@@ -52,7 +72,12 @@ public class DateConditionBuilder : ConditionBuilder
         return Expression.AndAlso(greaterThan, lessThan);
 
     }
-
+    /// <summary>
+    /// Builds an expression for a "GreaterThan" condition comparing a property with a date value.
+    /// </summary>
+    /// <param name="property">The property expression to be evaluated in the condition.</param>
+    /// <param name="filter">The filter request that contains the date value for comparison.</param>
+    /// <returns>An expression representing the "GreaterThan" condition.</returns>
     private static Expression BuildDateGreaterThanCondition(Expression property, FilterRequestDto filter)
     {
         Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
@@ -61,7 +86,12 @@ public class DateConditionBuilder : ConditionBuilder
 
         return Expression.GreaterThan(DateNonNullableProperty, DateValueExpression);
     }
-
+    /// <summary>
+    /// Builds an expression for a "GreaterThanOrEqual" condition comparing a property with a date value.
+    /// </summary>
+    /// <param name="property">The property expression to be evaluated in the condition.</param>
+    /// <param name="filter">The filter request that contains the date value for comparison.</param>
+    /// <returns>An expression representing the "GreaterThanOrEqual" condition.</returns>
     private static Expression BuildDateGreaterThanOrEqualCondition(Expression property, FilterRequestDto filter)
     {
         Expression DateNonNullableProperty = Expression.Convert(property, typeof(DateTime));
@@ -70,4 +100,5 @@ public class DateConditionBuilder : ConditionBuilder
 
         return Expression.GreaterThanOrEqual(DateNonNullableProperty, DateValueExpression);
     }
+    #endregion
 }
