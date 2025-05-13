@@ -260,18 +260,21 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (_customerId is not null)
         {
             _customerInvoicePrice= await CalculationForRegisteredCustomer(exitTransaction.AccurateTime.Value, _entryTransaction.AccurateTime, organization, _packageDto, _totalHours);
+            //update slots depends on category
             await UpdateSlotsCountIfCategoryChanged(_entryTransaction, _categoryHasChanged, _lstCategory);
         }
         else
         {
             _customerInvoicePrice= await CalculateInvoiceCases(_entryTransaction.AccurateTime, _totalHours, exitTransaction.AccurateTime.Value, organization);
+            //update slots depends on category
+            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_garage.Id, CustomerCategoryStatus.Customer);
         }
         //creating invoice
         CreateUpdateInvoiceDto _initialInvoice = await InitiateInvoice(_entryTransaction.AccurateTime, _customer, exitTransaction, _totalHours, _customerInvoicePrice, true);
         _initialInvoice.EntranceTime = _entryTransaction.AccurateTime;
         //Save Exit Transaction
-        var _createdExitFarageTransaction = await _garageTransactionsAppService.CreateAsync(exitTransaction);
-        _initialInvoice.GarageTransactionExitId = _createdExitFarageTransaction.Id;
+        var _createdExitGarageTransaction = await _garageTransactionsAppService.CreateAsync(exitTransaction);
+        _initialInvoice.GarageTransactionExitId = _createdExitGarageTransaction.Id;
         //Save Invoice
         await _invoiceAppService.CreateAsync(_initialInvoice);
         //Opens Gate Depends On Invoice Price
