@@ -22,6 +22,8 @@ namespace SmartParking.Authentication;
 using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
+/// <inheritdoc/>
+
 public class RoleAppService : ApplicationService, IRoleAppService
 {
     private readonly ICustomRoleReository _roleReository;
@@ -47,6 +49,8 @@ public class RoleAppService : ApplicationService, IRoleAppService
     }
 
     #region Public Methods
+    /// <inheritdoc/>
+
     public async Task<PagedResultDto<IdentityRoleDto>> GetListAndPagedOrganization(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -60,7 +64,8 @@ public class RoleAppService : ApplicationService, IRoleAppService
         }
     }
 
-   
+
+    /// <inheritdoc/>
 
     public async Task<PagedResultDto<RoleDto>> GetListAndPagedMdkhl(PagedAndSortedAndSearchResultRequestDto input , Guid? tenantId)
     {
@@ -78,9 +83,10 @@ public class RoleAppService : ApplicationService, IRoleAppService
         }
     }
 
-   
 
-    
+
+
+    /// <inheritdoc/>
 
     public async Task<List<IdentityRoleDto>> GetListByTenant(Guid? tenantId)
     {
@@ -91,6 +97,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
             return await MapRoles(queryable); ;
         }
     }
+    /// <inheritdoc/>
 
     public async Task<PagedResultDto<IdentityRoleDto>> SearchOrganization(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
@@ -110,13 +117,14 @@ public class RoleAppService : ApplicationService, IRoleAppService
         }
     }
 
-   
 
-   
-    
-   
 
-   
+
+
+
+
+
+    /// <inheritdoc/>
 
     public async Task<IdentityRoleDto> Create(IdentityRoleCreateDto roleCreateDto, [Optional] Guid? tenantId)
     {
@@ -128,6 +136,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
         return rolesDto;
     }
 
+    /// <inheritdoc/>
 
     public async Task<IdentityRoleDto> Update(Guid Id, IdentityRoleUpdateDto updateDto)
     {
@@ -144,6 +153,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
             throw new Exception(ex.Message);
         }
     }
+    /// <inheritdoc/>
 
     public async Task<IdentityRoleDto> GetRoleById(Guid Id)
     {
@@ -156,6 +166,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
         }
         
     }
+    /// <inheritdoc/>
 
     public async Task<IdentityRole?> GetIdentityRoleById(Guid Id)
     {
@@ -167,6 +178,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
             return role;
         }
     }
+    /// <inheritdoc/>
 
     public async Task AssignRole(Guid UserId, Guid RoleId)
     {
@@ -191,6 +203,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
         user.SetProperty("OrganizationId", org.Id);
         await _userManager.UpdateAsync(user);
     }
+    /// <inheritdoc/>
 
     public async Task<IdentityRole?> GetRoleByNameAsync (string roleName)
     {
@@ -199,6 +212,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
         return role;  
     }
 
+    /// <inheritdoc/>
 
     public async Task<IdentityRole?> GetRoleByNameMdkhlAsync(string roleName)
     {
@@ -207,6 +221,8 @@ public class RoleAppService : ApplicationService, IRoleAppService
             return await GetRoleByNameAsync(roleName);
         }
     }
+    /// <inheritdoc/>
+
     public async Task<PagedResultDto<RoleDto>> SearchMdkhl(PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -222,6 +238,7 @@ public class RoleAppService : ApplicationService, IRoleAppService
             return await GetPagedResultMdkhlAsync(query, input);
         }
     }
+    /// <inheritdoc/>
 
     public async Task<IdentityRoleDto> Delete(Guid RoleId)
     {
@@ -245,6 +262,12 @@ public class RoleAppService : ApplicationService, IRoleAppService
     }
     #endregion
     #region Private Methods
+    /// <summary>
+    /// Applies sorting to the provided queryable based on the provided sorting input.
+    /// </summary>
+    /// <param name="input">The sorting input containing the sorting criteria.</param>
+    /// <param name="queryable">The queryable to apply the sorting to.</param>
+    /// <returns>The queryable with applied sorting.</returns>
     private static IQueryable<IdentityRole> ApplySortForOrganization(PagedAndSortedResultRequestDto input, IQueryable<IdentityRole> queryable)
     {
 
@@ -252,6 +275,13 @@ public class RoleAppService : ApplicationService, IRoleAppService
             queryable = queryable.OrderBy(input.Sorting);
         return queryable;
     }
+    /// <summary>
+    /// Checks if a role with the specified name and tenant ID exists.
+    /// </summary>
+    /// <param name="roleName">The name of the role to check.</param>
+    /// <param name="tenantId">The tenant ID associated with the role.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <exception cref="Exception">Thrown if the role already exists.</exception>
     private async Task IsFoundRole(string roleName, Guid? tenantId)
     {
         var roleFound = await _roleReository.FindRoleByTenantAsync(roleName, tenantId);
@@ -260,6 +290,12 @@ public class RoleAppService : ApplicationService, IRoleAppService
             throw new Exception(LocalizationHelper.GetLocalizedString("Role") + ' ' + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
         }
     }
+    /// <summary>
+    /// Applies a search filter to the provided queryable based on the searching term.
+    /// </summary>
+    /// <param name="queryable">The queryable to apply the search filter to.</param>
+    /// <param name="searchingTerm">The term to search for within the role name or organization name.</param>
+    /// <returns>The queryable with applied search filter.</returns>
     private IQueryable<RoleWithOrganization> ApplySearchFilterForMdkhl(IQueryable<RoleWithOrganization> queryable, string searchingTerm)
     {
         var lowerTerm = searchingTerm.ToLower();
@@ -269,20 +305,34 @@ public class RoleAppService : ApplicationService, IRoleAppService
             role.Organization.EnglishName.ToLower().Contains(lowerTerm));
 
     }
+    /// <summary>
+    /// Maps the list of roles to their corresponding DTOs.
+    /// </summary>
+    /// <param name="queryable">The queryable containing roles.</param>
+    /// <returns>A task representing the asynchronous operation. The task result contains a list of <see cref="IdentityRoleDto"/>.</returns>
     private async Task<List<IdentityRoleDto>> MapRoles(IQueryable<IdentityRole> queryable)
     {
         var roles = await AsyncExecuter.ToListAsync(queryable);
         var rolesDto = ObjectMapper.Map<List<IdentityRole>, List<IdentityRoleDto>>(roles);
         return rolesDto;
     }
-
+    /// <summary>
+    /// Maps the list of roles with organization to their corresponding DTOs.
+    /// </summary>
+    /// <param name="queryable">The queryable containing roles with organization information.</param>
+    /// <returns>A task representing the asynchronous operation. The task result contains a list of <see cref="RoleDto"/>.</returns>
     private async Task<List<RoleDto>> MapRolesForMdkhl(IQueryable<RoleWithOrganization> queryable)
     {
         var roles = await AsyncExecuter.ToListAsync(queryable);
         var rolesDto = ObjectMapper.Map<List<RoleWithOrganization>, List<RoleDto>>(roles);
         return rolesDto;
     }
-
+    /// <summary>
+    /// Applies a search filter to the provided queryable based on the search term for the role name.
+    /// </summary>
+    /// <param name="queryable">The queryable to apply the search filter to.</param>
+    /// <param name="searchingTerm">The term to search for within the role name.</param>
+    /// <returns>The queryable with applied search filter.</returns>
     private IQueryable<IdentityRole> ApplySearchFilter(IQueryable<IdentityRole> queryable, string searchingTerm)
     {
         if (!searchingTerm.IsNullOrWhiteSpace())
@@ -295,6 +345,12 @@ public class RoleAppService : ApplicationService, IRoleAppService
         return queryable;
 
     }
+    /// <summary>
+    /// Filters the provided queryable based on the tenant ID, returning only roles associated with the specified tenant.
+    /// </summary>
+    /// <param name="tenantId">The tenant ID to filter by.</param>
+    /// <param name="queryable">The queryable to apply the filter to.</param>
+    /// <returns>The queryable filtered by tenant ID.</returns>
     private static IQueryable<IdentityRole> GetQueryByTenat(Guid? tenantId, IQueryable<IdentityRole> queryable)
     {
         if (tenantId == null)
@@ -306,13 +362,23 @@ public class RoleAppService : ApplicationService, IRoleAppService
         return queryable;
     }
 
-
+    /// <summary>
+    /// Filters the provided queryable based on the tenant ID, returning only roles associated with the specified tenant.
+    /// </summary>
+    /// <param name="tenantId">The tenant ID to filter by.</param>
+    /// <param name="queryable">The queryable to apply the filter to.</param>
+    /// <returns>The queryable filtered by tenant ID.</returns>
     private static IQueryable<IdentityRole> GetQueryListByTenat(Guid? tenantId, IQueryable<IdentityRole> queryable)
     {
         queryable = queryable.Where(r => r.TenantId == tenantId);
         return queryable;
     }
-
+    /// <summary>
+    /// Retrieves a paged result of roles based on the provided queryable and input parameters.
+    /// </summary>
+    /// <param name="queryable">The queryable containing roles.</param>
+    /// <param name="input">The input containing paging parameters.</param>
+    /// <returns>A task representing the asynchronous operation. The task result contains a <see cref="PagedResultDto{IdentityRoleDto}"/>.</returns>
     private async Task<PagedResultDto<IdentityRoleDto>> GetPagedResultAsync(IQueryable<IdentityRole> queryable, PagedResultRequestDto input)
     {
         var totalCount = await AsyncExecuter.CountAsync(queryable);
@@ -325,19 +391,35 @@ public class RoleAppService : ApplicationService, IRoleAppService
             Items = RolesDto
         };
     }
+    /// <summary>
+    /// Filters the provided queryable based on the tenant ID for roles with organization information.
+    /// </summary>
+    /// <param name="tenantId">The tenant ID to filter by.</param>
+    /// <param name="query">The queryable to apply the filter to.</param>
+    /// <returns>The queryable filtered by tenant ID.</returns>
     private static IQueryable<RoleWithOrganization> ApplyFilterTenant(Guid? tenantId, IQueryable<RoleWithOrganization> query)
     {
         if (tenantId.HasValue)
             query = query.Where(x => x.Role.TenantId == tenantId);
         return query;
     }
-
+    /// <summary>
+    /// Checks if sorting is applied to the queryable and applies the sorting accordingly.
+    /// </summary>
+    /// <param name="input">The sorting input containing the sorting criteria.</param>
+    /// <param name="query">The queryable to apply sorting to.</param>
+    /// <returns>The queryable with applied sorting.</returns>
     private static IQueryable<RoleWithOrganization> CheckSort(PagedAndSortedResultRequestDto input, IQueryable<RoleWithOrganization> query)
     {
         if (!input.Sorting.IsNullOrEmpty())
             query = ApplySortForMdkhl(input, query);
         return query;
     }
+    /// <summary>
+    /// Creates a query for roles with organization information, applying necessary joins and selects.
+    /// </summary>
+    /// <param name="input">The input containing sorting and paging parameters.</param>
+    /// <returns>A task representing the asynchronous operation. The task result contains the queryable for roles with organizations.</returns>
     private async Task<IQueryable<RoleWithOrganization>> CreateQueryForMdkhl(PagedAndSortedResultRequestDto input)
     {
         var queryable = await _roleReository.GetQueryableAsync();
@@ -360,12 +442,23 @@ public class RoleAppService : ApplicationService, IRoleAppService
 
         return query;
     }
-
+    /// <summary>
+    /// Applies sorting to the provided queryable based on the provided sorting input for roles with organization information.
+    /// </summary>
+    /// <param name="input">The sorting input containing the sorting criteria.</param>
+    /// <param name="query">The queryable to apply the sorting to.</param>
+    /// <returns>The queryable with applied sorting.</returns>
     private static IQueryable<RoleWithOrganization> ApplySortForMdkhl(PagedAndSortedResultRequestDto input, IQueryable<RoleWithOrganization> query)
     {
         query = query.OrderBy(input.Sorting);
         return query;
     }
+    /// <summary>
+    /// Retrieves a paged result of roles with organization information based on the provided queryable and input parameters.
+    /// </summary>
+    /// <param name="queryable">The queryable containing roles with organization information.</param>
+    /// <param name="input">The input containing paging parameters.</param>
+    /// <returns>A task representing the asynchronous operation. The task result contains a <see cref="PagedResultDto{RoleDto}"/>.</returns>
     private async Task<PagedResultDto<RoleDto>> GetPagedResultMdkhlAsync(IQueryable<RoleWithOrganization> queryable, PagedAndSortedResultRequestDto input)
     {
         var totalCount = await AsyncExecuter.CountAsync(queryable);
@@ -380,6 +473,12 @@ public class RoleAppService : ApplicationService, IRoleAppService
     }
     #endregion
     #region UnUsed
+    /// <summary>
+    /// Applies sorting to the given queryable based on the specified sorting string.
+    /// </summary>
+    /// <param name="queryable">The queryable sequence to be sorted.</param>
+    /// <param name="sorting">The sorting criteria, which can include "ASC" or "DESC".</param>
+    /// <returns>A sorted <see cref="IQueryable{IdentityRole}"/> based on the specified sorting string.</returns>
     private IQueryable<IdentityRole> ApplySorting(IQueryable<IdentityRole> queryable, string sorting)
     {
         if (sorting.Contains("DESC"))
