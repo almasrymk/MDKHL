@@ -20,6 +20,9 @@ namespace SmartParking.Blazor.Components.Pages.CameraMainType
         public int Id { get; set; }
         [CascadingParameter]
         private IMudDialogInstance MudDialog { get; set; }
+
+        private MudForm form;
+        private bool _clearable;
         /// <summary>
         /// List of available camera brands to populate dropdowns or selection fields.
         /// </summary>
