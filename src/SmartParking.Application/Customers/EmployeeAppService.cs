@@ -359,46 +359,7 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         }
     }
     /// <inheritdoc/>
-    public async override Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input)
-    {
-
-        bool emailValid = _baseCustomer.IsEmailValid(input.Email);
-        if (!emailValid)
-        {
-            throw new Exception("Email is not valid");
-
-        }
-        if (input.Password != input.RepeatPassword)
-        {
-            throw new Exception("Passwords doesn't match");
-
-        }
-        var customer = await GetAsync(id);
-
-        if (customer == null)
-        {
-            throw new Exception("No Customer Found");
-
-        }
-        if (customer.NationalId != input.NationalId || customer.identificationTypes != input.IdentificationType)
-        {
-            throw new Exception("Critical Data as National Id , Identification. can't be updated");
-        }
-
-        return await base.UpdateAsync(id, input);
-
-    }
-    /// <inheritdoc/>
-    public override async Task DeleteAsync(Guid id)
-    {
-        var customer = await _repository.FindAsync(x => x.Id == id);
-        if (customer == null)
-        {
-            throw new Exception("There is no customer related to that id");
-        }
-        await _repository.HardDeleteAsync(customer);
-
-    }
+   
     /// <inheritdoc/>
     public override async Task<CustomerDto> GetAsync(Guid id)
     {
@@ -458,6 +419,47 @@ public class EmployeeAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         {
             var output = await _userManager.AddToRolesAsync(customer.IdentityUser, [RolesType.OrganizationEmployee.ToString()]);
         }
+    }
+    #endregion
+    #region UnUsed Methods
+    public async override Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input)
+    {
+
+        bool emailValid = _baseCustomer.IsEmailValid(input.Email);
+        if (!emailValid)
+        {
+            throw new Exception("Email is not valid");
+
+        }
+        if (input.Password != input.RepeatPassword)
+        {
+            throw new Exception("Passwords doesn't match");
+
+        }
+        var customer = await GetAsync(id);
+
+        if (customer == null)
+        {
+            throw new Exception("No Customer Found");
+
+        }
+        if (customer.NationalId != input.NationalId || customer.identificationTypes != input.IdentificationType)
+        {
+            throw new Exception("Critical Data as National Id , Identification. can't be updated");
+        }
+
+        return await base.UpdateAsync(id, input);
+
+    }
+    public override async Task DeleteAsync(Guid id)
+    {
+        var customer = await _repository.FindAsync(x => x.Id == id);
+        if (customer == null)
+        {
+            throw new Exception("There is no customer related to that id");
+        }
+        await _repository.HardDeleteAsync(customer);
+
     }
     #endregion
 }
