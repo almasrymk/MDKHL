@@ -16,6 +16,9 @@ using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Cameras;
 
+/// <summary>
+/// Component for displaying a list of cameras.
+/// </summary>
 public partial class Camera
 {
     private List<MudMenuData> MenuDatas = new List<MudMenuData>();
@@ -37,6 +40,9 @@ public partial class Camera
         UpdatePolicyName = CameraPermissions.Edit;
         DeletePolicyName = CameraPermissions.Delete;
     }
+    /// <summary>
+    /// Called when the component is initialized.
+    /// </summary>
     protected async override Task OnInitializedAsync()
     {
         if (!await AuthorizationService.IsGrantedAsync(CameraPermissions.Default))
@@ -50,34 +56,32 @@ public partial class Camera
     /// filter for cameras on the server side using the camera columns.
     /// </summary>
     /// <param name="columnFilter">The name of column to filter for among cameras.</param>
-    /// <returns>Returns a task that represents the asynchronous operation.</returns>
     private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
-        // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndFilteredResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch, // The term to use for filtering results
+            SearchingTerm = termSearch, 
             filters = pageInfo.Filters
         };
-        // Call the service to perform the search based on the input parameters
         if (CurrentTenant.Id != null)
         {
             var camerassDto = await CamerasAppService.Filter(input);
-            // Calculate the total number of pages required to display all results
             TotalItem = (int)camerassDto.TotalCount;
-           await CreateTable(camerassDto);
+            await CreateTable(camerassDto);
         }
         else
         {
             var camerassDto = await CamerasAppService.FilterForMDKHL(input);
-            // Calculate the total number of pages required to display all results
             TotalItem = (int)camerassDto.TotalCount;
             await CreateTable(camerassDto);
         }
     }
+    /// <summary>
+    /// Creates the menu for the tenants.
+    /// </summary>
     private async Task CreateMenue()
     {
         var itemsOrganizations = new List<MenuItem>();
@@ -107,6 +111,11 @@ public partial class Camera
             },
         };
     }
+    /// <summary>
+    /// Handles the selection of a tenant and updates the table data accordingly.
+    /// </summary>
+    /// <param name="selectedValue"></param>
+    /// <param name="tenantId"></param>
     public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
     {
         TenantId = tenantId;
@@ -128,7 +137,6 @@ public partial class Camera
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
     /// </summary>
     /// <param name="page">The page number for which to fetch the data.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
         termSearch = pageInfo.SearchTerm;
@@ -152,9 +160,12 @@ public partial class Camera
        await CreateTable(camerassDto);
 
     }
+    /// <summary>
+    /// Creates the table and populates it with the cameras list 
+    /// </summary>
+    /// <param name="cameras"></param>
     private async Task CreateTable(PagedResultDto<CameraDto> cameras)
     {
-        // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
             Name = L["Cameras"],
@@ -201,11 +212,18 @@ public partial class Camera
         itemData = tableData;
         await Task.Yield();
     }
-
+    /// <summary>
+    /// Opens the dialog for adding a new camera.
+    /// </summary>
+    /// <param name="options"></param>
     private Task OpenDialogAsync(DialogOptions options)//Add Camera
     {
         return Dialog.ShowAsync<AddDialog>("Add Camera", options);
     }
+    /// <summary>
+    /// Assigns a garage to a camera.
+    /// </summary>
+    /// <param name="id">The ID of the camera to assign a garage to.</param>
     public async Task<IDialogReference> AssignGarage(string id)
     {
         var Gid = int.Parse(id);
@@ -220,6 +238,10 @@ public partial class Camera
         return await Dialog.ShowAsync<AssignGarageDialog>("Assign Garage", parameters);
 
     }
+    /// <summary>
+    /// Handles the edit operation for a camera row.
+    /// </summary>
+    /// <param name="row">The row definition of the camera to edit.</param>
     private async Task<IDialogReference> OnClickRowEdit(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
@@ -232,6 +254,10 @@ public partial class Camera
         };
         return await Dialog.ShowAsync<EditCamera>("Edit Camera", parameters);
     }
+    /// <summary>
+    /// Handles the click event on a row to view the camera details.
+    /// </summary>
+    /// <param name="row">The row that was clicked.</param>
     private async Task<IDialogReference> OnClickRowView(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
@@ -244,6 +270,10 @@ public partial class Camera
         };
         return await Dialog.ShowAsync<ViewCameraDialog>("CameraView", parameters);
     }
+    /// <summary>
+    /// Handles the delete operation for a camera row.
+    /// </summary>
+    /// <param name="row">The row definition of the camera to delete.</param>
     private async Task OnClickRowDelete(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
