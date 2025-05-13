@@ -9,6 +9,9 @@ using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Cities;
 
+/// <summary>
+/// Dialog component used to add a new city.
+/// </summary>
 public partial class AddCityDialog
 {
     private MudForm form;
@@ -20,19 +23,29 @@ public partial class AddCityDialog
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; }
 
+    /// <summary>
+    /// Sets the selected state value.
+    /// </summary>
+    /// <param name="state">The selected state value.</param>
     private void SelectState(string state)
     {
         StateSelectValue = state;
     }
 
+    /// <summary>
+    /// Initializes the component and loads the list of states.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         states = await StateAppService.GetStateLookupAsync();
         await base.OnInitializedAsync();
     }
+
+    /// <summary>
+    /// Handles the form submission, creates a new city, and displays appropriate notifications.
+    /// </summary>
     private async Task Submit()
     {
-
         try
         {
             CreateUpdateCityDto createUpdateCityDto = new CreateUpdateCityDto()
@@ -50,11 +63,9 @@ public partial class AddCityDialog
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/cities", forceLoad: true);
             }
-
             else
             {
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}  {L[AlertMessages.AlertMessages.ADD]} {createUpdateCityDto.ArabicName}", Severity.Error);
-
             }
         }
         catch (AbpValidationException validationException)
@@ -66,7 +77,6 @@ public partial class AddCityDialog
         }
         catch (BusinessException ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
@@ -75,18 +85,18 @@ public partial class AddCityDialog
         }
         catch (Exception ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
         }
-
-
     }
 
-
-
+    /// <summary>
+    /// Cancels the dialog without performing any actions.
+    /// </summary>
     private void Cancel()
     {
         MudDialog.Cancel();
     }
-
 }
+
+
+
