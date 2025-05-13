@@ -120,6 +120,7 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
 
         return new PagedResultDto<VehicleModelDto>(totalCount, vehicleModelsDto);
     }
+    /// <inheritdoc/>
 
     public async Task<Result<List<VehicleModelDto>>> GetModelsByBrandAsync(int brandId)
     {
@@ -135,6 +136,7 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
             return Result<List<VehicleModelDto>>.Success(modelsMap);
         }
     }
+    /// <inheritdoc/>
 
     public async Task<List<VehicleModelDto>> GetAllVehicleModelsAsync()
     {
@@ -149,6 +151,11 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
 
     #region Private Methods
 
+    /// <summary>
+    /// Validates whether a vehicle brand exists based on its ID.
+    /// </summary>
+    /// <param name="vehicleBrandId">The ID of the vehicle brand to check.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the vehicle brand does not exist.</exception>
     private async Task ValidateVehicleBrandExistsAsync(int vehicleBrandId)
     {
         var brand = await _vehicleBrandRepository.FindAsync(vehicleBrandId);
@@ -158,6 +165,14 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
         }
     }
 
+    /// <summary>
+    /// Validates the uniqueness of a vehicle model's name (English and Arabic).
+    /// </summary>
+    /// <param name="input">The DTO containing the details of the vehicle model to be validated.</param>
+    /// <param name="currentId">The ID of the current vehicle model being updated, if applicable. Default is null.</param>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when a vehicle model with the same English or Arabic name already exists, except for the current model being updated.
+    /// </exception>
     private async Task ValidateVehicleModelNameUniquenessAsync(CreateUpdateVehicleModelDto input, int? currentId = null)
     {
         var vehicleModel = await _repository.FirstOrDefaultAsync(vehicle =>
@@ -176,6 +191,7 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
             }
         }
     }
+
 
     #endregion
 }
