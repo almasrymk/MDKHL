@@ -36,12 +36,13 @@ namespace SmartParking.Vehicles.LookUps
         }
 
         #region Public Methods
-
+        /// <inheritdoc/>
         public override async Task<VehicleBrandDto> CreateAsync(CreateUpdateVehicleBrandDto input)
         {
             await ValidateVehicleBrandNameUniquenessAsync(input);
             return await base.CreateAsync(input);
         }
+        /// <inheritdoc/>
 
         public override async Task<VehicleBrandDto> UpdateAsync(int id, CreateUpdateVehicleBrandDto input)
         {
@@ -54,6 +55,7 @@ namespace SmartParking.Vehicles.LookUps
             await ValidateVehicleBrandNameUniquenessAsync(input, id);
             return await base.UpdateAsync(id, input);
         }
+        /// <inheritdoc/>
 
         public override async Task DeleteAsync(int id)
         {
@@ -65,6 +67,7 @@ namespace SmartParking.Vehicles.LookUps
 
             await _repository.HardDeleteAsync(vehicleBrand);
         }
+        /// <inheritdoc/>
 
         public async Task<PagedResultDto<VehicleBrandDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
         {
@@ -85,6 +88,7 @@ namespace SmartParking.Vehicles.LookUps
 
             return new PagedResultDto<VehicleBrandDto>(totalCount, vehicleBrandsDto);
         }
+        /// <inheritdoc/>
 
         public async Task<PagedResultDto<VehicleBrandDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
         {
@@ -104,6 +108,7 @@ namespace SmartParking.Vehicles.LookUps
 
             return new PagedResultDto<VehicleBrandDto>(totalCount, vehicleBrandsDto);
         }
+        /// <inheritdoc/>
 
         [RemoteService(IsEnabled = false)]
         public async Task<Result<List<VehicleBrandDto>>> GetbrandsAsync()
@@ -118,6 +123,7 @@ namespace SmartParking.Vehicles.LookUps
                 return Result<List<VehicleBrandDto>>.Success(brandsMap);
             }
         }
+        /// <inheritdoc/>
 
         public async Task<List<VehicleBrandDto>> GetAllVehicleBrandsAsync()
         {
@@ -131,7 +137,12 @@ namespace SmartParking.Vehicles.LookUps
         #endregion
 
         #region Private Methods
-
+        /// <summary>
+        /// Validates if the vehicle brand name is unique.
+        /// </summary>
+        /// <param name="input">The vehicle brand create or update DTO containing the details for the brand name.</param>
+        /// <param name="currentId">The ID of the current vehicle brand (used for update scenarios to ignore the current brand itself in the check).</param>
+        /// <exception cref="InvalidOperationException">Thrown when the vehicle brand name already exists (in either English or Arabic).</exception>
         private async Task ValidateVehicleBrandNameUniquenessAsync(CreateUpdateVehicleBrandDto input, int? currentId = null)
         {
             var vehicleBrand = await _repository.FirstOrDefaultAsync(
@@ -152,6 +163,7 @@ namespace SmartParking.Vehicles.LookUps
                 }
             }
         }
+
 
         #endregion
     }
