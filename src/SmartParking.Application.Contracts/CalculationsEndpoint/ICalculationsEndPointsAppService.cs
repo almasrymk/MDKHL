@@ -17,11 +17,11 @@ public interface ICalculationsEndPointsAppService : ITransientDependency
 
     decimal CalculatePriceForExceededHours(int totalHours, Organization organization);
 
-    decimal CalculatePriceForOrganizationIsClosedAndExceededHours(int totalHours, Organization organization, CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime);
-    decimal CalculatePriceForOrganizationIsClosed(int totalHours, Organization organization, CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime);
+    decimal CalculatePriceForOrganizationIsClosedAndExceededHours(Organization organization, DateTime exitTime, DateTime entranceTime);
+    decimal CalculatePriceForOrganizationIsClosed(int totalHours, Organization organization, DateTime exitTime, DateTime entranceTime);
     decimal CalculatePriceHours(Organization organization, int hours);
     decimal CalculatePriceHoursExceededDay(Organization organization, int hours);
-    (double, double) CalculateHours(CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime, Organization organization);
+    (double, double) CalculateHours(DateTime exitTime, DateTime entrenceTime, TimeOnly ClosingHoursStart, TimeOnly ClosingHoursEnd);
     int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto);
     int CalculateTimeForCustomPackage( DateTime? exitTime, CustomerPackageDto packageDto);
 

@@ -52,9 +52,9 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         return price;
 
     }
-    public  decimal CalculatePriceForOrganizationIsClosedAndExceededHours(int totalHours, Organization organization, CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime)
+    public  decimal CalculatePriceForOrganizationIsClosedAndExceededHours(Organization organization, DateTime exitTime, DateTime entranceTime)
     {
-        (double specialHours, double normalHours) = CalculateHours(garageTransaction, entrenceTime, organization);
+        (double specialHours, double normalHours) = CalculateHours(exitTime, entranceTime, organization.ClosingHoursStart, organization.ClosingHoursEnd);
         var closingHour = Math.Ceiling((organization.ClosingHoursEnd - organization.ClosingHoursStart).TotalHours);
         double price = 0;
         double totalDays = Math.Ceiling(specialHours / closingHour);
@@ -70,10 +70,10 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         return (decimal)price;
 
     }
-    public  decimal CalculatePriceForOrganizationIsClosed(int totalHours, Organization organization, CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime)
+    public  decimal CalculatePriceForOrganizationIsClosed(int totalHours, Organization organization, DateTime exitTime, DateTime entranceTime)
     {
 
-        (double specialHours, double normalHours) = CalculateHours(garageTransaction, entrenceTime, organization);
+        (double specialHours, double normalHours) = CalculateHours(exitTime, entranceTime, organization.ClosingHoursStart,organization.ClosingHoursEnd);
         var closingHour = Math.Ceiling((organization.ClosingHoursEnd - organization.ClosingHoursStart).TotalHours);
         double price = 0;
         if(closingHour ==0)
@@ -86,12 +86,10 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         {
             price += (double)  CalculatePriceHoursExceededDay(organization, (int)normalHours + (int)specialHours);
             price -= totalDays * closingHour * (double)organization.AdditionalHourPrice;
-
         }
         else
         {
             price += (double)  CalculatePriceHoursExceededDay(organization, (int)normalHours);
-
         }
         return (decimal)price;
     }
@@ -124,9 +122,9 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         }
         return price;
     }
-    public (double, double) CalculateHours(CreateUpdateGarageTransactionDto garageTransaction, DateTime entrenceTime, Organization organization)
+    public (double, double) CalculateHours(DateTime exitTime, DateTime entrenceTime, TimeOnly ClosingHoursStart , TimeOnly ClosingHoursEnd)
     {
-        TimeSpan totalDuration = garageTransaction.AccurateTime.Value - entrenceTime;
+        TimeSpan totalDuration = exitTime - entrenceTime;
 
         double totalHours = (int)totalDuration.TotalHours;
         totalHours += totalDuration.Minutes > 0 ? 1 : 0;
@@ -136,10 +134,10 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
 
         // Loop through each day from entry date to exit date
         DateTime currentDate = entrenceTime.Date;
-        while (currentDate <= garageTransaction.AccurateTime.Value.Date)
+        while (currentDate <= exitTime.Date)
         {
-            DateTime specialStartTime = new DateTime(currentDate.Year, currentDate.Month, currentDate.Day, organization.ClosingHoursStart.Hour, organization.ClosingHoursStart.Minute, 0);
-            DateTime specialEndTime = new DateTime(currentDate.Year, currentDate.Month, currentDate.Day, organization.ClosingHoursEnd.Hour, organization.ClosingHoursEnd.Minute, 0);
+            DateTime specialStartTime = new DateTime(currentDate.Year, currentDate.Month, currentDate.Day, ClosingHoursStart.Hour, ClosingHoursStart.Minute, 0);
+            DateTime specialEndTime = new DateTime(currentDate.Year, currentDate.Month, currentDate.Day, ClosingHoursEnd.Hour, ClosingHoursEnd.Minute, 0);
 
             // Handle overnight case where special hours span two dates
             if (specialEndTime.Hour < specialStartTime.Hour)
@@ -147,10 +145,10 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
                 specialEndTime = specialEndTime.AddDays(1);
 
                 // Calculate hours before midnight
-                if (entrenceTime < specialEndTime && garageTransaction.AccurateTime >= specialStartTime)
+                if (entrenceTime < specialEndTime && exitTime >= specialStartTime)
                 {
                     DateTime effectiveStart = entrenceTime < specialStartTime ? specialStartTime : entrenceTime;
-                    DateTime effectiveEnd = garageTransaction.AccurateTime.Value < specialEndTime ? garageTransaction.AccurateTime.Value : specialEndTime;
+                    DateTime effectiveEnd = exitTime < specialEndTime ? exitTime : specialEndTime;
 
                     TimeSpan specialDurationBeforeMidnight = effectiveEnd - effectiveStart;
                     if (specialDurationBeforeMidnight.TotalHours > 0)
@@ -161,10 +159,10 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
                 }
 
                 // Calculate hours after midnight
-                if (garageTransaction.AccurateTime > specialEndTime && garageTransaction.AccurateTime >= specialEndTime)
+                if (exitTime > specialEndTime && exitTime >= specialEndTime)
                 {
                     DateTime effectiveStart = specialEndTime;
-                    DateTime effectiveEnd = garageTransaction.AccurateTime.Value < specialEndTime ? garageTransaction.AccurateTime.Value : specialEndTime;
+                    DateTime effectiveEnd = exitTime < specialEndTime ? exitTime : specialEndTime;
 
                     TimeSpan specialDurationAfterMidnight = effectiveEnd - effectiveStart;
                     if (specialDurationAfterMidnight.TotalHours > 0)
@@ -178,10 +176,10 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
             else
             {
                 // Normal case where special hours are within the same day
-                if (entrenceTime < specialEndTime && garageTransaction.AccurateTime > specialStartTime)
+                if (entrenceTime < specialEndTime && exitTime > specialStartTime)
                 {
                     DateTime effectiveStart = entrenceTime < specialStartTime ? specialStartTime : entrenceTime;
-                    DateTime effectiveEnd = garageTransaction.AccurateTime.Value < specialEndTime ? garageTransaction.AccurateTime.Value : specialEndTime;
+                    DateTime effectiveEnd = exitTime < specialEndTime ? exitTime : specialEndTime;
 
                     TimeSpan specialDuration = effectiveEnd - effectiveStart;
                     if (specialDuration.TotalHours > 0)
