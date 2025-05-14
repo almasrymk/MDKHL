@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Abp.Runtime.Validation;
+using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using SmartParking.Entities.Lookups;
 using SmartParking.Enums;
@@ -12,7 +13,6 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Modularity;
-using Volo.Abp.Validation;
 using Xunit;
 
 namespace SmartParking.Regions;
