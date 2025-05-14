@@ -36,8 +36,7 @@ using SmartParking.Results;
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
 /// <summary>
-/// Represents the customer management page, where customers can be filtered, added, updated, and viewed.
-/// This class handles the display and filtering of customer data in a paginated grid and manages user permissions for different actions.
+/// Represents the customer management page
 /// </summary>
 public partial class Customer
 {
@@ -89,7 +88,7 @@ public partial class Customer
         }
         await base.OnInitializedAsync();
     }
-
+    #region Private Methods
     /// <summary>
     /// Creates the menu options based on tenant assignment and user permissions.
     /// </summary>
@@ -245,7 +244,7 @@ public partial class Customer
 
         var tableData = new TableData()
         {
-            Name = L[ "Customers"],
+            Name = L["Customers"],
             ShowHeader = true
         };
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -319,25 +318,6 @@ public partial class Customer
         itemData = tableData;
         await Task.Yield();
     }
-
-
-    /// <summary>
-    /// Opens a dialog for creating a vehicle associated with a customer.
-    /// </summary>
-    /// <param name="row">The selected customer row.</param>
-    /// <returns>The dialog reference.</returns>
-    public async Task<IDialogReference> CreateVehicle(RowDef row)
-    {
-        var id = Guid.Parse(row.Cells[0].Value);
-
-        var parameters = new DialogParameters
-        {
-            ["CustomerId"] = id,
-        };
-
-        return await DialogService.ShowAsync<AddVehicleDialog>("Simple Dialog", parameters);
-    }
-
     /// <summary>
     /// Opens a dialog to assign a role to a user.
     /// </summary>
@@ -360,7 +340,7 @@ public partial class Customer
     /// Navigates to the customer details view page.
     /// </summary>
     /// <param name="row">The selected customer row.</param>
-    public void ViewCustomer(RowDef row)
+    private void ViewCustomer(RowDef row)
     {
         var customerId = Guid.Parse(row.Cells[0].Value);
         Navigation.NavigateTo($"/customers/view/{customerId}", true);
@@ -370,35 +350,20 @@ public partial class Customer
     /// Downloads an Excel report of a customer's garage transactions.
     /// </summary>
     /// <param name="row">The selected customer row.</param>
-    public async Task ShowCustomerTransactions(RowDef row)
+    private async Task ShowCustomerTransactions(RowDef row)
     {
         var customerId = Guid.Parse(row.Cells[0].Value);
         var garageTransactionAnalysis = await AnalysisAppService.ReportGarageTransactionCustomerIdAsync(customerId, CurrentTenant.Id);
         var data = await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis, CurrentTenant.Id);
         await DownloadExcel(data, row.Cells[1].Value);
     }
-    /// <summary>
-    /// Opens a dialog for assigning a package to a customer by ID.
-    /// </summary>
-    /// <param name="id">The customer ID as a string.</param>
-    /// <returns>The dialog reference for the assign package dialog.</returns>
-    public async Task<IDialogReference> AssignPackage(string id)
-    {
-        var Gid = Guid.Parse(id);
-        var customer = await CustomerAppService.GetAsync(Gid);
-        var parameters = new DialogParameters
-        {
-            ["Customer"] = customer,
-        };
 
-        return await DialogService.ShowAsync<AssignPackgeDialog>("Assign Package", parameters);
-    }
 
     /// <summary>
     /// Navigates to the edit page for the selected customer.
     /// </summary>
     /// <param name="row">The row data containing the customer ID.</param>
-    public void HandleEdit(RowDef row)
+    private void HandleEdit(RowDef row)
     {
         var customerId = Guid.Parse(row.Cells[0].Value);
         Navigation.NavigateTo($"/customers/edit/{customerId}", true);
@@ -408,7 +373,7 @@ public partial class Customer
     /// Handles customer category selection and updates the displayed customer list.
     /// </summary>
     /// <param name="selectedValue">The selected category value.</param>
-    public async Task HandleSelectAsync(string selectedValue)
+    private async Task HandleSelectAsync(string selectedValue)
     {
         ValueOfMenue = selectedValue;
         var request = new PagedAndSortedAndSearchResultRequestDto
@@ -429,7 +394,7 @@ public partial class Customer
     /// </summary>
     /// <param name="Data">The table data to export.</param>
     /// <param name="Name">The name of the customer for the exported file.</param>
-    public async Task DownloadExcel(TableData Data, string Name)
+    private async Task DownloadExcel(TableData Data, string Name)
     {
         var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
         string file = System.IO.Path.Combine(folderName, $"{Name} Transactions.xlsx");
@@ -446,7 +411,7 @@ public partial class Customer
     /// </summary>
     /// <param name="selectedValue">The selected customer category value.</param>
     /// <param name="tenantId">The selected tenant ID.</param>
-    public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
+    private async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
     {
         TenantId = tenantId;
         ValueOfMenue = selectedValue;
@@ -532,5 +497,44 @@ public partial class Customer
             _ => throw new ArgumentException("Invalid selected value", nameof(selectedValue))
         };
     }
+    #endregion
+    #region Unused methods 
+
+    /// <summary>
+    /// Opens a dialog for assigning a package to a customer by ID.
+    /// </summary>
+    /// <param name="id">The customer ID as a string.</param>
+    /// <returns>The dialog reference for the assign package dialog.</returns>
+    private async Task<IDialogReference> AssignPackage(string id)
+    {
+        var Gid = Guid.Parse(id);
+        var customer = await CustomerAppService.GetAsync(Gid);
+        var parameters = new DialogParameters
+        {
+            ["Customer"] = customer,
+        };
+
+        return await DialogService.ShowAsync<AssignPackgeDialog>("Assign Package", parameters);
+    }
+
+
+    /// <summary>
+    /// Opens a dialog for creating a vehicle associated with a customer.
+    /// </summary>
+    /// <param name="row">The selected customer row.</param>
+    /// <returns>The dialog reference.</returns>
+    private async Task<IDialogReference> CreateVehicle(RowDef row)
+    {
+        var id = Guid.Parse(row.Cells[0].Value);
+
+        var parameters = new DialogParameters
+        {
+            ["CustomerId"] = id,
+        };
+
+        return await DialogService.ShowAsync<AddVehicleDialog>("Simple Dialog", parameters);
+    }
+    #endregion
+
 
 }
