@@ -22,7 +22,9 @@ using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.KeeperShifts;
-
+/// <summary>
+/// service for managing keeper shifts
+/// </summary>
 public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppService
 {
     private readonly IRepository<KeeperShift,int> _keeperShiftRepository;
@@ -48,6 +50,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         _mapper = mapper;
     }
     #region public methods
+    /// <inheritdoc/>
     public async Task<bool> CreateAsync(CreateUpdateKeeperShiftDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -70,7 +73,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             return true;
         }
     }
-
+    /// <inheritdoc/>
     public async Task<PagedResultDto<KeeperShiftDto>> GetMyShiftsForCurrentUser(Guid? userId, PagedAndSortedAndSearchResultRequestDto input)
     {
         var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
@@ -129,7 +132,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         };
 
     }
-
+    /// <inheritdoc/>
     public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForMdkhal(Guid? tenantId, Guid? userId, PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -183,6 +186,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             };
         }
     }
+    /// <inheritdoc/>
     public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForOrganization(Guid? tenantId, Guid? userId, PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -235,6 +239,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             };
         }
     }
+    /// <inheritdoc/>
     public async Task<KeeperShiftDto?> GetAsync(int id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -277,7 +282,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             return await result.FirstOrDefaultAsync();
         }
     }
-
+    /// <inheritdoc/>
     public async Task DeleteAsync(int id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -290,7 +295,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             await _keeperShiftRepository.HardDeleteAsync(keeperShift, true);
         }
     }
-
+    /// <inheritdoc/>
     public async Task<PagedResultDto<UserWithRole>> GetListUserCanAssignShiftsOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
         var users = await _userRepository.FindUserShiftsOrganizationAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.SearchingTerm);
@@ -300,7 +305,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             Items = users.Queryable.ToList()
         };
     }
-
+    /// <inheritdoc/>
     public async Task<PagedResultDto<UserWithRole>> GetListUserCanAssignShiftsMdkhlAsync(Guid? tenantId, PagedAndSortedAndSearchResultRequestDto input)
     {
 
@@ -316,18 +321,23 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
     }
     #endregion
     #region private methods
+    /// <summary>
+    /// Validates whether the given shift for a keeper overlaps with any existing assigned shifts.
+    /// </summary>
+    /// <param name="input">The shift assignment input.</param>
+    /// <param name="shift">The shift details to validate against.</param>
+    /// <exception cref="BusinessException">Thrown when an overlapping shift is found.</exception>
     private async Task OverlappingValidation(CreateUpdateKeeperShiftDto input, Shift? shift)
     {
         bool isOverlapping = await _keeperShiftRepository.AnyAsync(ks =>
-             ks.KeeperId == input.KeeperId &&
-             ks.ShiftId != input.ShiftId &&
-             (
-                 (shift.StartDate <= ks.EndDate && shift.EndDate >= ks.StartDate)
-             ) 
-             &&
-             (
-                 (shift.StartTime < ks.EndTime && shift.EndTime > ks.StartTime)
-             )
+            ks.KeeperId == input.KeeperId &&
+            ks.ShiftId != input.ShiftId &&
+            (
+                (shift.StartDate <= ks.EndDate && shift.EndDate >= ks.StartDate)
+            ) &&
+            (
+                (shift.StartTime < ks.EndTime && shift.EndTime > ks.StartTime)
+            )
         );
 
         if (isOverlapping)
@@ -335,6 +345,12 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             throw new BusinessException(LocalizationHelper.GetLocalizedString("Shift overlaps with an existing shift."));
         }
     }
+
+    /// <summary>
+    /// Checks if the shift has an active status.
+    /// </summary>
+    /// <param name="shift">The shift to check.</param>
+    /// <exception cref="BusinessException">Thrown if the shift is not active.</exception>
     private static void CheckShiftStatus(Shift? shift)
     {
         if (shift.Status != Status.Active)
@@ -342,6 +358,15 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             throw new BusinessException(LocalizationHelper.GetLocalizedString("ShiftNotActive"));
         }
     }
+
+    /// <summary>
+    /// Validates the start and end date values for a shift assignment.
+    /// </summary>
+    /// <param name="input">The shift assignment input.</param>
+    /// <param name="shift">The shift to validate against.</param>
+    /// <exception cref="BusinessException">
+    /// Thrown if dates are empty, end date is before start date, or the assignment dates fall outside the shift range.
+    /// </exception>
     private static void ValidateDate(CreateUpdateKeeperShiftDto input, Shift shift)
     {
         if (input.StartDate == default || input.EndDate == default)
@@ -358,43 +383,56 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         {
             throw new BusinessException(LocalizationHelper.GetLocalizedString("ShiftDateOutOfRange"));
         }
-        
     }
+
+    /// <summary>
+    /// Checks if a keeper is already assigned to the same shift within overlapping dates.
+    /// </summary>
+    /// <param name="input">The shift assignment input.</param>
+    /// <exception cref="BusinessException">Thrown if the keeper is already assigned to the shift.</exception>
     private async Task CheckDupplicateShift(CreateUpdateKeeperShiftDto input)
     {
         bool alreadyAssigned = await _keeperShiftRepository.AnyAsync(ks =>
-                     ks.KeeperId == input.KeeperId &&
-                     ks.ShiftId == input.ShiftId&&
-                     ks.EndDate >= input.StartDate);
+            ks.KeeperId == input.KeeperId &&
+            ks.ShiftId == input.ShiftId &&
+            ks.EndDate >= input.StartDate);
+
         if (alreadyAssigned)
         {
             throw new BusinessException(LocalizationHelper.GetLocalizedString("KeeperAlreadyAssignedToShift"));
         }
     }
 
-
-  
-
+    /// <summary>
+    /// Applies a search filter to the given KeeperShift query based on the search term provided.
+    /// </summary>
+    /// <param name="input">The request input containing the search term.</param>
+    /// <param name="queryable">The queryable list of KeeperShiftDto.</param>
+    /// <returns>The filtered queryable.</returns>
     private IQueryable<KeeperShiftDto> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<KeeperShiftDto>? queryable)
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
-
             queryable = queryable.Where(or =>
-            or.KeeperName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-            or.GarageNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-            or.GarageNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-            or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-            or.OrganizationNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-            or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-            or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
-
-        );
-
+                or.KeeperName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.GarageNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.GarageNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.OrganizationNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
+            );
         }
-            return queryable;
+        return queryable;
     }
-    private static IQueryable<KeeperShiftDto> ApplySorting(PagedAndSortedResultRequestDto input,  IQueryable<KeeperShiftDto> result)
+
+    /// <summary>
+    /// Applies sorting to the KeeperShiftDto query based on the provided sorting string.
+    /// </summary>
+    /// <param name="input">The request input containing the sorting parameter.</param>
+    /// <param name="result">The queryable to apply sorting on.</param>
+    /// <returns>The sorted queryable.</returns>
+    private static IQueryable<KeeperShiftDto> ApplySorting(PagedAndSortedResultRequestDto input, IQueryable<KeeperShiftDto> result)
     {
         var sorting = input.Sorting;
         if (!string.IsNullOrEmpty(sorting) && sorting.Contains("DESC"))
@@ -405,5 +443,6 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         result = result.OrderBy(sorting);
         return result;
     }
+
     #endregion
 }

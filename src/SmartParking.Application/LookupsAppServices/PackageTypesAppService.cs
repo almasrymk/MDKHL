@@ -23,13 +23,10 @@ namespace SmartParking.LookupsAppServices
                                                     CreateUpdatePackageTypeDto>,
         IPackageTypesAppService
     {
-        #region Private Fields
 
         private readonly IRepository<PackageType, int> _packageTypeRepository;
 
-        #endregion
 
-        #region Constructor
 
         public PackageTypesAppService(IRepository<PackageType, int> packageTypeRepository)
             : base(packageTypeRepository)
@@ -37,7 +34,6 @@ namespace SmartParking.LookupsAppServices
             _packageTypeRepository = packageTypeRepository;
         }
 
-        #endregion
 
         #region Public Methods
 
@@ -80,12 +76,9 @@ namespace SmartParking.LookupsAppServices
                 return base.GetListAsync(input);
             }
         }
+        ///<inheritdoc/>
 
-        /// <summary>
-        /// Method used to get list of package Types with filtering and pagination
-        /// </summary>
-        /// <param name="input">specifies max number of package Types and if it should be filtered or not</param>
-        /// <returns>PackageTypeDto List</returns>
+
         public async Task<PagedResultDto<PackageTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
         {
             var queryable = await _packageTypeRepository.GetQueryableAsync();
@@ -116,11 +109,8 @@ namespace SmartParking.LookupsAppServices
             return new PagedResultDto<PackageTypeDto>(totalCount, packageTypeDto);
         }
 
-        /// <summary>
-        /// Method used to search package types
-        /// </summary>
-        /// <param name="input">specifies search term and pagination options</param>
-        /// <returns>PackageTypeDto List</returns>
+        ///<inheritdoc/>
+
         public async Task<PagedResultDto<PackageTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
         {
             var queryable = await _packageTypeRepository.GetQueryableAsync();
@@ -153,10 +143,8 @@ namespace SmartParking.LookupsAppServices
             return new PagedResultDto<PackageTypeDto>(totalCount, packageTypeDto);
         }
 
-        /// <summary>
-        /// Gets all package types
-        /// </summary>
-        /// <returns>List of PackageTypeDto</returns>
+        ///<inheritdoc/>
+
         public async Task<List<PackageTypeDto>> GetAllListAsync()
         {
             using (DataFilter.Disable<IMultiTenant>())
@@ -170,7 +158,11 @@ namespace SmartParking.LookupsAppServices
         #endregion
 
         #region Private Methods
-
+        /// <summary>
+        /// Validates the uniqueness of a package type by checking if the English or Arabic names already exist in the repository.
+        /// </summary>
+        /// <param name="input">The DTO containing the details of the package type to validate.</param>
+        /// <exception cref="InvalidOperationException">Thrown when the English or Arabic name already exists in the repository.</exception>
         private async Task ValidatePackageTypeUniqunessAsync(CreateUpdatePackageTypeDto input)
         {
             var packageType = await _packageTypeRepository.FirstOrDefaultAsync(

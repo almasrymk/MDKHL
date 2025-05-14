@@ -8,29 +8,47 @@ using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.CameraBrand
 {
-    partial class AddCameraBrandDialog
+    /// <summary>
+    /// Dialog for adding a new camera brand.
+    /// </summary>
+    public partial class AddCameraBrandDialog
     {
+        /// <summary>
+        /// The form instance.
+        /// </summary>
         private MudForm form;
+
+        /// <summary>
+        /// The camera brand data transfer object.
+        /// </summary>
         private CreateUpdateCameraBrandDto cameraBrandDro = new CreateUpdateCameraBrandDto();
+
+        /// <summary>
+        /// The MudDialog instance.
+        /// </summary>
         [CascadingParameter]
         private IMudDialogInstance MudDialog { get; set; }
-        bool _clearable;
-
         protected override async Task OnInitializedAsync()
         {
-
             await base.OnInitializedAsync();
         }
+
+        /// <summary>
+        /// Submits the form data.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation.</returns>
         private async Task Submit()
         {
-
             try
             {
                 await CameraBrandsAppService.CreateAsync(cameraBrandDro);
+
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {cameraBrandDro.ArabicName} ", Severity.Success);
 
                 MudDialog.Close(DialogResult.Ok(true));
+
                 await Task.Delay(1000);
+
                 Navigation.NavigateTo("/Camerabrands", true);
             }
             catch (AbpValidationException validationException)
@@ -42,7 +60,6 @@ namespace SmartParking.Blazor.Components.Pages.CameraBrand
             }
             catch (BusinessException ex)
             {
-
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Code}", Severity.Error);
             }
             catch (AuthenticationException ex)
@@ -51,16 +68,18 @@ namespace SmartParking.Blazor.Components.Pages.CameraBrand
             }
             catch (Exception ex)
             {
-
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
             }
-
-
-
         }
+
+        /// <summary>
+        /// Cancels the dialog.
+        /// </summary>
         private void Cancel()
         {
             MudDialog.Cancel();
         }
     }
 }
+
+

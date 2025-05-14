@@ -10,7 +10,9 @@ using Volo.Abp.Application.Dtos;
 using System.Linq;
 
 namespace SmartParking.Blazor.Components.Pages.Employees;
-
+/// <summary>
+/// Represents the EmployeeRegister component.
+/// </summary>
 public partial class EmployeeRegister
 {
     private MudForm form;
@@ -19,7 +21,10 @@ public partial class EmployeeRegister
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
     public string Picture { get; set; }
 
-
+    /// <summary>
+    /// Initializes the component.
+    /// </summary>
+    /// <returns></returns>
     protected async override Task OnInitializedAsync()
     {
         var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
@@ -35,7 +40,10 @@ public partial class EmployeeRegister
 
         }
     }
-
+    /// <summary>
+    /// Handles the form submission.
+    /// </summary>
+    /// <returns></returns>
     public async Task HandleSubmit()
     {
         var successedMessage = L["CustomerCreatedSuccessfullyWith"];
@@ -58,12 +66,7 @@ public partial class EmployeeRegister
                 ShowSnackbar($" {successedMessage} {createUpdateCustomerDto.FullName}", Severity.Success);
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/employees");
-
-
-
             }
-
-
         }
         catch (AbpValidationException abpValidationException)
         {
@@ -73,7 +76,6 @@ public partial class EmployeeRegister
                 errors += error;
             }
             ShowSnackbar(errors, Severity.Error);
-
         }
         catch (BusinessException businessException)
         {
@@ -87,13 +89,9 @@ public partial class EmployeeRegister
         }
         catch (Exception ex)
         {
-
             ShowSnackbar(ex.Message, Severity.Error);
-
         }
-
     }
-
     /// <summary>
     /// Displays a snackbar notification with the specified message and severity.
     /// </summary>
@@ -104,11 +102,8 @@ public partial class EmployeeRegister
         Snackbar.Clear();
         Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
     }
-
     public void HandleCancel()
     {
         Navigation.NavigateTo("/customers", true);
-
     }
-
 }

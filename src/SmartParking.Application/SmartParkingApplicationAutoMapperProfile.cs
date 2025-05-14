@@ -173,6 +173,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.CreatorId, src => src.MapFrom(f => f.CreatorId))
             .ForMember(dest => dest.LastModifierId, src => src.MapFrom(f => f.LastModifierId))
             .ForMember(dest => dest.LastModificationTime, src => src.MapFrom(f => f.LastModificationTime));
+        CreateMap<VehicleDto, CreateUpdateVehicleDto>().ReverseMap();
 
         CreateMap<Package, PackageDto>()
         .ForMember(dest => dest.PackageType, opt => opt.MapFrom(src => src.PackageType))

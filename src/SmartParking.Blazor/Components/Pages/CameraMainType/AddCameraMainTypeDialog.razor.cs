@@ -9,6 +9,9 @@ using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.CameraMainType
 {
+    /// <summary>
+    /// Camera main type add dialog logic
+    /// </summary>
     partial class AddCameraMainTypeDialog
     {
         private MudForm form;
@@ -23,10 +26,12 @@ namespace SmartParking.Blazor.Components.Pages.CameraMainType
             CameraBrands = await CameraBrandAppService.GetAllCameraBrandsAsync();
             await base.OnInitializedAsync();
         }
+        /// <summary>
+        /// method to Submit camera main type to create 
+        /// </summary>
+        /// <returns></returns>
         private async Task Submit()
         {
-
-
             try
             {
                 await CameraMainTypesAppService.CreateAsync(cameraMainType);
@@ -62,6 +67,9 @@ namespace SmartParking.Blazor.Components.Pages.CameraMainType
 
 
         }
+        /// <summary>
+        /// method to cancel camera main type dialog
+        /// </summary>
         private void Cancel()
         {
             MudDialog.Cancel();

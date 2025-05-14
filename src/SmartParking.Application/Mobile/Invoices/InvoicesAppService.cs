@@ -29,6 +29,8 @@ public class InvoicesAppService : ApplicationService, IInvoicesAppService
         _invoiceRepoistory = invoiceRepoistory;
         _dataFilter = dataFilter;
     }
+    /// <inheritdoc/>
+
     public async Task<Result<InvoiceDto>> CreateAsync(CreateUpdateInvoiceDto input)
     {
         try
@@ -51,6 +53,7 @@ public class InvoicesAppService : ApplicationService, IInvoicesAppService
             return Result<InvoiceDto>.Error(ex.Message);
         }
     }
+    /// <inheritdoc/>
 
     public async Task<Result<InvoiceDto>> GetAsync(int id)
     {
@@ -64,6 +67,7 @@ public class InvoicesAppService : ApplicationService, IInvoicesAppService
         }
        
     }
+    /// <inheritdoc/>
 
     public async Task<Result<List<InvoiceDto>>> GetListAsync()
     {

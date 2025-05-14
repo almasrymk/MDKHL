@@ -114,12 +114,7 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
             );
         }
     }
-    public async Task<List<Subscription>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Subscription> queryable)
-    {
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        var subscriptions = await AsyncExecuter.ToListAsync(queryable);
-        return subscriptions;
-    }
+  
     /// <inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
@@ -182,6 +177,8 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         );
     }
     [RemoteService(IsEnabled = false)]
+    /// <inheritdoc/>
+
     public async Task<List<SubscriptionDto>> GetAllAsync()
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -194,6 +191,12 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
     #endregion
 
     #region Private Methods
+    /// <summary>
+    /// Applies a filter for tenant ID on the given subscription query.
+    /// </summary>
+    /// <param name="tenantId">The tenant ID to filter subscriptions by. If null, no filter is applied.</param>
+    /// <param name="queryable">The IQueryable of Subscription entities to apply the filter on.</param>
+    /// <returns>The filtered <see cref="IQueryable{Subscription}"/> based on the tenant ID.</returns>
     private static IQueryable<Subscription> ApplyFilterTenant(Guid? tenantId, IQueryable<Subscription> queryable)
     {
         if (tenantId.HasValue)
@@ -201,8 +204,13 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         return queryable;
     }
 
-  
 
+    /// <summary>
+    /// Applies sorting to the given subscription query based on the input sorting string.
+    /// </summary>
+    /// <param name="input">The DTO containing sorting information.</param>
+    /// <param name="queryable">The IQueryable of Subscription entities to apply sorting to.</param>
+    /// <returns>The sorted <see cref="IQueryable{Subscription}"/> based on the sorting criteria.</returns>
     private static IQueryable<Subscription> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Subscription> queryable)
     {
         if (!input.Sorting.IsNullOrEmpty())
@@ -217,7 +225,12 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
         }
         return queryable;
     }
-   
+    /// <summary>
+    /// Applies search criteria to the given subscription query based on the input search term.
+    /// </summary>
+    /// <param name="input">The DTO containing the search term.</param>
+    /// <param name="queryable">The IQueryable of Subscription entities to apply search filters to.</param>
+    /// <returns>The filtered <see cref="IQueryable{Subscription}"/> based on the search term.</returns>
     private static IQueryable<Subscription> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Subscription> queryable)
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
@@ -236,6 +249,17 @@ public class SubscriptionAppService : CrudAppService<Subscription,SubscriptionDt
 
         return queryable;
     }
-
+    /// <summary>
+    /// Applies paging to the provided subscription queryable based on the given input parameters.
+    /// </summary>
+    /// <param name="input">The DTO containing the skip count and maximum result count for paging.</param>
+    /// <param name="queryable">The IQueryable of Subscription entities to apply the paging to.</param>
+    /// <returns>A task representing the asynchronous operation. The task result contains a list of <see cref="Subscription"/> entities.</returns>
+    private async Task<List<Subscription>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Subscription> queryable)
+    {
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var subscriptions = await AsyncExecuter.ToListAsync(queryable);
+        return subscriptions;
+    }
     #endregion
 }

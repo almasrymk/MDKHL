@@ -25,4 +25,7 @@ public class DailyShiftDto : BaseDto
     public TimeOnly StartTime { get; set; }
     public TimeOnly EndTime { get; set; }
     public KeeperShiftRequestType KeeperShiftRequestType { get; set; }
+
+    public decimal AmountOfCash {  get; set; }
+    public decimal AmountOfVisa { get; set; }
 }

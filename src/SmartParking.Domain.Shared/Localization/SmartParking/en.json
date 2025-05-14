@@ -786,9 +786,9 @@
     "BeneficiariesDetials": "Beneficiaries Details",
     "BeneficiariesDetailsReports": "Beneficiaries Details Reports",
     "PaymentCode": "Payment Code",
-    "CannotAssignTwoPackageToSameVehicle": "Vehicle has an active package"
-
-
+    "CannotAssignTwoPackageToSameVehicle": "Vehicle has an active package",
+    "AmountOfCash": "Amount Of Cash",
+    "AmountOfVisa" : "Amount Of Visa"
   }
 
 }

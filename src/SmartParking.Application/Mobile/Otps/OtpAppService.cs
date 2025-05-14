@@ -65,6 +65,7 @@ public class OtpAppService : ApplicationService, IOtpAppService
         _authenticationUtility = authenticationUtility;
     }
 
+    #region Public Methods
     /// <inheritdoc/>
     public async Task<Result<string>> GenerateOtpAsync(string phoneNumber)
     {
@@ -157,10 +158,6 @@ public class OtpAppService : ApplicationService, IOtpAppService
         }
     }
 
-    private string GenerateRandomOtp()
-    {
-        return _random.Next(0, (int)Math.Pow(10, OtpLength)).ToString($"D{OtpLength}");
-    }
 
     /// <inheritdoc/>
     public async Task<Result<string>> GenerateOtpByUserIdAsync()
@@ -213,8 +210,8 @@ public class OtpAppService : ApplicationService, IOtpAppService
         return Result.Success(otp, "Otp Generated Successfully");
 
     }
-
-  
+    #endregion 
+    #region Private Methods
 
     /// <summary>
     /// function that send sms 
@@ -240,4 +237,10 @@ public class OtpAppService : ApplicationService, IOtpAppService
 
         return response.IsSuccessStatusCode;
     }
+    private string GenerateRandomOtp()
+    {
+        return _random.Next(0, (int)Math.Pow(10, OtpLength)).ToString($"D{OtpLength}");
+    }
+    #endregion
+
 }

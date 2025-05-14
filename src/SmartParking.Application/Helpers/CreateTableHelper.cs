@@ -21,6 +21,21 @@ namespace SmartParking.Helpers;
 
 public static class CreateTableHelper
 {
+
+    #region Public Methods
+    /// <summary>
+    /// Creates a table for garage transaction analysis with localized column names and rows based on the provided data.
+    /// </summary>
+    /// <param name="data">
+    /// A list of <see cref="GarageTransactionAnalysis"/> objects representing the garage transaction data.
+    /// </param>
+    /// <param name="currentTenant">
+    /// An optional tenant identifier (if any) for filtering tenant-specific data.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, with a <see cref="TableData"/> object
+    /// containing the localized table columns and rows.
+    /// </returns>
     public static async Task<TableData> CreateDataTableForGarageTransaction(List<GarageTransactionAnalysis> data, Guid? currentTenant)
     {
         var tableData = new TableData()
@@ -114,6 +129,19 @@ public static class CreateTableHelper
 
         return tableData;
     }
+    /// <summary>
+    /// Creates a table for displaying customer transaction data with localized column names and rows based on the provided data.
+    /// </summary>
+    /// <param name="data">
+    /// A list of <see cref="GarageTransactionAnalysis"/> objects representing the garage transaction data for customers.
+    /// </param>
+    /// <param name="currentTenant">
+    /// An optional tenant identifier (if any) for filtering tenant-specific data.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, with a <see cref="TableData"/> object
+    /// containing the localized table columns and rows.
+    /// </returns>
     public static async Task<TableData> CreateDataTableForGarageTransactionCustomer(List<GarageTransactionAnalysis> data, Guid? currentTenant)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
@@ -191,7 +219,16 @@ public static class CreateTableHelper
 
         return tableData;
     }
-
+    /// <summary>
+    /// Creates a table for displaying garage data with localized column names and rows based on the provided list of garages.
+    /// </summary>
+    /// <param name="garages">
+    /// A list of <see cref="GarageAnalysis"/> objects representing the garage data to be displayed in the table.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, with a <see cref="TableData"/> object
+    /// containing the localized table columns and rows.
+    /// </returns>
     public static async Task<TableData> CreateDataTableForGarages(List<GarageAnalysis> garages)
     {
         var tableData = new TableData()
@@ -241,6 +278,16 @@ public static class CreateTableHelper
         await Task.Yield();
         return tableData;
     }
+    /// <summary>
+    /// Creates a table for displaying customer package data with localized column names and rows based on the provided list of customer packages.
+    /// </summary>
+    /// <param name="customerPackages">
+    /// A list of <see cref="CustomerPackageDto"/> objects representing the customer package data to be displayed in the table.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, with a <see cref="TableData"/> object
+    /// containing the localized table columns and rows.
+    /// </returns>
     public static async Task<TableData> CreateDataTableForCustomerPackages(List<CustomerPackageDto> customerPackages)
     {
         var tableData = new TableData()
@@ -313,75 +360,11 @@ public static class CreateTableHelper
 
     }
 
-    public static async Task<TableData> CreateDataTableForKepperPayments(List<PaymentAnalysis> payments)
-    {
-        var tableData = new TableData()
-        {
-            Name = LocalizationHelper.GetLocalizedString("PaymentReports"),
-            ShowHeader = true
-        };
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Code"), Name = "PaymentNumber", IsFilterable = true, PropertyName = "PaymentNumber", IsSortable = true, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", IsFilterable = false, PropertyName = "Invoice.PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentCategory"), Name = "PaymentCategory", IsFilterable = true, PropertyName = "PaymentCategory", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(PaymentCategory) });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("InvoiceId"), Name = "InvoiceId", IsFilterable = false, PropertyName = "Invoice.Id", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentMethod"), Name = "PaymentMethod", IsFilterable = true, PropertyName = "PaymentMethod", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(PaymentMethod) });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Amount"), Name = "Amount", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Currency"), Name = "Currency", IsFilterable = true, PropertyName = "Currency", IsSortable = true, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerName"), Name = "CustomerName", IsFilterable = true, PropertyName = "Customers.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Date"), Name = "Date", IsFilterable = true, PropertyName = "CreationTime", IsSortable = true, TypeFilter = TypeFilter.Date, TypeOfColumn = typeof(DateTime) });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentStatus"), Name = "PaymentStatus", IsFilterable = true, PropertyName = "PaymentStatus", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(PaymentStatus) });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("KeeperName"), Name = "KeeperName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "KeeperName" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AmountDaily"), Name = "AmountDaily", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "AmountDaily" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AmountMonthly"), Name = "AmountMonthly", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "AmountMonthly" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Day"), Name = "Day", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "Day" });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Month"), Name = "Month", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "Month" });
-
-        foreach (var payment in payments)
-        {
-            var rowDef = new RowDef();
-
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Code"), payment.Payment.PaymentNumber?.ToString()));
-            if (CultureInfo.CurrentCulture.Name == "ar")
-            {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), payment.Payment.InvoiceId.HasValue ? payment.Payment.EnPlateNumber : LocalizationHelper.GetLocalizedString("Pacakge")));
-
-            }
-            else
-            {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), payment.Payment.InvoiceId.HasValue ? payment.Payment.ArPlateNumber : LocalizationHelper.GetLocalizedString("Pacakge")));
-
-            }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentCategory"), LocalizationHelper.GetLocalizedString(payment.Payment.PaymentCategory.ToString())));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(
-                LocalizationHelper.GetLocalizedString("InvoiceId"),
-                payment.Payment.PaymentCategory == Enums.PaymentCategory.PaymentParking
-                ? payment.Payment.InvoiceId.ToString()
-                : payment.Payment.PackageId.ToString()
-            ));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentMethod"), LocalizationHelper.GetLocalizedString(payment.Payment.PaymentMethod.ToString())));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Amount"), payment.Payment.Amount.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Currency"), LocalizationHelper.GetLocalizedString(payment.Payment.Currency.ToString())));
-            if (CultureInfo.CurrentCulture.Name == "ar")
-            {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), payment.Payment.Customers?.ArabicName ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
-            }
-            else
-            {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), payment.Payment.Customers?.IdentityUser.Name ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
-            }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Date"), payment.Payment.CreationTime.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentStatus"), LocalizationHelper.GetLocalizedString(payment.Payment.PaymentStatus.ToString())));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("KeeperName"), payment.KeeperName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AmountDaily"), payment.AmountDaily.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AmountMonthly"), payment.AmountMonthly.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Day"), payment.Day));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Month"), payment.Month));
-
-            tableData.Rows.Add(rowDef);
-        }
-        await Task.Yield();
-        return tableData;
-    }
+    /// <summary>
+    /// Creates a data table for payments with dynamic columns based on localization and the provided payments data.
+    /// </summary>
+    /// <param name="payments">The list of payments to be displayed in the table.</param>
+    /// <returns>A <see cref="Task{TableData}"/> representing the asynchronous operation. The result contains the generated table data.</returns>
     public static async Task<TableData> CreateDataTableForPayments(List<PaymentDto> payments)
     {
         var tableData = new TableData()
@@ -443,7 +426,15 @@ public static class CreateTableHelper
         await Task.Yield();
         return tableData;
     }
-
+    /// <summary>
+    /// Creates a data table for package payments, with columns and rows based on the provided payment data. 
+    /// It adjusts the columns and their display based on the current UI culture (Arabic or English).
+    /// </summary>
+    /// <param name="payments">A list of <see cref="PackagePaymentAnalysis"/> objects representing the payment data to display in the table.</param>
+    /// <returns>
+    /// A <see cref="Task{TableData}"/> representing the asynchronous operation. 
+    /// The result contains the generated table data with the package payment information.
+    /// </returns>
     public static async Task<TableData> CreateDataTablePackagePayments(List<PackagePaymentAnalysis> payments)
     {
         var tableData = new TableData()
@@ -502,6 +493,12 @@ public static class CreateTableHelper
         await Task.Yield();
         return tableData;
     }
+    /// <summary>
+    /// Creates a data table for keeper transactions report with localized column names based on the current UI culture.
+    /// </summary>
+    /// <param name="shiftAnalyses">A list of <see cref="ShiftAnalysis"/> objects containing shift transaction data.</param>
+    /// <param name="CurrentTenant">The current tenant's identifier (if null, the organization name is included in the report).</param>
+    /// <returns>A task representing the asynchronous operation, with a <see cref="TableData"/> object containing the generated table data.</returns>
     public static async Task<TableData> CreateDataTableForKeeperTransaction(List<ShiftAnalysis> shiftAnalyses, Guid? CurrentTenant)
     {
         var tableData = new TableData()
@@ -566,7 +563,12 @@ public static class CreateTableHelper
         await Task.Yield();
         return tableData;
     }
-
+    /// <summary>
+    /// Creates a data table for the payment user shift report with localized column names based on the current UI culture.
+    /// </summary>
+    /// <param name="paymentUserShifts">A list of <see cref="PaymentUserShift"/> objects containing payment and shift data for users.</param>
+    /// <param name="CurrentTenant">The current tenant's identifier (if null, the organization name is included in the report).</param>
+    /// <returns>A task representing the asynchronous operation, with a <see cref="TableData"/> object containing the generated table data.</returns>
     public static async Task<TableData> CreateDataTableForPaymentUserShift(List<PaymentUserShift> paymentUserShifts, Guid? CurrentTenant)
     {
         var tableData = new TableData()
@@ -721,7 +723,11 @@ public static class CreateTableHelper
         return tableData;
     }
 
-
+    /// <summary>
+    /// Creates a data table for displaying customer vehicle information.
+    /// </summary>
+    /// <param name="vehicleCustomers">A list of customer vehicle data transfer objects to be displayed in the table.</param>
+    /// <returns>A <see cref="TableData"/> object containing the table structure with columns and rows based on the provided data.</returns>
     public static async Task<TableData> CreateDataTableForCustomersVehicles(List<VehicleCustomerReportDto> vehicleCustomers)
     {
         var tableData = new TableData()
@@ -798,6 +804,12 @@ public static class CreateTableHelper
         await Task.Yield();
         return tableData;
     }
+    /// <summary>
+    /// Creates a data table for beneficiaries' details, dynamically creating columns and rows based on the customer analysis data.
+    /// The table is populated with either Arabic or English data based on the current culture.
+    /// </summary>
+    /// <param name="customers">A list of <see cref="CustomerAnalysis"/> objects containing the customer data to be displayed in the table.</param>
+    /// <returns>A <see cref="TableData"/> object containing the table structure, including columns and rows with customer details.</returns>
     public static async Task<TableData> CreateDataTableForBeneficiariesDetails(List<CustomerAnalysis> customers)
     {
         var tableData = new TableData()
@@ -847,5 +859,78 @@ public static class CreateTableHelper
         await Task.Yield();
         return tableData;
     }
+
+    #endregion
+    #region UnUsed Methods
+    public static async Task<TableData> CreateDataTableForKepperPayments(List<PaymentAnalysis> payments)
+    {
+        var tableData = new TableData()
+        {
+            Name = LocalizationHelper.GetLocalizedString("PaymentReports"),
+            ShowHeader = true
+        };
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Code"), Name = "PaymentNumber", IsFilterable = true, PropertyName = "PaymentNumber", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", IsFilterable = false, PropertyName = "Invoice.PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentCategory"), Name = "PaymentCategory", IsFilterable = true, PropertyName = "PaymentCategory", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(PaymentCategory) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("InvoiceId"), Name = "InvoiceId", IsFilterable = false, PropertyName = "Invoice.Id", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentMethod"), Name = "PaymentMethod", IsFilterable = true, PropertyName = "PaymentMethod", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(PaymentMethod) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Amount"), Name = "Amount", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Currency"), Name = "Currency", IsFilterable = true, PropertyName = "Currency", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerName"), Name = "CustomerName", IsFilterable = true, PropertyName = "Customers.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Date"), Name = "Date", IsFilterable = true, PropertyName = "CreationTime", IsSortable = true, TypeFilter = TypeFilter.Date, TypeOfColumn = typeof(DateTime) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentStatus"), Name = "PaymentStatus", IsFilterable = true, PropertyName = "PaymentStatus", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(PaymentStatus) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("KeeperName"), Name = "KeeperName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "KeeperName" });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AmountDaily"), Name = "AmountDaily", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "AmountDaily" });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AmountMonthly"), Name = "AmountMonthly", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "AmountMonthly" });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Day"), Name = "Day", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "Day" });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Month"), Name = "Month", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "Month" });
+
+        foreach (var payment in payments)
+        {
+            var rowDef = new RowDef();
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Code"), payment.Payment.PaymentNumber?.ToString()));
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), payment.Payment.InvoiceId.HasValue ? payment.Payment.EnPlateNumber : LocalizationHelper.GetLocalizedString("Pacakge")));
+
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), payment.Payment.InvoiceId.HasValue ? payment.Payment.ArPlateNumber : LocalizationHelper.GetLocalizedString("Pacakge")));
+
+            }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentCategory"), LocalizationHelper.GetLocalizedString(payment.Payment.PaymentCategory.ToString())));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+                LocalizationHelper.GetLocalizedString("InvoiceId"),
+                payment.Payment.PaymentCategory == Enums.PaymentCategory.PaymentParking
+                ? payment.Payment.InvoiceId.ToString()
+                : payment.Payment.PackageId.ToString()
+            ));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentMethod"), LocalizationHelper.GetLocalizedString(payment.Payment.PaymentMethod.ToString())));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Amount"), payment.Payment.Amount.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Currency"), LocalizationHelper.GetLocalizedString(payment.Payment.Currency.ToString())));
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), payment.Payment.Customers?.ArabicName ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), payment.Payment.Customers?.IdentityUser.Name ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
+            }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Date"), payment.Payment.CreationTime.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentStatus"), LocalizationHelper.GetLocalizedString(payment.Payment.PaymentStatus.ToString())));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("KeeperName"), payment.KeeperName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AmountDaily"), payment.AmountDaily.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("AmountMonthly"), payment.AmountMonthly.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Day"), payment.Day));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Month"), payment.Month));
+
+            tableData.Rows.Add(rowDef);
+        }
+        await Task.Yield();
+        return tableData;
+    }
+    #endregion
 }
 

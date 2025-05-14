@@ -16,16 +16,18 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Blazor.Components.Pages.Garages;
+/// <summary>
+/// Component for manage garages lpage list  
+/// </summary>
 public partial class Garage
 {
-    //[Inject] public IAuthorizationService AuthorizationService { get; set; }
     private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     private int TotalItem;
     private string sortColumn;
     private Guid? TenantId;
     private string ValueOfMenue = "All";
-    public int CurrentPage { get; set; } = 1; // Default current page value is 10
-    public int RowPerPage { get; set; } = 10; // Default value is 10
+    public int CurrentPage { get; set; } = 1; 
+    public int RowPerPage { get; set; } = 10;
     private TableData itemData = new TableData();
     public bool ViewAssign { get; set; } = true;
     private string termSearch;
@@ -42,6 +44,10 @@ public partial class Garage
         UpdatePolicyName = GaragePermissions.Edit;
         DeletePolicyName = GaragePermissions.Delete;
     }
+    /// <summary>
+    /// Initialize Component
+    /// create menus , list of garages , get number of active garages and number of garage can be added
+    /// </summary>
     protected async override Task OnInitializedAsync()
     {
         if (!await AuthorizationService.IsGrantedAsync(GaragePermissions.Default))
@@ -92,9 +98,7 @@ public partial class Garage
         }
         else
         {
-            // Call the service to perform the search based on the input parameters
             var garagessDto = await GarageAppService.Filter(input);
-            // Calculate the total number of pages required to display all results
             TotalItem = (int)garagessDto.TotalCount;
             CreateTable(garagessDto);
         }

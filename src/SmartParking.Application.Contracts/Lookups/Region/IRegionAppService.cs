@@ -48,6 +48,11 @@ public interface IRegionAppService : ICrudAppService<RegionDto, int, PagedAndSor
     /// <param name="id">Id of Region that needed to be deleted</param>
     /// <returns>No Content</returns>
     public Task DeleteAsync(int id);
+    /// <summary>
+    /// Method used to get region by country
+    /// </summary>
+    /// <param name="countryId">Id of country that needed to be get</param>
+    /// <returns>RegionLookupDto</returns>
 
     Task<List<RegionLookupDto>> GetRegionByCountry(int countryId);
 }

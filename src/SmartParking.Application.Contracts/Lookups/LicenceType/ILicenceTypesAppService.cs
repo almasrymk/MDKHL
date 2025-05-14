@@ -15,35 +15,51 @@ public interface ILicenceTypesAppService : ICrudAppService<LicenceTypeDto, int, 
 
 
     /// <summary>
-    /// abstract method to create licence type 
-   /// </summary>
-   /// <param name="input">licence type  create dto</param>
-   /// <returns>licence type Dto</returns>
-   public Task<LicenceTypeDto> CreateAsync(CreateUpdateLicenceTypeDto input);    
-
-        /// <summary>
-        /// abstract method to update specific licence type 
-        /// </summary>
-        /// <param name="input">licence type  create dto</param>
-        /// <param name="id">id of specific licence type </param>
-        /// <returns>licence type Dto</returns>
-        public Task<LicenceTypeDto> UpdateAsync(int id, CreateUpdateLicenceTypeDto input);
-        public Task<PagedResultDto<LicenceTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+    /// Abstract method to create a new license type.
+    /// </summary>
+    /// <param name="input">The license type create DTO containing the necessary information to create the license type.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the created license type DTO.</returns>
+    public Task<LicenceTypeDto> CreateAsync(CreateUpdateLicenceTypeDto input);
 
     /// <summary>
-    /// abstract method to filter of licence types
+    /// Abstract method to update an existing license type.
     /// </summary>
-    /// <param name="input">specifies max number of licence type and if it sorted or not and filter</param>
-    /// <returns>LicenceTypeDto</returns>
+    /// <param name="input">The license type create DTO containing the updated information for the license type.</param>
+    /// <param name="id">The ID of the specific license type to be updated.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the updated license type DTO.</returns>
+    public Task<LicenceTypeDto> UpdateAsync(int id, CreateUpdateLicenceTypeDto input);
+
+    /// <summary>
+    /// Abstract method to search for license types based on specified criteria.
+    /// </summary>
+    /// <param name="input">The request DTO that contains the maximum number of license types to return, sorting information, and search term.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a paged result DTO with the matching license types.</returns>
+    public Task<PagedResultDto<LicenceTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+
+    /// <summary>
+    /// Abstract method to filter license types based on specified criteria.
+    /// </summary>
+    /// <param name="input">The request DTO that contains the maximum number of license types to return, sorting information, and filter criteria.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a paged result DTO with the filtered license types.</returns>
     public Task<PagedResultDto<LicenceTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
+    /// <summary>
+    /// Abstract method to delete a specific license type by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the license type to be deleted.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public Task DeleteAsync(int id);
 
+    /// <summary>
+    /// Abstract method to retrieve a list of all license types.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of all license type DTOs.</returns>
     public Task<List<LicenceTypeDto>> GetAllLicencesAsync();
 
     /// <summary>
-    /// abstract method to get all licence types 
+    /// Abstract method to retrieve all license types with additional result formatting.
     /// </summary>
-    /// <returns>LicenceTypeDto</returns>
-    Task<Result<List<LicenceTypeDto>>> GetAllLicenceTypesAsync();
+    /// <returns>A task that represents the asynchronous operation. The task result contains a formatted result with a list of all license type DTOs.</returns>
+    public Task<Result<List<LicenceTypeDto>>> GetAllLicenceTypesAsync();
+
 }

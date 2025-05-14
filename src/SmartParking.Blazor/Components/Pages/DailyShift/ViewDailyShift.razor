@@ -10,6 +10,7 @@
 @using SmartParking.Organizations
 @using System.Globalization
 @using Volo.Abp.MultiTenancy
+@using SmartParking.Currency
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject IGarageAppService GaragesAppService
@@ -129,6 +130,29 @@
 						Immediate="true"
 						Disabled=true
 						Label="@L["KeeperShiftRequestType"]" />
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<div style="display: flex; flex-direction: column">
+							<label style="font-size: 0.75rem; margin-bottom: 4px; color: rgba(0, 0, 0, 0.38); cursor: default;">
+								@L["AmountOfCash"]
+                                @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                            </label>
+						<MudTextField Value="DailyShiftDto.AmountOfCash.ToString()"
+									  Immediate="true"
+									  Disabled=true />
+									  </div>
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<div style="display: flex; flex-direction: column;">
+							<label style="font-size: 0.75rem; margin-bottom: 4px; color: rgba(0, 0, 0, 0.38); cursor: default;">
+								@L["AmountOfVisa"]
+                                @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                            </label>
+						<MudTextField Value="DailyShiftDto.AmountOfVisa.ToString()"
+									  Immediate="true"
+									  Disabled=true
+									  />
+									  </div>
 					</MudItem>
 				</MudGrid>
 			</MudForm>

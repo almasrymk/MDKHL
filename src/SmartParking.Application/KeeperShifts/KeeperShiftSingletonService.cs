@@ -32,6 +32,7 @@ public sealed class KeeperShiftSingletonService : ISingletonService<StateManagem
         state = null;
 
     }
+    /// <inheritdoc/>
 
     public async Task<StateManagementDto> GetAsync(int key)
     {
@@ -43,11 +44,13 @@ public sealed class KeeperShiftSingletonService : ISingletonService<StateManagem
 
         return state;
     }
+    /// <inheritdoc/>
 
     public void Refresh()
     {
         state = null;
     }
+    /// <inheritdoc/>
 
     public async  Task<StateManagementDto> SetAsync(int key)
     {

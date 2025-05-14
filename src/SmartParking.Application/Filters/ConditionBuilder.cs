@@ -11,5 +11,11 @@ namespace SmartParking.Filters;
 public abstract class ConditionBuilder : ISingletonDependency
 {
     public abstract TypeFilter SupportedType { get; }
+    /// <summary>
+    /// Builds an expression based on the filter operator to compare a property with a date value.
+    /// </summary>
+    /// <param name="property">The property expression to be evaluated in the condition.</param>
+    /// <param name="filter">The filter request that contains the filter operator and date values.</param>
+    /// <returns>An expression representing the condition based on the filter operator.</returns>
     public abstract Expression BuildCondition(Expression property, FilterRequestDto filter);
 }

@@ -63,6 +63,7 @@ public class CameraMainTypeAppService : CrudAppService<CameraMainType, CameraMai
         await ValidateCameraMainTypeUniqnuessAsync(input);
         return await base.UpdateAsync(id, input);
     }
+    ///<inheritdoc/>
 
     public async Task<PagedResultDto<CameraMainTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
@@ -85,6 +86,7 @@ public class CameraMainTypeAppService : CrudAppService<CameraMainType, CameraMai
             cameraMainTypesDto
         );
     }
+    ///<inheritdoc/>
 
     public async Task<List<CameraMainTypeDto>> GetAllCameraMainTypesAsync()
     {
@@ -94,6 +96,7 @@ public class CameraMainTypeAppService : CrudAppService<CameraMainType, CameraMai
             return ObjectMapper.Map<List<CameraMainType>, List<CameraMainTypeDto>>(maintypes);
         }
     }
+    ///<inheritdoc/>
 
     public async Task<PagedResultDto<CameraMainTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
@@ -121,7 +124,15 @@ public class CameraMainTypeAppService : CrudAppService<CameraMainType, CameraMai
     #endregion
 
     #region Private Methods
-
+    /// <summary>
+    /// Validates the uniqueness of the camera main type's English and Arabic names before creation or update.
+    /// Throws an <see cref="InvalidOperationException"/> if a camera main type with the same English or Arabic name already exists.
+    /// </summary>
+    /// <param name="input">The DTO containing the English and Arabic names of the camera main type to validate.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if a camera main type with the same English or Arabic name already exists, using localized error messages.
+    /// </exception>
     private async Task ValidateCameraMainTypeUniqnuessAsync(CreateUpdateCameraMainTypeDto input)
     {
         var cameraMainType = await _repository.FirstOrDefaultAsync

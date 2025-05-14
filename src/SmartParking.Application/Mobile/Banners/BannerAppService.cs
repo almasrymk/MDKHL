@@ -20,6 +20,8 @@ public class BannerAppService : ApplicationService, IBannerAppService
     {
         _bannerRepository = bannerRepository;
     }
+    /// <inheritdoc/>
+
     public async Task<Result<BannerDto>> CreateAsync(CreateUpdateBannerDto input)
     {
         try
@@ -47,6 +49,7 @@ public class BannerAppService : ApplicationService, IBannerAppService
             return Result<BannerDto>.Error(ex.Message);
         }
     }
+    /// <inheritdoc/>
 
     public async Task<Result<List<BannerDto>>> GetListAsync()
     {

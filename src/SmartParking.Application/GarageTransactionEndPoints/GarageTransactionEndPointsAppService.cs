@@ -365,7 +365,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             entryTransaction.CustomerCategory = exitTransaction.CustomerCategory;
             await ChangeCategoryForEntryTransaction(entryTransaction);
         }
-        var _lastInvoiceForPlateNumber = await _invoiceAppService.GetLatestInvoiceForPlateInOrganizationGarage(exitTransaction.PlateNumber, exitTransaction.OrganizationID, exitTransaction.GarageId);
+        var _lastInvoiceForPlateNumber = await _invoiceAppService.GetLatestInvoiceForCustomerInOrganizationGarage(exitTransaction.PlateNumber, exitTransaction.OrganizationID, exitTransaction.GarageId);
         await _garageTransactionUtilityAppService.CloseCheckoutMobileTransaction(exitTransaction.PlateNumber);
         _logger.LogInformation($"{DateTime.Now} ====> Customer ID : {customer.Id}");
         _logger.LogInformation($"{DateTime.Now} ====> PlateNumber  : {exitTransaction.PlateNumber}");

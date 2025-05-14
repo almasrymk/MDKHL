@@ -57,7 +57,15 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
         _organizationPdfAppService = organizationPdfAppService;
         _paymentWebAppService = paymentWebAppService;
     }
+
+    #region Public Methods
+
+    /// <summary>
+    /// Generates the HTML content for an invoice based on the provided invoice ID, commercial registration, and QR code.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the HTML string of the invoice.</returns>
     [RemoteService(isEnabled:false)]
+
     public async Task<string> GenerateInvoiceHtmlAsync(int invoiceId, string commericialRegisteratio,string qrCode)
     {
         var invoice = await _invoicePdfAppService.GetAsync(invoiceId);
@@ -167,6 +175,10 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
 
         return htmlContent;
     }
+    /// <summary>
+    /// Generates a PDF document from an invoice ID, commercial registration number, and QR code.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the generated PDF file as a byte array.</returns>
 
     public async Task<byte[]> GenerateInvoicePdfAsync(int invoiceId, string commericialRegisteratio, string qrCode)
     {
@@ -188,7 +200,10 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
     }
     [RemoteService(isEnabled: false)]
 
-
+    /// <summary>
+    /// Generates a PDF document from HTML content and CSS for a specific invoice.
+    /// </summary>
+    /// <returns>A byte array containing the generated PDF file.</returns>
     public byte[] GeneratePdfFromHtmlAsync(string htmlContent,int invoiceId)
     {
 
@@ -396,23 +411,11 @@ img[style*='width:120px;'] {
       
 
     }
-    public string GetPdfDirectory(int InvoiceId)
-    {
-        if(InvoiceId < 0)
-        {
-            throw new Exception("Invoice Id can't be null");
-        }
-        var invoice = _invoicePdfAppService.GetAsync(InvoiceId);
-        if (invoice == null)
-        {
-            throw new EntityNotFoundException(typeof(Invoice),InvoiceId);
-        }
-        string fileName = $"{InvoiceId}.{"pdf"}";
-        string fullPath = "invoice/PDFs/"+ fileName;
 
-        return fullPath;
-
-    }
+    /// <summary>
+    /// Saves the generated PDF for an invoice to a file system or storage.
+    /// </summary>
+    /// <returns>A <see cref="Stream"/> representing the saved PDF file.</returns>
     [RemoteServiceAttribute(isEnabled: true)]
     public async Task<Stream> SaveInvoicePdf(int invoiceId)
     {
@@ -941,10 +944,33 @@ img[style*='width:120px;'] {
         document.Close();
         return stream;
     }
-
+    /// <summary>
+    /// Retrieves the PDF invoice for the specified invoice ID and returns it as a downloadable file.
+    /// </summary>
+    /// <returns>A <see cref="FileContentResult"/> containing the PDF file as a downloadable response.</returns>
     public async Task<IActionResult> GetInvoicePDF(int invoiceId)
     {
         var stream = await SaveInvoicePdf(invoiceId);
         return new FileContentResult(stream.GetAllBytes(), "application/pdf");
     }
+    #endregion
+    #region UnUsed Methods 
+    public string GetPdfDirectory(int InvoiceId)
+    {
+        if (InvoiceId < 0)
+        {
+            throw new Exception("Invoice Id can't be null");
+        }
+        var invoice = _invoicePdfAppService.GetAsync(InvoiceId);
+        if (invoice == null)
+        {
+            throw new EntityNotFoundException(typeof(Invoice), InvoiceId);
+        }
+        string fileName = $"{InvoiceId}.{"pdf"}";
+        string fullPath = "invoice/PDFs/" + fileName;
+
+        return fullPath;
+
+    }
+    #endregion
 }

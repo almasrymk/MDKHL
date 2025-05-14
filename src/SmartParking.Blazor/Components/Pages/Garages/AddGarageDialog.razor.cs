@@ -1,22 +1,18 @@
-﻿using Blazorise;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.AlertMessages;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using SmartParking.Validations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Garages;
-
+/// <summary>
+///  Dailog for add new garage
+/// </summary>
 public partial class AddGarageDialog
 {
     [CascadingParameter]
@@ -24,9 +20,7 @@ public partial class AddGarageDialog
     public CreateUpdateGarageDto createUpdateGarage { get; set; }
     private TimeSpan? _time = new TimeSpan();
     private List<OrganizationDto> Organizations = new List<OrganizationDto>();
-
     private MudForm form;
-
     protected override async Task OnInitializedAsync()
     {
         createUpdateGarage = new CreateUpdateGarageDto();
@@ -38,6 +32,11 @@ public partial class AddGarageDialog
             Organizations = result.Items.ToList();
         }
     }
+    #region Private Mehtods
+
+    /// <summary>
+    /// Method to handle submit to create new garage 
+    /// </summary>
     private async void SubmitCreate()
     {
 		try
@@ -46,10 +45,8 @@ public partial class AddGarageDialog
             {
                 createUpdateGarage.OrganizationId = await OrganizationAppService.GetOrganizationIdByTenant(currrentUser.TenantId);
             }
-            
             createUpdateGarage.Code = "";
             createUpdateGarage.ClosingHours = TimeOnly.FromTimeSpan(_time ?? TimeSpan.Zero);
-
             var garage = await GarageAppService.CreateAsync(createUpdateGarage);
             if (garage != null)
             {
@@ -72,7 +69,6 @@ public partial class AddGarageDialog
         }
         catch (BusinessException ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
@@ -81,11 +77,13 @@ public partial class AddGarageDialog
         }
         catch (Exception ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
     }
-
+    /// <summary>
+    /// handle cancel close dialog
+    /// </summary>
+    /// <returns></returns>
     private async Task CancelCreate()
     {
         createUpdateGarage = new CreateUpdateGarageDto();
@@ -94,6 +92,10 @@ public partial class AddGarageDialog
         MudDialogAdd.Cancel();
 
     }
+    /// <summary>
+    /// handle change max capacity and max slots
+    /// </summary>
+    /// <param name="maxCapacity"></param>
     private void HandleMaxCapacityChange(int maxCapacity)
     {
         createUpdateGarage.MaxCapacity = maxCapacity;
@@ -101,25 +103,36 @@ public partial class AddGarageDialog
         createUpdateGarage.MaxSlotsForCustomers = 0;
         createUpdateGarage.MaxSlotsForFree = 0;
     }
-
+    /// <summary>
+    /// handle change max slots for employees
+    /// </summary>
+    /// <param name="maxSlotsForEmployees"></param>
     private void HandleEmployeeSlotsChange(int maxSlotsForEmployees)
     {
         createUpdateGarage.MaxSlotsForEmployess = maxSlotsForEmployees;
         Disrtibute();
     }
-
+    /// <summary>
+    /// handle change max slots for customers
+    /// </summary>
+    /// <param name="maxSlotsForCustomers"></param>
     private void HandleCustomerSlotsChange(int maxSlotsForCustomers)
     {
         createUpdateGarage.MaxSlotsForCustomers = maxSlotsForCustomers;
         Disrtibute();
     }
-
+    /// <summary>
+    /// handle change max slots for free
+    /// </summary>
+    /// <param name="maxSlotsForFree"></param>
     private void HandleFreeSlotsChange(int maxSlotsForFree)
     {
         createUpdateGarage.MaxSlotsForFree = maxSlotsForFree;
         Disrtibute();
     }
-
+    /// <summary>
+    /// method to distribute remaining capacity
+    /// </summary>
     private void Disrtibute()
     {
         int MaxSlotsForEmployess =  createUpdateGarage.MaxSlotsForEmployess;
@@ -130,7 +143,5 @@ public partial class AddGarageDialog
         createUpdateGarage.MaxSlotsForFree= MaxSlotsForFree;
         createUpdateGarage.MaxSlotsForCustomers= MaxSlotsForCustomers;
     }
-
-
-
+    #endregion
 }
