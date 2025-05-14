@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Modularity;
 using Xunit;
-namespace SmartParking.VehicleModel;
+namespace SmartParking.VehicleModels;
 /// <summary>
 /// Unit tests for the VehicleModelsAppService.
 /// </summary>
-public class VehicleModelAppService_Tests<TStartupModule> : SmartParkingApplicationTestBase<TStartupModule>
+public class VehicleModelAppServiceTests<TStartupModule> : SmartParkingApplicationTestBase<TStartupModule>
     where TStartupModule : IAbpModule
 {
     private readonly IVehicleModelsAppService _vehicleModelAppService;
@@ -22,7 +22,7 @@ public class VehicleModelAppService_Tests<TStartupModule> : SmartParkingApplicat
     /// <summary>
     /// Initializes a new instance of the <see cref="VehicleModelAppService_Tests{TStartupModule}"/> class.
     /// </summary>
-    public VehicleModelAppService_Tests()
+    public VehicleModelAppServiceTests()
     {
         _vehicleModelAppService = GetRequiredService<IVehicleModelsAppService>();
     }
