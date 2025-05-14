@@ -134,7 +134,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         await CheckExistanceOfDependencies(input);
         var _overlapExpression = GetTimeOverlapExpression(input.StartTime, input.EndTime, input.StartDate, input.EndDate, input.GarageId, input.IsFullDay, input.Status);
         var _sameShiftExpression = NotSameEntityExpression(id);
-        if ((await HasOverlappingShift(_overlapExpression.And(_sameShiftExpression)))  && (Shift.Status != Status.Active))
+        if ((await HasOverlappingShift(_overlapExpression.And(_sameShiftExpression)))  && (Shift.Status == Status.Active))
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("ShiftOverlapValidation"));
         }
@@ -279,7 +279,8 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     /// <returns>True if an overlapping active shift exists, otherwise false.</returns>
     private async Task<bool> HasOverlappingShift(Expression<Func<Shift, bool>> expression)
     {
-        return await _repository.AnyAsync(expression.And(s => s.Status == Status.Active));
+        var result= await _repository.FirstOrDefaultAsync(expression);
+        return await _repository.AnyAsync(expression);
     }
     /// <summary>
     /// Returns an expression that excludes the shift with the given ID.
@@ -310,8 +311,8 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         Expression<Func<Shift, bool>> middnighOverlapsWithMidnigtShift = IfNewOvernightOverlapsWithExistingMidnight(StartDate, EndDate, StartTime, EndTime);
         Expression<Func<Shift, bool>> currentShiftIsFullDay = CurrentShiftIsFullDayOverlapsWithExistingNotFullDayShift(IsFullday, StartDate, EndDate);
         Expression<Func<Shift, bool>> currentShiftIsFullDayOverlaping = NewShiftFullDayOverlapsWithExistingShiftNotFullDay(StartDate, EndDate);
-        Expression<Func<Shift, bool>> newShiftIsNotMidnight = NewShiftIsNotMidNightShift(StartTime, EndTime);
-        Expression<Func<Shift, bool>> newShiftIsMidnight = NewShiftIsMidNightShift(StartTime, EndTime);
+        Expression<Func<Shift, bool>> newShiftIsNotMidnight = NewShiftIsNotMidNightShift(StartTime, EndTime,StartDate,EndDate);
+        Expression<Func<Shift, bool>> newShiftIsMidnight = NewShiftIsMidNightShift(StartTime, EndTime,StartDate,EndDate);
 
         if (IsFullday)
         {
@@ -346,13 +347,27 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     {
         return s =>
             s.GarageId == GarageId &&
-            (s.Status == Status.Active) &&
-            (StartDate >= s.StartDate && StartDate <= s.EndDate) ||
-            (EndDate >= s.StartDate && EndDate <= s.EndDate) ||
-            (StartDate <= s.StartDate && EndDate >= s.EndDate) ||
-            (StartDate <= s.StartDate && EndDate <= s.EndDate) ||
-            (StartDate >= s.StartDate && EndDate >= s.EndDate);
+            (s.Status == Status.Active);
     }
+    private Expression<Func<Shift, bool>> OverlappingTimeNormalShiftExpression(TimeOnly StartTime, TimeOnly EndTime)
+    {
+        return s =>(s.StartTime>StartTime && StartTime < s.EndTime && (EndTime>s.EndTime||EndTime<s.EndTime))||
+                   (s.StartTime<StartTime && StartTime < s.EndTime && (EndTime > s.EndTime||EndTime < s.EndTime));
+    }
+    private Expression<Func<Shift, bool>> OverlappingTimeMidnightShiftExpression(TimeOnly StartTime, TimeOnly EndTime)
+    {
+        return s => s.StartTime > s.EndTime && (
+        StartTime<s.StartTime&&(EndTime<=s.EndTime ||EndTime>s.EndTime)||
+        (StartTime>s.StartTime)&&(StartTime<s.EndTime&&StartTime<s.StartTime))||
+        (StartTime<s.StartTime&&EndTime>s.StartTime&&EndTime>s.EndTime);
+    }
+    private Expression<Func<Shift, bool>> OverlappingDateExpression(DateOnly StartDate, DateOnly EndDate)
+    {
+        return s =>(s.StartDate>=StartDate && (EndDate>s.EndDate||EndDate<=s.EndDate))||
+                   (s.StartDate < StartDate && (EndDate > s.EndDate || EndDate <= s.EndDate));
+    }
+
+   
 
     /// <summary>
     /// Builds an expression to detect overlaps between a non-midnight new shift and existing midnight shifts.
@@ -364,15 +379,11 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     /// <returns>Expression to find conflicting midnight shifts.</returns>
     private Expression<Func<Shift, bool>> IfNewNotOvernightOverlapsWithExistingMidnight(DateOnly StartDate, DateOnly EndDate, TimeOnly StartTime, TimeOnly EndTime)
     {
-        return s => (!s.IsFullDay)
-            && s.StartTime > s.EndTime
-            &&
-            (
-                (StartTime >= s.StartTime && StartTime > s.EndTime) ||
-                (EndTime >= s.StartTime && EndTime > s.EndTime) ||
-                (StartTime <= s.EndTime && s.StartTime > StartTime) ||
-                (EndTime < s.EndTime && s.StartTime > EndTime)
-            );
+        Expression<Func<Shift, bool>> _overlappTimeExpression = OverlappingTimeMidnightShiftExpression(StartTime, EndTime);
+        Expression<Func<Shift, bool>> _overlappDateExpression = OverlappingDateExpression(StartDate, EndDate);
+        Expression<Func<Shift, bool>> expression = s => (!s.IsFullDay) && (s.StartTime > s.EndTime);
+        return _overlappDateExpression.And(_overlappTimeExpression).And(expression);
+
     }
 
     /// <summary>
@@ -385,13 +396,10 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     /// <returns>Expression for midnight shift conflicts.</returns>
     private Expression<Func<Shift, bool>> IfNewOvernightOverlapsWithExistingMidnight(DateOnly StartDate, DateOnly EndDate, TimeOnly StartTime, TimeOnly EndTime)
     {
-        return s => (!s.IsFullDay)
-            && s.StartTime > s.EndTime
-            &&
-            (
-                (StartTime >= s.StartTime && StartTime > s.EndTime && (EndTime > s.EndTime || EndTime <= s.EndTime)) ||
-                (StartTime <= s.StartTime && StartTime > s.EndTime && (EndTime > s.EndTime || EndTime <= s.EndTime))
-            );
+        Expression<Func<Shift, bool>> _overlappTimeExpression = OverlappingTimeMidnightShiftExpression(StartTime, EndTime);
+        Expression<Func<Shift, bool>> _overlappDateExpression = OverlappingDateExpression(StartDate, EndDate);
+        Expression<Func<Shift, bool>> expression = s => (!s.IsFullDay) && (s.StartTime > s.EndTime);
+        return _overlappDateExpression.And(_overlappTimeExpression).And(expression);
     }
 
     /// <summary>
@@ -433,14 +441,12 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     /// <param name="StartTime">Start time of the new shift.</param>
     /// <param name="EndTime">End time of the new shift.</param>
     /// <returns>Expression to match non-midnight overlaps.</returns>
-    private Expression<Func<Shift, bool>> NewShiftIsNotMidNightShift(TimeOnly StartTime, TimeOnly EndTime)
+    private Expression<Func<Shift, bool>> NewShiftIsNotMidNightShift(TimeOnly StartTime, TimeOnly EndTime,DateOnly StartDate ,DateOnly EndDate)
     {
-        return s => (!s.IsFullDay) && (s.StartTime < s.EndTime) &&
-                       (
-                           (StartTime >= s.StartTime && StartTime < s.EndTime) ||   // New shift starts during existing shift
-                           (EndTime > s.StartTime && EndTime <= s.EndTime) ||       // New shift ends during existing shift
-                           (StartTime <= s.StartTime && EndTime >= s.EndTime)       // New shift completely overlaps existing shift
-                       );
+        Expression<Func<Shift, bool>> _overlappTimeExpression = OverlappingTimeNormalShiftExpression(StartTime, EndTime);
+        Expression<Func<Shift, bool>> _overlappDateExpression = OverlappingDateExpression(StartDate, EndDate);
+        Expression<Func<Shift, bool>> expression = s => (!s.IsFullDay) && (s.StartTime < s.EndTime);
+        return _overlappDateExpression.And(_overlappTimeExpression).And(expression);
     }
 
     /// <summary>
@@ -464,16 +470,13 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     /// <param name="StartTime">Start time of the new shift.</param>
     /// <param name="EndTime">End time of the new shift.</param>
     /// <returns>Expression to match overlapping midnight shifts.</returns>
-    private Expression<Func<Shift, bool>> NewShiftIsMidNightShift(TimeOnly StartTime, TimeOnly EndTime)
+    private Expression<Func<Shift, bool>> NewShiftIsMidNightShift(TimeOnly StartTime, TimeOnly EndTime,DateOnly StartDate , DateOnly EndDate)
     {
-        return s => s.StartTime > s.EndTime && (
-                       (EndTime <= s.StartTime) ||
-                       (StartTime >= s.EndTime) ||
-                       (StartTime < s.StartTime && EndTime > s.EndTime) ||
-                       (StartTime >= s.StartTime && EndTime <= s.EndTime) ||
-                       (StartTime < s.StartTime && EndTime > s.StartTime) ||
-                       (StartTime < s.EndTime && EndTime > s.EndTime)
-                     );
+        Expression<Func<Shift, bool>> _overlappTimeExpression = OverlappingTimeMidnightShiftExpression(StartTime, EndTime);
+        Expression<Func<Shift, bool>> _overlappDateExpression = OverlappingDateExpression(StartDate, EndDate);
+        Expression<Func<Shift, bool>> expression = s => s.StartTime > s.EndTime;
+
+        return  _overlappDateExpression.And(_overlappTimeExpression).And(expression);
     }
 
     /// <summary>
