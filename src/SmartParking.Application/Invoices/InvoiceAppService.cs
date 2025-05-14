@@ -307,7 +307,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     }
     /// <inheritdoc/>
 
-    public async Task<Result<InvoiceDto>> GetLatestInvoiceForPlateInOrganizationGarage(string PlateNumber, int OrganizationId, int GarageId)
+    public async Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(string PlateNumber, int OrganizationId, int GarageId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -415,11 +415,6 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
                     .FirstOrDefaultAsync();
             return qrCode;
         }
-    }
-
-    public Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(string PlateNumber, int OrganizationId, int GarageId)
-    {
-        throw new NotImplementedException();
     }
     #endregion
 
