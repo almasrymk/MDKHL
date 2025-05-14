@@ -16,7 +16,9 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Blazor.Components.Pages.DailyShift;
-
+/// <summary>
+/// Represents the DailyShift component.
+/// </summary>
 public partial class DailyShift
 {
     private List<DailyShiftDto> dailyShiftDtos = new List<DailyShiftDto>();
@@ -94,16 +96,17 @@ public partial class DailyShift
             await CreateTable(dailyShiftDto);
         }
     }
+    /// <summary>
+    /// Creates the table data and populates it with the provided daily shift list.
+    /// </summary>
+    /// <param name="dailyShiftDto"></param>
     private async Task CreateTable(PagedResultDto<DailyShiftDto> dailyShiftDto)
     {
-        // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
             Name = L["DailyShifts"],
             ShowHeader = true
         };
-
-
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Name"], Name = "UserName", IsFilterable = true, PropertyName = "KeeperName", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CurrentTenant.Id == null)
@@ -182,7 +185,9 @@ public partial class DailyShift
         await Task.Yield();
     }
 
-
+    /// <summary>
+    ///  Creates the menu for organizations.
+    /// </summary>
     private async Task CreateMenue()
     {
         var itemsOrganizations = new List<MenuItem>();
@@ -213,6 +218,11 @@ public partial class DailyShift
             },
         };
     }
+    /// <summary>
+    /// Handles the selection of a tenant.
+    /// </summary>
+    /// <param name="selectedValue"></param>
+    /// <param name="tenantId"></param>
     public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
     {
         TenantId = tenantId;
@@ -232,6 +242,11 @@ public partial class DailyShift
         TotalItem = (int)DailyShiftDto.TotalCount;
         await CreateTable(DailyShiftDto);
     }
+    /// <summary>
+    /// Handles the click view  for a row.
+    /// </summary>
+    /// <param name="row"></param>
+    /// <returns></returns>
     private async Task<IDialogReference> OnClickRowView(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);

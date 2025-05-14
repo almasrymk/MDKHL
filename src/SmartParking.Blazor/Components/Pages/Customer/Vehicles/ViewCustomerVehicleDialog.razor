@@ -1,4 +1,5 @@
-﻿@using Microsoft.Extensions.Localization
+﻿@using AutoMapper
+@using Microsoft.Extensions.Localization
 @using SmartParking.Analysis
 @using SmartParking.Cutomers
 @using SmartParking.Localization
@@ -18,7 +19,7 @@
 @inject IAnalysisAppService AnalysisAppService
 @inject IGenerateFilesAppService GenerateFilesAppService
 @inject IJSRuntime JSRuntime;
-
+@inject IMapper Mapper
 
 <PageTitle>@L["CustomerVehicle"]</PageTitle>
 <div class="modal-wrapper ">

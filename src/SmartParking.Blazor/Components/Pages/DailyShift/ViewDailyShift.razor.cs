@@ -4,6 +4,9 @@ using SmartParking.DailyShifts;
 
 namespace SmartParking.Blazor.Components.Pages.DailyShift
 {
+    /// <summary>
+    /// component for view daily shift
+    /// </summary>
     partial class ViewDailyShift
     {
         [CascadingParameter]
@@ -11,13 +14,17 @@ namespace SmartParking.Blazor.Components.Pages.DailyShift
         [Parameter] public DailyShiftDto DailyShiftDto { get; set; }
         private MudForm form;
         string KeeperShiftRequestType = "";
-
+        /// <summary>
+        /// Initializes the component.
+        /// </summary>
         protected override Task OnInitializedAsync()
         {
             KeeperShiftRequestType = DailyShiftDto.KeeperShiftRequestType.ToString();
             return base.OnInitializedAsync();
         }
-
+        /// <summary>
+        /// Closes the view  dialog.
+        /// </summary>
         private void OnCloseViewOnly()
         {
             MudDialogAdd.Cancel();

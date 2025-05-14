@@ -22,106 +22,88 @@ using SmartParking.Permissions.CameraPermissions;
 
 namespace SmartParking.Blazor.Components.Pages.ContactsData;
 
+/// <summary>
+/// Represents the contact data component that handles the management of contact information.
+/// </summary>
 public partial class ContactData
 {
-
     private int TotalItem;
-    public int CurrentPage { get; set; } = 1; // Default current page value is 10
-    public int RowPerPage { get; set; } = 10; // Default value is 10
-
+    public int CurrentPage { get; set; } = 1;
+    public int RowPerPage { get; set; } = 10; 
     private TableData itemData = new TableData();
-
     private string termSearch;
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ContactData"/> class.
+    /// </summary>
+    /// <param name="localizer">The localizer for string resources.</param>
     public ContactData(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
         CreatePolicyName = ContactPermissions.Create;
         UpdatePolicyName = ContactPermissions.Edit;
         DeletePolicyName = ContactPermissions.Delete;
-
-
     }
 
+    /// <summary>
+    /// Called when the component is initialized. Checks the user's authorization to access the contact data page.
+    /// </summary>
     protected async override Task OnInitializedAsync()
     {
         if (!await AuthorizationService.IsGrantedAsync(ContactPermissions.Default))
         {
-
             Navigation.NavigateTo("/Account/AccessDenied", true);
         }
         await base.OnInitializedAsync();
-
     }
+
     /// <summary>
-    /// filter for contact data on the server side using the contact data columns.
+    /// Filters contact data on the server side based on the specified column filter.
     /// </summary>
-    /// <param name="columnFilter">The name of column to filter for among contact data.</param>
-    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    /// <param name="pageInfo">The page change event containing filter and pagination information.</param>
     private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-
-        // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndFilteredResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch, // The term to use for filtering results
+            SearchingTerm = termSearch,
             filters = pageInfo.Filters
         };
-        // Call the service to perform the search based on the input parameters
         var contactInfoDto = await ContactInfoAppService.Filter(input);
-
-        // Calculate the total number of pages required to display all results
         TotalItem = (int)contactInfoDto.TotalCount;
         CreateTable(contactInfoDto);
-
-
     }
+
     /// <summary>
-    /// Searches for contact data on the server side using the contact data code search term.
+    /// Searches for contact data on the server side using the provided search term.
     /// </summary>
-    /// <param name="searchTerm">The term to search for among contact data.</param>
-    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    /// <param name="pageInfo">The page change event containing search term and pagination information.</param>
     private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-        Console.WriteLine(pageInfo.SearchTerm);
-
-        // Update the term used for searching with the provided search term
         termSearch = pageInfo.SearchTerm;
-
-        // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch // The term to use for filtering results
+            SearchingTerm = termSearch
         };
-
-        // Call the service to perform the search based on the input parameters
         var contactInfosDto = await ContactInfoAppService.Search(input);
-
-        // Calculate the total number of pages required to display all results
         TotalItem = (int)contactInfosDto.TotalCount;
         CreateTable(contactInfosDto);
     }
+
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
     /// </summary>
-    /// <param name="page">The page number for which to fetch the data.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <param name="pageInfo">The page change event containing pagination information.</param>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        Console.WriteLine(RowPerPage);
-        // Create a request object for paged and sorted data
         var input = new PagedAndSortedResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
@@ -129,22 +111,22 @@ public partial class ContactData
             Sorting = pageInfo.SortColumn
         };
         var organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
-        // Retrieve the list of organizations from the server
         var contactDto = await ContactInfoAppService.GetContactInfoByOrganization(input, organization.Id);
         TotalItem = (int)contactDto.TotalCount;
         CreateTable(contactDto);
-
     }
 
+    /// <summary>
+    /// Creates the table based on the fetched contact data.
+    /// </summary>
+    /// <param name="contactInfos">The contact data to display in the table.</param>
     private void CreateTable(PagedResultDto<ContactInfoDto> contactInfos)
     {
-        // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
             Name = "Contact Data",
             ShowHeader = true
         };
-
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Name"], Name = "Name", IsFilterable = true, PropertyName = "Name", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -161,11 +143,14 @@ public partial class ContactData
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["WhatsAppNum"], item.WhatsAppNum));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Email"], item.ContactMail));
 
-
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
     }
+
+    /// <summary>
+    /// Opens the dialog to create new contact data.
+    /// </summary>
     private async Task CreateContactData()
     {
         var organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
@@ -174,7 +159,12 @@ public partial class ContactData
             ["organizationId"] = organization.Id
         };
         await Dialog.ShowAsync<AddContactDataDialog>("Simple Dialog", parameters);
-    }    
+    }
+
+    /// <summary>
+    /// Opens the dialog to update an existing contact data entry.
+    /// </summary>
+    /// <param name="row">The row representing the contact data to update.</param>
     private async Task UpdateContactData(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
@@ -187,7 +177,12 @@ public partial class ContactData
             ["contactDataId"] = contactData.Id
         };
         await Dialog.ShowAsync<UpdateContactDataDialog>("Simple Dialog", parameters);
-    }    
+    }
+
+    /// <summary>
+    /// Opens the dialog to view the details of a contact data entry.
+    /// </summary>
+    /// <param name="row">The row representing the contact data to view.</param>
     private async Task ViewContactData(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
@@ -198,6 +193,11 @@ public partial class ContactData
         };
         await Dialog.ShowAsync<ViewContactDataDialog>("Simple Dialog", parameters);
     }
+
+    /// <summary>
+    /// Opens the dialog to confirm and delete a contact data entry.
+    /// </summary>
+    /// <param name="row">The row representing the contact data to delete.</param>
     private async Task DeleteContactData(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
@@ -205,8 +205,7 @@ public partial class ContactData
 
         var parameters = new DialogParameters
         {
-            ["Name"] = Name,
-
+            ["Name"] = Name
         };
 
         var dialog = await Dialog.ShowAsync<SPDialogDelete>("DeleteContactData", parameters);
@@ -221,15 +220,10 @@ public partial class ContactData
                 await Task.Delay(1000);
 
                 Navigation.NavigateTo("/contact-data", forceLoad: true);
-
             }
-
-
         }
-       
         catch (BusinessException ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
@@ -238,14 +232,7 @@ public partial class ContactData
         }
         catch (Exception ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
         }
-
-
-
-
-
     }
-    
 }

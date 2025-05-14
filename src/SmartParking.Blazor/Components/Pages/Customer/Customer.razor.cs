@@ -35,6 +35,9 @@ using SmartParking.Results;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
+/// <summary>
+/// Represents the customer management page
+/// </summary>
 public partial class Customer
 {
     private SPDataGrid DataGridComponent { get; set; }
@@ -44,16 +47,18 @@ public partial class Customer
     private string sortColumn;
     private Guid? TenantId = null;
     private string ValueOfMenue = "All";
-    public int CurrentPage { get; set; } = 1; // Default current page value is 10
-    public int RowPerPage { get; set; } = 10; // Default value is 10
-
+    public int CurrentPage { get; set; } = 1;
+    public int RowPerPage { get; set; } = 10;
     private TableData itemData = new TableData();
-
     public bool ViewAdd { get; set; } = true;
-
     private string termSearch;
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Customer"/> class.
+    /// </summary>
+    /// <param name="localizer">The localized string resource provider.</param>
+    /// <param name="currentUser">The current user context for checking permissions.</param>
     public Customer(IStringLocalizer<SmartParkingResource> localizer, ICurrentUser currentUser)
     {
         _localizer = localizer;
@@ -62,11 +67,15 @@ public partial class Customer
         DeletePolicyName = CustomerPermissions.Delete;
     }
 
+    /// <summary>
+    /// Initializes the component and checks user permissions and tenant assignment.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     protected async override Task OnInitializedAsync()
     {
         if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result || currrentTenant.Id is null)
         {
-         await CreateMenue();
+            await CreateMenue();
         }
         if (!await AuthorizationService.IsGrantedAsync(CustomerPermissions.Default))
         {
@@ -76,25 +85,25 @@ public partial class Customer
         {
             assign = false;
             ViewAdd = false;
-
         }
         await base.OnInitializedAsync();
     }
-
+    #region Private Methods
+    /// <summary>
+    /// Creates the menu options based on tenant assignment and user permissions.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task CreateMenue()
     {
-
         var MenuDatasMdkhl = new List<MudMenuData>
         {
             CreatePackageMenue(),
-           await CreateOrganizationMenue(),
-
+            await CreateOrganizationMenue(),
         };
 
         var MenuDatasOrganization = new List<MudMenuData>
         {
             CreatePackageMenue(),
-            
         };
 
         if (currrentTenant.Id is null)
@@ -107,6 +116,10 @@ public partial class Customer
         }
     }
 
+    /// <summary>
+    /// Creates the menu for organizations based on the available organizations and their names.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation that returns the organization menu.</returns>
     private async Task<MudMenuData> CreateOrganizationMenue()
     {
         var itemsOrganizations = new List<MenuItem>();
@@ -135,6 +148,10 @@ public partial class Customer
         };
     }
 
+    /// <summary>
+    /// Creates the package menu with various package types.
+    /// </summary>
+    /// <returns>The package menu data containing various package options.</returns>
     private MudMenuData CreatePackageMenue()
     {
         return new MudMenuData
@@ -142,30 +159,21 @@ public partial class Customer
             Name = "Package",
             Label = @L[ValueOfMenue],
             Items = new List<MenuItem>
-                {
-                    new MenuItem { MenueName = "Package", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("All"))   },
-                    new MenuItem { MenueName = "Package", Label = @L["Beneficiaries"], OnClick =EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Beneficiaries"))   },
-                    new MenuItem { MenueName = "Package",Label = @L["Employees"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await  HandleSelectAsync("Employees"))   },
-                    new MenuItem { MenueName = "Package",Label = @L["Visitors"], OnClick =  EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Visitors")) },
-                    new MenuItem { MenueName = "Package", Label = @L["NoPackages"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("NoPackages")) },
-                }
-        };
-    }
-
-  
-    private List<MudMenuData> CreateoragnizationMenue()
-    {
-        return new List<MudMenuData>
-        {
-            CreatePackageMenue()
+            {
+                new MenuItem { MenueName = "Package", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("All"))   },
+                new MenuItem { MenueName = "Package", Label = @L["Beneficiaries"], OnClick =EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Beneficiaries"))   },
+                new MenuItem { MenueName = "Package", Label = @L["Employees"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await  HandleSelectAsync("Employees"))   },
+                new MenuItem { MenueName = "Package", Label = @L["Visitors"], OnClick =  EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("Visitors")) },
+                new MenuItem { MenueName = "Package", Label = @L["NoPackages"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectAsync("NoPackages")) },
+            }
         };
     }
 
     /// <summary>
-    /// filter for hotels on the server side using the hotel columns.
+    /// Filters customer data based on specified parameters, including page information, sorting, and search term.
     /// </summary>
-    /// <param name="columnFilter">The name of column to filter for among hotel.</param>
-    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    /// <param name="pageInfo">The page information that contains sorting, filtering, and paging details.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
         var input = new PagedAndSortedAndFilteredResultRequestDto
@@ -176,23 +184,21 @@ public partial class Customer
             SearchingTerm = termSearch,
             filters = pageInfo.Filters
         };
+
         if (currrentTenant.Id == null)
         {
             var customersDto = await CustomerAppService.FilterMDKHL(input);
-
             TotalItem = (int)customersDto.TotalCount;
             await CreateTable(customersDto);
         }
         else
         {
-
             var customersDto = await CustomerAppService.Filter(input);
-
             TotalItem = (int)customersDto.TotalCount;
             await CreateTable(customersDto);
         }
-
     }
+
 
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
@@ -221,22 +227,26 @@ public partial class Customer
         await CreateTable(customersDto);
 
     }
-
+    /// <summary>
+    /// Navigates to the customer registration page.
+    /// </summary>
     private void HandleAdd()
     {
         Navigation.NavigateTo("/customers/register", true);
     }
 
+    /// <summary>
+    /// Creates and populates a dynamic table with customer data.
+    /// </summary>
+    /// <param name="customers">Paged list of customer DTOs.</param>
     private async Task CreateTable(PagedResultDto<CustomerDto> customers)
     {
 
         var tableData = new TableData()
         {
-            Name = L[ "Customers"],
+            Name = L["Customers"],
             ShowHeader = true
         };
-
-
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "FullName", IsFilterable = true, PropertyName = "IdentityUser.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -308,21 +318,11 @@ public partial class Customer
         itemData = tableData;
         await Task.Yield();
     }
-
-    public async Task<IDialogReference> CreateVehicle(RowDef row)
-    {
-        var id = Guid.Parse(row.Cells[0].Value);
-
-        var parameters = new DialogParameters
-        {
-            ["CustomerId"] = id,
-        };
-
-
-        return await DialogService.ShowAsync<AddVehicleDialog>("Simple Dialog", parameters);
-
-
-    }
+    /// <summary>
+    /// Opens a dialog to assign a role to a user.
+    /// </summary>
+    /// <param name="row">The row string containing the customer ID.</param>
+    /// <returns>The dialog reference.</returns>
     public async Task<IDialogReference> AssignRole(string row)
     {
         var id = Guid.Parse(row);
@@ -333,51 +333,47 @@ public partial class Customer
             ["Id"] = customer.IdentityId,
         };
 
-
         return await DialogService.ShowAsync<AssignationDialog>("Simple Dialog", parameters);
-
-
     }
 
-    public void ViewCustomer(RowDef row)
+    /// <summary>
+    /// Navigates to the customer details view page.
+    /// </summary>
+    /// <param name="row">The selected customer row.</param>
+    private void ViewCustomer(RowDef row)
     {
         var customerId = Guid.Parse(row.Cells[0].Value);
-
         Navigation.NavigateTo($"/customers/view/{customerId}", true);
+    }
 
-
-    } 
-    public async Task ShowCustomerTransactions(RowDef row)
+    /// <summary>
+    /// Downloads an Excel report of a customer's garage transactions.
+    /// </summary>
+    /// <param name="row">The selected customer row.</param>
+    private async Task ShowCustomerTransactions(RowDef row)
     {
         var customerId = Guid.Parse(row.Cells[0].Value);
-        var garageTransactionAnalysis = await AnalysisAppService.ReportGarageTransactionCustomerIdAsync(customerId,CurrentTenant.Id);
-        var data =await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis , currrentTenant.Id);
-
+        var garageTransactionAnalysis = await AnalysisAppService.ReportGarageTransactionCustomerIdAsync(customerId, CurrentTenant.Id);
+        var data = await CreateTableHelper.CreateDataTableForGarageTransactionCustomer(garageTransactionAnalysis, CurrentTenant.Id);
         await DownloadExcel(data, row.Cells[1].Value);
-
     }
 
-    public async Task<IDialogReference> AssignPackage(string id)
-    {
-        var Gid = Guid.Parse(id);
-        var customer = await CustomerAppService.GetAsync(Gid);
-        var parameters = new DialogParameters
-        {
-            ["Customer"] = customer,
-        };
 
-        return await DialogService.ShowAsync<AssignPackgeDialog>("Assign Package", parameters);
-
-    }
-
-    public void HandleEdit(RowDef row)
+    /// <summary>
+    /// Navigates to the edit page for the selected customer.
+    /// </summary>
+    /// <param name="row">The row data containing the customer ID.</param>
+    private void HandleEdit(RowDef row)
     {
         var customerId = Guid.Parse(row.Cells[0].Value);
-
         Navigation.NavigateTo($"/customers/edit/{customerId}", true);
     }
 
-    public async Task HandleSelectAsync(string selectedValue)
+    /// <summary>
+    /// Handles customer category selection and updates the displayed customer list.
+    /// </summary>
+    /// <param name="selectedValue">The selected category value.</param>
+    private async Task HandleSelectAsync(string selectedValue)
     {
         ValueOfMenue = selectedValue;
         var request = new PagedAndSortedAndSearchResultRequestDto
@@ -389,25 +385,37 @@ public partial class Customer
         };
 
         PagedResultDto<CustomerDto> customers = await GetCustomersAsync(request, selectedValue);
-
         TotalItem = (int)customers.TotalCount;
         await CreateTable(customers);
     }
-    public async Task DownloadExcel(TableData Data, string Name)
+
+    /// <summary>
+    /// Downloads an Excel report for customer transaction data.
+    /// </summary>
+    /// <param name="Data">The table data to export.</param>
+    /// <param name="Name">The name of the customer for the exported file.</param>
+    private async Task DownloadExcel(TableData Data, string Name)
     {
         var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
         string file = System.IO.Path.Combine(folderName, $"{Name} Transactions.xlsx");
         await GenerateFilesAppService.ExportToExcel(Data, file);
+
         SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
                     LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
 
         await JSRuntime.InvokeVoidAsync("window.open", $"{PathHelper.ReportsFolder}/{Name} Transactions.xlsx", "_blank");
     }
 
-    public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
+    /// <summary>
+    /// Handles tenant selection and updates the customer list accordingly.
+    /// </summary>
+    /// <param name="selectedValue">The selected customer category value.</param>
+    /// <param name="tenantId">The selected tenant ID.</param>
+    private async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
     {
         TenantId = tenantId;
         ValueOfMenue = selectedValue;
+
         var request = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = RowPerPage,
@@ -417,11 +425,17 @@ public partial class Customer
         };
 
         PagedResultDto<CustomerDto> customers = await GetCustomersAsync(request, selectedValue, TenantId);
-
         TotalItem = (int)customers.TotalCount;
         await CreateTable(customers);
     }
 
+    /// <summary>
+    /// Retrieves customers based on the tenant and selected category.
+    /// </summary>
+    /// <param name="request">The paged, sorted, and searched request parameters.</param>
+    /// <param name="selectedValue">The selected category.</param>
+    /// <param name="tenantId">Optional tenant ID (used only for super admin).</param>
+    /// <returns>A paged result of customer DTOs.</returns>
     private async Task<PagedResultDto<CustomerDto>> GetCustomersAsync(
         PagedAndSortedAndSearchResultRequestDto request,
         string selectedValue,
@@ -438,6 +452,13 @@ public partial class Customer
         }
     }
 
+    /// <summary>
+    /// Retrieves customers for the super admin (Mdkhl) based on category and tenant.
+    /// </summary>
+    /// <param name="request">The paged, sorted, and searched request parameters.</param>
+    /// <param name="selectedValue">The selected customer category.</param>
+    /// <param name="tenantId">Optional tenant ID.</param>
+    /// <returns>A paged result of customer DTOs.</returns>
     private async Task<PagedResultDto<CustomerDto>> GetCustomersForMdkhlAsync(
         PagedAndSortedAndSearchResultRequestDto request,
         string selectedValue,
@@ -454,6 +475,13 @@ public partial class Customer
         };
     }
 
+    /// <summary>
+    /// Retrieves customers for a specific organization based on category.
+    /// </summary>
+    /// <param name="request">The paged, sorted, and searched request parameters.</param>
+    /// <param name="selectedValue">The selected customer category.</param>
+    /// <param name="organizationId">The organization ID.</param>
+    /// <returns>A paged result of customer DTOs.</returns>
     private async Task<PagedResultDto<CustomerDto>> GetCustomersForOrganizationAsync(
         PagedAndSortedAndSearchResultRequestDto request,
         string selectedValue,
@@ -469,5 +497,44 @@ public partial class Customer
             _ => throw new ArgumentException("Invalid selected value", nameof(selectedValue))
         };
     }
+    #endregion
+    #region Unused methods 
+
+    /// <summary>
+    /// Opens a dialog for assigning a package to a customer by ID.
+    /// </summary>
+    /// <param name="id">The customer ID as a string.</param>
+    /// <returns>The dialog reference for the assign package dialog.</returns>
+    private async Task<IDialogReference> AssignPackage(string id)
+    {
+        var Gid = Guid.Parse(id);
+        var customer = await CustomerAppService.GetAsync(Gid);
+        var parameters = new DialogParameters
+        {
+            ["Customer"] = customer,
+        };
+
+        return await DialogService.ShowAsync<AssignPackgeDialog>("Assign Package", parameters);
+    }
+
+
+    /// <summary>
+    /// Opens a dialog for creating a vehicle associated with a customer.
+    /// </summary>
+    /// <param name="row">The selected customer row.</param>
+    /// <returns>The dialog reference.</returns>
+    private async Task<IDialogReference> CreateVehicle(RowDef row)
+    {
+        var id = Guid.Parse(row.Cells[0].Value);
+
+        var parameters = new DialogParameters
+        {
+            ["CustomerId"] = id,
+        };
+
+        return await DialogService.ShowAsync<AddVehicleDialog>("Simple Dialog", parameters);
+    }
+    #endregion
+
 
 }

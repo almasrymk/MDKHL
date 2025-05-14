@@ -29,7 +29,9 @@ using SmartParking.Entities.Customers;
 using SmartParking.Cutomers;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
-
+/// <summary>
+/// Represents a dialog for viewing customer vehicles.
+/// </summary>
 public partial class ViewCustomerVehicleDialog
 {
     [CascadingParameter]
@@ -39,8 +41,8 @@ public partial class ViewCustomerVehicleDialog
 
     private int TotalItem;
     private CustomerDto  CustomerDto = new CustomerDto();
-    public int CurrentPage { get; set; } = 1; // Default current page value is 10
-    public int RowPerPage { get; set; } = 10; // Default value is 10
+    public int CurrentPage { get; set; } = 1;
+    public int RowPerPage { get; set; } = 10; 
 
     private TableData itemData = new TableData();
 
@@ -52,6 +54,10 @@ public partial class ViewCustomerVehicleDialog
     {
         _localizer = localizer;
     }
+    /// <summary>
+    /// Initializes the component and checks if the current tenant is set.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     protected override Task OnInitializedAsync()
     {
         if (CurrentTenant.Id is null)
@@ -80,10 +86,12 @@ public partial class ViewCustomerVehicleDialog
         CreateTable(vehicleDto.Items.ToList());
 
     }
-
+    /// <summary>
+    /// Creates a table data structure from a list of vehicle DTOs.
+    /// </summary>
+    /// <param name="vehicles">The list of vehicle DTOs.</param>
     private void CreateTable(List<VehicleDto> vehicles)
     {
-        // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
             Name = L["CustomerVehicleHeader"],
@@ -105,7 +113,6 @@ public partial class ViewCustomerVehicleDialog
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["LicenceType"], Name = "LicenceType", IsFilterable = false, PropertyName = "LicenceType.EnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["BrandName"], Name = "BrandName", IsFilterable = false, PropertyName = "VehicleBrand.EnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ModelName"], Name = "ModelName", IsFilterable = false, PropertyName = "VehicleModel.EnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
-
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ModelYear"], Name = "ModelYear", IsFilterable = false, PropertyName = "ModelYear", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CompanyName"], Name = "CompanyName", IsFilterable = false, PropertyName = "CompanyName", IsSortable = false, TypeFilter = TypeFilter.Text });
@@ -127,19 +134,18 @@ public partial class ViewCustomerVehicleDialog
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["BrandName"], item.BrandEnglishName));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ModelName"], item.ModelEnglishName));
             }
-
-
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ModelYear"], item.ModelYear));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CompanyName"], item.CompanyName));
-
-
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
     }
+    /// <summary>
+    /// Shows customer transactions based on the provided row and download type.
+    /// </summary>
+    /// <param name="args">A tuple containing the row and download type.</param>
     public async Task ShowCustomerTransactions((RowDef row, string TypeDownload) args)
     {
-
         var (row, TypeDownload) = args;
         var plateNumber = row.Cells[1].Value;
         TableData Data;
@@ -150,8 +156,6 @@ public partial class ViewCustomerVehicleDialog
             Sorting = CultureInfo.CurrentCulture.Name == "ar" ? "CustomerArabicName" : "CustomerEnglishName" ,
             SearchingTerm = CultureInfo.CurrentCulture.Name == "ar" ? CustomerDto.ArabicName : CustomerDto.FullName,
             filters= new ()
-            
-
         };
         var vehicleCustomer = await AnalysisAppService.ReportVehicleCustomerAsync(input, CurrentTenant.Id);
         
@@ -164,12 +168,13 @@ public partial class ViewCustomerVehicleDialog
             "csv" => JSRuntime.ExportToCsvAsync(Data, GenerateFilesAppService, Snackbar),
             _ => Task.CompletedTask
         };
-
         await exportTask;
-        
-
     }
-
+    /// <summary>
+    /// Downloads the provided table data as an Excel file.
+    /// </summary>
+    /// <param name="Data">The table data to be exported.</param>
+    /// <param name="Name">The name of the file to be generated.</param>
     public async Task DownloadExcel(TableData Data, string Name)
     {
         var folderName = FileHelper.CreateImageDirectory(PathHelper.ReportsFolder);
@@ -177,70 +182,60 @@ public partial class ViewCustomerVehicleDialog
         await GenerateFilesAppService.ExportToExcel(Data, file);
         SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
                     LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.EXPORT), Severity.Success);
-
         await JSRuntime.InvokeVoidAsync("window.open", $"{PathHelper.ReportsFolder}/{Name} Transactions.xlsx", "_blank");
     }     
-    
     private async Task<IDialogReference> HandleAdd()
     {
-
-
         var parameters = new DialogParameters
         {
             ["CustomerId"] = Guid.Parse(CustomerId),
         };
-
-
         return await DialogService.ShowAsync<AddVehicleDialog>("view customer vehicle", parameters);
     }
-
+    /// <summary>
+    /// Handles the add vehicle dialog.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task<CreateUpdateVehicleDto> CreateVehicleEditDto(VehicleDto vehicle)
     {
         var ArPlate = await VehiclesAppService.SplitPlateAsync(vehicle.ArPlateNumber);
         var EnPlate = await VehiclesAppService.SplitPlateAsync(vehicle.EnPlateNumber);
-
-        return new CreateUpdateVehicleDto
-        {
-            ArPlateLetters = ArPlate.letters,
-            ArPlateNumber = ArPlate.numbers,
-            BelongToCompany = vehicle.BelongToCompany,
-            CompanyName = vehicle.CompanyName,
-            EnPlateLetters = EnPlate.letters,
-            EnPlateNumber = EnPlate.numbers,
-            LicenceTypeId = vehicle.LicenceTypeId,
-            ModelYear = vehicle.ModelYear,
-            PlateColorId = vehicle.PlateColorId,
-            VehicleBrandId = vehicle.VehicleBrandId,
-            VehicleModelId = vehicle.VehicleModelId,
-            CustomerId = vehicle.CustomerId,
-        };
+        CreateUpdateVehicleDto createUpdateVehicleDto = Mapper.Map<CreateUpdateVehicleDto>(vehicle);
+        createUpdateVehicleDto.ArPlateLetters = ArPlate.letters;
+        createUpdateVehicleDto.ArPlateNumber = ArPlate.numbers;
+        createUpdateVehicleDto.EnPlateLetters = EnPlate.letters;
+        createUpdateVehicleDto.EnPlateNumber = EnPlate.numbers;
+        return createUpdateVehicleDto;
     }
+    /// <summary>
+    /// Handles the edit operation for a vehicle.
+    /// </summary>
+    /// <param name="row">The row definition containing the vehicle information.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task<IDialogReference> HandleEdit(RowDef row)
     {
         var vehicleId = int.Parse(row.Cells[0].Value);
         var vehicle = await VehiclesAppService.GetAsync(vehicleId);
         var vehicleEdit = await CreateVehicleEditDto(vehicle);
-         
         var parameters = new DialogParameters
         {
             ["VehicleId"] = vehicleId,
             ["Vehicle"] = vehicleEdit
         };
-
         return await DialogService.ShowAsync<EditVehicleDialog>("edit customer vehicle", parameters);
     }
+    /// <summary>
+    /// Handles the delete vehicle dialog.
+    /// </summary>
+    /// <param name="row">The row containing the vehicle to be deleted.</param>
     private async Task HandleDelete(RowDef row)
     {
-
         var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[1].Value;
-
         var parameters = new DialogParameters
         {
             ["Name"] = Name,
-
         };
-
         var dialog = await Dialog.ShowAsync<SPDialogDelete>("Delete vehicle", parameters);
         var result = await dialog.Result;
         try
@@ -252,16 +247,11 @@ public partial class ViewCustomerVehicleDialog
                     LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.DELETE) + " " +
                     LocalizationHelper.GetLocalizedString("Vehicle"), Severity.Success);
                 await Task.Delay(1000);
-
                 Navigation.Refresh(true);
-
             }
-
-
         }
         catch (BusinessException ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
@@ -270,12 +260,9 @@ public partial class ViewCustomerVehicleDialog
         }
         catch (Exception ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
-
     }
-
     public async Task<IDialogReference> HandleAssign(string vehicleId)
     {
         var vehicleIdAfterParse = int.Parse(vehicleId);
@@ -285,9 +272,6 @@ public partial class ViewCustomerVehicleDialog
             ["Customer"] = customer,
             ["VehicleId"] = vehicleIdAfterParse,
         };
-
-
         return await DialogService.ShowAsync<AssignPackgeDialog>("view customer package", parameters);
     }
-
 }
