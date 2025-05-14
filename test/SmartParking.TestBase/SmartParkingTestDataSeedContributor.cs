@@ -36,8 +36,10 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
     private readonly IRepository<Shift, int> _shiftRepository;
     private readonly IRepository<KeeperShift, int> _keeperShiftRepository;
     private readonly IRepository<Discount, int> _discountRepository;
+    private readonly IRepository<VehicleBrand, int> _vehicleBrandRepository;
+    private readonly IRepository<VehicleModel, int> _vehicleModelRepository;
     private readonly IdentityUserManager _identityUserManager;
-    public SmartParkingTestDataSeedContributor(IRepository<Region, int> regionRepository, IRepository<Country, int> countryRepository, IRepository<State, int> stateRepository, IRepository<City, int> cityRepository, IRepository<SubscriptionType, int> subscriptionTypeRepository, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationRepostory, IRepository<Garage, int> garageRepostory, IRepository<CameraModel, int> cameraModelRepository, IRepository<CameraMainType, int> cameraMainTypeRepository, IRepository<PlateColor, int> plateColorRepository, IRepository<LicenceType, int> licenceTypeRepository, IRepository<CameraBrand, int> cameraBrandRepository, IRepository<Camera, int> cameraRepostory, IRepository<Shift, int> shiftRepository, IRepository<KeeperShift, int> keeperShiftRepository, IRepository<Discount, int> discountRepository, IdentityUserManager identityUserManager)
+    public SmartParkingTestDataSeedContributor(IRepository<Region, int> regionRepository, IRepository<Country, int> countryRepository, IRepository<State, int> stateRepository, IRepository<City, int> cityRepository, IRepository<SubscriptionType, int> subscriptionTypeRepository, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationRepostory, IRepository<Garage, int> garageRepostory, IRepository<CameraModel, int> cameraModelRepository, IRepository<CameraMainType, int> cameraMainTypeRepository, IRepository<PlateColor, int> plateColorRepository, IRepository<LicenceType, int> licenceTypeRepository, IRepository<CameraBrand, int> cameraBrandRepository, IRepository<Camera, int> cameraRepostory, IRepository<Shift, int> shiftRepository, IRepository<KeeperShift, int> keeperShiftRepository, IRepository<Discount, int> discountRepository, IdentityUserManager identityUserManager, IRepository<VehicleBrand, int> vehicleBrandRepository, IRepository<VehicleModel, int> vehicleModelRepository)
     {
         _regionRepository = regionRepository;
         _countryRepository = countryRepository;
@@ -57,6 +59,8 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
         _keeperShiftRepository = keeperShiftRepository;
         _discountRepository = discountRepository;
         _identityUserManager = identityUserManager;
+        _vehicleBrandRepository = vehicleBrandRepository;
+        _vehicleModelRepository = vehicleModelRepository;
     }
     public async Task SeedAsync(DataSeedContext context)
     {
@@ -376,6 +380,45 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
 
 
         }
+        if (!await _vehicleBrandRepository.AnyAsync())
+        {
+            // Step 1: Seed Vehicle Brands
+            var brands = new List<VehicleBrand>
+    {
+        new VehicleBrand { EnglishName = "Toyota", ArabicName = "تويوتا" },
+        new VehicleBrand { EnglishName = "Honda", ArabicName = "هوندا" },
+        new VehicleBrand { EnglishName = "Hyundai", ArabicName = "هيونداي" },
+        new VehicleBrand { EnglishName = "Ford", ArabicName = "فورد" },
+        new VehicleBrand { EnglishName = "BMW", ArabicName = "بي إم دبليو" }
+    };
+
+            await _vehicleBrandRepository.InsertManyAsync(brands, autoSave: true);
+
+            // Step 2: Get inserted brands by EnglishName
+            var toyota = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Toyota");
+            var honda = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Honda");
+            var hyundai = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Hyundai");
+            var ford = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Ford");
+            var bmw = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "BMW");
+
+            // Step 3: Seed Vehicle Models with reference to BrandId
+            var models = new List<VehicleModel>
+    {
+        new VehicleModel { EnglishName = "Corolla", ArabicName = "كورولا", VehiclesBrandId = toyota.Id, Image = "corolla.png" },
+        new VehicleModel { EnglishName = "Camry", ArabicName = "كامري", VehiclesBrandId = toyota.Id, Image = "camry.png" },
+        new VehicleModel { EnglishName = "Civic", ArabicName = "سيفيك", VehiclesBrandId = honda.Id, Image = "civic.png" },
+        new VehicleModel { EnglishName = "Accord", ArabicName = "أكورد", VehiclesBrandId = honda.Id, Image = "accord.png" },
+        new VehicleModel { EnglishName = "Elantra", ArabicName = "النترا", VehiclesBrandId = hyundai.Id, Image = "elantra.png" },
+        new VehicleModel { EnglishName = "Sonata", ArabicName = "سوناتا", VehiclesBrandId = hyundai.Id, Image = "sonata.png" },
+        new VehicleModel { EnglishName = "Focus", ArabicName = "فوكَس", VehiclesBrandId = ford.Id, Image = "focus.png" },
+        new VehicleModel { EnglishName = "Mustang", ArabicName = "موستانج", VehiclesBrandId = ford.Id, Image = "mustang.png" },
+        new VehicleModel { EnglishName = "X5", ArabicName = "إكس 5", VehiclesBrandId = bmw.Id, Image = "x5.png" },
+        new VehicleModel { EnglishName = "3 Series", ArabicName = "السلسلة 3", VehiclesBrandId = bmw.Id, Image = "3series.png" }
+    };
+
+            await _vehicleModelRepository.InsertManyAsync(models, autoSave: true);
+        }
+
 
     }
 }
