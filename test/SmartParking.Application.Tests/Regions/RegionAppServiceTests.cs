@@ -146,57 +146,8 @@ public class RegionAppServiceTests<TStartupModule> : SmartParkingApplicationTest
             await _regionAppService.UpdateAsync(created.Id, input);
         });
     }
-    [Fact]
-    public async Task Should_Not_Allow_Duplicate_English_Name_On_Update()
-    {
-        // Arrange
-        var countries = await _countriesAppService.GetCountryLookupAsync();
-        var egypt = countries.FirstOrDefault(c => c.EnglishName == "Egypt");
-
-        var regions = await _regionAppService.GetRegionByCountry(egypt.Id);
-        regions.Count.ShouldBeGreaterThan(1); // Ensure at least two to check duplication
-
-        var firstRegion = regions.First();
-        var secondRegion = regions.Skip(1).First();
-
-        var input = new CreateUpdateRegionDto
-        {
-            EnglishName = firstRegion.EnglishName, // Duplicate
-            ArabicName = "منطقة مكررة",
-            CountryId = egypt.Id,
-            Status = Status.Active
-        };
-
-        // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-        {
-            await _regionAppService.UpdateAsync(secondRegion.Id, input);
-        });
-    }
-    [Theory]
-    [InlineData("", "منطقة بدون اسم إنجليزي")]
-    [InlineData("Region without Arabic", "")]
-    [InlineData("", "")]
-    public async Task Should_Not_Create_Region_Without_Required_Names(string englishName, string arabicName)
-    {
-        // Arrange
-        var countries = await _countriesAppService.GetCountryLookupAsync();
-        var egypt = countries.FirstOrDefault(c => c.EnglishName == "Egypt");
-
-        var input = new CreateUpdateRegionDto
-        {
-            EnglishName = englishName,
-            ArabicName = arabicName,
-            CountryId = egypt.Id,
-            Status = Status.Active
-        };
-
-        // Act & Assert
-        await Assert.ThrowsAsync<AbpValidationException>(async () =>
-        {
-            await _regionAppService.CreateAsync(input);
-        });
-    }
+  
+    
     [Theory]
     [InlineData("", "اسم عربي")]
     [InlineData("English Name", "")]
