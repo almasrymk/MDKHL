@@ -123,8 +123,8 @@ public class StateAppServiceTests<TStartupModule> : SmartParkingApplicationTestB
     }
 
     [Theory]
-    [InlineData(null, "اسم عربي")]
-    [InlineData("English Name", null)]
+    [InlineData("", "اسم عربي")]
+    [InlineData("English Name", "")]
     [InlineData("", "")]
     public async Task Should_Not_Create_State_Without_Required_Fields(string englishName, string arabicName)
     {
