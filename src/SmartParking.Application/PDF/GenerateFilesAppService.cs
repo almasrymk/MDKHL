@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.CodeAnalysis.Elfie.Model;
 using OfficeOpenXml;
 using SmartParking.DataTable;
-using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Events;
 using SmartParking.Localization;
@@ -308,7 +307,7 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
     /// </summary>
     /// <returns>A <see cref="Table"/> representing the header of the report.</returns>
 
-    private static Table CreateHeaderTable(TableData Data, PdfFont font, Organization? organization)
+    private static Table CreateHeaderTable(TableData Data, PdfFont font, OrganizationDto? organization)
     {
         Table headerTable = new Table(3);
         headerTable.SetWidth(UnitValue.CreatePercentValue(100));
