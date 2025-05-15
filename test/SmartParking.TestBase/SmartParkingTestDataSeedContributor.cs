@@ -14,6 +14,8 @@ using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Shifts;
 using SmartParking.Entities.Discounts;
 using Volo.Abp.Identity;
+using SmartParking.Entities.Vehicles;
+using Volo.Abp.TenantManagement;
 
 namespace SmartParking;
 
@@ -38,8 +40,9 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
     private readonly IRepository<Discount, int> _discountRepository;
     private readonly IRepository<VehicleBrand, int> _vehicleBrandRepository;
     private readonly IRepository<VehicleModel, int> _vehicleModelRepository;
+    private readonly IRepository<Vehicle, int> _vehicleRepository;
     private readonly IdentityUserManager _identityUserManager;
-    public SmartParkingTestDataSeedContributor(IRepository<Region, int> regionRepository, IRepository<Country, int> countryRepository, IRepository<State, int> stateRepository, IRepository<City, int> cityRepository, IRepository<SubscriptionType, int> subscriptionTypeRepository, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationRepostory, IRepository<Garage, int> garageRepostory, IRepository<CameraModel, int> cameraModelRepository, IRepository<CameraMainType, int> cameraMainTypeRepository, IRepository<PlateColor, int> plateColorRepository, IRepository<LicenceType, int> licenceTypeRepository, IRepository<CameraBrand, int> cameraBrandRepository, IRepository<Camera, int> cameraRepostory, IRepository<Shift, int> shiftRepository, IRepository<KeeperShift, int> keeperShiftRepository, IRepository<Discount, int> discountRepository, IdentityUserManager identityUserManager, IRepository<VehicleBrand, int> vehicleBrandRepository, IRepository<VehicleModel, int> vehicleModelRepository)
+    public SmartParkingTestDataSeedContributor(IRepository<Region, int> regionRepository, IRepository<Country, int> countryRepository, IRepository<State, int> stateRepository, IRepository<City, int> cityRepository, IRepository<SubscriptionType, int> subscriptionTypeRepository, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationRepostory, IRepository<Garage, int> garageRepostory, IRepository<CameraModel, int> cameraModelRepository, IRepository<CameraMainType, int> cameraMainTypeRepository, IRepository<PlateColor, int> plateColorRepository, IRepository<LicenceType, int> licenceTypeRepository, IRepository<CameraBrand, int> cameraBrandRepository, IRepository<Camera, int> cameraRepostory, IRepository<Shift, int> shiftRepository, IRepository<KeeperShift, int> keeperShiftRepository, IRepository<Discount, int> discountRepository, IdentityUserManager identityUserManager, IRepository<VehicleBrand, int> vehicleBrandRepository, IRepository<VehicleModel, int> vehicleModelRepository, IRepository<Vehicle, int> vehicleRepository)
     {
         _regionRepository = regionRepository;
         _countryRepository = countryRepository;
@@ -61,6 +64,7 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
         _identityUserManager = identityUserManager;
         _vehicleBrandRepository = vehicleBrandRepository;
         _vehicleModelRepository = vehicleModelRepository;
+        _vehicleRepository = vehicleRepository;
     }
     public async Task SeedAsync(DataSeedContext context)
     {
@@ -353,7 +357,7 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
             var blueplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Blue");
             var whiteplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "White");
             var yellowplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Yellow");
-            var silverplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Yellow");
+            var silverplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Silver");
             var greenplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Green");
 
 
@@ -420,5 +424,60 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
         }
 
 
-    }
+        if (!await _vehicleRepository.AnyAsync())
+        {
+            var toyota = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Toyota");
+            var honda = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Honda");
+
+            var corolla = await _vehicleModelRepository.FirstOrDefaultAsync(m => m.EnglishName == "Corolla");
+            var civic = await _vehicleModelRepository.FirstOrDefaultAsync(m => m.EnglishName == "Civic");
+
+            var whitePlate = await _plateColorRepository.FirstOrDefaultAsync(p => p.EnglishName == "White");
+            var privateLicence = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.EnglishName == "Private Car");
+
+
+            if (toyota == null || honda == null || corolla == null || civic == null ||
+                whitePlate == null || privateLicence == null)
+            {
+                throw new Exception("Missing lookup or customer data for vehicle seeding.");
+            }
+
+            var vehicles = new List<Vehicle>
+        {
+                new Vehicle
+                {
+                TenantId = Guid.NewGuid(),
+                CustomerId = Guid.NewGuid(),
+                VehicleBrandId = toyota.Id,
+                VehicleModelId = corolla.Id,
+                PlateColorId = whitePlate.Id,
+                LicenceTypeId = privateLicence.Id,
+                EnPlateNumber = "1234",
+                ArPlateNumber = "١٢٣٤",
+                ModelYear = "2022",
+                BelongToCompany = false,
+                Status = Status.Active
+            },
+                new Vehicle
+            {
+                TenantId = Guid.NewGuid(),
+                CustomerId = Guid.NewGuid(),
+                VehicleBrandId = honda.Id,
+                VehicleModelId = civic.Id,
+                PlateColorId = whitePlate.Id,
+                LicenceTypeId = privateLicence.Id,
+                EnPlateNumber = "5678",
+                ArPlateNumber = "٥٦٧٨",
+                ModelYear = "2021",
+                BelongToCompany = true,
+                CompanyName = "Smart Co.",
+                Status = Status.Active
+            }
+        };
+
+            await _vehicleRepository.InsertManyAsync(vehicles, autoSave: true);
+        };
+        }
+
+
 }
