@@ -16,13 +16,13 @@ public class CreateUpdaeGarageDtoValidator : AbstractValidator<CreateUpdateGarag
         RuleFor(x => x.NameEn)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .MaximumLength(100)
-            .Matches(@"^[a-zA-Z][a-zA-Z0-9\s.,\-\\_]*$")
+            .Matches(ConstantValidations.EnglishName)
             .WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"));
         
         RuleFor(x => x.NameAr)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .MaximumLength(100)
-            .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s@#\*\-]*$").WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"));
+            .Matches(ConstantValidations.ArabicName).WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"));
 
 
         RuleFor(x => x.ClosingHours.ToString("HH:mm"))
