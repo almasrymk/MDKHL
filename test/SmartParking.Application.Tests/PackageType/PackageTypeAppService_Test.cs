@@ -24,11 +24,16 @@ public class PackageTypeAppService_Test<TStartupModule> : SmartParkingApplicatio
     {
         _packageTypesAppService = GetRequiredService<IPackageTypesAppService>();
     }
-
-    /// <summary>
-    /// Should create a valid package type when given valid input.
-    /// </summary>
     [Fact]
+    public async Task Sholuld_GetList_NotEmpty_Because_Seeding ()
+    {
+        var result = await _packageTypesAppService.GetAllListAsync();
+        Assert.Equal(3 , result.Count);
+    }
+        /// <summary>
+        /// Should create a valid package type when given valid input.
+        /// </summary>
+        [Fact]
     public async Task Should_Create_Valid_PackageType()
     {
         var input = new CreateUpdatePackageTypeDto
@@ -139,8 +144,6 @@ public class PackageTypeAppService_Test<TStartupModule> : SmartParkingApplicatio
             EnglishName = "Delete Me",
             ArabicName = "احذف"
         });
-
-        Assert.Equal(1, entity.Id);
 
         await _packageTypesAppService.DeleteAsync(entity.Id);
 
