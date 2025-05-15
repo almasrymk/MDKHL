@@ -20,7 +20,7 @@
 
 
 
-			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
 				<MudGrid>
 
 					<MudItem sm="6" md="6">
@@ -70,64 +70,3 @@
 	}
 </style>
 
-@code {
-	[CascadingParameter]
-	private IMudDialogInstance MudDialogAdd { get; set; }
-	[Parameter]
-	public int Id { get; set; }
-	[Parameter] public CreateUpdateCameraBrandDto CameraBrand { get; set; }
-
-	bool _clearable;
-	private MudForm form;
-
-	protected override async Task OnInitializedAsync()
-	{
-
-		await base.OnInitializedAsync();
-	}
-
-	private async Task SubmitEdit()
-	{
-		
-		try
-		{
-
-			await CameraBrandsAppService.UpdateAsync(Id, CameraBrand);
-			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {CameraBrand.ArabicName} ", Severity.Success);
-			MudDialogAdd.Close(DialogResult.Ok(true));
-			await Task.Delay(1000);
-			Navigation.NavigateTo("/cameraBrands", true);
-
-		}
-		catch (AbpValidationException validationException)
-		{
-			foreach (var validationError in validationException.ValidationErrors)
-			{
-				SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
-			}
-		}
-		catch (BusinessException ex)
-		{
-
-			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Code}", Severity.Error);
-		}
-		catch (AuthenticationException ex)
-		{
-			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
-		}
-		catch (Exception ex)
-		{
-
-			SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
-		}
-	}
-
-	private async Task CancelEdit()
-	{
-		MudDialogAdd.Cancel();
-
-
-	}
-
-
-}

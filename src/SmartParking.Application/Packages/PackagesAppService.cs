@@ -22,7 +22,9 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.DefaultPackages;
-
+/// <summary>
+/// Service for handling packages.
+/// </summary>
 [Authorize]
 public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAndSortedResultRequestDto,CreateUpdatePackageDto> , IPackagesAppService 
 {
@@ -44,9 +46,8 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
         DeletePolicyName = PackagePermissions.Delete;
 
     }
-
-
-
+    #region public methods
+    /// <inheritdoc/>
     public async Task<Result<List<PackageDto>>> GetListPackageByOrganizationId(int organizationId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -64,58 +65,7 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
         }
 
     }
-    public async Task<PagedResultDto<PackageDto>> SearchOrganization(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable)
-    {
-        queryable = SearchCriteria(input, queryable);
-        queryable = SortingCriteria(input, queryable);
-        return await ProcessDataToMapDto(input, queryable);
-
-    }
-
-    private static IQueryable<Package> SearchCriteria(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable)
-    {
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
-
-            queryable = queryable.Where(or =>
-                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.CreatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.DeactivatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Price.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())  ||
-                or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
-            );
-        }
-
-        return queryable;
-    }
-
-    public async Task<PagedResultDto<PackageDto>> SearchMdkhl(PagedAndSortedAndSearchResultRequestDto input,  IQueryable<Package> queryable , Guid? TenantId = null)
-    {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            if (TenantId != null)
-                queryable = queryable.Where(p => p.TenantId == TenantId);
-            queryable = SearchCriteria(input, queryable);
-            queryable = SortingCriteria(input, queryable);
-            return await ProcessDataToMapDto(input, queryable);
-        }
-    }
-
-    private async Task<PagedResultDto<PackageDto>> ProcessDataToMapDto(PagedAndSortedAndSearchResultRequestDto input,  IQueryable<Package> queryable)
-    {
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        var packages = await AsyncExecuter.ToListAsync(queryable);
-        var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
-        return new PagedResultDto<PackageDto>(
-            totalCount,
-            packagesDto
-        );
-    }
-
+    /// <inheritdoc/>
     public async Task<PagedResultDto<PackageDto>> Search(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId = null)
     {
         var queryable = await _repository.GetQueryableAsync();
@@ -123,12 +73,13 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
 
         return CurrentTenant.Id switch
         {
-            (null) => await SearchMdkhl(input, queryable,TenantId),
-            (not null)=> await SearchOrganization(input, queryable)
+            (null) => await SearchMdkhl(input, queryable, TenantId),
+            (not null) => await SearchOrganization(input, queryable)
         };
 
 
     }
+    /// <inheritdoc/>
     public async Task<PagedResultDto<PackageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<camera> from the repository
@@ -155,6 +106,7 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
             packagesDto
         );
     }
+    /// <inheritdoc/>
     public async Task<PagedResultDto<PackageDto>> GetPackagesByOrganization(PagedAndSortedResultRequestDto input, int organizationId)
     {
         var query = await _repository.GetQueryableAsync();
@@ -169,6 +121,7 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
            garagesDto
        );
     }
+    /// <inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -183,6 +136,20 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
             await _repository.HardDeleteAsync(package);
         }
     }
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<PackageDto>> GetListMDKHLAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId = null)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            IQueryable<Package> queryable = await IntializeGetListQuery();
+            if (TenantId != null)
+                queryable = queryable.Where(p => p.TenantId == TenantId);
+            queryable = SearchCriteria(input, queryable);
+            queryable = SortingCriteria(input, queryable);
+            return await MapToGetListDto(input, queryable);
+        }
+
+    }
     ///<inheritdoc/>
     public async Task<PagedResultDto<PackageDto>> GetAllListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
@@ -193,61 +160,6 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
         return await MapToGetListDto(input, queryable);
 
     }
-
-    private async Task<PagedResultDto<PackageDto>> MapToGetListDto(PagedAndSortedResultRequestDto input,  IQueryable<Package> queryable)
-    {
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        var packages = await AsyncExecuter.ToListAsync(queryable);
-        var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
-
-        return new PagedResultDto<PackageDto>(
-            totalCount,
-            packagesDto
-        );
-    }
-
-    public async Task<PagedResultDto<PackageDto>> GetListMDKHLAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? TenantId = null)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            IQueryable<Package> queryable = await IntializeGetListQuery();
-           if(TenantId != null)
-                queryable=queryable.Where(p=>p.TenantId == TenantId );
-            queryable = SearchCriteria(input, queryable);
-            queryable = SortingCriteria(input, queryable);
-            return await MapToGetListDto(input,  queryable);
-        }
-
-    }
-
-    private async Task<IQueryable<Package>> IntializeGetListQuery()
-    {
-        var queryable = await _repository.GetQueryableAsync();
-        queryable = queryable.Include(p => p.PackageType);
-        queryable = queryable.Include(p => p.CustomerPackages);
-        return queryable;
-    }
-
-    private static IQueryable<Package> SortingCriteria(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable)
-    {
-        if (!string.IsNullOrEmpty(input.Sorting))
-        {
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-                queryable = queryable.OrderBy(input.Sorting);
-            }
-
-        }
-
-        return queryable;
-    }
-
     ///<inheritdoc/>
     public async Task<List<PackageDto>> GetAllMdkhlAsync(int organizationId, CustomerCategoryStatus customerCategory)
     {
@@ -256,7 +168,7 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
 
             var queryable = await _repository.GetQueryableAsync();
             queryable = queryable.Include(p => p.PackageType);
-            queryable = queryable.Where(x => x.OrganizationId == organizationId && x.CustomerCategory == customerCategory && x.Status==Status.Active);
+            queryable = queryable.Where(x => x.OrganizationId == organizationId && x.CustomerCategory == customerCategory && x.Status == Status.Active);
             var totalCount = await AsyncExecuter.CountAsync(queryable);
             var packages = await AsyncExecuter.ToListAsync(queryable);
             var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
@@ -283,7 +195,7 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
 
         return packagesDto;
     }
-
+    /// <inheritdoc/>
     public override async Task<PackageDto> UpdateAsync(int id, CreateUpdatePackageDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -300,8 +212,9 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
 
             return await base.UpdateAsync(id, input);
         }
-        
+
     }
+    /// <inheritdoc/>
     public override Task<PackageDto> GetAsync(int id)
     {
         if (CurrentTenant.Id == null)
@@ -314,5 +227,140 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
         return base.GetAsync(id);
 
     }
+    #endregion
+
+    #region private methods
+    /// <summary>
+    /// Maps and paginates a list of <see cref="Package"/> entities to a list of <see cref="PackageDto"/> objects.
+    /// </summary>
+    /// <param name="input">Paging and sorting request DTO with search term.</param>
+    /// <param name="queryable">The filtered <see cref="IQueryable{Package}"/> to process.</param>
+    /// <returns>Paged result of <see cref="PackageDto"/>.</returns>
+    private async Task<PagedResultDto<PackageDto>> ProcessDataToMapDto(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable)
+    {
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var packages = await AsyncExecuter.ToListAsync(queryable);
+        var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
+        return new PagedResultDto<PackageDto>(
+            totalCount,
+            packagesDto
+        );
+    }
+
+    /// <summary>
+    /// Maps and paginates a list of <see cref="Package"/> entities to <see cref="PackageDto"/> based on basic pagination input.
+    /// </summary>
+    /// <param name="input">Paging and sorting request DTO without search term.</param>
+    /// <param name="queryable">The queryable list of <see cref="Package"/> entities.</param>
+    /// <returns>Paged result of <see cref="PackageDto"/>.</returns>
+    private async Task<PagedResultDto<PackageDto>> MapToGetListDto(PagedAndSortedResultRequestDto input, IQueryable<Package> queryable)
+    {
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var packages = await AsyncExecuter.ToListAsync(queryable);
+        var packagesDto = ObjectMapper.Map<List<Package>, List<PackageDto>>(packages);
+
+        return new PagedResultDto<PackageDto>(
+            totalCount,
+            packagesDto
+        );
+    }
+
+    /// <summary>
+    /// Initializes the queryable object for <see cref="Package"/> including related entities.
+    /// </summary>
+    /// <returns>A queryable of <see cref="Package"/> including PackageType and CustomerPackages.</returns>
+    private async Task<IQueryable<Package>> IntializeGetListQuery()
+    {
+        var queryable = await _repository.GetQueryableAsync();
+        queryable = queryable.Include(p => p.PackageType);
+        queryable = queryable.Include(p => p.CustomerPackages);
+        return queryable;
+    }
+
+    /// <summary>
+    /// Applies sorting logic to the given <see cref="Package"/> queryable based on user input.
+    /// </summary>
+    /// <param name="input">The DTO containing sorting criteria.</param>
+    /// <param name="queryable">The original queryable to sort.</param>
+    /// <returns>A sorted queryable.</returns>
+    private static IQueryable<Package> SortingCriteria(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable)
+    {
+        if (!string.IsNullOrEmpty(input.Sorting))
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+        }
+
+        return queryable;
+    }
+
+    /// <summary>
+    /// Applies search filters to the <see cref="Package"/> queryable using the provided search term.
+    /// </summary>
+    /// <param name="input">The DTO containing the search term.</param>
+    /// <param name="queryable">The original queryable to filter.</param>
+    /// <returns>A filtered queryable.</returns>
+    private static IQueryable<Package> SearchCriteria(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable)
+    {
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+            queryable = queryable.Where(or =>
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.CreatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.DeactivatedBy.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Price.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
+            );
+        }
+
+        return queryable;
+    }
+
+    /// <summary>
+    /// Searches and filters <see cref="Package"/> entities by organization-specific criteria and maps them to DTOs.
+    /// </summary>
+    /// <param name="input">Search and sort input DTO.</param>
+    /// <param name="queryable">Queryable of packages to filter.</param>
+    /// <returns>Paged result of <see cref="PackageDto"/>.</returns>
+    private async Task<PagedResultDto<PackageDto>> SearchOrganization(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable)
+    {
+        queryable = SearchCriteria(input, queryable);
+        queryable = SortingCriteria(input, queryable);
+        return await ProcessDataToMapDto(input, queryable);
+    }
+
+    /// <summary>
+    /// Searches and filters <see cref="Package"/> entities within a specific tenant and maps them to DTOs.
+    /// Multi-tenant filter is disabled inside this method to allow cross-tenant access.
+    /// </summary>
+    /// <param name="input">Search and sort input DTO.</param>
+    /// <param name="queryable">Queryable of packages to filter.</param>
+    /// <param name="TenantId">Optional tenant ID to filter by.</param>
+    /// <returns>Paged result of <see cref="PackageDto"/>.</returns>
+    private async Task<PagedResultDto<PackageDto>> SearchMdkhl(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Package> queryable, Guid? TenantId = null)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            if (TenantId != null)
+                queryable = queryable.Where(p => p.TenantId == TenantId);
+            queryable = SearchCriteria(input, queryable);
+            queryable = SortingCriteria(input, queryable);
+            return await ProcessDataToMapDto(input, queryable);
+        }
+    }
+
+    #endregion
 
 }

@@ -89,6 +89,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _discountAppService = discountAppService;
     }
 
+    #region Public Methods
     /// <inheritdoc/>
 
     public async Task<Result> CorrectTransactionByPlateNumberAsync(int garageTransactionId, string plateNumber)
@@ -191,8 +192,9 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     {
         var listInvoice=await AsyncExecuter.ToListAsync(_invoiceRepository.GetQueryableAsync().Result.Where(inv => inv.OrganizationId == organizationId).OrderByDescending(inv=>inv.InvoiceTime).Take(100));
         return ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(listInvoice);
-    }    
-    
+    }
+    /// <inheritdoc/>
+
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdPaidAsync(int organizationId)
     {
         var listInvoice=await AsyncExecuter.ToListAsync(_invoiceRepository.GetQueryableAsync().Result.Where(inv => inv.OrganizationId == organizationId && inv.InvoiceType == InvoiceType.Paid).OrderByDescending(inv=>inv.InvoiceTime).Take(100));
@@ -265,6 +267,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             });
         }
     }
+    /// <inheritdoc/>
 
     public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId,Guid userId)
     {
@@ -280,22 +283,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         return mappedTransaction.Count == 0? Result<List<GarageTransactionDto>>.NotFound("Transaction not found") : Result<List<GarageTransactionDto>>.Success(mappedTransaction);
     }
 
-    private async Task<Result?> CheckUserIsFound(int organizationId, Guid userId)
-    {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            var user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
-
-            if (user is null)
-            {
-                return Result.Invalid(new Results.ValidationError
-                {
-                    ErrorMessage = "User not found"
-                });
-            }
-        }
-        return null;
-    }
+   
+    /// <inheritdoc/>
 
     public async Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum)
 	{
@@ -304,6 +293,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 		var tenant = await AsyncExecuter.FirstOrDefaultAsync(query);
 		return tenant;
 	}
+    /// <inheritdoc/>
 
     public async Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId , decimal discountValue =default)
     {
@@ -335,45 +325,16 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         }
     }
 
-    private async Task<Result<InvoiceMobileDto>> ProcessingInvoiceMobileDto(decimal discountValue, int invoiceId, Result<string> image)
-    {
-        var invoice = await _invoiceAppService.GetAsync(invoiceId);
-        var invoiceDto = ObjectMapper.Map<InvoiceDto, InvoiceMobileDto>(invoice);
-        invoiceDto.QrCodeInvoice = image.Value;
-        invoiceDto.Vehicle = await _vehicleAppService.GetVehicleByPlateNumberAsync(invoice.PlateNumber);
-        invoiceDto.TotalPriceWithVatAndDiscount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, discountValue);
-        invoiceDto.ExitTransactionImage = invoiceDto.EntryTransactionImage;
-        return invoiceDto;
-    }
+   
+    /// <inheritdoc/>
 
-    private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout(InvoiceDto invoice , decimal discountValue)
-    {
-        var paymentChekout = new PaymentCheckoutRequestDto
-        {
-            PaymentCategory = PaymentCategory.PaymentParking,
-            PaymentMethod = PaymentMethod.Cash,
-            Amount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, discountValue),
-            CustomerId = invoice.CustomerId,
-            OrganizationId = invoice.OrganizationId,
-            InvoiceId = invoice.Id,
-            PaymentName = PaymentMethod.Cash.ToString()
-        };
-        var payment = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
-        return payment;
-    }
     public async Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType, decimal discountValue = default)
     {
        return await CheckoutAsync(invoiceId, discountValue);
     }
 
-    private static bool CheckIfInvoiceIsPaid(InvoiceDto invoice)
-    {
-        if (invoice.InvoiceType == InvoiceType.Paid.ToString())
-        {
-            return true;
-        }
-        return false;
-    }
+  
+    /// <inheritdoc/>
 
     public async Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationIdAsync(int organizationId)
     {
@@ -390,4 +351,83 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         }
     }
 
+    #endregion
+    #region Private Methods
+    /// <summary>
+    /// Checks whether an invoice is marked as paid.
+    /// </summary>
+    /// <param name="invoice">The invoice to check.</param>
+    /// <returns><c>true</c> if the invoice is marked as paid; otherwise, <c>false</c>.</returns>
+    private static bool CheckIfInvoiceIsPaid(InvoiceDto invoice)
+    {
+        if (invoice.InvoiceType == InvoiceType.Paid.ToString())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Processes the invoice data to create an <see cref="InvoiceMobileDto"/> with additional details like QR code, vehicle info, and price calculations.
+    /// </summary>
+    /// <param name="discountValue">The discount value to apply to the invoice.</param>
+    /// <param name="invoiceId">The unique identifier of the invoice to process.</param>
+    /// <param name="image">The result containing the QR code image for the invoice.</param>
+    /// <returns>A task representing the asynchronous operation, containing a <see cref="Result{InvoiceMobileDto}"/> object with the processed invoice details.</returns>
+    private async Task<Result<InvoiceMobileDto>> ProcessingInvoiceMobileDto(decimal discountValue, int invoiceId, Result<string> image)
+    {
+        var invoice = await _invoiceAppService.GetAsync(invoiceId);
+        var invoiceDto = ObjectMapper.Map<InvoiceDto, InvoiceMobileDto>(invoice);
+        invoiceDto.QrCodeInvoice = image.Value;
+        invoiceDto.Vehicle = await _vehicleAppService.GetVehicleByPlateNumberAsync(invoice.PlateNumber);
+        invoiceDto.TotalPriceWithVatAndDiscount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, discountValue);
+        invoiceDto.ExitTransactionImage = invoiceDto.EntryTransactionImage;
+        return invoiceDto;
+    }
+
+    /// <summary>
+    /// Requests a payment checkout by creating a payment request with necessary details like payment category, method, and amount.
+    /// </summary>
+    /// <param name="invoice">The invoice for which the payment checkout is requested.</param>
+    /// <param name="discountValue">The discount value to apply to the payment.</param>
+    /// <returns>A task representing the asynchronous operation, containing the <see cref="PaymentCheckoutDto"/> for the payment request.</returns>
+    private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout(InvoiceDto invoice, decimal discountValue)
+    {
+        var paymentChekout = new PaymentCheckoutRequestDto
+        {
+            PaymentCategory = PaymentCategory.PaymentParking,
+            PaymentMethod = PaymentMethod.Cash,
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, discountValue),
+            CustomerId = invoice.CustomerId,
+            OrganizationId = invoice.OrganizationId,
+            InvoiceId = invoice.Id,
+            PaymentName = PaymentMethod.Cash.ToString()
+        };
+        var payment = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
+        return payment;
+    }
+
+    /// <summary>
+    /// Checks if a user exists within a specific organization by their user ID and organization ID.
+    /// </summary>
+    /// <param name="organizationId">The organization ID to check within.</param>
+    /// <param name="userId">The unique identifier of the user to check.</param>
+    /// <returns>A task representing the asynchronous operation, returning <c>null</c> if the user exists, or an error result if the user is not found.</returns>
+    private async Task<Result?> CheckUserIsFound(int organizationId, Guid userId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
+
+            if (user is null)
+            {
+                return Result.Invalid(new Results.ValidationError
+                {
+                    ErrorMessage = "User not found"
+                });
+            }
+        }
+        return null;
+    }
+    #endregion
 }

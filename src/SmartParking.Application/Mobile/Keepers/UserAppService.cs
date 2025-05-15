@@ -32,8 +32,8 @@ public class UserAppService : ApplicationService, IUserAppService
         _usersAppService = usersAppService;
     }
 
-   
 
+    #region Public Methods
     /// <inheritdoc/>
     public async Task<Result<UserDataDto>> GetUserDataAsync()
     {
@@ -64,7 +64,6 @@ public class UserAppService : ApplicationService, IUserAppService
         }
         return Result<UserDataDto>.NotFound("User not found with the specified username");
     }
-
     /// <inheritdoc/>
     public async Task<Result<UserDataDto>> UpdateUserAsync(string FullName,string phoneNumber, string password, string email, string image)
     {
@@ -119,7 +118,17 @@ public class UserAppService : ApplicationService, IUserAppService
             OrganizationId = user.GetProperty<int>("OrganizationId")
         };
     }
-
+    #endregion
+    #region Private Methods
+    /// <summary>
+    /// Changes the password for a given user.
+    /// </summary>
+    /// <param name="password">The new password to be set for the user.</param>
+    /// <param name="user">The user whose password will be changed.</param>
+    /// <returns>
+    /// A <see cref="Result"/> indicating whether the operation was successful or not.
+    /// If successful, the updated <see cref="IdentityUser"/> is returned. If failed, an error message is returned.
+    /// </returns>
     private async Task<Result<Volo.Abp.Identity.IdentityUser?>> ChangePassword(string password, Volo.Abp.Identity.IdentityUser? user)
     {
         var removePasswordResult = await _userManager.RemovePasswordAsync(user);
@@ -141,4 +150,5 @@ public class UserAppService : ApplicationService, IUserAppService
         }
         return user;
     }
+    #endregion
 }

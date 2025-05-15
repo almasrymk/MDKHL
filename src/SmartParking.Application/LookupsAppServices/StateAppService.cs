@@ -44,101 +44,31 @@ public class StateAppService : CrudAppService<State, StateDto,
         _stateRepository = stateRepository;
         _regionRepository = regionRepository;
     }
-
+    #region Public Methods
     ///<inheritdoc/>
-
     public override async Task<StateDto> CreateAsync(CreateUpdateStateDto input)
     {
-        var state = await _stateRepository.FirstOrDefaultAsync
-                (state =>
-                state.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                state.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+        await ValidateStateUniqunessAsync(input);
+        await ValidateRegionExistsAsync(input.RegionId);
+        ValidateStatus(input.Status);
 
-        var exisitingRegion = await _regionRepository.FindAsync(input.RegionId);
-
-        if (exisitingRegion is null)
-        {
-            throw new InvalidOperationException("region doesnot exist");
-        }
-
-        if (state != null)
-        {
-            if (state.EnglishName == input.EnglishName)
-            {
-                throw new InvalidOperationException("state english name already exists");
-
-            }
-            else if (state.ArabicName == input.ArabicName)
-            {
-                throw new InvalidOperationException("state arabic name already exists");
-
-            }
-
-            throw new InvalidOperationException("english name , arabic name already exist");
-        }
-
-        if (input.Status != Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
-        {
-            throw new InvalidOperationException("Invalid status value.");
-
-        }
-        
-        
-            return await base.CreateAsync(input);
+        return await base.CreateAsync(input);
     }
-
     ///<inheritdoc/>
+
     public override async Task<StateDto> UpdateAsync(int id, CreateUpdateStateDto input)
     {
-        var exisitingState = await _stateRepository.GetAsync(id);
+        var existingState = await _stateRepository.GetAsync(id)
+            ?? throw new InvalidOperationException("State not found");
 
-        if (exisitingState is null)
-        {
-            throw new InvalidOperationException("State not found");
-        }
-        var exisitingRegion = await _regionRepository.FindAsync(input.RegionId);
+        await ValidateStateUniqunessAsync(input, id);
+        await ValidateRegionExistsAsync(input.RegionId);
+        ValidateStatus(input.Status);
 
-        if (exisitingRegion is null)
-        {
-            throw new InvalidOperationException("region doesnot exist");
-        }
-
-
-        var state = await _stateRepository.FirstOrDefaultAsync
-                (state =>
-                state.RegionId == input.RegionId &&
-                state.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                state.ArabicName.ToLower().Contains(input.ArabicName.ToLower())
-                );
-
-       if (state != null && state.Id != id )
-       {
-
-            if (state.EnglishName == input.EnglishName.Trim(' '))
-            {
-                throw new InvalidOperationException("state english name already exists");
-
-            }
-            else if (state.ArabicName == input.ArabicName.Trim(' '))
-            {
-                throw new InvalidOperationException("state arabic name already exists");
-
-            }
-
-
-        }
-
-        if (input.Status != Status.Active && input.Status != Status.Inactive && input.Status != Status.Deleted)
-        {
-            throw new InvalidOperationException("Invalid status value.");
-
-        }
-
-       
-
-        return await base.UpdateAsync(id,input);
+        return await base.UpdateAsync(id, input);
     }
 
+    
     ///<inheritdoc/>
 
     public async Task<PagedResultDto<StateDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
@@ -181,6 +111,7 @@ public class StateAppService : CrudAppService<State, StateDto,
             stateDto
         );
     }
+    ///<inheritdoc/>
 
     public async Task<List<RegionLookupDto>> GetRegionLookupAsync()
     {
@@ -192,6 +123,7 @@ public class StateAppService : CrudAppService<State, StateDto,
         return regionsList;
         }
     }
+    ///<inheritdoc/>
 
     public async Task<List<StateLookupDto>> GetStateLookupAsync()
     {
@@ -203,6 +135,7 @@ public class StateAppService : CrudAppService<State, StateDto,
         return statesList;
         }
     }
+    ///<inheritdoc/>
 
     public async Task<List<StateLookupDto>> GetStateLookupByRegionAsync(int regionId)
     {
@@ -216,11 +149,8 @@ public class StateAppService : CrudAppService<State, StateDto,
 
         }
     }
-    /// <summary>
-    /// method used to get list of states
-    /// </summary>
-    /// <param name="input">specifies max number of state and if it filtered or not</param>
-    /// <returns>StateDto List</returns>
+    ///<inheritdoc/>
+
     public async Task<PagedResultDto<StateDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         // Get the IQueryable<state> from the repository
@@ -277,11 +207,58 @@ public class StateAppService : CrudAppService<State, StateDto,
         {
             throw new EntityNotFoundException(typeof(State), id);
         }
-
-
-
-        
-
         await _stateRepository.HardDeleteAsync(state);
     }
+    #endregion
+
+    #region Private Methods
+    /// <summary>
+    /// Validates the uniqueness of a state by checking if the English or Arabic names already exist for the specified region in the repository, excluding the current state (if specified by ID).
+    /// </summary>
+    /// <param name="input">The DTO containing the state details to validate.</param>
+    /// <param name="id">The ID of the state to exclude from the check (optional).</param>
+    /// <exception cref="InvalidOperationException">Thrown when the English or Arabic name of the state already exists in the repository for the given region.</exception>
+    private async Task ValidateStateUniqunessAsync(CreateUpdateStateDto input, int? id = null)
+    {
+        string normalizedEnglish = input.EnglishName?.Trim().ToLowerInvariant();
+        string normalizedArabic = input.ArabicName?.Trim().ToLowerInvariant();
+
+        var state = await _stateRepository.FirstOrDefaultAsync(s =>
+            s.RegionId == input.RegionId &&
+            (s.EnglishName.ToLower() == normalizedEnglish ||
+             s.ArabicName.ToLower() == normalizedArabic) &&
+            (!id.HasValue || s.Id != id.Value));
+
+        if (state == null) return;
+
+        if (state.EnglishName.Trim().ToLowerInvariant() == normalizedEnglish)
+            throw new InvalidOperationException("State english name already exists");
+
+        if (state.ArabicName.Trim().ToLowerInvariant() == normalizedArabic)
+            throw new InvalidOperationException("State arabic name already exists");
+    }
+
+    /// <summary>
+    /// Validates if a region with the specified ID exists in the repository.
+    /// </summary>
+    /// <param name="regionId">The ID of the region to validate.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the region with the given ID does not exist.</exception>
+    private async Task ValidateRegionExistsAsync(int regionId)
+    {
+        var region = await _regionRepository.FindAsync(regionId);
+        if (region is null)
+            throw new InvalidOperationException("Region does not exist");
+    }
+
+    /// <summary>
+    /// Validates that the given status is one of the valid status values: Active, Inactive, or Deleted.
+    /// </summary>
+    /// <param name="status">The status to validate.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the status is invalid.</exception>
+    private void ValidateStatus(Status status)
+    {
+        if (status != Status.Active && status != Status.Inactive && status != Status.Deleted)
+            throw new InvalidOperationException("Invalid status value.");
+    }
+    #endregion
 }

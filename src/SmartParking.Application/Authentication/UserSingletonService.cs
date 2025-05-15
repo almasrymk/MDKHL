@@ -31,6 +31,8 @@ public class UserSingletonService : ISingletonService<IdentityUser, Guid?>
         instance = null;
 
     }
+    #region Public Methods
+    /// <inheritdoc/>
 
     public async Task<IdentityUser> GetAsync(Guid? key)
     {
@@ -42,6 +44,7 @@ public class UserSingletonService : ISingletonService<IdentityUser, Guid?>
 
         return instance;
     }
+    /// <inheritdoc/>
 
     public async Task<IdentityUser> SetAsync(Guid? key)
     {
@@ -55,8 +58,17 @@ public class UserSingletonService : ISingletonService<IdentityUser, Guid?>
         }
         return instance;
     }
-   
-    
+
+
+
+    /// <inheritdoc/>
+
+    public void Refresh()
+    {
+        instance = null;
+    }
+#endregion
+    #region UnUsed Methods
     public async Task<bool> ISCurrentUserIsAssignShift(Guid? key)
     {
         if (instance == null)
@@ -67,9 +79,5 @@ public class UserSingletonService : ISingletonService<IdentityUser, Guid?>
         var userCategory = instance.GetProperty<UserTypeCategory>("UserTypeCategory");
         return userCategory > 0 ? true : false;
     }
-
-    public void Refresh()
-    {
-        instance = null;
-    }
+    #endregion
 }

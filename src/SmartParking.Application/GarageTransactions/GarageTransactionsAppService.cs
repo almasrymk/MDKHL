@@ -53,6 +53,7 @@ public class GarageTransactionsAppService :
         _VehicleRepository = vehicleRepository;
         _CustomerRepository = customerRepository;
     }
+    #region public methods
     public async Task<PagedResultDto<GarageTransactionDto>> GetAllListAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -71,41 +72,6 @@ public class GarageTransactionsAppService :
         }
 
     }
-
-    private static IQueryable<GarageTransaction> ApplyFilterTenant(Guid? tenantId, IQueryable<GarageTransaction> queryable)
-    {
-        if (tenantId.HasValue)
-            queryable = queryable.Where(t => t.TenantId == tenantId);
-        return queryable;
-    }
-
-    private async Task<List<GarageTransaction>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<GarageTransaction> queryable)
-    {
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        var garageTransactions = await AsyncExecuter.ToListAsync(queryable);
-        return garageTransactions;
-    }
-
-    private static IQueryable<GarageTransaction> ApplySort(PagedAndSortedResultRequestDto input, IQueryable<GarageTransaction> queryable)
-    {
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            // Determine if the sorting should be ascending or descending
-            if (input.Sorting.Contains("DESC"))
-            {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
-            }
-            else
-            {
-
-                queryable = queryable.OrderBy(input.Sorting);
-            }
-        }
-
-        return queryable;
-    }
-
     public async override Task<GarageTransactionDto> GetAsync(int id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -113,7 +79,7 @@ public class GarageTransactionsAppService :
             return await base.GetAsync(id);
 
         }
-      
+
     }
     public async Task<PagedResultDto<GarageTransactionDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
@@ -153,23 +119,6 @@ public class GarageTransactionsAppService :
             garageTransactionsDto
         );
     }
-
-    private static IQueryable<GarageTransaction> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<GarageTransaction> queryable)
-    {
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
-            queryable = queryable.Where(or =>
-                or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.AccurateTime.Value.ToString().ToLower().Contains(input.SearchingTerm) ||
-                or.SnapTime.Value.ToString().ToLower().Contains(input.SearchingTerm) ||
-                or.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
-            );
-        }
-
-        return queryable;
-    }
-
     public async Task<PagedResultDto<GarageTransactionDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -187,7 +136,7 @@ public class GarageTransactionsAppService :
                     or.SnapTime.Value.ToString().ToLower() == (input.SearchingTerm.ToLower()) ||
                     or.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                     or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
-                ); 
+                );
             }
             if (!input.Sorting.IsNullOrEmpty())
             {
@@ -320,10 +269,10 @@ public class GarageTransactionsAppService :
     }
     public async override Task DeleteAsync(int id)
     {
-        var transactionDto=await GetAsync(id);
+        var transactionDto = await GetAsync(id);
         if (transactionDto == null)
         {
-           throw new Exception(LocalizationHelper.GetLocalizedString("Transaction") +" "+LocalizationHelper.GetLocalizedString("NotFoundValidation")); 
+            throw new Exception(LocalizationHelper.GetLocalizedString("Transaction") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
         if (transactionDto.CameraType == CameraType.Exit)
         {
@@ -331,108 +280,8 @@ public class GarageTransactionsAppService :
         }
         await base.DeleteAsync(id);
     }
-    private async Task UnMappingEntryTransactionForDeletedExit(string plateNumber)
-    {
-        var query = await _repository.GetQueryableAsync();
-
-        var latestTransaction = query
-                .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == CameraType.Entry && gt.IsIn == false && gt.IsMapped==true)
-                .OrderByDescending(gt => gt.AccurateTime) 
-                .FirstOrDefault();
-        latestTransaction.IsIn = true;
-        latestTransaction.IsMapped = false;
-        await CurrentUnitOfWork.SaveChangesAsync();
-    }
-    // Function to convert base64 string to image and save it
-    public string SaveBase64Image(CreateUpdateGarageTransactionDto input)
-    {
-     
-        string base64Image = input.VehiclePicture;
-        try
-        {
-
-            var imageFormat = "jpg"; // Adjust formats as needed
-                                     // CheckBase64(ref base64Image, ref imageFormat);
-            CreateBase64Image(ref base64Image);
-            var imageBytes = Convert.FromBase64String(base64Image);
-
-            var imageDirectoryPath = CreateImageDirectory(input);
-
-
-
-
-            // Generate a unique name for the image
-            string fileName = $"{Guid.NewGuid()}.{imageFormat}";
-            string fullPath = Path.Combine(imageDirectoryPath, fileName);
-
-            // Save the image to the specified path
-            File.WriteAllBytes(fullPath, imageBytes);
-
-            // Return the relative path for storing in the database
-            return $"/GarageTransactionsImages/{input.OrganizationID}/{input.GarageId}/{input.CameraId}/{fileName}";
-        }
-        catch (Exception ex)
-        {
-            return null;
-            // throw new UserFriendlyException("An error occurred while saving the image", ex);
-        }
-    }
-
-    private void CreateBase64Image(ref string base64Image)
-    {
-        if (!base64Image.Contains(","))
-        {
-            byte[] imageBytes = Convert.FromBase64String(base64Image);
-            base64Image = Convert.ToBase64String(imageBytes);
-        }
-        else
-        {
-            base64Image = base64Image.Split(',')[1];
-        }
-    }
-
-    private string CreateImageDirectory(CreateUpdateGarageTransactionDto input)
-    {
-        // Define the path where the image will be saved
-        string ImageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "GarageTransactionsImages", input.OrganizationID.ToString(), input.GarageId.ToString(), input.CameraId.ToString());
-
-        // Ensure the directory exists
-        if (!Directory.Exists(ImageDirectoryPath))
-        {
-            Directory.CreateDirectory(ImageDirectoryPath);
-        }
-        return ImageDirectoryPath;
-    }
-
-    private void CheckBase64(ref string base64Image, ref string imageFormat)
-    {
-
-        // Validate the base64 string format
-        if (!base64Image.Contains(","))
-        {
-            // Extract the image format and base64 content
-            var base64Parts = base64Image.Split(',');
-            base64Image = base64Parts[1];
-            imageFormat = base64Parts[0] switch
-            {
-                var x when x.Contains("jpeg") => "jpg",
-                var x when x.Contains("webp") => "webp",
-                var x when x.Contains("png") => "png",
-                _ => "jpg"
-            };
-
-        }
-
-        if (string.IsNullOrEmpty(base64Image))
-        {
-            throw new ArgumentException("The provided image is not a valid Base64 string");
-        }
-
-
-    }
-
     /// <inheritdoc/>
-	public async Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
+    public async Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
         var queryable = await _repository.GetQueryableAsync();
 
@@ -470,20 +319,40 @@ public class GarageTransactionsAppService :
 
 
     }
-
-    private async Task<Guid> GetCurrentCustomerId()
+    // Function to convert base64 string to image and save it
+    public string SaveBase64Image(CreateUpdateGarageTransactionDto input)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
+
+        string base64Image = input.VehiclePicture;
+        try
         {
 
-            var customer = await _CustomerRepository.GetQueryableAsync();
-            var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).FirstOrDefault();
-            return customerId;
+            var imageFormat = "jpg"; // Adjust formats as needed
+                                     // CheckBase64(ref base64Image, ref imageFormat);
+            CreateBase64Image(ref base64Image);
+            var imageBytes = Convert.FromBase64String(base64Image);
+
+            var imageDirectoryPath = CreateImageDirectory(input);
+
+
+
+
+            // Generate a unique name for the image
+            string fileName = $"{Guid.NewGuid()}.{imageFormat}";
+            string fullPath = Path.Combine(imageDirectoryPath, fileName);
+
+            // Save the image to the specified path
+            File.WriteAllBytes(fullPath, imageBytes);
+
+            // Return the relative path for storing in the database
+            return $"/GarageTransactionsImages/{input.OrganizationID}/{input.GarageId}/{input.CameraId}/{fileName}";
+        }
+        catch (Exception ex)
+        {
+            return null;
+            // throw new UserFriendlyException("An error occurred while saving the image", ex);
         }
     }
-
-
-
     public async Task<Result<List<GarageTransactionDto>>> GetCustomerTransactionsInOrganization(int organizationId)
     {
         var customerId = await GetCurrentCustomerId();
@@ -492,7 +361,7 @@ public class GarageTransactionsAppService :
             var query = await _VehicleRepository.GetQueryableAsync();
             query = query.Where(x => x.CustomerId == customerId);
             var garageTransactionQuery = await _repository.GetQueryableAsync();
-            garageTransactionQuery = garageTransactionQuery.Where(GT => GT.OrganizationID == organizationId && GT.IsIn==true);
+            garageTransactionQuery = garageTransactionQuery.Where(GT => GT.OrganizationID == organizationId && GT.IsIn == true);
             garageTransactionQuery = garageTransactionQuery.Where(GT => query.Any(vehicle => vehicle.ArPlateNumber == GT.PlateNumber || vehicle.EnPlateNumber == GT.PlateNumber));
             var transactions = await AsyncExecuter.ToListAsync(garageTransactionQuery);
             var transactionsDtos = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(transactions);
@@ -503,11 +372,143 @@ public class GarageTransactionsAppService :
 
     public async Task<int> GetCameraIdByGarageTransactionId(int garageTransactionId)
     {
-        var garagetransaction=await _repository.FindAsync(garageTransactionId);
+        var garagetransaction = await _repository.FindAsync(garageTransactionId);
         if (garagetransaction == null)
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("Transaction") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
         return garagetransaction.CameraId;
     }
+    #endregion
+    #region Private Methods
+    private static IQueryable<GarageTransaction> ApplyFilterTenant(Guid? tenantId, IQueryable<GarageTransaction> queryable)
+    {
+        if (tenantId.HasValue)
+            queryable = queryable.Where(t => t.TenantId == tenantId);
+        return queryable;
+    }
+
+    private async Task<List<GarageTransaction>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<GarageTransaction> queryable)
+    {
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var garageTransactions = await AsyncExecuter.ToListAsync(queryable);
+        return garageTransactions;
+    }
+
+    private static IQueryable<GarageTransaction> ApplySort(PagedAndSortedResultRequestDto input, IQueryable<GarageTransaction> queryable)
+    {
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            // Determine if the sorting should be ascending or descending
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+        }
+
+        return queryable;
+    }
+
+   
+    private static IQueryable<GarageTransaction> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<GarageTransaction> queryable)
+    {
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+            queryable = queryable.Where(or =>
+                or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.AccurateTime.Value.ToString().ToLower().Contains(input.SearchingTerm) ||
+                or.SnapTime.Value.ToString().ToLower().Contains(input.SearchingTerm) ||
+                or.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+            );
+        }
+
+        return queryable;
+    }
+
+   
+    private async Task UnMappingEntryTransactionForDeletedExit(string plateNumber)
+    {
+        var query = await _repository.GetQueryableAsync();
+
+        var latestTransaction = query
+                .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == CameraType.Entry && gt.IsIn == false && gt.IsMapped==true)
+                .OrderByDescending(gt => gt.AccurateTime) 
+                .FirstOrDefault();
+        latestTransaction.IsIn = true;
+        latestTransaction.IsMapped = false;
+        await CurrentUnitOfWork.SaveChangesAsync();
+    }
+  
+
+    private void CreateBase64Image(ref string base64Image)
+    {
+        if (!base64Image.Contains(","))
+        {
+            byte[] imageBytes = Convert.FromBase64String(base64Image);
+            base64Image = Convert.ToBase64String(imageBytes);
+        }
+        else
+        {
+            base64Image = base64Image.Split(',')[1];
+        }
+    }
+
+    private string CreateImageDirectory(CreateUpdateGarageTransactionDto input)
+    {
+        // Define the path where the image will be saved
+        string ImageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "GarageTransactionsImages", input.OrganizationID.ToString(), input.GarageId.ToString(), input.CameraId.ToString());
+
+        // Ensure the directory exists
+        if (!Directory.Exists(ImageDirectoryPath))
+        {
+            Directory.CreateDirectory(ImageDirectoryPath);
+        }
+        return ImageDirectoryPath;
+    }
+
+    private async Task<Guid> GetCurrentCustomerId()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var customer = await _CustomerRepository.GetQueryableAsync();
+            var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).FirstOrDefault();
+            return customerId;
+        }
+    }
+    #endregion
+    #region Un used
+    private void CheckBase64(ref string base64Image, ref string imageFormat)
+    {
+
+        // Validate the base64 string format
+        if (!base64Image.Contains(","))
+        {
+            // Extract the image format and base64 content
+            var base64Parts = base64Image.Split(',');
+            base64Image = base64Parts[1];
+            imageFormat = base64Parts[0] switch
+            {
+                var x when x.Contains("jpeg") => "jpg",
+                var x when x.Contains("webp") => "webp",
+                var x when x.Contains("png") => "png",
+                _ => "jpg"
+            };
+
+        }
+
+        if (string.IsNullOrEmpty(base64Image))
+        {
+            throw new ArgumentException("The provided image is not a valid Base64 string");
+        }
+
+
+    }
+    #endregion
 }

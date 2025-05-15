@@ -68,7 +68,13 @@ public partial class OrganizationEdit
     IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
     IList<CityLookupDto> cities = new List<CityLookupDto>();
     IList<SubscriptionDto> SubscriptionDtos = new List<SubscriptionDto>();
+    public OrganizationDto OrganizationDto { get; set; } = new();
+    private readonly IMapper _mapper;
 
+    public OrganizationEdit(IMapper mapper)
+    {
+        _mapper = mapper;
+    }
 
     private async Task OnSubscriptionSelected(int value)
     {
@@ -181,40 +187,8 @@ public partial class OrganizationEdit
 
     private void MappingDtos(OrganizationDto organization)
     {
-        _createUpdateOrganiztionDto.EnglishName = organization.EnglishName;
-        _createUpdateOrganiztionDto.ArabicName = organization.ArabicName;
-        _createUpdateOrganiztionDto.NumOfCameras = organization.NumOfCameras;
-        _createUpdateOrganiztionDto.CommercialRegistrationNumber = organization.CommercialRegistrationNumber;
-        _createUpdateOrganiztionDto.Status = organization.Status;
-        _createUpdateOrganiztionDto.MaxCapacity = organization.MaxCapacity;
-        _createUpdateOrganiztionDto.Email = organization.ContactMail;
-        _createUpdateOrganiztionDto.PhoneNumber = organization.PhoneNum;
-        _createUpdateOrganiztionDto.WhatsAppNum = organization.WhatsAppNum;
-        _createUpdateOrganiztionDto.FirstHourPrice = organization.FirstHourPrice;
-        _createUpdateOrganiztionDto.SecondHourPrice = organization.SecondHourPrice;
-        _createUpdateOrganiztionDto.ThirdHourPrice = organization.ThirdHourPrice;
-        _createUpdateOrganiztionDto.FullDayPrice = organization.FullDayPrice;
-        _createUpdateOrganiztionDto.NumberOfHours = organization.NumberOfHours;
-        _createUpdateOrganiztionDto.IsNumberOfHoursExceeded = organization.IsNumberOfHoursExceeded;
-        _createUpdateOrganiztionDto.AdditionalHourPrice = organization.AdditionalHourPrice;
-        _createUpdateOrganiztionDto.Address = organization.Address;
-        _createUpdateOrganiztionDto.BuildingNumber = organization.BuildingNumber;
-        _createUpdateOrganiztionDto.StreetName = organization.StreetName;
-        _createUpdateOrganiztionDto.SecondaryNumber = organization.SecondaryNumber;
-        _createUpdateOrganiztionDto.PostalCode = organization.PostalCode;
-        _createUpdateOrganiztionDto.District = organization.District;
-        _createUpdateOrganiztionDto.IsClose = organization.IsClose;
-        _createUpdateOrganiztionDto.OrganizationPicture = organization.OrganizationPicture;
-        _createUpdateOrganiztionDto.SubscriptionId = organization.SubscriptionId;
-        _createUpdateOrganiztionDto.FreeMinutes = organization.FreeMinutes;
-        _createUpdateOrganiztionDto.Graceperiod = organization.Graceperiod;
-        _createUpdateOrganiztionDto.TaxNumber = organization.TaxNumber;
-        _createUpdateOrganiztionDto.HasFreeSlots = organization.HasFreeSlots;
-        _createUpdateOrganiztionDto.HasPackageOnly = organization.HasPackageOnly;
-        _createUpdateOrganiztionDto.TenantId=organization.TenantId;
-        _createUpdateOrganiztionDto.PaymentCode=organization.PaymentCode;
+        _createUpdateOrganiztionDto = _mapper.Map<CreateUpdateOrganiztionDto>(organization);
     }
-
     private async Task GetRegions()
     {
 
@@ -267,24 +241,6 @@ public partial class OrganizationEdit
         };
         var dialog = await Dialog.ShowAsync<GarageDialog>("view garage", parameters);
     }
-    private async Task ViewCategories()
-    {
-        var id = int.Parse(Id);
-        var parameters = new DialogParameters
-        {
-            ["organizationId"] = id
-        };
-        var dialog = await Dialog.ShowAsync<CategoriesDialog>("view garage", parameters);
-    }
-    private async Task ViewContact()
-    {
-        var id = int.Parse(Id);
-        var parameters = new DialogParameters
-        {
-            ["organizationId"] = id
-        };
-        var dialog = await Dialog.ShowAsync<ContactDataDialog>("view contact", parameters);
-    }
     private async Task ViewCustomers()
     {
         var id = int.Parse(Id);
@@ -293,15 +249,6 @@ public partial class OrganizationEdit
             ["organizationId"] = id
         };
         var dialog = await Dialog.ShowAsync<CustomerDialog>("view package", parameters);
-    }
-    private async Task ViewUsers()
-    {
-        var id = int.Parse(Id);
-        var parameters = new DialogParameters
-        {
-            ["organizationId"] = id
-        };
-        var dialog = await Dialog.ShowAsync<UsersDialog>("view users", parameters);
     }
     private async Task ViewSubscription()
     {

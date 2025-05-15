@@ -131,7 +131,7 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
     {
 
         var cameraId = await GarageTransactionAppService.GetCameraIdByGarageTransactionId(ExitGarageTransactionId);
-        var camera = await CameraAppService.GetCameraIPByCameraId(cameraId);
+        var camera = await CameraAppService.GetAsync(cameraId);
         var openGateBody = new OpenGateRequestDto
         {
             ip = camera.CameraIP,

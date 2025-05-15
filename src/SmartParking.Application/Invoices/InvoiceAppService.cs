@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using QRCoder;
 using SmartParking.Entities.Invoices;
-using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Enums;
@@ -18,16 +15,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
-using Volo.Abp.DependencyInjection;
-using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 
@@ -52,13 +44,14 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         _invoiceUtility = invoiceUtility;
         _paymentRepository = paymentRepository;
     }
+    #region public methods 
+    /// <inheritdoc/>
 
     public override async Task<InvoiceDto> CreateAsync(CreateUpdateInvoiceDto input)
     {
         Organization organization = null;
         using (_dataFilter.Disable<IMultiTenant>())
         {
-
             organization = await _organizationsRepository.GetAsync(input.OrganizationId);
             if (organization is null)
             {
@@ -78,11 +71,11 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             return await base.CreateAsync(input);
     }
     [Authorize]
+    /// <inheritdoc/>
+
     public override async Task<PagedResultDto<InvoiceDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-
         var queryable = await _invoiceRepository.GetQueryableAsync();
-
         if (!input.Sorting.IsNullOrEmpty())
         {
             // Determine if the sorting should be ascending or descending
@@ -93,11 +86,9 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             }
             else
             {
-
                 queryable = queryable.OrderBy(input.Sorting);
             }
         }
-
         using (DataFilter.Disable<IMultiTenant>())
         {
             var invoices = await base.GetListAsync(input);
@@ -107,9 +98,11 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     }
 
     [Authorize]
+    /// <inheritdoc/>
+
     public override async Task<InvoiceDto> GetAsync(int id)
     {
-        if (CurrentTenant.Id==null)
+        if (CurrentTenant.Id == null)
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
@@ -126,12 +119,9 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     {
         // Get the IQueryable<garage> from the repository
         var queryable = await _invoiceRepository.GetQueryableAsync();
-
         // Apply search filtering
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
-
-
             queryable = queryable.Where(or =>
                 or.Id.ToString().Contains(input.SearchingTerm.ToLower()) ||
                 or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
@@ -140,15 +130,12 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
                 or.CustomerEnName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.InvoiceType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.InvoiceTime.ToString()!.Contains(input.SearchingTerm.ToLower()) ||
-                or.TotalHours.ToString().Contains(input.SearchingTerm.ToLower())||
+                or.TotalHours.ToString().Contains(input.SearchingTerm.ToLower()) ||
                 or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) 
-                
+                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
             // full date-time or includes hour
             );
-
         }
-
         if (!input.Sorting.IsNullOrEmpty())
         {
             if (input.Sorting.Contains("DESC"))
@@ -162,15 +149,13 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             }
 
         }
-        queryable = queryable.OrderByDescending(x=>x.Id);
+        queryable = queryable.OrderByDescending(x => x.Id);
         // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
-
         // Apply pagination
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
         // Execute the query and get the list of hotel entities
         var invoices = await AsyncExecuter.ToListAsync(queryable);
-
         // Map the hotel entities to hotelDto objects
         var invoiceDto = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices);
         // Return the paginated result
@@ -181,6 +166,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     }
 
     [Authorize]
+    /// <inheritdoc/>
+
     public async Task<PagedResultDto<InvoiceDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         // Get the IQueryable<garage> from the repository
@@ -206,12 +193,10 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         }
         // Get the total count of filtered records
         var totalCount = await AsyncExecuter.CountAsync(queryable);
-
         // Apply pagination
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
         // Execute the query and get the list of garages entities
         var invoices = await AsyncExecuter.ToListAsync(queryable);
-
         // Map the garages entities to garagesDto objects
         var invoicesDto = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices);
         // Return the paginated result
@@ -221,21 +206,18 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         );
     }
     [Authorize]
+    /// <inheritdoc/>
+
     public override async Task DeleteAsync(int id)
     {
         var invoice = await _invoiceRepository.FindAsync(id);
-
         if (invoice is null)
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Invoice") +" "+ LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            throw new Exception(LocalizationHelper.GetLocalizedString("Invoice") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
-
-
         await base.DeleteAsync(id);
     }
-
- 
-
+    /// <inheritdoc/>
     public async Task<Result<string>> GetInvoiceQRCodeForOrganization(int invoiceId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -250,19 +232,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             return await GetImage(invoice, qrCode);
         }
     }
-
-    private async Task<string?> GetQrCodeAsync(InvoiceDto? invoice)
-    {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            var paymentQuery = await _paymentRepository.GetQueryableAsync();
-            string? qrCode = await paymentQuery
-                    .Where(p => p.InvoiceId == invoice.Id)
-                    .Select(p => p.QrCodeInvoice)
-                    .FirstOrDefaultAsync();
-            return qrCode;
-        }
-    }
+    /// <inheritdoc/>
 
     public async Task<Result<string>> GetInvoiceQRCodeForMDKHL(int invoiceId)
     {
@@ -278,8 +248,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             return result;
         }
     }
-
     [RemoteService(false)]
+    /// <inheritdoc/>
 
     public async Task<Result<string>> GetImage(InvoiceDto? invoice, string? qrCodedto)
     {
@@ -290,23 +260,15 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrCodedto, QRCodeGenerator.ECCLevel.Q))
         using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
         {
-
             byte[] qrCodeImage = qrCode.GetGraphic(20);
-
-
             string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderQrImage, folderImages);
-
             if (!Directory.Exists(imageDirectoryPath))
             {
                 Directory.CreateDirectory(imageDirectoryPath);
             }
             string fileName = $"{Guid.NewGuid()}{DateTime.Now:yyyyMMddHHmmssfff}.png";
             string fullPath = Path.Combine(imageDirectoryPath, fileName);
-
-
             await File.WriteAllBytesAsync(fullPath, qrCodeImage);
-
-
             return $"{folderQrImage}/{folderImages}/{fileName}";
         }
     }
@@ -315,12 +277,9 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 	public async Task<PagedResultDto<InvoiceDto>> GetAllInvoicesByOrganizationAsync(PagedAndSortedResultRequestDto input, Guid? tenantId)
     {
         var queryable = await _invoiceRepository.GetQueryableAsync();
-
         queryable = queryable.Where(t => t.TenantId == tenantId);
-
         if (!input.Sorting.IsNullOrEmpty())
         {
-            
             if (input.Sorting.Contains("DESC"))
             {
                 var sorting = input.Sorting.Split(' ').ToList();
@@ -331,7 +290,6 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             else
             {
                 queryable = queryable.OrderBy(input.Sorting);
-
                 if (input.Sorting.Contains("InvoiceType"))
                     queryable = queryable = queryable.OrderBy(input.Sorting).ThenBy(_ => _.IsPackage);
             }
@@ -342,74 +300,69 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
                 .Skip(input.SkipCount)
                 .Take(input.MaxResultCount)
         );
-
         // Map entities to DTOs
         var incoicesDtos = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(items);
-
         // Return paged result
         return new PagedResultDto<InvoiceDto>(totalCount, incoicesDtos);
     }
+    /// <inheritdoc/>
 
     public async Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(string PlateNumber, int OrganizationId, int GarageId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _invoiceRepository.GetQueryableAsync();
-            query=query.Where(inv=>inv.PlateNumber == PlateNumber && inv.GarageId==GarageId && inv.OrganizationId == OrganizationId);
-            query=query.OrderByDescending(inv=>inv.InvoiceTime);
+            query = query.Where(inv => inv.PlateNumber == PlateNumber && inv.GarageId == GarageId && inv.OrganizationId == OrganizationId);
+            query = query.OrderByDescending(inv => inv.InvoiceTime);
             var invoice = await AsyncExecuter.FirstOrDefaultAsync(query);
-            var invoiceDto = ObjectMapper.Map<Invoice,InvoiceDto>(invoice);
+            var invoiceDto = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
             return Result.Success(invoiceDto);
-
-
         }
     }
+    /// <inheritdoc/>
 
-    public async Task<PagedResultDto<InvoiceDto>> GetInvoiceForCustomer(Guid customerId,PagedResultRequestDto input)
+    public async Task<PagedResultDto<InvoiceDto>> GetInvoiceForCustomer(Guid customerId, PagedResultRequestDto input)
     {
-
-            var query = await _invoiceRepository.GetQueryableAsync();
-            query = query.Where(inv => inv.CustomerId == customerId);
-            var totalCount = await AsyncExecuter.CountAsync(query);
-            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
-            var invoice = await AsyncExecuter.ToListAsync(query);
-            var invoiceDto = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoice);
-            return new PagedResultDto<InvoiceDto>
-            {
-                Items = invoiceDto,
-                TotalCount = totalCount
-            };
+        var query = await _invoiceRepository.GetQueryableAsync();
+        query = query.Where(inv => inv.CustomerId == customerId);
+        var totalCount = await AsyncExecuter.CountAsync(query);
+        query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var invoice = await AsyncExecuter.ToListAsync(query);
+        var invoiceDto = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoice);
+        return new PagedResultDto<InvoiceDto>
+        {
+            Items = invoiceDto,
+            TotalCount = totalCount
+        };
     }
+    /// <inheritdoc/>
 
-    public async Task<Result<List<InvoiceDto>>> GetUnpaidInvoiceForKeeperInHisOrganization(int OrganizationId,string plateNumber)
+    public async Task<Result<List<InvoiceDto>>> GetUnpaidInvoiceForKeeperInHisOrganization(int OrganizationId, string plateNumber)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-
-            var query=await _invoiceRepository.GetQueryableAsync();
-            query=query.Where(inv=>inv.OrganizationId== OrganizationId && inv.PlateNumber==plateNumber&&inv.InvoiceType==InvoiceType.UnPaid);
-            var invList=await AsyncExecuter.ToListAsync(query);
+            var query = await _invoiceRepository.GetQueryableAsync();
+            query = query.Where(inv => inv.OrganizationId == OrganizationId && inv.PlateNumber == plateNumber && inv.InvoiceType == InvoiceType.UnPaid);
+            var invList = await AsyncExecuter.ToListAsync(query);
             var invDtos = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invList);
             return Result.Success(invDtos);
-
         }
     }
+    /// <inheritdoc/>
 
     public async Task<InvoiceDto?> GetLatestInvoiceForOrganization()
     {
-
-       var query=await _invoiceRepository.GetQueryableAsync();
-       query = query.Where(x =>x.InvoiceType==InvoiceType.UnPaid&&x.InvoicePrice>0);
-       query= query.OrderByDescending(x=>x.CreationTime);
-       var invoice =await query.FirstOrDefaultAsync();
+        var query = await _invoiceRepository.GetQueryableAsync();
+        query = query.Where(x => x.InvoiceType == InvoiceType.UnPaid && x.InvoicePrice > 0);
+        query = query.OrderByDescending(x => x.CreationTime);
+        var invoice = await query.FirstOrDefaultAsync();
         if (invoice == null)
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("VehicleNotFoundAtGate"));
         }
-       return ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
-      
-        
+        return ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
     }
+    /// <inheritdoc/>
 
     public async Task<PagedResultDto<InvoiceDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
     {
@@ -418,18 +371,21 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             return await Search(input);
         }
     }
+    /// <inheritdoc/>
 
-    public async Task UpdateDiscountForInvoice(int invoiceId,decimal discount)
+    public async Task UpdateDiscountForInvoice(int invoiceId, decimal discount)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var invoice =await _invoiceRepository.FirstOrDefaultAsync(x => x.Id==invoiceId);
-            if (invoice == null) {
+            var invoice = await _invoiceRepository.FirstOrDefaultAsync(x => x.Id == invoiceId);
+            if (invoice == null)
+            {
                 throw new Exception(LocalizationHelper.GetLocalizedString("Invoice") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation") + LocalizationHelper.GetLocalizedString("AtGate"));
             }
-            var result = NumbersValidations.ValidateInvoice(discount, Math.Round((invoice.InvoicePrice * 0.15m) + (invoice.InvoicePrice),2));
-            if(result==null) {
-            
+            var result = NumbersValidations.ValidateInvoice(discount, Math.Round((invoice.InvoicePrice * 0.15m) + (invoice.InvoicePrice), 2));
+            if (result == null)
+            {
+
                 invoice.Discount = discount;
                 invoice.InvoiceType = InvoiceType.Paid;
                 await _invoiceRepository.UpdateAsync(invoice);
@@ -439,9 +395,27 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             {
                 throw new Exception(result);
             }
-
-
         }
-
     }
+    #endregion
+    #region private methods
+    /// <summary>
+    /// Asynchronously retrieves the QR code associated with the specified invoice.
+    /// </summary>
+    /// <param name="invoice">An instance of <see cref="InvoiceDto"/> representing the invoice for which the QR code is being fetched.</param>
+    /// <returns>A string representing the QR code if found, or <c>null</c> if no QR code is associated with the invoice.</returns>
+    private async Task<string?> GetQrCodeAsync(InvoiceDto? invoice)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var paymentQuery = await _paymentRepository.GetQueryableAsync();
+            string? qrCode = await paymentQuery
+                    .Where(p => p.InvoiceId == invoice.Id)
+                    .Select(p => p.QrCodeInvoice)
+                    .FirstOrDefaultAsync();
+            return qrCode;
+        }
+    }
+    #endregion
+
 }

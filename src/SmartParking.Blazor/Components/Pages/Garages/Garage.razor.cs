@@ -1,64 +1,42 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Microsoft.JSInterop;
 using MudBlazor;
-using SmartParking.Analysis;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
-using SmartParking.Cameras;
-using SmartParking.Entities.Organizations;
-using SmartParking.Enums;
 using SmartParking.Garages;
-using SmartParking.Helpers;
 using SmartParking.Localization;
 using SmartParking.OrganizationsGarages;
-using SmartParking.PDF;
-using SmartParking.Permissions.CameraPermissions;
 using SmartParking.Permissions.GaragePermissions;
-using SmartParking.Results;
-using SmartParking.Utilities;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 
-
 namespace SmartParking.Blazor.Components.Pages.Garages;
+/// <summary>
+/// Component for manage garages lpage list  
+/// </summary>
 public partial class Garage
 {
-    //[Inject] public IAuthorizationService AuthorizationService { get; set; }
     private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     private int TotalItem;
-    private bool assign = true;
     private string sortColumn;
     private Guid? TenantId;
     private string ValueOfMenue = "All";
-    public int CurrentPage { get; set; } = 1; // Default current page value is 10
-    public int RowPerPage { get; set; } = 10; // Default value is 10
-
-
+    public int CurrentPage { get; set; } = 1; 
+    public int RowPerPage { get; set; } = 10;
     private TableData itemData = new TableData();
     public bool ViewAssign { get; set; } = true;
-
     private string termSearch;
 	private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
-
     public  int MaxiumumNumberOfGarageAllowedToBeAdded { get; set; }
     public  int SumOfAllMaximumCapacityforActiveGarages { get; set; }
-
     public int ActiveGarages { get; set; }
-
     private bool showOrganizationView =>currentTenant.Id != null;
-
-
     public Garage(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
@@ -66,16 +44,14 @@ public partial class Garage
         UpdatePolicyName = GaragePermissions.Edit;
         DeletePolicyName = GaragePermissions.Delete;
     }
-
-
-
-
-
+    /// <summary>
+    /// Initialize Component
+    /// create menus , list of garages , get number of active garages and number of garage can be added
+    /// </summary>
     protected async override Task OnInitializedAsync()
     {
         if (!await AuthorizationService.IsGrantedAsync(GaragePermissions.Default))
         {
-            
             Navigation.NavigateTo("/Account/AccessDenied", true);
         }
         await CreateMenue();
@@ -94,11 +70,7 @@ public partial class Garage
             SumOfAllMaximumCapacityforActiveGarages = result.Item1;
 		}
         await base.OnInitializedAsync();
-
     }
-
-
-
     /// <summary>
     /// filter for hotels on the server side using the hotel columns.
     /// </summary>
@@ -106,8 +78,6 @@ public partial class Garage
     /// <returns>Returns a task that represents the asynchronous operation.</returns>
     private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-
         // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndFilteredResultRequestDto
         {
@@ -128,57 +98,17 @@ public partial class Garage
         }
         else
         {
-
-            // Call the service to perform the search based on the input parameters
             var garagessDto = await GarageAppService.Filter(input);
-
-            // Calculate the total number of pages required to display all results
             TotalItem = (int)garagessDto.TotalCount;
             CreateTable(garagessDto);
-
         }
 
     }
     /// <summary>
-    /// Searches for hotels on the server side using the hotel code search term.
+    /// Handle Select Item by organization
     /// </summary>
-    /// <param name="searchTerm">The term to search for among hotel.</param>
-    /// <returns>Returns a task that represents the asynchronous operation.</returns>
-    private async Task HandleSearch(PageChangeEventArgs pageInfo)
-    {
-
-        // Update the term used for searching with the provided search term
-        termSearch = pageInfo.SearchTerm;
-
-        // Create a new search input object with pagination, sorting, and search term parameters
-        var input = new PagedAndSortedAndSearchResultRequestDto
-        {
-            MaxResultCount = pageInfo.RowsPerPage,
-            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch // The term to use for filtering results
-        };
-
-        // Call the service to perform the search based on the input parameters
-        if (currentTenant.Id == null)
-        {
-            var garagessDto = await GarageAppService.SearchForMDKHL(input);
-
-            // Calculate the total number of pages required to display all results
-            TotalItem = (int)garagessDto.TotalCount;
-            await CreateTable(garagessDto);
-        }
-        else
-        {
-
-            var garagessDto = await GarageAppService.Search(input);
-
-            // Calculate the total number of pages required to display all results
-            TotalItem = (int)garagessDto.TotalCount;
-            await CreateTable(garagessDto);
-
-        }
-    }
+    /// <param name="selectedValue"></param>
+    /// <param name="tenantId"></param>
     public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
     {
         TenantId = tenantId;
@@ -203,15 +133,10 @@ public partial class Garage
            await CreateOrganizationMenue(),
 
         };
-
-        
-
         if (currentTenant.Id is null)
         {
             MenuDatas = MenuDatasMdkhl;
         }
-        
-
     }
     private async Task<MudMenuData> CreateOrganizationMenue()
     {
@@ -232,7 +157,6 @@ public partial class Garage
                 itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
             }
         }
-
         return new MudMenuData
         {
             Name = L["Organizations"],
@@ -240,10 +164,6 @@ public partial class Garage
             Items = itemsOrganizations
         };
     }
-   
-
-
-    
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
     /// </summary>
@@ -270,10 +190,7 @@ public partial class Garage
             garagesDto = await GarageAppService.GetListOrganizationAsync(input);
         TotalItem = (int)garagesDto.TotalCount;
         await CreateTable(garagesDto);
-
-
     }
-
     private async Task CreateTable(PagedResultDto<GarageDto> garages)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
@@ -282,8 +199,6 @@ public partial class Garage
             Name = @L["GarageHeader"],
             ShowHeader = true
         };
-
-
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "Code", IsFilterable = true, PropertyName = "Code", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
@@ -338,7 +253,6 @@ public partial class Garage
         itemData = tableData;
         await Task.Yield();
     }
-
     private Task CreateGarage()
     {
         return DialogService.ShowAsync<AddGarageDialog>("Simple Dialog", options);
@@ -348,75 +262,33 @@ public partial class Garage
 	{
 		var Gid = int.Parse(id);
 		var garageDto = await GarageAppService.GetAsync(Gid);
-
-		var createUpdateGarage = new CreateUpdateGarageDto
-		{
-	        ClosingHours = garageDto.ClosingHours,
-            Code = garageDto.Code,
-            MaxCapacity = garageDto.MaxCapacity,
-            NameEn = garageDto.NameEn,
-            NameAr = garageDto.NameAr,
-            OrganizationId = garageDto.OrganizationId,
-            Status = garageDto.Status,
-            MaxSlotsForCustomers = garageDto.MaxSlotsForCustomers,
-            MaxSlotsForEmployess = garageDto.MaxSlotsForEmployess,
-            MaxSlotsForFree = garageDto.MaxSlotsForFree,
-        };
-
-
-
+        var createUpdateGarage = _mapper.Map<CreateUpdateGarageDto>(garageDto);
 		var parameters = new DialogParameters
 		{
 			["UpdatedId"] = Gid,
 			["Garage"] = createUpdateGarage
 		};
-
 		return await DialogService.ShowAsync<AssignOrganizationDialog>("Assign Garage", parameters);
-
 	}
 	private async Task<IDialogReference> OnClickRowEdit(RowDef row)
     {
         var id =int.Parse(row.Cells[0].Value);
-
 		var garageDto= await GarageAppService.GetAsync(id);
-
-        var createUpdateGarage=new CreateUpdateGarageDto { 
-            NameEn = garageDto.NameEn,
-            NameAr = garageDto.NameAr,
-            Code = garageDto.Code,
-            Status=garageDto.Status,
-            MaxCapacity=garageDto.MaxCapacity,
-            ClosingHours=garageDto.ClosingHours,
-            OrganizationId=garageDto.OrganizationId,
-            MaxSlotsForCustomers = garageDto.MaxSlotsForCustomers,
-            MaxSlotsForEmployess = garageDto.MaxSlotsForEmployess,
-            MaxSlotsForFree = garageDto.MaxSlotsForFree,
-        };
-
-
-
+        var createUpdateGarage = _mapper.Map<CreateUpdateGarageDto>(garageDto);
 		var parameters = new DialogParameters { 
             ["Garage"] = createUpdateGarage,
             ["UpdatedId"]=id
         };
-
-
         return await DialogService.ShowAsync<UpdateGarageDialog>("Edit Garage", parameters);
-        
     }
     private async Task<IDialogReference> OnClickRowView(RowDef row)
     {
 		var id = int.Parse(row.Cells[0].Value);
-
 		var garageDto = await GarageAppService.GetAsync(id);
-
-
 		var parameters = new DialogParameters
         {
             ["Garage"] = garageDto,
         };
-
-
         return await DialogService.ShowAsync<ViewGarageDialog>("View Garage", parameters);
     }
 
@@ -424,13 +296,10 @@ public partial class Garage
     {
 		var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
-
         var parameters = new DialogParameters
         {
             ["Name"] = Name,
-
         };
-
         var dialog = await DialogService.ShowAsync<SPDialogDelete>("DeleteGarage", parameters);
         var result = await dialog.Result;
         try
@@ -441,12 +310,10 @@ public partial class Garage
                 SnackBar.ShowSnackbar(Snackbar, $"{Name} {L[AlertMessages.AlertMessages.DELETE]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/garages", forceLoad: true);
-
             }
         }
         catch (BusinessException ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.DELETE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
@@ -458,7 +325,5 @@ public partial class Garage
 
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.DELETE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
-
-
     }
 }

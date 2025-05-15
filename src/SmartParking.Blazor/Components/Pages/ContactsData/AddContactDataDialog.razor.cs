@@ -8,32 +8,27 @@ using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.ContactsData;
 
+/// <summary>
+/// Represents the dialog component for adding a new contact data entry.
+/// </summary>
 public partial class AddContactDataDialog
 {
     private MudForm form;
-    public ContactInfoCreateUpdateDto input = new ContactInfoCreateUpdateDto();
-
+    public ContactInfoCreateUpdateDto createUpdateContactDataDto = new ContactInfoCreateUpdateDto();
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; }
     bool _clearable;
-    [Parameter] public int organizationId { get; set; }
-
+    [Parameter]
+    public int organizationId { get; set; }
+    /// <summary>
+    /// Submits the form to create a new contact data entry.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
     private async Task Submit()
     {
-
         try
         {
-            ContactInfoCreateUpdateDto createUpdateContactDataDto = new ContactInfoCreateUpdateDto()
-            {
-                Name = input.Name,
-                ContactMail = input.ContactMail,
-                OrganizationId = organizationId,
-                PhoneNum = input.PhoneNum,
-                TenantId = CurrentTenant.Id,
-                WhatsAppNum = input.WhatsAppNum
-            };
-
-
+           
             var contactdata = await ContactInfoAppService.CreateAsync(createUpdateContactDataDto);
             if (contactdata != null)
             {
@@ -41,13 +36,10 @@ public partial class AddContactDataDialog
                 MudDialog.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/contact-data", forceLoad: true);
-
             }
-
             else
             {
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} {createUpdateContactDataDto.Name} ", Severity.Error);
-
             }
         }
         catch (AbpValidationException validationException)
@@ -59,7 +51,6 @@ public partial class AddContactDataDialog
         }
         catch (BusinessException ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message}", Severity.Error);
         }
         catch (AuthenticationException ex)
@@ -68,11 +59,13 @@ public partial class AddContactDataDialog
         }
         catch (Exception ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
-
     }
+
+    /// <summary>
+    /// Cancels the add contact data operation and closes the dialog.
+    /// </summary>
     private void Cancel()
     {
         MudDialog.Cancel();

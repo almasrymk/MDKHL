@@ -26,6 +26,9 @@ public class CameraBrandAppService : CrudAppService<CameraBrand, CameraBrandDto,
         _repository = repository;
         _dataFilter = dataFilter;
     }
+
+    #region Public Methods
+
     ///<inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
@@ -36,36 +39,14 @@ public class CameraBrandAppService : CrudAppService<CameraBrand, CameraBrandDto,
             throw new EntityNotFoundException(typeof(CameraBrand), id);
         }
 
-        
-         await _repository.HardDeleteAsync(cameraBrand);
+        await _repository.HardDeleteAsync(cameraBrand);
     }
 
     ///<inheritdoc/>
     public override async Task<CameraBrandDto> CreateAsync(CreateUpdateCameraBrandDto input)
     {
-        var cameraBrand = await _repository.FirstOrDefaultAsync
-           (camera =>
-           camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-           camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-
-        if (cameraBrand != null)
-        {
-            if (cameraBrand.EnglishName == input.EnglishName.Trim(' '))
-            {
-                throw new InvalidOperationException("Camera brand english name already exists");
-
-            }
-            else if (cameraBrand.ArabicName == input.ArabicName.Trim(' '))
-            {
-                throw new InvalidOperationException("Camera brand  arabic name already exists");
-
-            }
-
-
-        }
+        await ValidateCameraBrandUniqnuessAsync(input);
         return await base.CreateAsync(input);
-
     }
 
     ///<inheritdoc/>
@@ -78,53 +59,30 @@ public class CameraBrandAppService : CrudAppService<CameraBrand, CameraBrandDto,
             throw new InvalidOperationException("Camera brand not found");
         }
 
-        var cameraBrand = await _repository.FirstOrDefaultAsync
-                (camera =>
-                camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-
-        if (cameraBrand != null)
-        {
-            if (cameraBrand.EnglishName == input.EnglishName.Trim(' ') && cameraBrand.Id != id)
-            {
-                throw new InvalidOperationException("Camera brand english name already exists");
-
-            }
-            else if (cameraBrand.ArabicName == input.ArabicName.Trim(' ') && cameraBrand.Id != id)
-            {
-                throw new InvalidOperationException("Camera brand arabic name already exists");
-
-            }
-
-
-        }
+        await ValidateCameraBrandUniqnuessAsync(input);
         return await base.UpdateAsync(id, input);
     }
+    ///<inheritdoc/>
+
     public async Task<PagedResultDto<CameraBrandDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         var queryable = await _repository.GetQueryableAsync();
-        // Apply filtering
+
         var filterExpression = BuildExpression<CameraBrand>.BuildFilterExpression(input.filters);
         if (filterExpression is not null)
         {
             queryable = queryable.Where(filterExpression);
         }
-        // Get the total count of filtered records
+
         var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of organizations entities
-        var cameraBrands = await AsyncExecuter.ToListAsync(queryable);
 
+        var cameraBrands = await AsyncExecuter.ToListAsync(queryable);
         var cameraBrandsDto = ObjectMapper.Map<List<CameraBrand>, List<CameraBrandDto>>(cameraBrands);
-        // Return the paginated result
-        return new PagedResultDto<CameraBrandDto>(
-            totalCount,
-            cameraBrandsDto
-        );
+
+        return new PagedResultDto<CameraBrandDto>(totalCount, cameraBrandsDto);
     }
+    ///<inheritdoc/>
 
     public async Task<List<CameraBrandDto>> GetAllCameraBrandsAsync()
     {
@@ -134,34 +92,60 @@ public class CameraBrandAppService : CrudAppService<CameraBrand, CameraBrandDto,
             return ObjectMapper.Map<List<CameraBrand>, List<CameraBrandDto>>(brands);
         }
     }
+    ///<inheritdoc/>
 
     public async Task<PagedResultDto<CameraBrandDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         var queryable = await _repository.GetQueryableAsync();
-        // Apply search filtering
+
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
-
             queryable = queryable.Where(or =>
                 or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
-
-
-            );
+                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()));
         }
 
         var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        var cameraBrands = await AsyncExecuter.ToListAsync(queryable);
 
-        // Map the hotel entities to cameraDto objects
+        var cameraBrands = await AsyncExecuter.ToListAsync(queryable);
         var cameraBrandsDto = ObjectMapper.Map<List<CameraBrand>, List<CameraBrandDto>>(cameraBrands);
-        // Return the paginated result
-        return new PagedResultDto<CameraBrandDto>(
-            totalCount,
-            cameraBrandsDto
-        );
+
+        return new PagedResultDto<CameraBrandDto>(totalCount, cameraBrandsDto);
     }
+
+    #endregion
+
+    #region Private Methods
+
+    /// <summary>
+    /// Validates the uniqueness of the camera brand's English and Arabic names before creating or updating a brand.
+    /// Throws an <see cref="InvalidOperationException"/> if a brand with the same English or Arabic name already exists.
+    /// </summary>
+    /// <param name="input">The camera brand DTO containing English and Arabic names to be validated.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if a camera brand with the same English name or Arabic name already exists.
+    /// </exception>
+    private async Task ValidateCameraBrandUniqnuessAsync(CreateUpdateCameraBrandDto input)
+    {
+        var cameraBrand = await _repository.FirstOrDefaultAsync(camera =>
+            camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+            camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+        if (cameraBrand != null)
+        {
+            if (cameraBrand.EnglishName == input.EnglishName.Trim(' '))
+            {
+                throw new InvalidOperationException("Camera brand english name already exists");
+            }
+            else if (cameraBrand.ArabicName == input.ArabicName.Trim(' '))
+            {
+                throw new InvalidOperationException("Camera brand arabic name already exists");
+            }
+        }
+    }
+
+
+    #endregion
 }

@@ -31,20 +31,18 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
         _subscriptionTypeRepository = subscriptionTypeRepository;
         _dataFilter = dataFilter;
     }
+    #region Public Methods
     /// <inheritdoc/>
     public override async Task<SubscriptionTypeDto> CreateAsync(CreateUpdateSubscriptionTypeDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var existingSubscriptionType = await _subscriptionTypeRepository.FirstOrDefaultAsync(x => x.TypeEn == input.TypeEn );
-
-            if (existingSubscriptionType != null)
-            {
-                throw new InvalidOperationException("subscription type with the same name already exists !");
-            }
-                return await base.CreateAsync(input);
+            await CheckSubscrtiptionTypeUniquness(input);
+            return await base.CreateAsync(input);
         }
     }
+
+   
 
     /// <inheritdoc/>
     public override async Task<SubscriptionTypeDto> UpdateAsync(int id, CreateUpdateSubscriptionTypeDto input)
@@ -52,13 +50,7 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
         using (_dataFilter.Disable<IMultiTenant>())
         {
 
-            var existingSubscriptionType = await _subscriptionTypeRepository.FirstOrDefaultAsync(x => x.TypeEn == input.TypeEn);
-
-            if (existingSubscriptionType != null)
-            {
-                throw new InvalidOperationException("subscription type with the same name already exists !");
-            }
-
+            await CheckSubscrtiptionTypeUniquness(input);
             return await base.UpdateAsync(id, input);
         }
     }
@@ -135,7 +127,8 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
 		}
 
 	}
-	public async Task<PagedResultDto<SubscriptionTypeDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
+    /// <inheritdoc/>
+    public async Task<PagedResultDto<SubscriptionTypeDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
 	{
 		using (_dataFilter.Disable<IMultiTenant>())
 		{
@@ -182,4 +175,22 @@ public class SubscriptionTypeAppService : CrudAppService<SubscriptionType, Subsc
 			);
 		}
 	}
+    #endregion
+    #region Private Methods
+    /// <summary>
+    /// Checks if a subscription type with the same English name already exists in the database.
+    /// </summary>
+    /// <param name="input">The DTO containing the subscription type details to check for uniqueness.</param>
+    /// <exception cref="InvalidOperationException">Thrown when a subscription type with the same English name already exists.</exception>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    private async Task CheckSubscrtiptionTypeUniquness(CreateUpdateSubscriptionTypeDto input)
+    {
+        var existingSubscriptionType = await _subscriptionTypeRepository.FirstOrDefaultAsync(x => x.TypeEn == input.TypeEn);
+
+        if (existingSubscriptionType != null)
+        {
+            throw new InvalidOperationException("subscription type with the same name already exists !");
+        }
+    }
+    #endregion
 }

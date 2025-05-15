@@ -19,11 +19,15 @@ using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Cities;
 
+/// <summary>
+/// Blazor component for managing city records, including search, filter, pagination, and CRUD operations.
+/// </summary>
 public partial class City
 {
     private int TotalItem;
-    public int CurrentPage { get; set; } = 1; // Default current page value is 10
-    public int RowPerPage { get; set; } = 10; // Default value is 10
+    public int CurrentPage { get; set; } = 1;
+
+    public int RowPerPage { get; set; } = 10;
 
     private TableData itemData = new TableData();
 
@@ -32,81 +36,61 @@ public partial class City
     private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
-
     public City(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
     }
+
     /// <summary>
-    /// filter for cities on the server side using the city columns.
+    /// Filters city records based on provided column filters.
     /// </summary>
-    /// <param name="columnFilter">The name of column to filter for among city.</param>
-    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    /// <param name="pageInfo">Pagination and filter information.</param>
     private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-
-        // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndFilteredResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch, // The term to use for filtering results
+            SearchingTerm = termSearch,
             filters = pageInfo.Filters
         };
-        // Call the service to perform the search based on the input parameters
-        var citiesDto = await AppService.Filter(input);
 
-        // Calculate the total number of pages required to display all results
+        var citiesDto = await AppService.Filter(input);
         TotalItem = (int)citiesDto.TotalCount;
         CreateTable(citiesDto);
-
-
     }
 
     /// <summary>
-    /// Searches for hotels on the server side using the hotel code search term.
+    /// Searches cities using a search term.
     /// </summary>
-    /// <param name="searchTerm">The term to search for among hotel.</param>
-    /// <returns>Returns a task that represents the asynchronous operation.</returns>
+    /// <param name="pageInfo">Pagination and search term data.</param>
     private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-        Console.WriteLine(pageInfo.SearchTerm);
-
-        // Update the term used for searching with the provided search term
         termSearch = pageInfo.SearchTerm;
 
-        // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch // The term to use for filtering results
+            SearchingTerm = termSearch
         };
 
-        // Call the service to perform the search based on the input parameters
         var citiesDto = await AppService.Search(input);
-
-        // Calculate the total number of pages required to display all results
         TotalItem = (int)citiesDto.TotalCount;
         CreateTable(citiesDto);
     }
 
     /// <summary>
-    /// Fetches the table data for the specified page and updates the table with the retrieved data.
+    /// Retrieves paginated city data from the server.
     /// </summary>
-    /// <param name="page">The page number for which to fetch the data.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <param name="pageInfo">Information about the current page.</param>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        Console.WriteLine(RowPerPage);
-        // Create a request object for paged and sorted data
+
         var input = new PagedAndSortedResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
@@ -114,65 +98,60 @@ public partial class City
             Sorting = pageInfo.SortColumn
         };
 
-        // Retrieve the list of cities from the server
         var citiesDto = await AppService.GetListAsync(input);
         TotalItem = (int)citiesDto.TotalCount;
         CreateTable(citiesDto);
-
     }
 
+    /// <summary>
+    /// Builds the table UI from a paginated result of cities.
+    /// </summary>
+    /// <param name="cities">Paginated result of cities.</param>
     private void CreateTable(PagedResultDto<CityDto> cities)
     {
-        // Initialize table data to be displayed, setting the table's name and whether to show the header
-        var tableData = new TableData()
+        var tableData = new TableData
         {
             Name = L["Cities"],
             ShowHeader = true
         };
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "City Arabic Name", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "City English Name", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["StateArabicName"], Name = "State Arabic Name", IsFilterable = true, PropertyName = "State.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-		tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["StateEnglishName"], Name = "State English Name", IsFilterable = true, PropertyName = "State.EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef { DisplayName = _localizer["Id"], Name = "Id", PropertyName = "Id", IsSortable = true, IsFilterable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef { DisplayName = _localizer["ArabicName"], Name = "City Arabic Name", PropertyName = "ArabicName", IsSortable = true, IsFilterable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef { DisplayName = _localizer["EnglishName"], Name = "City English Name", PropertyName = "EnglishName", IsSortable = true, IsFilterable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef { DisplayName = _localizer["StateArabicName"], Name = "State Arabic Name", PropertyName = "State.ArabicName", IsSortable = true, IsFilterable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef { DisplayName = _localizer["StateEnglishName"], Name = "State English Name", PropertyName = "State.EnglishName", IsSortable = true, IsFilterable = true, TypeFilter = TypeFilter.Text });
 
-
-		foreach (var item in cities.Items)
+        foreach (var item in cities.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["StateArabicName"], item.StateArabicName));
-			rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["StateEnglishName"], item.StateEnglishName));
-
-			tableData.Rows.Add(rowDef);
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["StateArabicName"], item.StateArabicName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["StateEnglishName"], item.StateEnglishName));
+            tableData.Rows.Add(rowDef);
         }
+
         itemData = tableData;
     }
 
+    /// <summary>
+    /// Opens a dialog to create a new city.
+    /// </summary>
     private Task CreateCity()
     {
-
-
         return Dialog.ShowAsync<AddCityDialog>("Simple Dialog", options);
-
-
     }
+
+    /// <summary>
+    /// Opens the edit dialog for a selected city row.
+    /// </summary>
+    /// <param name="row">The selected row to edit.</param>
+    /// <returns>A dialog reference to the edit dialog.</returns>
     private async Task<IDialogReference> OnClickRowEdit(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
-
         var cityDto = await AppService.GetAsync(id);
-
-        var createUpdateCityDto = new CreateUpdateCityDto
-        {
-            ArabicName = cityDto.ArabicName,
-            EnglishName = cityDto.EnglishName,
-            StateId = cityDto.StateId,
-        };
-
-
 
         var parameters = new DialogParameters
         {
@@ -180,56 +159,53 @@ public partial class City
             ["Id"] = id
         };
 
-
         return await Dialog.ShowAsync<EditCityDialog>("Edit City", parameters);
-
     }
 
-
+    /// <summary>
+    /// Opens a view-only dialog for a selected city row.
+    /// </summary>
+    /// <param name="row">The selected row to view.</param>
+    /// <returns>A dialog reference to the view dialog.</returns>
     private async Task<IDialogReference> OnClickRowView(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
-
         var cityDto = await AppService.GetAsync(id);
-
 
         var parameters = new DialogParameters
         {
-            ["City"] = cityDto,
+            ["City"] = cityDto
         };
-
 
         return await Dialog.ShowAsync<DetailsCityDialog>("View City", parameters);
     }
 
+    /// <summary>
+    /// Deletes a selected city row after confirmation dialog.
+    /// </summary>
+    /// <param name="row">The selected row to delete.</param>
     private async Task OnClickRowDelete(RowDef row)
     {
-    
-
         var id = int.Parse(row.Cells[0].Value);
-        var Name =  row.Cells[2].Value;
+        var Name = row.Cells[2].Value;
 
         var parameters = new DialogParameters
         {
-            ["Name"] = Name,
-
+            ["Name"] = Name
         };
 
         var dialog = await Dialog.ShowAsync<SPDialogDelete>("DeleteCity", parameters);
         var result = await dialog.Result;
+
         try
         {
             if (!result.Canceled)
             {
                 await AppService.DeleteAsync(id);
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name} ", Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name}", Severity.Success);
                 await Task.Delay(1000);
-
                 Navigation.NavigateTo("/cities", forceLoad: true);
-
             }
-
-
         }
         catch (BusinessException ex)
         {
@@ -237,19 +213,12 @@ public partial class City
         }
         catch (AuthenticationException ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}", Severity.Error);
         }
         catch (Exception ex)
         {
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]}", Severity.Error);
         }
-
-
     }
-
-   
-
-
-
 }
+

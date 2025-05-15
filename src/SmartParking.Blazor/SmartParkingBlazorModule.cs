@@ -18,6 +18,7 @@ using SmartParking.EntityFrameworkCore;
 using SmartParking.Localization;
 using SmartParking.MultiTenancy;
 using SmartParking.Results;
+using StackExchange.Profiling;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -124,6 +125,12 @@ public class SmartParkingBlazorModule : AbpModule
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
         var tenantDomains = configuration.GetSection("TenantDomains").Get<string[]>();
+        context.Services.AddMiniProfiler(options =>
+        {
+            options.RouteBasePath = "/profiler";
+            options.TrackConnectionOpenClose = true;
+            options.EnableServerTimingHeader = true;
+        }).AddEntityFramework();
         Configure<AbpTenantResolveOptions>(options =>
         {
             //options.TenantResolvers.Clear();
@@ -378,6 +385,8 @@ public class SmartParkingBlazorModule : AbpModule
                 new CookieRequestCultureProvider()
             };
         });
+        app.UseMiniProfiler(); 
+
         app.UseRouting();
 
         app.UseAuthentication(); // Authentication middleware should be before UseAuthorization and UseEndpoints

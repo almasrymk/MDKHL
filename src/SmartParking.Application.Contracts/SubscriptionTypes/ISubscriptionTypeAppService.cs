@@ -42,6 +42,11 @@ public interface ISubscriptionTypeAppService : ICrudAppService<SubscriptionTypeD
     /// <param name="input"></param>
     /// <returns></returns>
     Task<PagedResultDto<SubscriptionTypeDto>> FilterForMDKHL(PagedAndSortedAndFilteredResultRequestDto input);
+    /// <summary>
+    /// Method used to search . 
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
     Task<PagedResultDto<SubscriptionTypeDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input);
 
 

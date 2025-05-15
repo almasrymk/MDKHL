@@ -19,9 +19,37 @@ namespace SmartParking.CustomerPackages
         CreateUpdateCustomerPackageDto
         >
     {
+        /// <summary>
+        /// Retrieves the active customer package for a specific organization and vehicle plate number, 
+        /// based on the provided exit transaction date.
+        /// </summary>
+        /// <param name="orgID">The ID of the organization.</param>
+        /// <param name="PlateNumber">The plate number of the vehicle.</param>
+        /// <param name="ExitTransaction">The exit time of the garage transaction.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. 
+        /// The task result contains the active <see cref="CustomerPackageDto"/> if one is found.
+        /// </returns>
         Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int orgID, string PlateNumber, DateTime ExitTransaction);
+        /// <summary>
+        /// Retrieves a list of all packages currently assigned to the authenticated customer.
+        /// </summary>
+        /// <returns>
+        /// A task that represents the asynchronous operation. 
+        /// The task result contains a <see cref="Result{T}"/> with a list of <see cref="CustomerPackageDto"/> assigned to the customer.
+        /// </returns>
         Task<Result<List<CustomerPackageDto>>> GetPackageByCustomer();
-        Task<Result> AssignPackageToCustomerAsync(int packageId,string ArabicPlateNumber,string EnglishPlateNumber);
+        /// <summary>
+        /// Assigns a package to a customer using the specified package ID and vehicle plate numbers.
+        /// </summary>
+        /// <param name="packageId">The ID of the package to assign.</param>
+        /// <param name="ArabicPlateNumber">The Arabic version of the vehicle plate number.</param>
+        /// <param name="EnglishPlateNumber">The English version of the vehicle plate number.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. 
+        /// The task result contains a <see cref="Result"/> indicating the outcome of the assignment.
+        /// </returns>
+        Task<Result> AssignPackageToCustomerAsync(int packageId, string ArabicPlateNumber, string EnglishPlateNumber);
 
 
         /// <summary>
@@ -45,8 +73,24 @@ namespace SmartParking.CustomerPackages
         /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="PackageDto"/> objects associated with the customer.</returns>
         Task<PagedResultDto<CustomerPackageDto>> GetListPackagesByCustomerOrganization(Guid customerId, PagedAndSortedResultRequestDto input);
 
-        Task<DateTime> GetExpireyDateForPackageSubscripedByCustomerInSpecificOrganization(int OrgId,Guid CustomerId , int PackageId);
+        /// <summary>
+        /// Gets the expiry date for a specific customer's subscription to a package within a given organization.
+        /// </summary>
+        /// <param name="OrgId">The ID of the organization.</param>
+        /// <param name="CustomerId">The ID of the customer.</param>
+        /// <param name="PackageId">The ID of the package.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. 
+        /// The task result contains the <see cref="DateTime"/> of the package expiry.
+        /// </returns>
+        Task<DateTime> GetExpireyDateForPackageSubscripedByCustomerInSpecificOrganization(int OrgId, Guid CustomerId, int PackageId);
 
+        /// <summary>
+        /// Checks if the number of subscribed customers has reached the limit for the given organization.
+        /// Throws an exception if the limit has been exceeded.
+        /// </summary>
+        /// <param name="organizationId">The ID of the organization to check limits for.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
         Task CheckSubscriptionCustomersLimitsAsync(int organizationId);
     }
 }

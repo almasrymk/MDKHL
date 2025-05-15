@@ -11,7 +11,9 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
 namespace SmartParking.Organizations;
-
+/// <summary>
+/// Interface for Organization App Service.
+/// </summary>
 public interface IOrganizationsAppService : ICrudAppService<OrganizationDto,int,PagedAndSortedResultRequestDto,CreateUpdateOrganiztionDto>
 {
     /// <summary>

@@ -50,7 +50,11 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
 		_customerRepository = CustomerRepository;
 	}
 
-	[RemoteService(IsEnabled =false)]
+
+    #region Public Methods
+    /// <inheritdoc/>
+
+    [RemoteService(IsEnabled =false)]
     public async Task<Result<VehicleDto>> CreateAsync(CreateUpdateVehicleMobileDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -117,6 +121,7 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
         }
     }
 
+    /// <inheritdoc/>
 
     public async Task<Result<VehicleDto>> DeleteAsync(int vehicleId)
     {
@@ -132,6 +137,7 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
             return Result<VehicleDto>.Success(vehicleDto, "Vehicle Delete Succesuffuly");
         }
 	}
+    /// <inheritdoc/>
 
     public async Task<Result<VehicleDto>> EditAsync(int vehicleId, CreateUpdateVehicleMobileDto input)
     {
@@ -197,6 +203,7 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
             return Result<VehicleDto>.Success(vehicleDto, "Vehicle Edit Succesuffuly");
         }
 	}
+    /// <inheritdoc/>
 
     public async Task<Result<List<VehicleDto>>> GetListAsync()
     {
@@ -212,8 +219,9 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
         }
         
 
-    }   
-    
+    }
+    /// <inheritdoc/>
+
     public async Task<Result<VehicleDto>> GetAsync(int vehicleId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -229,6 +237,7 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
         
 
     }
+    /// <inheritdoc/>
 
     public async Task<VehicleDto> GetVehicleByPlateNumberAsync(string plateNumber)
     {
@@ -236,5 +245,5 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
         var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicle);
         return vehicleDto;
     }
-
+    #endregion
 }

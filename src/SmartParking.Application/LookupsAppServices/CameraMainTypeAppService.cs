@@ -27,6 +27,9 @@ public class CameraMainTypeAppService : CrudAppService<CameraMainType, CameraMai
         _repository = repository;
         _dataFilter = dataFilter;
     }
+
+    #region Public Methods
+
     ///<inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
@@ -43,29 +46,8 @@ public class CameraMainTypeAppService : CrudAppService<CameraMainType, CameraMai
     ///<inheritdoc/>
     public override async Task<CameraMainTypeDto> CreateAsync(CreateUpdateCameraMainTypeDto input)
     {
-        var cameraMainType = await _repository.FirstOrDefaultAsync
-           (camera =>
-           camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-           camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-
-        if (cameraMainType != null)
-        {
-            if (cameraMainType.EnglishName == input.EnglishName.Trim(' '))
-            {
-                throw new InvalidOperationException(
-                                                        $"{LocalizationHelper.GetLocalizedString("EnglishName")} {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
-            }
-            else if (cameraMainType.ArabicName == input.ArabicName.Trim(' '))
-            {
-                throw new InvalidOperationException(
-                                            $"{LocalizationHelper.GetLocalizedString("ArabicName")} {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
-            }
-
-
-        }
+        await ValidateCameraMainTypeUniqnuessAsync(input);
         return await base.CreateAsync(input);
-
     }
 
     ///<inheritdoc/>
@@ -78,54 +60,33 @@ public class CameraMainTypeAppService : CrudAppService<CameraMainType, CameraMai
             throw new InvalidOperationException("Camera maintype not found");
         }
 
-        var cameraMainType = await _repository.FirstOrDefaultAsync
-                (camera =>
-                camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-
-        if (cameraMainType != null)
-        {
-            if (cameraMainType.EnglishName == input.EnglishName.Trim(' ') && cameraMainType.Id != id)
-            {
-                throw new InvalidOperationException(
-                                        $"{LocalizationHelper.GetLocalizedString("EnglishName")} {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
-            }
-            else if (cameraMainType.ArabicName == input.ArabicName.Trim(' ') && cameraMainType.Id != id)
-            {
-                throw new InvalidOperationException(
-                            $"{LocalizationHelper.GetLocalizedString("ArabicName")} {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
-
-            }
-
-
-        }
+        await ValidateCameraMainTypeUniqnuessAsync(input);
         return await base.UpdateAsync(id, input);
     }
+    ///<inheritdoc/>
+
     public async Task<PagedResultDto<CameraMainTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         var queryable = await _repository.GetQueryableAsync();
-        // Apply filtering
+
         var filterExpression = BuildExpression<CameraMainType>.BuildFilterExpression(input.filters);
         if (filterExpression is not null)
         {
             queryable = queryable.Where(filterExpression);
         }
-        // Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-        // Apply pagination
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of organizations entities
         var cameraMainTypes = await AsyncExecuter.ToListAsync(queryable);
 
         var cameraMainTypesDto = ObjectMapper.Map<List<CameraMainType>, List<CameraMainTypeDto>>(cameraMainTypes);
-        // Return the paginated result
+
         return new PagedResultDto<CameraMainTypeDto>(
             totalCount,
             cameraMainTypesDto
         );
     }
+    ///<inheritdoc/>
 
     public async Task<List<CameraMainTypeDto>> GetAllCameraMainTypesAsync()
     {
@@ -135,34 +96,64 @@ public class CameraMainTypeAppService : CrudAppService<CameraMainType, CameraMai
             return ObjectMapper.Map<List<CameraMainType>, List<CameraMainTypeDto>>(maintypes);
         }
     }
+    ///<inheritdoc/>
 
     public async Task<PagedResultDto<CameraMainTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
         var queryable = await _repository.GetQueryableAsync();
-        // Apply search filtering
+
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
-
             queryable = queryable.Where(or =>
                 or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
-
-
             );
         }
 
         var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
         var cameraMainTypes = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the hotel entities to cameraDto objects
         var cameraMainTypesDto = ObjectMapper.Map<List<CameraMainType>, List<CameraMainTypeDto>>(cameraMainTypes);
-        // Return the paginated result
+
         return new PagedResultDto<CameraMainTypeDto>(
             totalCount,
             cameraMainTypesDto
         );
     }
+
+    #endregion
+
+    #region Private Methods
+    /// <summary>
+    /// Validates the uniqueness of the camera main type's English and Arabic names before creation or update.
+    /// Throws an <see cref="InvalidOperationException"/> if a camera main type with the same English or Arabic name already exists.
+    /// </summary>
+    /// <param name="input">The DTO containing the English and Arabic names of the camera main type to validate.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if a camera main type with the same English or Arabic name already exists, using localized error messages.
+    /// </exception>
+    private async Task ValidateCameraMainTypeUniqnuessAsync(CreateUpdateCameraMainTypeDto input)
+    {
+        var cameraMainType = await _repository.FirstOrDefaultAsync
+        (camera =>
+            camera.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+            camera.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+        if (cameraMainType != null)
+        {
+            if (cameraMainType.EnglishName == input.EnglishName.Trim(' '))
+            {
+                throw new InvalidOperationException(
+                    $"{LocalizationHelper.GetLocalizedString("EnglishName")} {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
+            }
+            else if (cameraMainType.ArabicName == input.ArabicName.Trim(' '))
+            {
+                throw new InvalidOperationException(
+                    $"{LocalizationHelper.GetLocalizedString("ArabicName")} {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
+            }
+        }
+    }
+
+    #endregion
 }

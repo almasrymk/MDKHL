@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.Shared
+@using SmartParking.Currency
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.SubscriptionTypes
@@ -72,15 +73,20 @@
                         </MudItem>
 
                     <MudItem sm="6">
+                         <div style="display: flex; flex-direction: column;">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                    @L["SubscriptionPrice"]
+                                    @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                                </label>
                         <MudNumericField @bind-Value="subscription.SubscriptionPrice"
                                       For="@(() => subscription.SubscriptionPrice)"
                                       Immediate="true"
                                       Min="0" 
                                       HideSpinButtons="true"
                                       class="@(CultureInfo.CurrentCulture.Name=="ar" ? "custom-numeric-field" : "")"                                       
-                                      Label="@($"{L["SubscriptionPrice"]} ({L["SAR"]})")" 
                                       Required="true"
                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                            </div>
                     </MudItem>
                         <MudItem sm="6">
                             <MudNumericField @bind-Value="subscription.ParkingSlot"

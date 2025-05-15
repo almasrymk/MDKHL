@@ -28,137 +28,78 @@ namespace SmartParking.Vehicles.LookUps;
 [Authorize]
 public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, int, PagedAndSortedResultRequestDto, CreateUpdatePlateColorDto>, IPlateColorsAppService
 {
-	private readonly Volo.Abp.Domain.Repositories.IRepository<PlateColor, int> _repository;
+    private readonly Volo.Abp.Domain.Repositories.IRepository<PlateColor, int> _repository;
     private readonly IDataFilter _dataFilter;
 
-    public PlateColorsAppService(Volo.Abp.Domain.Repositories.IRepository<PlateColor, int> repository,IDataFilter dataFilter) : base(repository)
+    public PlateColorsAppService(Volo.Abp.Domain.Repositories.IRepository<PlateColor, int> repository, IDataFilter dataFilter)
+        : base(repository)
     {
-		_repository = repository;
+        _repository = repository;
         _dataFilter = dataFilter;
     }
 
+    #region Public Methods
     ///<inheritdoc/>
+
     public override async Task<PlateColorDto> CreateAsync(CreateUpdatePlateColorDto input)
     {
-        var plateColor = await _repository.FirstOrDefaultAsync
-               (plate =>
-               plate.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-               plate.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-        if (plateColor != null)
-        {
-            if (plateColor.EnglishName == input.EnglishName.Trim(' ') )
-            {
-                throw new InvalidOperationException("Plate color english name already exists");
-
-            }
-            else if (plateColor.ArabicName == input.ArabicName.Trim(' ') )
-            {
-                throw new InvalidOperationException("Plate color  arabic name already exists");
-
-            }
-
-
-        }
+        await ValidatePlateColorUniquenessAsync(input);
         return await base.CreateAsync(input);
-
     }
-
     ///<inheritdoc/>
+
     public override async Task<PlateColorDto> UpdateAsync(int id, CreateUpdatePlateColorDto input)
     {
         var existingPlate = await _repository.GetAsync(id);
-
         if (existingPlate is null)
         {
             throw new InvalidOperationException("Plate Color not found");
         }
 
-        var plateColor = await _repository.FirstOrDefaultAsync
-                (plate =>
-                plate.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                plate.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-
-        if (plateColor != null)
-        {
-            if (plateColor.EnglishName == input.EnglishName.Trim(' ') && plateColor.Id != id)
-            {
-                throw new InvalidOperationException("Plate Color english name already exists");
-
-            }
-            else if (plateColor.ArabicName == input.ArabicName.Trim(' ') && plateColor.Id != id)
-            {
-                throw new InvalidOperationException("Plate Color arabic name already exists");
-
-            }
-
-
-        }
+        await ValidatePlateColorUniquenessAsync(input, id);
         return await base.UpdateAsync(id, input);
     }
+    ///<inheritdoc/>
+
     public async Task<PagedResultDto<PlateColorDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
-	{
-		// Get the IQueryable<camera> from the repository
-		var queryable = await _repository.GetQueryableAsync();
-		// Apply search filtering
-		if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-		{
+    {
+        var queryable = await _repository.GetQueryableAsync();
 
-			queryable = queryable.Where(or =>
-				or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-				or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
-				
-			);
-		}
-		// Get the total count of filtered records
-		var totalCount = await AsyncExecuter.CountAsync(queryable);
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+            queryable = queryable.Where(or =>
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
+            );
+        }
 
-		// Apply pagination
-		queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-		// Execute the query and get the list of camera entities
-		var plateColors = await AsyncExecuter.ToListAsync(queryable);
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var plateColors = await AsyncExecuter.ToListAsync(queryable);
+        var plateColorsDto = ObjectMapper.Map<List<PlateColor>, List<PlateColorDto>>(plateColors);
 
-		// Map the hotel entities to cameraDto objects
-		var plateColorsDto = ObjectMapper.Map<List<PlateColor>, List<PlateColorDto>>(plateColors);
-		// Return the paginated result
-		return new PagedResultDto<PlateColorDto>(
-			totalCount,
-			plateColorsDto
-		);
-	}
+        return new PagedResultDto<PlateColorDto>(totalCount, plateColorsDto);
+    }
+    ///<inheritdoc/>
 
-	/// <summary>
-	/// method used to get list of cameraes
-	/// </summary>
-	/// <param name="input">specifies max number of camera and if it filtered or not</param>
-	/// <returns>cameraeDto List</returns>
-	public async Task<PagedResultDto<PlateColorDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
-	{
-		// Get the IQueryable<camera> from the repository
-		var queryable = await _repository.GetQueryableAsync();
-		// Apply filtering
-		var filterExpression = BuildExpression<PlateColor>.BuildFilterExpression(input.filters);
-		if (filterExpression is not null)
-		{
-			queryable = queryable.Where(filterExpression);
-		}
-		// Get the total count of filtered records
-		var totalCount = await AsyncExecuter.CountAsync(queryable);
+    public async Task<PagedResultDto<PlateColorDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+        var queryable = await _repository.GetQueryableAsync();
+        var filterExpression = BuildExpression<PlateColor>.BuildFilterExpression(input.filters);
 
-		// Apply pagination
-		queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-		// Execute the query and get the list of organizations entities
-		var plateColors = await AsyncExecuter.ToListAsync(queryable);
+        if (filterExpression is not null)
+        {
+            queryable = queryable.Where(filterExpression);
+        }
 
-		// Map the organizations entities to organizationsDto objects
-		var plateColorsDto = ObjectMapper.Map<List<PlateColor>, List<PlateColorDto>>(plateColors);
-		// Return the paginated result
-		return new PagedResultDto<PlateColorDto>(
-			totalCount,
-			plateColorsDto
-		);
-	}
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var plateColors = await AsyncExecuter.ToListAsync(queryable);
+        var plateColorsDto = ObjectMapper.Map<List<PlateColor>, List<PlateColorDto>>(plateColors);
+
+        return new PagedResultDto<PlateColorDto>(totalCount, plateColorsDto);
+    }
+    ///<inheritdoc/>
 
     public override async Task DeleteAsync(int id)
     {
@@ -168,8 +109,10 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
         {
             throw new EntityNotFoundException(typeof(PlateColor), id);
         }
+
         await _repository.HardDeleteAsync(plateColor);
     }
+    ///<inheritdoc/>
 
     public async Task<List<PlateColorDto>> GetAllPlateColorsAsync()
     {
@@ -179,4 +122,38 @@ public class PlateColorsAppService : CrudAppService<PlateColor, PlateColorDto, i
             return ObjectMapper.Map<List<PlateColor>, List<PlateColorDto>>(plateColors);
         }
     }
+
+    #endregion
+
+    #region Private Methods
+
+    /// <summary>
+    /// Validates if the plate color's English or Arabic name is unique.
+    /// </summary>
+    /// <param name="input">The plate color create/update DTO containing the English and Arabic names to check for uniqueness.</param>
+    /// <param name="currentId">The ID of the current plate color being updated (optional). If provided, it will be excluded from the uniqueness check.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the plate color with the same English or Arabic name already exists.</exception>
+    private async Task ValidatePlateColorUniquenessAsync(CreateUpdatePlateColorDto input, int? currentId = null)
+    {
+        var plateColor = await _repository.FirstOrDefaultAsync(
+            plate =>
+                plate.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                plate.ArabicName.ToLower().Contains(input.ArabicName.ToLower())
+        );
+
+        if (plateColor != null)
+        {
+            if (plateColor.EnglishName == input.EnglishName.Trim() && plateColor.Id != currentId)
+            {
+                throw new InvalidOperationException("Plate color English name already exists");
+            }
+            else if (plateColor.ArabicName == input.ArabicName.Trim() && plateColor.Id != currentId)
+            {
+                throw new InvalidOperationException("Plate color Arabic name already exists");
+            }
+        }
+    }
+
+    #endregion
 }

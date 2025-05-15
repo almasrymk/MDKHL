@@ -5,6 +5,8 @@
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject ICameraMainTypeAppService CameraMainTypesAppService
 <div class="modal-wrapper">
     <MudDialog class="mud-modal">
         <TitleContent>
@@ -83,16 +85,3 @@
         border-radius: 0 20px 0 20px;
     }
 </style>
-
-@code {
-    [Inject] ISnackbar Snackbar { get; set; }
-    [Inject] ICameraMainTypeAppService CameraMainTypesAppService { get; set; }
-    [Parameter]
-    public CameraMainTypeDto cameraMainType { get; set; } = new CameraMainTypeDto();
-    [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; }
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
-}

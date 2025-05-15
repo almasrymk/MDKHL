@@ -24,9 +24,6 @@ public partial class Invoice
     private TableData itemData = new TableData();
 
     private string termSearch;
-
-    private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
-
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     public Invoice(IStringLocalizer<SmartParkingResource> localizer)
     {
@@ -80,9 +77,7 @@ public partial class Invoice
             Sorting = pageInfo.SortColumn,
             SearchingTerm = termSearch // The term to use for filtering results
         };
-
         // Call the service to perform the search based on the input parameters
-
         if (CurrentTenant.Id == null)
         {
             var invoiceDto = await AppService.SearchForMDKHL(input);
@@ -95,11 +90,7 @@ public partial class Invoice
             TotalItem = (int)invoiceDto.TotalCount;
             CreateTable(invoiceDto);
         }
-
-        // Calculate the total number of pages required to display all results
-     
     }
-
     /// <summary>
     /// Fetches the table data for the specified page and updates the table with the retrieved data.
     /// </summary>
@@ -138,7 +129,6 @@ public partial class Invoice
             CreateTable(invoiceDto);
         }
     }
-
     private void CreateTable(PagedResultDto<InvoiceDto> invoices)
     {
         // Initialize table data to be displayed, setting the table's name and whether to show the header
@@ -209,9 +199,6 @@ public partial class Invoice
                 $"{item.InvoicePrice} {IconHtml}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"],!item.IsPackage?_localizer[$"{item.InvoiceType.ToString()}"]: _localizer[$"Package"]));
 
-          
-
-
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
@@ -226,33 +213,10 @@ public partial class Invoice
         if (CurrentTenant.Id != null)
         {
             Navigation.NavigateTo("/invoices/details/" + row.Cells[0].Value, true);
-
         }
         else
         {
             Navigation.NavigateTo("/invoices/details/" + row.Cells[1].Value, true);
-
         }
-    }
-    /// <summary>
-
-    /// Displays a snackbar notification with the specified message and severity.
-
-    /// </summary>
-
-    /// <param name="message">The message to display in the snackbar.</param>
-
-    /// <param name="severity">The severity level of the snackbar (e.g., Success, Error).</param>
-
-    void ShowSnackbar(string message, Severity severity)
-
-    {
-
-        Snackbar.Clear();
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopRight;
-
-        Snackbar.Add(message, severity, c => c.SnackbarVariant = Variant.Filled);
-
     }
 }

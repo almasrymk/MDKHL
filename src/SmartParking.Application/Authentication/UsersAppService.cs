@@ -32,6 +32,8 @@ using SmartParking.Cutomers;
 namespace SmartParking.Authentication;
 
 [Authorize]
+///<inheritdoc/>
+
 public class UsersAppService : ApplicationService, IUsersAppService
 {
     private readonly UserManager<IdentityUser> _userManager;
@@ -68,6 +70,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
         _organizationsRepository = organizationsRepository;
 
     }
+
+    #region Public Methods
     ///<inheritdoc/>
     public async Task<UserDto> CreateWithRoleAsync(UserCreateDto input, Guid roleId)
     {
@@ -79,7 +83,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
         await AssignRoleAndPermissionsAsync(user, roleId, input);
 
         return ObjectMapper.Map<IdentityUser, UserDto>(user);
-    }   
+    }
+    ///<inheritdoc/>
+
     public async Task<UserDto> CreateWithRoleWithoutCustomerAsync(UserCreateDto input, Guid roleId)
     {
         IdentityUser user = await AddAndValidateUserAsync(input);
@@ -90,6 +96,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
     }
 
     [AllowAnonymous]
+    ///<inheritdoc/>
+
     public async Task<IdentityUser> AddAndValidateUserAsync (UserCreateDto input)
     {
         await _identityOptions.SetAsync();
@@ -110,6 +118,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
         return user;
     }
+    ///<inheritdoc/>
 
     public async Task CheckSubscriptionUsersLimitsAsync(int organizationId)
     {
@@ -130,87 +139,10 @@ public class UsersAppService : ApplicationService, IUsersAppService
         }
         
     
-    private async Task<Subscription?> GetSubscriptionByOrganizationId(Organization organization)
-    {
-        using(DataFilter.Disable<IMultiTenant>())
-        {
-            return await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
-        }
-    }
-
-    private IdentityUser CreateUser(UserCreateDto input)
-    {
-        return new IdentityUser(GuidGenerator.Create(),input.UserName,input.Email,input.TenantId);
-    }
-
-    private void SetUserProperties(IdentityUser user, UserCreateDto input)
-    {
-        user.Name = input.Name;
-        user.Surname = input.Surname;
-        user.SetProperty("OtpCode", null);
-        user.SetProperty("OtpExpirationDate", DateTime.Now);
-        user.SetProperty("UserTypeId", input.UserType);
-        user.SetProperty("OrganizationId", input.OrganizationId);
-        user.SetProperty("IdentificationTypes", input.IdentificationTypes);
-        user.SetProperty("NationalId", input.NationalId);
-        if(input.UserTypeCategory.HasValue)
-         user.SetProperty("UserTypeCategory", input.UserTypeCategory);
-    }
-
-    private async Task AddCustomer(IdentificationTypes identificationTypes, string NationalId,string ArabicName,Guid userId)
-    {
-        try
-        {
-            var customer = new Customer
-            {
-                IdentityUserId = userId,
-                IdentificationTypes = identificationTypes,
-                NationalId = NationalId,
-                ArabicName = ArabicName,
-                TenantId = null
-
-            };
-
-            await _customerRepository.InsertAsync(customer, true);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
-                LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
-                LocalizationHelper.GetLocalizedString("Customer"));
-
-        }
-
-    }
-    private async Task AssignRoleAndPermissionsWithoutCustomerAsync(IdentityUser user, Guid roleId, UserCreateDto input)
-    {
-        if (input.IsCustomer)
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-
-                await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
-            }
-
-
-        }
-        user.AddRole(roleId);
-    }    
-    private async Task AssignRoleAndPermissionsAsync(IdentityUser user, Guid roleId,UserCreateDto input)
-    {
-        if (input.IsCustomer)
-        {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                await CreateCustomerWithRoleAsync(user, input);
-                //  
-            }
-
-
-        }
-        user.AddRole(roleId);
-    }
+    
     [AllowAnonymous]
+    ///<inheritdoc/>
+
     public async Task CreateCustomerWithRoleAsync(IdentityUser user, UserCreateDto input)
     {
 
@@ -224,12 +156,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
     }
 
 
-    /// <summary>
-    /// Checks if the provided phone number is unique and associated with a user.
-    /// </summary>
-    /// <param name="phone">The phone number to check for uniqueness.</param>
-    /// <returns>The <see cref="IdentityUser"/> associated with the phone number if it exists.</returns>
-    /// <exception cref="ValidationException">Thrown when the phone number is not associated with any user.</exception>
+    ///<inheritdoc/>
+
     public async Task<UserDto> CheckPhoneIsUnique(string phone)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -298,6 +226,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             };
         }
     }
+    ///<inheritdoc/>
 
     public async Task<PagedResultDto<UserWithRole>> SearchForOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
@@ -327,6 +256,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             return await GetPagedResultAsync(queryable, input);
         }
     }
+    ///<inheritdoc/>
 
     public async Task<PagedResultDto<UserDto>> FilterForOrganizationAsync(PagedAndSortedAndFilteredResultRequestDto input)
     {
@@ -347,29 +277,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     }
 
-    private async Task<PagedResultDto<UserDto>> GetPagedResultAsync(IQueryable<IdentityUser> queryable, PagedResultRequestDto input)
-    {
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        var users = await AsyncExecuter.ToListAsync(queryable);
-        var usersDto = ObjectMapper.Map<List<IdentityUser>, List<UserDto>>(users);
-        
-        return new PagedResultDto<UserDto>
-        {
-            TotalCount = totalCount,
-            Items = usersDto
-        };
-    }
 
-    private IQueryable<IdentityUser> ApplySorting(IQueryable<IdentityUser> queryable, string sorting)
-    {
-        if (sorting.Contains("DESC"))
-        {
-            var sortingParts = sorting.Split(' ').ToList();
-            return queryable.OrderBy(sortingParts[0] + " descending");
-        }
-        return queryable.OrderBy(sorting);
-    }
+    ///<inheritdoc/>
 
     public async Task<UserDto> AssignRoleToUser(Guid userId, string roleName)
     {
@@ -381,6 +290,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             return userDto;
         }
     }
+    ///<inheritdoc/>
 
     public async Task<IdentityUser?> IsUserFound(Guid? userId)
     {
@@ -398,6 +308,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
         }
        
     }
+    ///<inheritdoc/>
+
     public async Task<UserDto> UpdateUserWithoutRoleChangeAsync(Guid? id, UpdateUserDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -444,7 +356,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
             var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
             return userDto;
         }
-    }    
+    }
+    ///<inheritdoc/>
+
     public async Task<UserDto> UpdateUserWithRoleChangeMdkhlAsync(Guid? id, UpdateUserDto input)
     {
         try
@@ -474,82 +388,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
         }
     }
 
-    private static void ChenageRoleInMdkhl(UpdateUserDto input, IdentityUser? user)
-    {
-        if (input.RoleId == Guid.Empty)
-            throw new Exception(LocalizationHelper.GetLocalizedString("Role") + " " +
-                LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
-        foreach (var item in user.Roles)
-        {
-            user.RemoveRole(item.RoleId);
-        }
-        user.AddRole(input.RoleId);
-    }
-
-    private async Task AssignRoleIfCustomerAsync(UpdateUserDto input, IdentityUser? user)
-    {
-        if (input.IsCustomer)
-        {
-            await AddCustomer(input.IdentificationTypes, input.NationalId, input.Surname, user.Id);
-            var roleCustomer = await GetCustomerRole();
-            user.AddRole(roleCustomer.Id);
-        }
-    }
-
-    private async Task UpdateUserProperties(IdentityUser user, UpdateUserDto input)
-    {
-        await CheckNationalIdValid(user, input.IdentificationTypes,input.NationalId);
-        await CheckUpdatePhoneNumber(user, input);
-        await _authenticationUtility.CheckPhoneNumberIsValid(input.PhoneNumber);
-        await _authenticationUtility.CheckUserNameIsValid(input.Name);
-        user.Name = input.Name;
-        user.Surname = input.Surname;
-
-        ObjectHelper.TrySetProperty(
-            user,
-            x => x.Email,
-            () => input.Email
-        );
-        user.SetIsActive(input.IsActive);
-        user.SetProperty("IdentificationTypes", input.IdentificationTypes);
-        user.SetProperty("NationalId", input.NationalId);
-        user.SetProperty("OrganizationId", input.OrganizationId);
-        ObjectHelper.TrySetProperty(
-            user,
-            x => x.PhoneNumber,
-            () => input.PhoneNumber
-            );
-        user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
-        if (input.UserTypeCategory.HasValue)
-            user.SetProperty("UserTypeCategory", input.UserTypeCategory);
-
-    }
-
-    private async Task CheckUpdatePhoneNumber(IdentityUser user, UpdateUserDto input)
-    {
-        if (user.PhoneNumber != input.PhoneNumber)
-        {
-            var result = await CheckPhoneIsUnique(input.PhoneNumber);
-            if (result is not null)
-            {
-                throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " +
-                    LocalizationHelper.GetLocalizedString("DuplicateValidation"));
-
-            }
-        }
-    }
-
-    private async Task CheckNationalIdValid(IdentityUser user, IdentificationTypes identification, string nationalId)
-    {
-        var IdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes");
-        var NationalId = user.GetProperty<string>("NationalId");
-        if (IdentificationTypes != identification || NationalId != nationalId)
-        {
-            await _authenticationUtility.CheckNationalId(identification, nationalId);
-            await _authenticationUtility.CheckIfNationalIDIsUnique(nationalId);
-        }
-    }
+    ///<inheritdoc/>
 
     public async Task<UserDto> UpdateProfileDataAsync(Guid? id, UpdateUserDto input)
     {
@@ -568,6 +408,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
             return userDto;
         }
     }
+    ///<inheritdoc/>
+
     public async Task<Result<UserDataDto>> UpdateProfileDataMobileAsync(Guid? id, UserDataDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -604,117 +446,23 @@ public class UsersAppService : ApplicationService, IUsersAppService
             
         }
     }
-
-    private  async Task ChangeRole(UpdateUserDto input, IdentityUser? user)
-    {
-        if (user.Roles.Count == 0)
-        {
-            await CustomerToUser(user);
-        }
-        if (input.RoleId == Guid.Empty)
-            throw new Exception(LocalizationHelper.GetLocalizedString("Role")+" "+
-                LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-        
-        foreach (var item in user.Roles)
-        {
-            if(item.TenantId == CurrentTenant.Id)
-                user.RemoveRole(item.RoleId);
-        }
-        user.AddRole(input.RoleId);
-    }
-    
-    private async Task CustomerToUser(IdentityUser user)
-    {
-        var orgId =await GetOrganizationIdByTenantAsync(CurrentTenant.Id);
-        user.SetProperty("OrganizationId", orgId);
-        ObjectHelper.TrySetProperty(
-                   user,
-                   x => x.TenantId,
-                   () => CurrentTenant.Id
-               );
-
-
-    }
-
-    private static async void RemoveRole(Guid roleId, IdentityUser? user)
-    {
-        user.RemoveRole(roleId);
-    }
-    
-    public async Task RemoveRoleMdkhl(Guid UserId , Guid RoleId)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            IdentityUser? user = await IsUserFound(UserId);
-            var role = await _roleReository.GetAsync(RoleId);
-            if(role.Name == RolesType.Customer.ToString())
-            {
-                throw new Exception(
-                   LocalizationHelper.GetLocalizedString("UserRole") + " " +
-                   LocalizationHelper.GetLocalizedString("Customer"));
-              
-            }
-            user.RemoveRole(RoleId);
-            await _userManager.UpdateAsync(user);
-        }
-    }
-
-    public async Task<UserDto> GetAsync(Guid? id)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-
-            IdentityUser? user = await IsUserFound(id);
-
-            var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
-            userDto.Image = user.GetProperty<string>("Image");
-            userDto.IdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes");
-            userDto.NationalId = user.GetProperty<string>("NationalId");
-            userDto.UserTypeCategory = user.GetProperty<UserTypeCategory>("UserTypeCategory");
-            if (user.Roles.Any())
-            {
-                userDto.RoleId = user.Roles.FirstOrDefault().RoleId;
-            }
-           userDto.IsCustomer = await GetRoleCustomer(user);
-            return userDto;
-        }
-    }
-
-    private async Task<bool> GetRoleCustomer(IdentityUser? user)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            IdentityRole? role = await GetCustomerRole();
-            return user.Roles.Any(r => r.RoleId == role.Id);
-        }
-
-    }
-
-    private async Task<IdentityRole?> GetCustomerRole()
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var roleQuery = await _roleReository.GetQueryableAsync();
-            var role = roleQuery.FirstOrDefault(r => r.Name == RolesType.Customer.ToString());
-            return role;
-        }
-        
-    }
+    ///<inheritdoc/>
 
     public async Task<UserDto> UpdateImageAsync(Guid? id, string image)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityUser? user = await IsUserFound(id);
-            var imagePath =await FileHelper.SaveImageFromBase64Async(image, PathHelper.UserFolder);
+            var imagePath = await FileHelper.SaveImageFromBase64Async(image, PathHelper.UserFolder);
             user?.SetProperty("Image", imagePath);
-            
+
             await _userManager.UpdateAsync(user);
             var userMap = ObjectMapper.Map<IdentityUser, UserDto>(user);
             userMap.Image = user.GetProperty<string>("Image");
             return userMap;
         }
     }
+    ///<inheritdoc/>
 
     public async Task<IdentityRole?> FindRoleByTenantIdAsync(string roleName, Guid? tenantId)
     {
@@ -730,27 +478,57 @@ public class UsersAppService : ApplicationService, IUsersAppService
             TotalCount = users.PageSize
         };
     }
+    ///<inheritdoc/>
 
-    private async Task<IQueryable<IdentityUser>> FindByUserType(params int[] userTypes)
+    public async Task RemoveRoleMdkhl(Guid UserId, Guid RoleId)
     {
-        var query = await _userRepository.GetQueryableAsync();
-        query = query.Where(_ => _.Roles.Any());
-        //if (userTypes.Any())
-        //{
-        //    query = query.Where(user => userTypes.Contains(EF.Property<int>(user, "UserTypeId")));
-        //}
-        return query;
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            IdentityUser? user = await IsUserFound(UserId);
+            var role = await _roleReository.GetAsync(RoleId);
+            if (role.Name == RolesType.Customer.ToString())
+            {
+                throw new Exception(
+                   LocalizationHelper.GetLocalizedString("UserRole") + " " +
+                   LocalizationHelper.GetLocalizedString("Customer"));
+            }
+            user.RemoveRole(RoleId);
+            await _userManager.UpdateAsync(user);
+        }
     }
+
+    ///<inheritdoc/>
+
+    public async Task<UserDto> GetAsync(Guid? id)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            IdentityUser? user = await IsUserFound(id);
+
+            var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
+            userDto.Image = user.GetProperty<string>("Image");
+            userDto.IdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes");
+            userDto.NationalId = user.GetProperty<string>("NationalId");
+            userDto.UserTypeCategory = user.GetProperty<UserTypeCategory>("UserTypeCategory");
+            if (user.Roles.Any())
+            {
+                userDto.RoleId = user.Roles.FirstOrDefault().RoleId;
+            }
+            userDto.IsCustomer = await GetRoleCustomer(user);
+            return userDto;
+        }
+    }
+    ///<inheritdoc/>
 
     public async Task<UserDto> UpdateUserWithNoRoleAsync(Guid? id, UpdateUserDto input)
     {
         IdentityUser? user = await IsUserFound(id);
 
-       
+
         RemoveRole(input.RoleId, user);
         user?.SetProperty("UserTypeId", 3);
         user?.SetProperty("OrganizationId", value: 0);
-       
+
 
         if (user.UserName != input.UserName)
         {
@@ -762,8 +540,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
         var userDto = ObjectMapper.Map<IdentityUser, UserDto>(user);
         return userDto;
     }
+    ///<inheritdoc/>
 
-    public  async Task<List<UserRolesForMdkhl>> GetUserWithRolesForMdkhlAsync(Guid userId)
+    public async Task<List<UserRolesForMdkhl>> GetUserWithRolesForMdkhlAsync(Guid userId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -771,6 +550,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             return await _userRepository.GetUserWithRolesForMdkhlAsync(userId);
         }
     }
+    ///<inheritdoc/>
 
     public async Task<string?> GetImage(Guid? userId)
     {
@@ -780,11 +560,365 @@ public class UsersAppService : ApplicationService, IUsersAppService
             return user?.GetProperty<string>("Image");
         }
     }
+    ///<inheritdoc/>
 
     public async Task<bool> IsCurrentUserHasShift()
     {
         IdentityUser? user = await IsUserFound(CurrentTenant.Id);
         var userCategory = user.GetProperty<UserTypeCategory>("UserTypeCategory");
-        return userCategory > 0?true:false;
+        return userCategory > 0 ? true : false;
     }
+    #endregion
+    #region Private Methods
+    /// <summary>
+    /// Changes the role of a user based on the provided <see cref="UpdateUserDto"/> input.
+    /// </summary>
+    /// <param name="input">The data transfer object containing the role information to update.</param>
+    /// <param name="user">The user whose role is being updated.</param>
+    /// <exception cref="Exception">Thrown if the role is not found.</exception>
+    private async Task ChangeRole(UpdateUserDto input, IdentityUser? user)
+    {
+        if (user.Roles.Count == 0)
+        {
+            await CustomerToUser(user);
+        }
+        if (input.RoleId == Guid.Empty)
+            throw new Exception(LocalizationHelper.GetLocalizedString("Role") + " " +
+                LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+
+        foreach (var item in user.Roles)
+        {
+            if (item.TenantId == CurrentTenant.Id)
+                user.RemoveRole(item.RoleId);
+        }
+        user.AddRole(input.RoleId);
+    }
+
+    /// <summary>
+    /// Converts a customer to a user by assigning an organization ID and setting the tenant ID.
+    /// </summary>
+    /// <param name="user">The user to convert.</param>
+    private async Task CustomerToUser(IdentityUser user)
+    {
+        var orgId = await GetOrganizationIdByTenantAsync(CurrentTenant.Id);
+        user.SetProperty("OrganizationId", orgId);
+        ObjectHelper.TrySetProperty(
+                   user,
+                   x => x.TenantId,
+                   () => CurrentTenant.Id
+               );
+    }
+
+    /// <summary>
+    /// Removes the specified role from the given user.
+    /// </summary>
+    /// <param name="roleId">The ID of the role to remove.</param>
+    /// <param name="user">The user to remove the role from.</param>
+    private static async void RemoveRole(Guid roleId, IdentityUser? user)
+    {
+        user.RemoveRole(roleId);
+    }
+
+    /// <summary>
+    /// Removes a role from a user in Mdkhl, ensuring that the user does not have the "Customer" role.
+    /// </summary>
+    /// <param name="UserId">The ID of the user to remove the role from.</param>
+    /// <param name="RoleId">The ID of the role to remove.</param>
+    /// <exception cref="Exception">Thrown if the user has the "Customer" role.</exception>
+    
+
+    /// <summary>
+    /// Checks if the specified user has the "Customer" role.
+    /// </summary>
+    /// <param name="user">The user to check.</param>
+    /// <returns><c>true</c> if the user has the "Customer" role, otherwise <c>false</c>.</returns>
+    private async Task<bool> GetRoleCustomer(IdentityUser? user)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            IdentityRole? role = await GetCustomerRole();
+            return user.Roles.Any(r => r.RoleId == role.Id);
+        }
+    }
+
+
+    /// <summary>
+    /// Retrieves the role for a customer from the role repository.
+    /// </summary>
+    /// <returns>The <see cref="IdentityRole"/> for the customer role, or <c>null</c> if not found.</returns>
+    private async Task<IdentityRole?> GetCustomerRole()
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var roleQuery = await _roleReository.GetQueryableAsync();
+            var role = roleQuery.FirstOrDefault(r => r.Name == RolesType.Customer.ToString());
+            return role;
+        }
+    }
+
+    /// <summary>
+    /// Finds users based on their user types.
+    /// </summary>
+    /// <param name="userTypes">The user types to filter by.</param>
+    /// <returns>A queryable collection of <see cref="IdentityUser"/> that match the specified user types.</returns>
+    private async Task<IQueryable<IdentityUser>> FindByUserType(params int[] userTypes)
+    {
+        var query = await _userRepository.GetQueryableAsync();
+        query = query.Where(_ => _.Roles.Any());
+        return query;
+    }
+
+    /// <summary>
+    /// Retrieves a subscription by the organization’s subscription ID.
+    /// </summary>
+    /// <param name="organization">The organization whose subscription is being retrieved.</param>
+    /// <returns>The <see cref="Subscription"/> associated with the organization, or <c>null</c> if not found.</returns>
+    private async Task<Subscription?> GetSubscriptionByOrganizationId(Organization organization)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            return await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
+        }
+    }
+
+    /// <summary>
+    /// Creates a new user based on the provided <see cref="UserCreateDto"/> input.
+    /// </summary>
+    /// <param name="input">The data transfer object containing the user information.</param>
+    /// <returns>A new instance of <see cref="IdentityUser"/>.</returns>
+    private IdentityUser CreateUser(UserCreateDto input)
+    {
+        return new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, input.TenantId);
+    }
+
+    /// <summary>
+    /// Sets the properties of a user based on the provided <see cref="UserCreateDto"/> input.
+    /// </summary>
+    /// <param name="user">The user whose properties are being set.</param>
+    /// <param name="input">The data transfer object containing the properties to set on the user.</param>
+    private void SetUserProperties(IdentityUser user, UserCreateDto input)
+    {
+        user.Name = input.Name;
+        user.Surname = input.Surname;
+        user.SetProperty("OtpCode", null);
+        user.SetProperty("OtpExpirationDate", DateTime.Now);
+        user.SetProperty("UserTypeId", input.UserType);
+        user.SetProperty("OrganizationId", input.OrganizationId);
+        user.SetProperty("IdentificationTypes", input.IdentificationTypes);
+        user.SetProperty("NationalId", input.NationalId);
+        if (input.UserTypeCategory.HasValue)
+            user.SetProperty("UserTypeCategory", input.UserTypeCategory);
+    }
+
+    /// <summary>
+    /// Adds a customer to the system by inserting it into the customer repository.
+    /// </summary>
+    /// <param name="identificationTypes">The identification type for the customer.</param>
+    /// <param name="NationalId">The national ID of the customer.</param>
+    /// <param name="ArabicName">The Arabic name of the customer.</param>
+    /// <param name="userId">The user ID of the customer.</param>
+    /// <exception cref="Exception">Thrown if the customer cannot be added.</exception>
+    private async Task AddCustomer(IdentificationTypes identificationTypes, string NationalId, string ArabicName, Guid userId)
+    {
+        try
+        {
+            var customer = new Customer
+            {
+                IdentityUserId = userId,
+                IdentificationTypes = identificationTypes,
+                NationalId = NationalId,
+                ArabicName = ArabicName,
+                TenantId = null
+            };
+
+            await _customerRepository.InsertAsync(customer, true);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ADD) + " " +
+                LocalizationHelper.GetLocalizedString("Customer"));
+        }
+    }
+
+    /// <summary>
+    /// Assigns a role and permissions to a user without creating a customer.
+    /// </summary>
+    /// <param name="user">The user to assign the role and permissions to.</param>
+    /// <param name="roleId">The ID of the role to assign.</param>
+    /// <param name="input">The data transfer object containing user-related information.</param>
+    /// <remarks>
+    /// If the input specifies the user is a customer, the role "Customer" will be added to the user.
+    /// </remarks>
+    private async Task AssignRoleAndPermissionsWithoutCustomerAsync(IdentityUser user, Guid roleId, UserCreateDto input)
+    {
+        if (input.IsCustomer)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                await _userManager.AddToRoleAsync(user, RolesType.Customer.ToString());
+            }
+        }
+        user.AddRole(roleId);
+    }
+
+    /// <summary>
+    /// Assigns a role and permissions to a user. If the user is a customer, a customer role is created and assigned.
+    /// </summary>
+    /// <param name="user">The user to whom the role and permissions will be assigned.</param>
+    /// <param name="roleId">The ID of the role to be assigned to the user.</param>
+    /// <param name="input">The data transfer object containing user-related information.</param>
+    private async Task AssignRoleAndPermissionsAsync(IdentityUser user, Guid roleId, UserCreateDto input)
+    {
+        if (input.IsCustomer)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                await CreateCustomerWithRoleAsync(user, input);
+            }
+        }
+        user.AddRole(roleId);
+    }
+
+    /// <summary>
+    /// Retrieves a paginated list of users based on the provided query and input.
+    /// </summary>
+    /// <param name="queryable">The queryable collection of users to be paginated.</param>
+    /// <param name="input">The input containing pagination details (e.g., skip count, max result count).</param>
+    /// <returns>A <see cref="PagedResultDto{UserDto}"/> containing the total count and the list of paged users.</returns>
+    private async Task<PagedResultDto<UserDto>> GetPagedResultAsync(IQueryable<IdentityUser> queryable, PagedResultRequestDto input)
+    {
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var users = await AsyncExecuter.ToListAsync(queryable);
+        var usersDto = ObjectMapper.Map<List<IdentityUser>, List<UserDto>>(users);
+
+        return new PagedResultDto<UserDto>
+        {
+            TotalCount = totalCount,
+            Items = usersDto
+        };
+    }
+
+    /// <summary>
+    /// Applies sorting to the queryable collection of users based on the specified sorting string.
+    /// </summary>
+    /// <param name="queryable">The queryable collection of users to be sorted.</param>
+    /// <param name="sorting">The sorting string that defines the field and order (e.g., "Name DESC").</param>
+    /// <returns>The sorted queryable collection of users.</returns>
+    private IQueryable<IdentityUser> ApplySorting(IQueryable<IdentityUser> queryable, string sorting)
+    {
+        if (sorting.Contains("DESC"))
+        {
+            var sortingParts = sorting.Split(' ').ToList();
+            return queryable.OrderBy(sortingParts[0] + " descending");
+        }
+        return queryable.OrderBy(sorting);
+    }
+
+    /// <summary>
+    /// Changes the role of a user in MDKHL (if applicable).
+    /// </summary>
+    /// <param name="input">The update data transfer object containing the new role ID.</param>
+    /// <param name="user">The user whose role is being changed.</param>
+    /// <exception cref="Exception">Thrown if the role ID is empty or not found.</exception>
+    private static void ChenageRoleInMdkhl(UpdateUserDto input, IdentityUser? user)
+    {
+        if (input.RoleId == Guid.Empty)
+            throw new Exception(LocalizationHelper.GetLocalizedString("Role") + " " +
+                LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+
+        foreach (var item in user.Roles)
+        {
+            user.RemoveRole(item.RoleId);
+        }
+        user.AddRole(input.RoleId);
+    }
+
+    /// <summary>
+    /// Assigns a customer role to the user if the input specifies the user is a customer.
+    /// </summary>
+    /// <param name="input">The data transfer object containing user-related information.</param>
+    /// <param name="user">The user to whom the customer role will be assigned.</param>
+    private async Task AssignRoleIfCustomerAsync(UpdateUserDto input, IdentityUser? user)
+    {
+        if (input.IsCustomer)
+        {
+            await AddCustomer(input.IdentificationTypes, input.NationalId, input.Surname, user.Id);
+            var roleCustomer = await GetCustomerRole();
+            user.AddRole(roleCustomer.Id);
+        }
+    }
+
+    /// <summary>
+    /// Updates the properties of a user based on the provided <see cref="UpdateUserDto"/> input.
+    /// </summary>
+    /// <param name="user">The user whose properties will be updated.</param>
+    /// <param name="input">The data transfer object containing the updated user information.</param>
+    private async Task UpdateUserProperties(IdentityUser user, UpdateUserDto input)
+    {
+        await CheckNationalIdValid(user, input.IdentificationTypes, input.NationalId);
+        await CheckUpdatePhoneNumber(user, input);
+        await _authenticationUtility.CheckPhoneNumberIsValid(input.PhoneNumber);
+        await _authenticationUtility.CheckUserNameIsValid(input.Name);
+        user.Name = input.Name;
+        user.Surname = input.Surname;
+
+        ObjectHelper.TrySetProperty(
+            user,
+            x => x.Email,
+            () => input.Email
+        );
+        user.SetIsActive(input.IsActive);
+        user.SetProperty("IdentificationTypes", input.IdentificationTypes);
+        user.SetProperty("NationalId", input.NationalId);
+        user.SetProperty("OrganizationId", input.OrganizationId);
+        ObjectHelper.TrySetProperty(
+            user,
+            x => x.PhoneNumber,
+            () => input.PhoneNumber
+        );
+        user.SetConcurrencyStampIfNotNull(input.ConcurrencyStamp);
+        if (input.UserTypeCategory.HasValue)
+            user.SetProperty("UserTypeCategory", input.UserTypeCategory);
+    }
+
+    /// <summary>
+    /// Checks if the phone number in the input is unique and doesn't already exist for another user.
+    /// </summary>
+    /// <param name="user">The user whose phone number is being checked.</param>
+    /// <param name="input">The data transfer object containing the phone number to check.</param>
+    /// <exception cref="Exception">Thrown if the phone number is not unique.</exception>
+    private async Task CheckUpdatePhoneNumber(IdentityUser user, UpdateUserDto input)
+    {
+        if (user.PhoneNumber != input.PhoneNumber)
+        {
+            var result = await CheckPhoneIsUnique(input.PhoneNumber);
+            if (result is not null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " +
+                    LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Validates if the national ID in the input is valid and unique.
+    /// </summary>
+    /// <param name="user">The user whose national ID is being checked.</param>
+    /// <param name="identification">The identification type being validated.</param>
+    /// <param name="nationalId">The national ID to validate.</param>
+    /// <exception cref="Exception">Thrown if the national ID is invalid or not unique.</exception>
+    private async Task CheckNationalIdValid(IdentityUser user, IdentificationTypes identification, string nationalId)
+    {
+        var IdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes");
+        var NationalId = user.GetProperty<string>("NationalId");
+        if (IdentificationTypes != identification || NationalId != nationalId)
+        {
+            await _authenticationUtility.CheckNationalId(identification, nationalId);
+            await _authenticationUtility.CheckIfNationalIDIsUnique(nationalId);
+        }
+    }
+
+    #endregion
 }

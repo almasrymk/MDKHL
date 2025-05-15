@@ -14,6 +14,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Mobile.Otps;
+using SmartParking.Organizations;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
@@ -39,6 +40,7 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.Validation;
 using static System.Net.WebRequestMethods;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace SmartParking.Authentication;
@@ -61,6 +63,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly TaqnyatSmsOptionsDto _options;
     private readonly HttpClient _httpClient;
     private readonly ICurrentTenant _currentTenant;
+    private readonly IOrganizationsAppService _organizationsAppService;
 
     public AuthenticationAppService(
         SignInManager<IdentityUser> signInManager,
@@ -75,7 +78,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IAuthenticationUtility authenticationUtility,
         IUsersAppService usersAppService,
         HttpClient httpClient,
-        ICurrentTenant currentTenant)
+        ICurrentTenant currentTenant,
+        IOrganizationsAppService organizationsAppService)
     {
         _signInManager = signInManager;
         _userManager = userManager;
@@ -90,8 +94,12 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _httpClient = httpClient;
         _currentTenant = currentTenant;
         _options = options.Value;
+        _organizationsAppService = organizationsAppService;
     }
+
+    #region Public Methods
     /// <inheritdoc/>
+
     public async Task<Tenant> GetTenantByNameDtoAsync(string name)
     {
         var query = await _tenantRepository.GetQueryableAsync();
@@ -100,6 +108,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         return tenant;
 
     }
+    /// <inheritdoc/>
+
     public async Task<UserDataDto> UpdateUser(string phone, string password)
     {
         var user = await _userRepository.FirstOrDefaultAsync(u => u.Id == CurrentUser.Id);
@@ -214,7 +224,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 }
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
-
+                CurrentTenant.Change(user.TenantId);
 
                 var roles = await _userManager.GetRolesAsync(user);
                 return Result<LoginResultDto>.Success(new LoginResultDto
@@ -237,7 +247,31 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
 
     }
-    [RemoteService(IsEnabled = false)]
+    /// <inheritdoc/>
+
+    public async Task<Result<LoginAppResultDto>> LoginAppAsync(LoginMobileInputDto input)
+    {
+        var LoginResult = await LoginAsync(input);
+        var LoginAppResultDto = new LoginAppResultDto();
+
+        if (LoginResult.IsSuccess)
+        {
+            CurrentTenant.Change( Guid.Parse(LoginResult.Value.TenantId));
+            var tenant = await _tenantRepository.FirstOrDefaultAsync(x => x.Id == Guid.Parse(LoginResult.Value.TenantId));
+            LoginAppResultDto.TenantId = LoginResult.Value.TenantId;
+            LoginAppResultDto.AccessToken = LoginResult.Value.AccessToken;
+            LoginAppResultDto.Role = LoginResult.Value.Role;
+            var organization = await _organizationsAppService.GetOrganizationIdByTenant(new Guid(LoginResult.Value.TenantId));
+            LoginAppResultDto.Baseurl = $"{_httpContext.HttpContext.Request.Scheme}:/{tenant.Name}/{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}";
+            LoginAppResultDto.OrganizationId = organization;
+            LoginAppResultDto.ImageBase64 = await _organizationsAppService.GetOrganizationPictureByOrganizationTenant(new Guid(LoginResult.Value.TenantId));
+            return Result<LoginAppResultDto>.Success(LoginAppResultDto);
+        }
+        return Result<LoginAppResultDto>.Invalid(LoginResult.ValidationErrors);
+    }
+   [RemoteService(IsEnabled = false)]
+    /// <inheritdoc/>
+
     public async Task<string> GenerateToken(string userId)
     {
         await Task.Yield();
@@ -286,55 +320,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         return user;
     }
 
-    private async Task<IdentityUser?> FindUserAsync(LoginInputDto input)
-    {
-        return await _userRepository.FirstOrDefaultAsync(u =>
-            u.UserName == input.Username || u.PhoneNumber == input.Username);
-    }
-
-    private async Task CheckPassword(LoginInputDto input, IdentityUser user)
-    {
-        if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
-            throw new Exception(LocalizationHelper.GetLocalizedString("InvalidCredentials"));
-        if (user.IsActive == false)
-            throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " + LocalizationHelper.GetLocalizedString("InActive"));
-        return;
-    }
-
-    private async Task CheckRole(IdentityUser user)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var roles = await _userManager.GetRolesAsync(user);
-            if (roles.Contains("Customer") && roles.Count == 1)
-                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " + LocalizationHelper.GetLocalizedString("NotAllowed"));
-            return;
-        }
-       
-    }
-
-    private async Task CheckOrganization(IdentityUser user)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var organizationId = user.GetProperty<int>("OrganizationId");
-
-            if (organizationId == 0) return;
-
-            var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
-
-            if (organization == null || organization.Status == Enums.Status.Inactive || organization.Status == Enums.Status.Deleted)
-            {
-                throw new Exception(LocalizationHelper.GetLocalizedString(
-                    (AlertMessages.AlertMessages.FAILED) + " : " + LocalizationHelper.GetLocalizedString("Organization") + " " +
-                    LocalizationHelper.GetLocalizedString("InActive") + " , " +
-                    LocalizationHelper.GetLocalizedString("Organization") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation")));
-            }
-
-            return;
-        }
-        
-    }
+   
 
     /// <inheritdoc/>
     public async Task<Result<RegisterResultDto>> RegisterAsync(RegisterInputDto input)
@@ -401,6 +387,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         });
 
     }
+    /// <inheritdoc/>
 
     public async Task<bool> SetNewPasswordWeb(string UserName, string NewPassword)
     {
@@ -434,6 +421,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     {
         await _signInManager.SignOutAsync();
     }
+    /// <inheritdoc/>
 
     public async Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum)
     {
@@ -447,6 +435,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
 
     }
+    /// <inheritdoc/>
+
     public async Task<bool> GenerateOTPForUser(string UserName)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -464,13 +454,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             return result;
         }
     }
-    private string GenrateOTP()
-    {
-        int min = 1000;
-        int max = 9999;
-        Random random = new Random();
-        return random.Next(min, max).ToString();
-    }
+    /// <inheritdoc/>
 
     public async Task<bool> SendSms(string phoneNumber, string message)
     {
@@ -492,6 +476,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         return response.IsSuccessStatusCode;
 
     }
+    /// <inheritdoc/>
+
     public async Task<bool> VerifyOtp(string UserName, string Otp)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -506,14 +492,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
     }
 
-    private bool CheckOtp(string Otp, string CurrentOtp, DateTime ExpiryTime)
-    {
-        if (CurrentOtp == Otp && ExpiryTime >= DateTime.Now)
-        {
-            return true;
-        }
-        return false;
-    }
+    /// <inheritdoc/>
 
     public async Task<Guid> GetCurrentCustomerId()
     {
@@ -526,6 +505,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         }
 
     }
+    /// <inheritdoc/>
 
     public async Task<IdentityUser?> IsUserFoundAsync(string Id)
     {
@@ -534,6 +514,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             return await _userManager.FindByIdAsync(Id);
         }
     }
+    /// <inheritdoc/>
+
     public async Task<string> GetUserNameByPhoneNumber(string phone)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -546,4 +528,102 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             return user.UserName;
         }
     }
+    #endregion
+    #region Private Methods
+    /// <summary>
+    /// Generates a 4-digit One-Time Password (OTP).
+    /// </summary>
+    /// <returns>A string representing the generated OTP.</returns>
+    private string GenrateOTP()
+    {
+        int min = 1000;
+        int max = 9999;
+        Random random = new Random();
+        return random.Next(min, max).ToString();
+    }
+    /// <summary>
+    /// Finds a user based on the provided login input, searching by either username or phone number.
+    /// </summary>
+    /// <param name="input">The login input containing the username or phone number to search for.</param>
+    /// <returns>The found <see cref="IdentityUser"/> if found, otherwise null.</returns>
+    private async Task<IdentityUser?> FindUserAsync(LoginInputDto input)
+    {
+        return await _userRepository.FirstOrDefaultAsync(u =>
+            u.UserName == input.Username || u.PhoneNumber == input.Username);
+    }
+    /// <summary>
+    /// Checks if the provided OTP is valid by comparing it with the current OTP and ensuring it is not expired.
+    /// </summary>
+    /// <param name="Otp">The OTP entered by the user.</param>
+    /// <param name="CurrentOtp">The current OTP stored for the user.</param>
+    /// <param name="ExpiryTime">The expiration time of the OTP.</param>
+    /// <returns>True if the OTP matches and has not expired; otherwise, false.</returns>
+    private bool CheckOtp(string Otp, string CurrentOtp, DateTime ExpiryTime)
+    {
+        if (CurrentOtp == Otp && ExpiryTime >= DateTime.Now)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Verifies the password of the user.
+    /// Throws an exception if the user does not exist or if the password is incorrect or if the user is inactive.
+    /// </summary>
+    /// <param name="input">The login input containing the password to check.</param>
+    /// <param name="user">The <see cref="IdentityUser"/> whose password is being verified.</param>
+    /// <exception cref="Exception">Thrown if the password is incorrect or the user is inactive.</exception>
+    private async Task CheckPassword(LoginInputDto input, IdentityUser user)
+    {
+        if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
+            throw new Exception(LocalizationHelper.GetLocalizedString("InvalidCredentials"));
+        if (user.IsActive == false)
+            throw new Exception(LocalizationHelper.GetLocalizedString("User") + " " + LocalizationHelper.GetLocalizedString("InActive"));
+        return;
+    }
+    /// <summary>
+    /// Verifies if the user's role is allowed. Throws an exception if the user is a "Customer" and the only role.
+    /// </summary>
+    /// <param name="user">The <see cref="IdentityUser"/> whose roles are being checked.</param>
+    /// <exception cref="Exception">Thrown if the user has a role of "Customer" and no other roles.</exception>
+    private async Task CheckRole(IdentityUser user)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("Customer") && roles.Count == 1)
+                throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " + LocalizationHelper.GetLocalizedString("NotAllowed"));
+            return;
+        }
+
+    }
+    /// <summary>
+    /// Verifies if the organization associated with the user is active and valid. Throws an exception if the organization is inactive or not found.
+    /// </summary>
+    /// <param name="user">The <see cref="IdentityUser"/> whose organization is being checked.</param>
+    /// <exception cref="Exception">Thrown if the organization is inactive or not found.</exception>
+    private async Task CheckOrganization(IdentityUser user)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var organizationId = user.GetProperty<int>("OrganizationId");
+
+            if (organizationId == 0) return;
+
+            var organization = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
+
+            if (organization == null || organization.Status == Enums.Status.Inactive || organization.Status == Enums.Status.Deleted)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString(
+                    (AlertMessages.AlertMessages.FAILED) + " : " + LocalizationHelper.GetLocalizedString("Organization") + " " +
+                    LocalizationHelper.GetLocalizedString("InActive") + " , " +
+                    LocalizationHelper.GetLocalizedString("Organization") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation")));
+            }
+
+            return;
+        }
+
+    }
+    #endregion
 }

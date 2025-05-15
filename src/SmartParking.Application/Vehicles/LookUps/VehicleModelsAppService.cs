@@ -22,169 +22,105 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
+
 namespace SmartParking.Vehicles.LookUps;
+
 [Authorize]
 public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModelDto, int, PagedAndSortedResultRequestDto, CreateUpdateVehicleModelDto>, IVehicleModelsAppService
 {
     private readonly IRepository<VehicleModel, int> _repository;
     private readonly IRepository<VehicleBrand, int> _vehicleBrandRepository;
-
     private IDataFilter _dataFilter;
 
-    public VehicleModelsAppService(IRepository<VehicleModel, int> repository,IRepository<VehicleBrand, int> vehicleBrandRepository, IDataFilter dataFilter) : base(repository)
-	{
+    public VehicleModelsAppService(IRepository<VehicleModel, int> repository, IRepository<VehicleBrand, int> vehicleBrandRepository, IDataFilter dataFilter)
+        : base(repository)
+    {
         _repository = repository;
         _vehicleBrandRepository = vehicleBrandRepository;
         _dataFilter = dataFilter;
     }
 
+    #region Public Methods
+
     ///<inheritdoc/>
     public override async Task<VehicleModelDto> CreateAsync(CreateUpdateVehicleModelDto input)
     {
-        var vehicleModel = await _repository.FirstOrDefaultAsync
-                (vehicle =>
-                vehicle.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                vehicle.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-        var exisitingVehicleBrand = await _vehicleBrandRepository.FindAsync(input.VehiclesBrandId);
-
-        if (exisitingVehicleBrand is null)
-        {
-            throw new InvalidOperationException("Vehicle brand doesnot exist");
-        }
-        if (vehicleModel != null)
-        {
-            if (vehicleModel.EnglishName == input.EnglishName.Trim(' '))
-            {
-                throw new InvalidOperationException("Vehicle model english name already exists");
-
-            }
-            else if (vehicleModel.ArabicName == input.ArabicName.Trim(' '))
-            {
-                throw new InvalidOperationException("Vehicle model  arabic name already exists");
-
-            }
-
-
-        }
+        await ValidateVehicleBrandExistsAsync(input.VehiclesBrandId);
+        await ValidateVehicleModelNameUniquenessAsync(input);
         return await base.CreateAsync(input);
-
     }
 
     ///<inheritdoc/>
     public override async Task<VehicleModelDto> UpdateAsync(int id, CreateUpdateVehicleModelDto input)
     {
         var existingVehicleModel = await _repository.GetAsync(id);
-
         if (existingVehicleModel is null)
         {
             throw new InvalidOperationException("Vehicle model not found");
         }
 
-        var vehicleModel = await _repository.FirstOrDefaultAsync
-                (vehicle =>
-                vehicle.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                vehicle.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-        var exisitingVehicleBrand = await _vehicleBrandRepository.FindAsync(input.VehiclesBrandId);
-
-        if (exisitingVehicleBrand is null)
-        {
-            throw new InvalidOperationException("Vehicle brand doesnot exist");
-        }
-        if (vehicleModel != null)
-        {
-            if (vehicleModel.EnglishName == input.EnglishName.Trim(' ') && vehicleModel.Id != id)
-            {
-                throw new InvalidOperationException("Vehicle model english name already exists");
-
-            }
-            else if (vehicleModel.ArabicName == input.ArabicName.Trim(' ') && vehicleModel.Id != id)
-            {
-                throw new InvalidOperationException("Vehicle model arabic name already exists");
-
-            }
-
-
-        }
+        await ValidateVehicleBrandExistsAsync(input.VehiclesBrandId);
+        await ValidateVehicleModelNameUniquenessAsync(input, id);
         return await base.UpdateAsync(id, input);
     }
-    /// <inheritdoc/>
+
+    ///<inheritdoc/>
     public override async Task DeleteAsync(int id)
     {
-        
-            var vehicleModel = await _repository.FindAsync(id);
+        var vehicleModel = await _repository.FindAsync(id);
 
-            if (vehicleModel is null)
-            {
-                throw new EntityNotFoundException(typeof(VehicleModel), id);
-            }
+        if (vehicleModel is null)
+        {
+            throw new EntityNotFoundException(typeof(VehicleModel), id);
+        }
 
-            await _repository.HardDeleteAsync(vehicleModel);
-        
-        
+        await _repository.HardDeleteAsync(vehicleModel);
     }
 
     /// <inheritdoc/>
     public async Task<PagedResultDto<VehicleModelDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
-        // Get the IQueryable<camera> from the repository
         var queryable = await _repository.GetQueryableAsync();
-        // Apply search filtering
+
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
-
             queryable = queryable.Where(or =>
                 or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.VehiclesBrand.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())||
+                or.VehiclesBrand.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.VehiclesBrand.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
-        // Get the total count of filtered records
+
         var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of camera entities
-        var vehicleModels = await AsyncExecuter.ToListAsync(queryable);
 
-        // Map the hotel entities to cameraDto objects
+        var vehicleModels = await AsyncExecuter.ToListAsync(queryable);
         var vehicleModelsDto = ObjectMapper.Map<List<VehicleModel>, List<VehicleModelDto>>(vehicleModels);
-        // Return the paginated result
-        return new PagedResultDto<VehicleModelDto>(
-            totalCount,
-            vehicleModelsDto
-        );
+
+        return new PagedResultDto<VehicleModelDto>(totalCount, vehicleModelsDto);
     }
 
     /// <inheritdoc/>
     public async Task<PagedResultDto<VehicleModelDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
-        // Get the IQueryable<camera> from the repository
         var queryable = await _repository.GetQueryableAsync();
-        // Apply filtering
         var filterExpression = BuildExpression<VehicleModel>.BuildFilterExpression(input.filters);
+
         if (filterExpression is not null)
         {
             queryable = queryable.Where(filterExpression);
         }
-        // Get the total count of filtered records
+
         var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        // Apply pagination
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of organizations entities
-        var vehicleModels = await AsyncExecuter.ToListAsync(queryable);
 
-        // Map the organizations entities to organizationsDto objects
+        var vehicleModels = await AsyncExecuter.ToListAsync(queryable);
         var vehicleModelsDto = ObjectMapper.Map<List<VehicleModel>, List<VehicleModelDto>>(vehicleModels);
-        // Return the paginated result
-        return new PagedResultDto<VehicleModelDto>(
-            totalCount,
-            vehicleModelsDto
-        );
+
+        return new PagedResultDto<VehicleModelDto>(totalCount, vehicleModelsDto);
     }
+    /// <inheritdoc/>
 
     public async Task<Result<List<VehicleModelDto>>> GetModelsByBrandAsync(int brandId)
     {
@@ -195,11 +131,12 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
             var models = await AsyncExecuter.ToListAsync(query);
             if (models.Count == 0)
                 return Result<List<VehicleModelDto>>.NotFound();
+
             var modelsMap = ObjectMapper.Map<List<VehicleModel>, List<VehicleModelDto>>(models);
             return Result<List<VehicleModelDto>>.Success(modelsMap);
         }
-        
     }
+    /// <inheritdoc/>
 
     public async Task<List<VehicleModelDto>> GetAllVehicleModelsAsync()
     {
@@ -209,4 +146,52 @@ public class VehicleModelsAppService : CrudAppService<VehicleModel, VehicleModel
             return ObjectMapper.Map<List<VehicleModel>, List<VehicleModelDto>>(models);
         }
     }
+
+    #endregion
+
+    #region Private Methods
+
+    /// <summary>
+    /// Validates whether a vehicle brand exists based on its ID.
+    /// </summary>
+    /// <param name="vehicleBrandId">The ID of the vehicle brand to check.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the vehicle brand does not exist.</exception>
+    private async Task ValidateVehicleBrandExistsAsync(int vehicleBrandId)
+    {
+        var brand = await _vehicleBrandRepository.FindAsync(vehicleBrandId);
+        if (brand is null)
+        {
+            throw new InvalidOperationException("Vehicle brand does not exist");
+        }
+    }
+
+    /// <summary>
+    /// Validates the uniqueness of a vehicle model's name (English and Arabic).
+    /// </summary>
+    /// <param name="input">The DTO containing the details of the vehicle model to be validated.</param>
+    /// <param name="currentId">The ID of the current vehicle model being updated, if applicable. Default is null.</param>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when a vehicle model with the same English or Arabic name already exists, except for the current model being updated.
+    /// </exception>
+    private async Task ValidateVehicleModelNameUniquenessAsync(CreateUpdateVehicleModelDto input, int? currentId = null)
+    {
+        var vehicleModel = await _repository.FirstOrDefaultAsync(vehicle =>
+            vehicle.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+            vehicle.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
+
+        if (vehicleModel != null)
+        {
+            if (vehicleModel.EnglishName == input.EnglishName.Trim() && vehicleModel.Id != currentId)
+            {
+                throw new InvalidOperationException("Vehicle model English name already exists");
+            }
+            else if (vehicleModel.ArabicName == input.ArabicName.Trim() && vehicleModel.Id != currentId)
+            {
+                throw new InvalidOperationException("Vehicle model Arabic name already exists");
+            }
+        }
+    }
+
+
+    #endregion
 }

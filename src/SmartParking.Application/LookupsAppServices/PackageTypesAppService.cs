@@ -15,98 +15,79 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Filters;
 
-namespace SmartParking.LookupsAppServices;
-[Authorize]
-
-public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto,
-                                int, PagedAndSortedResultRequestDto,
-                                CreateUpdatePackageTypeDto>,
-    IPackageTypesAppService
-
+namespace SmartParking.LookupsAppServices
 {
-    public readonly IRepository<PackageType, int> _packageTypeRepository;
-    public PackageTypesAppService(IRepository<PackageType, int> packageTypeRepository) 
-    : base(packageTypeRepository)
+    [Authorize]
+    public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto,
+                                                    int, PagedAndSortedResultRequestDto,
+                                                    CreateUpdatePackageTypeDto>,
+        IPackageTypesAppService
     {
-        _packageTypeRepository = packageTypeRepository;
-    }
 
-        /// <inheritdoc/>
+        private readonly IRepository<PackageType, int> _packageTypeRepository;
 
-        public override async Task<PackageTypeDto> CreateAsync(CreateUpdatePackageTypeDto input)
+
+
+        public PackageTypesAppService(IRepository<PackageType, int> packageTypeRepository)
+            : base(packageTypeRepository)
         {
-            var packageType = await _packageTypeRepository.FirstOrDefaultAsync
-                (type =>
-                type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                type.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-         
-
-            if (packageType != null)
-            {
-                if (packageType.EnglishName == input.EnglishName.Trim(' ') )
-                {
-                    throw new InvalidOperationException("package english name already exists");
-
-                }
-                else if (packageType.ArabicName == input.ArabicName.Trim(' ') )
-                {
-                    throw new InvalidOperationException("Package arabic name already exists");
-
-                }
-           
-
-            }
-               return await base.CreateAsync(input);
+            _packageTypeRepository = packageTypeRepository;
         }
 
-        /// <inheritdoc/>
+
+        #region Public Methods
+
+        ///<inheritdoc/>
+        public override async Task<PackageTypeDto> CreateAsync(CreateUpdatePackageTypeDto input)
+        {
+            await ValidatePackageTypeUniqunessAsync(input);
+            return await base.CreateAsync(input);
+        }
+
+        ///<inheritdoc/>
         public override async Task<PackageTypeDto> UpdateAsync(int id, CreateUpdatePackageTypeDto input)
         {
-            var existingPackage= await _packageTypeRepository.GetAsync(id);
+            var existingPackage = await _packageTypeRepository.GetAsync(id);
 
             if (existingPackage is null)
             {
                 throw new InvalidOperationException("Package Type not found");
             }
 
-            var packageType = await _packageTypeRepository.FirstOrDefaultAsync
-                    (type =>
-                    type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
-                    type.ArabicName.ToLower().Contains(input.ArabicName.ToLower()));
-
-
-            if (packageType != null)
-            {
-                if (packageType.EnglishName == input.EnglishName.Trim(' ') && packageType.Id != id)
-                {
-                    throw new InvalidOperationException("package english name already exists");
-
-                }
-                else if (packageType.ArabicName == input.ArabicName.Trim(' ') && packageType.Id != id)
-                {
-                    throw new InvalidOperationException("Package arabic name already exists");
-
-                }
-
-
-            }
-                return await base.UpdateAsync(id,input);
+            await ValidatePackageTypeUniqunessAsync(input);
+            return await base.UpdateAsync(id, input);
         }
-        /// <summary>
-        /// method used to get list of package Types
-        /// </summary>
-        /// <param name="input">specifies max number of package Type and if it filtered or not</param>
-        /// <returns>PackageTypeDto List</returns>
+
+        ///<inheritdoc/>
+        public override async Task DeleteAsync(int id)
+        {
+            var packageType = await _packageTypeRepository.FirstOrDefaultAsync(p => p.Id == id);
+            if (packageType == null)
+                throw new EntityNotFoundException(typeof(PackageType), id);
+
+            await _packageTypeRepository.HardDeleteAsync(packageType);
+        }
+
+        ///<inheritdoc/>
+        public override Task<PagedResultDto<PackageTypeDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+        {
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                return base.GetListAsync(input);
+            }
+        }
+        ///<inheritdoc/>
+
+
         public async Task<PagedResultDto<PackageTypeDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
         {
-            // Get the IQueryable<garage> from the repository
             var queryable = await _packageTypeRepository.GetQueryableAsync();
-            // Apply filtering
             var filterExpression = BuildExpression<PackageType>.BuildFilterExpression(input.filters);
             if (filterExpression is not null)
             {
                 queryable = queryable.Where(filterExpression);
             }
+
             if (!input.Sorting.IsNullOrEmpty())
             {
                 if (input.Sorting.Contains("DESC"))
@@ -118,104 +99,91 @@ public class PackageTypesAppService : CrudAppService<PackageType, PackageTypeDto
                 {
                     queryable = queryable.OrderBy(input.Sorting);
                 }
+            }
 
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+
+            var packageTypesDto = await AsyncExecuter.ToListAsync(queryable);
+            var packageTypeDto = ObjectMapper.Map<List<PackageType>, List<PackageTypeDto>>(packageTypesDto);
+            return new PagedResultDto<PackageTypeDto>(totalCount, packageTypeDto);
         }
-        // Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-        // Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of garages entities
-        var packageTypesDto = await AsyncExecuter.ToListAsync(queryable);
+        ///<inheritdoc/>
 
-        // Map the garages entities to garagesDto objects
-        var packageTypeDto = ObjectMapper.Map<List<PackageType>, List<PackageTypeDto>>(packageTypesDto);
-        Console.WriteLine(packageTypeDto.Count);
-        // Return the paginated result
-        return new PagedResultDto<PackageTypeDto>(
-            totalCount,
-            packageTypeDto
-        );
-    }
-
-    /// <summary>
-    /// method used to get list of package types
-    /// </summary>
-    /// <param name="input">specifies max number of package type and if it filtered or not</param>
-    /// <returns>PackageTypeDto List</returns>
-    public async Task<PagedResultDto<PackageTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
-    {
-        // Get the IQueryable<garage> from the repository
-        var queryable = await _packageTypeRepository.GetQueryableAsync();
-        // Apply search filtering
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        public async Task<PagedResultDto<PackageTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
         {
+            var queryable = await _packageTypeRepository.GetQueryableAsync();
+            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
+                queryable = queryable.Where(c =>
+                    c.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                    c.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
+                );
+            }
 
-            queryable = queryable.Where(c =>
-                c.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                c.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC"))
+                {
+                    var sorting = input.Sorting.Split(' ').ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+            }
 
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+
+            var packageTypes = await AsyncExecuter.ToListAsync(queryable);
+            var packageTypeDto = ObjectMapper.Map<List<PackageType>, List<PackageTypeDto>>(packageTypes);
+            return new PagedResultDto<PackageTypeDto>(totalCount, packageTypeDto);
+        }
+
+        ///<inheritdoc/>
+
+        public async Task<List<PackageTypeDto>> GetAllListAsync()
+        {
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                var packageType = await _packageTypeRepository.GetListAsync();
+                var packageTypeMap = ObjectMapper.Map<List<PackageType>, List<PackageTypeDto>>(packageType);
+                return packageTypeMap;
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+        /// <summary>
+        /// Validates the uniqueness of a package type by checking if the English or Arabic names already exist in the repository.
+        /// </summary>
+        /// <param name="input">The DTO containing the details of the package type to validate.</param>
+        /// <exception cref="InvalidOperationException">Thrown when the English or Arabic name already exists in the repository.</exception>
+        private async Task ValidatePackageTypeUniqunessAsync(CreateUpdatePackageTypeDto input)
+        {
+            var packageType = await _packageTypeRepository.FirstOrDefaultAsync(
+                type =>
+                    type.EnglishName.ToLower().Contains(input.EnglishName.ToLower()) ||
+                    type.ArabicName.ToLower().Contains(input.ArabicName.ToLower())
             );
-        }
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            if (input.Sorting.Contains("DESC"))
+
+            if (packageType != null)
             {
-                var sorting = input.Sorting.Split(' ').ToList();
-                queryable = queryable.OrderBy(sorting[0] + " descending");
+                if (packageType.EnglishName == input.EnglishName.Trim(' '))
+                {
+                    throw new InvalidOperationException("Package English name already exists");
+                }
+                else if (packageType.ArabicName == input.ArabicName.Trim(' '))
+                {
+                    throw new InvalidOperationException("Package Arabic name already exists");
+                }
             }
-            else
-            {
-                queryable = queryable.OrderBy(input.Sorting);
-            }
-
         }
-        // Get the total count of filtered records
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
 
-        // Apply pagination
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        // Execute the query and get the list of hotel entities
-        var packageTypes = await AsyncExecuter.ToListAsync(queryable);
-
-        // Map the hotel entities to hotelDto objects
-        var packageTypeDto = ObjectMapper.Map<List<PackageType>, List<PackageTypeDto>>(packageTypes);
-        Console.WriteLine(packageTypeDto.Count);
-        // Return the paginated result
-        return new PagedResultDto<PackageTypeDto>(
-            totalCount,
-            packageTypeDto
-        );
+        #endregion
     }
-
-
-    ///<inheritdoc/>
-    public override async Task DeleteAsync(int id)
-    {
-        var packageType = await _packageTypeRepository.FirstOrDefaultAsync( p => p.Id == id);
-        if (packageType == null)
-            throw new EntityNotFoundException(typeof(PackageType), id);
-
-        await _packageTypeRepository.HardDeleteAsync(packageType);
-    }
-
-    public override Task<PagedResultDto<PackageTypeDto>> GetListAsync(PagedAndSortedResultRequestDto input)
-    {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            return base.GetListAsync(input);
-
-        }
-    }
-    
-    public  async Task<List<PackageTypeDto>> GetAllListAsync()
-    {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            var packageType = await _packageTypeRepository.GetListAsync();
-            var packageTypeMap = ObjectMapper.Map<List<PackageType>, List<PackageTypeDto>>(packageType);
-            return packageTypeMap;
-        }
-    }
-
 }

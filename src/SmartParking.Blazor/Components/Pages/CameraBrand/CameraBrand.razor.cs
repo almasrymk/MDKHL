@@ -16,12 +16,14 @@ using SmartParking.Blazor.Components.Shared;
 using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.CameraBrand;
-
-partial class CameraBrand
+/// <summary>
+/// Represents a camera brand component.
+/// </summary>
+public partial class CameraBrand
 {
     private int TotalItem;
-    public int CurrentPage { get; set; } = 1; // Default current page value is 10
-    public int RowPerPage { get; set; } = 10; // Default value is 10
+    public int CurrentPage { get; set; } = 1;
+    public int RowPerPage { get; set; } = 10;
 
     private TableData itemData = new TableData();
 
@@ -36,58 +38,56 @@ partial class CameraBrand
         _localizer = localizer;
     }
 
+    #region Private Mehtods 
+    /// <summary>
+    /// Handles filtering of camera brand data based on the provided page change event arguments.
+    /// </summary>
+    /// <param name="pageInfo">Page change event arguments.</param>
     private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
-
         var input = new PagedAndSortedAndFilteredResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch, // The term to use for filtering results
+            SearchingTerm = termSearch,
             filters = pageInfo.Filters
         };
-        // Call the service to perform the search based on the input parameters
         var brandsDto = await AppService.Filter(input);
 
-        // Calculate the total number of pages required to display all results
         TotalItem = (int)brandsDto.TotalCount;
         CreateTable(brandsDto);
-
-
     }
-
+    /// <summary>
+    /// Handles searching of camera brand data based on the provided page change event arguments.
+    /// </summary>
+    /// <param name="pageInfo">Page change event arguments.</param>
     private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
-
-
-        // Update the term used for searching with the provided search term
         termSearch = pageInfo.SearchTerm;
 
-        // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch // The term to use for filtering results
+            SearchingTerm = termSearch
         };
 
-        // Call the service to perform the search based on the input parameters
         var brandsDto = await AppService.Search(input);
 
-        // Calculate the total number of pages required to display all results
         TotalItem = (int)brandsDto.TotalCount;
         CreateTable(brandsDto);
     }
-
-
+    /// <summary>
+    /// Fetches camera brand data based on the provided page change event arguments.
+    /// </summary>
+    /// <param name="pageInfo">Page change event arguments.</param>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
 
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        // Create a request object for paged and sorted data
         var input = new PagedAndSortedResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
@@ -95,16 +95,18 @@ partial class CameraBrand
             Sorting = pageInfo.SortColumn
         };
 
-        // Retrieve the list of brands from the server
         var camerabrandsDto = await AppService.GetListAsync(input);
         TotalItem = (int)camerabrandsDto.TotalCount;
         CreateTable(camerabrandsDto);
 
     }
 
+    /// <summary>
+    /// Creates a table data object from the  camera brand list.
+    /// </summary>
+    /// <param name="camerabrands">Camera brand data.</param>
     private void CreateTable(PagedResultDto<CameraBrandDto> camerabrands)
     {
-        // Initialize table data to be displayed, setting the table's name and whether to show the header
         var tableData = new TableData()
         {
             Name = L["CameraBrands"],
@@ -127,15 +129,20 @@ partial class CameraBrand
         }
         itemData = tableData;
     }
-
+    /// <summary>
+    /// Opens a dialog to create a new camera brand.
+    /// </summary>
+    /// <returns>An <see cref="IDialogReference"/> representing the dialog instance.</returns>
     private Task<IDialogReference> CreateCameraBrand()
     {
-
-
         return Dialog.ShowAsync<AddCameraBrandDialog>("Simple Dialog", options);
-
-
     }
+
+    /// <summary>
+    /// Handles the edit action when a row is clicked. Opens an edit dialog pre-filled with camera brand data.
+    /// </summary>
+    /// <param name="row">The selected row containing the brand ID.</param>
+    /// <returns>An <see cref="IDialogReference"/> representing the dialog instance.</returns>
     private async Task<IDialogReference> OnClickRowEdit(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
@@ -148,51 +155,51 @@ partial class CameraBrand
             EnglishName = brandDto.EnglishName
         };
 
-
-
         var parameters = new DialogParameters
         {
             ["CameraBrand"] = createUpdateBrandDto,
             ["Id"] = id
         };
 
-
         return await Dialog.ShowAsync<UpdateCameraBrandDialog>("Edit Brand", parameters);
-
     }
 
-
+    /// <summary>
+    /// Handles the view action when a row is clicked. Opens a read-only dialog with brand details.
+    /// </summary>
+    /// <param name="row">The selected row containing the brand ID.</param>
+    /// <returns>An <see cref="IDialogReference"/> representing the dialog instance.</returns>
     private async Task<IDialogReference> OnClickRowView(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
 
         var brandDto = await AppService.GetAsync(id);
 
-
         var parameters = new DialogParameters
         {
             ["CameraBrand"] = brandDto,
         };
 
-
         return await Dialog.ShowAsync<ViewCameraBrandDialog>("View Brand", parameters);
     }
 
+    /// <summary>
+    /// Handles the delete action when a row is clicked. Opens a confirmation dialog and deletes the camera brand if confirmed.
+    /// </summary>
+    /// <param name="row">The selected row containing the brand ID and name.</param>
     private async Task OnClickRowDelete(RowDef row)
     {
-       
-
         var id = int.Parse(row.Cells[0].Value);
         var Name = row.Cells[2].Value;
 
         var parameters = new DialogParameters
         {
             ["Name"] = Name,
-
         };
 
         var dialog = await Dialog.ShowAsync<SPDialogDelete>("DeleteBrand", parameters);
         var result = await dialog.Result;
+
         try
         {
             if (!result.Canceled)
@@ -200,12 +207,8 @@ partial class CameraBrand
                 await AppService.DeleteAsync(id);
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name} ", Severity.Success);
                 await Task.Delay(1000);
-
                 Navigation.NavigateTo("/Camerabrands", forceLoad: true);
-
             }
-
-
         }
         catch (AbpValidationException validationException)
         {
@@ -216,7 +219,6 @@ partial class CameraBrand
         }
         catch (BusinessException ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
@@ -225,13 +227,11 @@ partial class CameraBrand
         }
         catch (Exception ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
-
-
-
     }
-
-
+    #endregion
 }
+
+
+

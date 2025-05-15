@@ -19,8 +19,8 @@
             <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
                 <MudGrid>
                     <MudItem sm="6" >
-                        <MudTextField @bind-Value="input.ArabicName"
-                                      For="@(() => input.ArabicName)"
+                        <MudTextField @bind-Value="createUpdateCountryDto.ArabicName"
+                                      For="@(() => createUpdateCountryDto.ArabicName)"
                                       Immediate="true"
                                       Required
                                       Variant="Variant.Text"
@@ -31,8 +31,8 @@
                     </MudItem>
 
                     <MudItem sm="6" >
-                        <MudTextField @bind-Value="input.EnglishName"
-                                      For="@(() => input.EnglishName)"
+                        <MudTextField @bind-Value="createUpdateCountryDto.EnglishName"
+                                      For="@(() => createUpdateCountryDto.EnglishName)"
                                       Immediate="true"
                                       Required
                                       Variant="Variant.Text"
@@ -42,8 +42,8 @@
                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6" >
-                        <MudTextField @bind-Value="input.ArabicCapital"
-                                      For="@(() => input.ArabicCapital)"
+                        <MudTextField @bind-Value="createUpdateCountryDto.ArabicCapital"
+                                      For="@(() => createUpdateCountryDto.ArabicCapital)"
                                       Immediate="true"
                                       Required
                                       Label="@L["Arabic Capital"]" 
@@ -52,8 +52,8 @@
                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6" >
-                        <MudTextField @bind-Value="input.EnglishCapital"
-                                      For="@(() => input.EnglishCapital)"
+                        <MudTextField @bind-Value="createUpdateCountryDto.EnglishCapital"
+                                      For="@(() => createUpdateCountryDto.EnglishCapital)"
                                       Immediate="true"
                                       Required
                                       Variant="Variant.Text"

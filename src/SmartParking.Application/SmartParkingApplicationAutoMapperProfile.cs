@@ -123,11 +123,13 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
        .ForMember(dest => dest.OrganizationNameAr, opt => opt.MapFrom(src => src.Organization.ArabicName))
        .ForMember(dest => dest.OrganizationNameEn, opt => opt.MapFrom(src => src.Organization.EnglishName)).ReverseMap();
         CreateMap<CreateUpdateGarageDto, Garage>().ReverseMap();
+        CreateMap<GarageDto, CreateUpdateGarageDto>();
 
         CreateMap<Camera, CameraDto>()
         .ForMember(dest => dest.GarageNameAr, opt => opt.MapFrom(src => src.Garage.NameAr))
         .ForMember(dest => dest.GarageNameEn, opt => opt.MapFrom(src => src.Garage.NameEn));
         CreateMap<CreateUpdateCameraDto, Camera>();
+        CreateMap<CameraDto, CreateUpdateCameraDto>();
 
         CreateMap<PlateColor, PlateColorDto>();
 		CreateMap<CreateUpdatePlateColorDto, PlateColor>();
@@ -171,6 +173,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.CreatorId, src => src.MapFrom(f => f.CreatorId))
             .ForMember(dest => dest.LastModifierId, src => src.MapFrom(f => f.LastModifierId))
             .ForMember(dest => dest.LastModificationTime, src => src.MapFrom(f => f.LastModificationTime));
+        CreateMap<VehicleDto, CreateUpdateVehicleDto>().ReverseMap();
 
         CreateMap<Package, PackageDto>()
         .ForMember(dest => dest.PackageType, opt => opt.MapFrom(src => src.PackageType))
@@ -273,11 +276,15 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         .ReverseMap();
 
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>().ReverseMap();        
-        CreateMap<CreateUpdateGarageTransactionDto, GarageTransactionDto>().ReverseMap();        
+        CreateMap<CreateUpdateGarageTransactionDto, GarageTransactionDto>().ReverseMap();       
+        
+        CreateMap<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>().ReverseMap();        
 
         // unLinked transaction 
         CreateMap<UnLinkedTransaction, UnLinkedTransactionDto>();
         CreateMap<CreateUpdateGarageTransactionEndPointDto, UnLinkedTransaction>();
+
+
 
         CreateMap<CustomerPackage, CustomerPackageDto>();
         CreateMap<CreateUpdateCustomerPackageDto, CustomerPackage>();

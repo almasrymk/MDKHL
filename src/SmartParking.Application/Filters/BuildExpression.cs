@@ -27,7 +27,7 @@ public static class BuildExpression<T>
 
         _filterStrategy = new FilterStrategy(builders);
     }
-
+    #region Public Methods
     public static Expression<Func<T, bool>> BuildFilterExpression(List<FilterRequestDto> filterDatas)
     {
         ParameterExpression param = Expression.Parameter(typeof(T), "x");
@@ -47,6 +47,8 @@ public static class BuildExpression<T>
         return Expression.Lambda<Func<T, bool>>(combinedExpression, param);
     }
 
+    #endregion
+    #region Private Methods
 
     private static Expression GetPropertyExpression(Expression param, string filterProperty)
     {
@@ -59,11 +61,12 @@ public static class BuildExpression<T>
 
         return property;
     }
-
-  
-
-    
+    #endregion
 
 
-   
+
+
+
+
+
 }
