@@ -16,6 +16,7 @@ using SmartParking.Entities.Discounts;
 using Volo.Abp.Identity;
 using SmartParking.Entities.Vehicles;
 using Volo.Abp.TenantManagement;
+using SmartParking.Entities.Customers;
 
 namespace SmartParking;
 
@@ -40,9 +41,14 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
     private readonly IRepository<Discount, int> _discountRepository;
     private readonly IRepository<VehicleBrand, int> _vehicleBrandRepository;
     private readonly IRepository<VehicleModel, int> _vehicleModelRepository;
+    private readonly IRepository<PackageType, int> _packageTypeRepository;
+    private readonly IRepository<Package, int> _packageRepository;
+    private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly IRepository<Vehicle, int> _vehicleRepository;
+
+
     private readonly IdentityUserManager _identityUserManager;
-    public SmartParkingTestDataSeedContributor(IRepository<Region, int> regionRepository, IRepository<Country, int> countryRepository, IRepository<State, int> stateRepository, IRepository<City, int> cityRepository, IRepository<SubscriptionType, int> subscriptionTypeRepository, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationRepostory, IRepository<Garage, int> garageRepostory, IRepository<CameraModel, int> cameraModelRepository, IRepository<CameraMainType, int> cameraMainTypeRepository, IRepository<PlateColor, int> plateColorRepository, IRepository<LicenceType, int> licenceTypeRepository, IRepository<CameraBrand, int> cameraBrandRepository, IRepository<Camera, int> cameraRepostory, IRepository<Shift, int> shiftRepository, IRepository<KeeperShift, int> keeperShiftRepository, IRepository<Discount, int> discountRepository, IdentityUserManager identityUserManager, IRepository<VehicleBrand, int> vehicleBrandRepository, IRepository<VehicleModel, int> vehicleModelRepository, IRepository<Vehicle, int> vehicleRepository)
+    public SmartParkingTestDataSeedContributor(IRepository<Region, int> regionRepository, IRepository<Country, int> countryRepository, IRepository<State, int> stateRepository, IRepository<City, int> cityRepository, IRepository<SubscriptionType, int> subscriptionTypeRepository, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationRepostory, IRepository<Garage, int> garageRepostory, IRepository<CameraModel, int> cameraModelRepository, IRepository<CameraMainType, int> cameraMainTypeRepository, IRepository<PlateColor, int> plateColorRepository, IRepository<LicenceType, int> licenceTypeRepository, IRepository<CameraBrand, int> cameraBrandRepository, IRepository<Camera, int> cameraRepostory, IRepository<Shift, int> shiftRepository, IRepository<KeeperShift, int> keeperShiftRepository, IRepository<Discount, int> discountRepository, IdentityUserManager identityUserManager, IRepository<VehicleBrand, int> vehicleBrandRepository, IRepository<VehicleModel, int> vehicleModelRepository, IRepository<PackageType, int> packageTypeRrepository, IRepository<Package, int> packageRrepository, IRepository<Customer, Guid> customerRepository, IRepository<Vehicle, int> vehicleRepository)
     {
         _regionRepository = regionRepository;
         _countryRepository = countryRepository;
@@ -64,11 +70,14 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
         _identityUserManager = identityUserManager;
         _vehicleBrandRepository = vehicleBrandRepository;
         _vehicleModelRepository = vehicleModelRepository;
+        _packageTypeRepository = packageTypeRrepository;
+        _packageRepository = packageRrepository;
+        _customerRepository = customerRepository;
         _vehicleRepository = vehicleRepository;
     }
     public async Task SeedAsync(DataSeedContext context)
     {
-     
+
         if (!await _countryRepository.AnyAsync())
         {
 
@@ -222,7 +231,6 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
 
 
                 var garageTest = await _garageRepostory.FirstOrDefaultAsync(g => g.NameEn == "Main Garage");
-
                 if (!await _shiftRepository.AnyAsync())
                 {
                     var shiftList = new List<Shift> {
@@ -248,12 +256,32 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
                 await _identityUserManager.CreateAsync(user, "P@ssw0rd");
                 await _identityUserManager.CreateAsync(user2, "P@ssw0rd");
 
+                if(!await _customerRepository.AnyAsync())
+                {
+                    var customers = new List<Customer>()
+                {
+                   new Customer
+                {
+                    IdentityUserId = user2.Id,
+                    OTP = "123456",
+                    OtpExpirationDate = DateTime.Now.AddMinutes(5),
+                    IdentificationTypes = IdentificationTypes.NationalID,
+                    NationalId = "1234567890",
+                    ArabicName = "العميل التجريبي",
+                    IsEmployee = false,
+                    CustomerCategory = CustomerCategoryStatus.Customer,
+                    TenantId =organizationTest.TenantId
+                } };
+
+                    await _customerRepository.InsertManyAsync(customers, autoSave: true);
+                }
+
                 var shift_1 = await _shiftRepository.FirstOrDefaultAsync(g => g.EnglishName == "Mid night");
                 var shift_2 = await _shiftRepository.FirstOrDefaultAsync(g => g.EnglishName == "Test");
 
                 if (!await _keeperShiftRepository.AnyAsync())
                 {
-                    
+
                     var keeperShiftList = new List<KeeperShift>
                     {
                         new KeeperShift { GarageId = shift_1.GarageId , OrganizationId = shift_1.OrganizationId , ShiftId = shift_1.Id , KeeperId = user.Id ,
@@ -267,13 +295,52 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
                             StartDate = new DateOnly(2025 ,  3 ,  1 )  , EndDate = new DateOnly(2025 , 3 , 30) , StartTime = shift_2.StartTime  , EndTime = shift_2.EndTime  } ,
 
 
-                      
+
                     };
-                    await _keeperShiftRepository.InsertManyAsync(keeperShiftList , true);
+                    await _keeperShiftRepository.InsertManyAsync(keeperShiftList, true);
 
                 }
 
-             
+                if (!await _packageTypeRepository.AnyAsync())
+                {
+                    var packageTypes = new List<PackageType>()
+                                                  {
+                                                      new PackageType { ArabicName = "النوع", EnglishName = "Type"},
+                                                      new PackageType { ArabicName = "النوع الاول", EnglishName = "Type1"},
+                                                      new PackageType { ArabicName = "النوع الثاني", EnglishName = "Type2"},
+                                                  };
+                    await _packageTypeRepository.InsertManyAsync(packageTypes,
+                         autoSave: true
+                     );
+
+
+                    var packageTypeTest = await _packageTypeRepository.FirstOrDefaultAsync(g => g.EnglishName == "Type");
+
+                    var packages = new List<Package>()
+                    {
+                        new Package
+                        {
+                            PackageTypeId = packageTypeTest.Id,
+                            Price = 100.00m,
+                            Description = "Test Package Description",
+                            published = true,
+                            PublishFrom = new TimeOnly(9, 0),
+                            PublishTo = new TimeOnly(17, 0),
+                            CreatedDate = DateTime.Now,
+                            CreatedBy = "TestUser",
+                            ActivationDate = DateTime.Now,
+                            ActivedBy = "Admin",
+                            DectivationDate = DateTime.Now.AddMonths(1),
+                            DeactivatedBy = "Admin",
+                            OrganizationId = organizationTest.Id,
+                            PackageStatus = SubscriptionStatus.Active,
+                            CustomerCategory = CustomerCategoryStatus.Customer,
+                            DurationOfPackage = 30
+                        }
+
+                    };
+                }
+
                 var cameraBrand = new CameraBrand { ArabicName = "تست", EnglishName = "test" };
                 await _cameraBrandRepository.InsertAsync(cameraBrand, autoSave: true);
                 var cameraBrandTest = await _cameraBrandRepository.FirstOrDefaultAsync(_ => _.EnglishName == "test");
@@ -328,20 +395,15 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
                      OrganizationId = organizationTest.Id,
                  }
                 };
-
-
                 await _cameraRepostory.InsertManyAsync(cameras,
                       autoSave: true
                   );
-            }
-
-        }
-
-        if (!await _plateColorRepository.AnyAsync())
-        {
+                var customer = await _customerRepository.FirstOrDefaultAsync(x => x.NationalId == "1234567890");
+                if (!await _plateColorRepository.AnyAsync())
+                {
 
 
-            var plateColors = new List<PlateColor>
+                    var plateColors = new List<PlateColor>
                {
                    new PlateColor {  EnglishName = "Red", ArabicName = "أحمر" },
                    new PlateColor {  EnglishName = "Blue", ArabicName = "أزرق" },
@@ -351,17 +413,17 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
                    new PlateColor {  EnglishName = "Silver", ArabicName = "فضى" }
                };
 
-            await _plateColorRepository.InsertManyAsync(plateColors, autoSave: true);
+                    await _plateColorRepository.InsertManyAsync(plateColors, autoSave: true);
 
-            var redplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Red");
-            var blueplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Blue");
-            var whiteplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "White");
-            var yellowplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Yellow");
-            var silverplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Silver");
-            var greenplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Green");
+                    var redplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Red");
+                    var blueplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Blue");
+                    var whiteplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "White");
+                    var yellowplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Yellow");
+                    var silverplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Silver");
+                    var greenplate = await _plateColorRepository.FirstOrDefaultAsync(g => g.EnglishName == "Green");
 
 
-            var licenceTypes = new List<LicenceType>
+                    var licenceTypes = new List<LicenceType>
                 {
                 // Two licence types sharing the same PlateColorId (e.g., Red with Id = 1)
                 new LicenceType {  EnglishName = "Private Car", ArabicName = "خاص", PlateColorId = whiteplate.Id },
@@ -380,14 +442,14 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
                 new LicenceType {  EnglishName = "Diplomatic", ArabicName = "دبلوماسي", PlateColorId = greenplate.Id }
                 };
 
-            await _licenceTypeRepository.InsertManyAsync(licenceTypes, autoSave: true);
+                    await _licenceTypeRepository.InsertManyAsync(licenceTypes, autoSave: true);
 
 
-        }
-        if (!await _vehicleBrandRepository.AnyAsync())
-        {
-            // Step 1: Seed Vehicle Brands
-            var brands = new List<VehicleBrand>
+                }
+                if (!await _vehicleBrandRepository.AnyAsync())
+                {
+                    // Step 1: Seed Vehicle Brands
+                    var brands = new List<VehicleBrand>
     {
         new VehicleBrand { EnglishName = "Toyota", ArabicName = "تويوتا" },
         new VehicleBrand { EnglishName = "Honda", ArabicName = "هوندا" },
@@ -396,17 +458,17 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
         new VehicleBrand { EnglishName = "BMW", ArabicName = "بي إم دبليو" }
     };
 
-            await _vehicleBrandRepository.InsertManyAsync(brands, autoSave: true);
+                    await _vehicleBrandRepository.InsertManyAsync(brands, autoSave: true);
 
-            // Step 2: Get inserted brands by EnglishName
-            var toyota = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Toyota");
-            var honda = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Honda");
-            var hyundai = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Hyundai");
-            var ford = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Ford");
-            var bmw = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "BMW");
+                    // Step 2: Get inserted brands by EnglishName
+                    var toyota = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Toyota");
+                    var honda = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Honda");
+                    var hyundai = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Hyundai");
+                    var ford = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Ford");
+                    var bmw = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "BMW");
 
-            // Step 3: Seed Vehicle Models with reference to BrandId
-            var models = new List<VehicleModel>
+                    // Step 3: Seed Vehicle Models with reference to BrandId
+                    var models = new List<VehicleModel>
     {
         new VehicleModel { EnglishName = "Corolla", ArabicName = "كورولا", VehiclesBrandId = toyota.Id, Image = "corolla.png" },
         new VehicleModel { EnglishName = "Camry", ArabicName = "كامري", VehiclesBrandId = toyota.Id, Image = "camry.png" },
@@ -420,64 +482,42 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
         new VehicleModel { EnglishName = "3 Series", ArabicName = "السلسلة 3", VehiclesBrandId = bmw.Id, Image = "3series.png" }
     };
 
-            await _vehicleModelRepository.InsertManyAsync(models, autoSave: true);
-        }
-
-
-        if (!await _vehicleRepository.AnyAsync())
-        {
-            var toyota = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Toyota");
-            var honda = await _vehicleBrandRepository.FirstOrDefaultAsync(b => b.EnglishName == "Honda");
-
-            var corolla = await _vehicleModelRepository.FirstOrDefaultAsync(m => m.EnglishName == "Corolla");
-            var civic = await _vehicleModelRepository.FirstOrDefaultAsync(m => m.EnglishName == "Civic");
-
-            var whitePlate = await _plateColorRepository.FirstOrDefaultAsync(p => p.EnglishName == "White");
-            var privateLicence = await _licenceTypeRepository.FirstOrDefaultAsync(l => l.EnglishName == "Private Car");
-
-
-            if (toyota == null || honda == null || corolla == null || civic == null ||
-                whitePlate == null || privateLicence == null)
-            {
-                throw new Exception("Missing lookup or customer data for vehicle seeding.");
-            }
-
-            var vehicles = new List<Vehicle>
-        {
-                new Vehicle
+                    await _vehicleModelRepository.InsertManyAsync(models, autoSave: true);
+                }
+                if (!await _vehicleRepository.AnyAsync())
                 {
-                TenantId = Guid.NewGuid(),
-                CustomerId = Guid.NewGuid(),
-                VehicleBrandId = toyota.Id,
-                VehicleModelId = corolla.Id,
-                PlateColorId = whitePlate.Id,
-                LicenceTypeId = privateLicence.Id,
-                EnPlateNumber = "1234",
-                ArPlateNumber = "١٢٣٤",
-                ModelYear = "2022",
-                BelongToCompany = false,
-                Status = Status.Active
-            },
-                new Vehicle
-            {
-                TenantId = Guid.NewGuid(),
-                CustomerId = Guid.NewGuid(),
-                VehicleBrandId = honda.Id,
-                VehicleModelId = civic.Id,
-                PlateColorId = whitePlate.Id,
-                LicenceTypeId = privateLicence.Id,
-                EnPlateNumber = "5678",
-                ArPlateNumber = "٥٦٧٨",
-                ModelYear = "2021",
-                BelongToCompany = true,
-                CompanyName = "Smart Co.",
-                Status = Status.Active
-            }
-        };
+                    // Fetch required related entities
+                    var model = await _vehicleModelRepository.FirstOrDefaultAsync(vm => vm.EnglishName == "Corolla");
+                    var brand = await _vehicleBrandRepository.FirstOrDefaultAsync(vb => vb.EnglishName == "Toyota");
+                    var plateColor = await _plateColorRepository.FirstOrDefaultAsync(pc => pc.EnglishName == "White");
+                    var licenceType = await _licenceTypeRepository.FirstOrDefaultAsync(lt => lt.EnglishName == "Private Car");
 
-            await _vehicleRepository.InsertManyAsync(vehicles, autoSave: true);
-        };
+                    // Seed Vehicle
+                    var vehicle = new Vehicle
+                    {
+                        CustomerId = customer.Id,
+                        VehicleModelId = model.Id,
+                        VehicleBrandId = brand.Id,
+                        PlateColorId = plateColor.Id,
+                        LicenceTypeId = licenceType.Id,
+                        EnPlateNumber = "1234",
+                        ArPlateNumber = "١٢٣٤",
+                        ModelYear = "2022",
+                        BelongToCompany = false,
+                        CompanyName = null,
+                        Status = Status.Active
+                    };
+
+                    await _vehicleRepository.InsertAsync(vehicle, autoSave: true);
+                }
+
+
+            }
+
+
+
         }
 
 
+    }
 }
