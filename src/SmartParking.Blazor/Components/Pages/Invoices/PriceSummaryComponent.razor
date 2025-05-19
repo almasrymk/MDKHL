@@ -4,6 +4,7 @@
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Permissions.InvoicesPermissions
+@using SmartParking.Permissions.CheckoutPermissions
 @using Discounts
 @using System.Globalization
 @using SmartParking.Validations
@@ -44,17 +45,19 @@
                         @((MarkupString)$"{InvoicePriceWithVat} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
                     </MudText>
                 </MudItem>
+                @if (AuthorizationService.IsGrantedAnyAsync(CheckoutPermissions.Discount).Result){
 
-                @if (OnChooseDiscount)
-                {
-                    <MudItem xs="6">
-                        <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["After"] @L["Discount"]</MudText>
-                    </MudItem>
-                    <MudItem xs="6" Class="text-end">
-                        <MudText Typo="Typo.h6" Color="MudBlazor.Color.Tertiary">
-                            @((MarkupString)$"{InvoicePriceAfterDiscount} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
-                        </MudText>
-                    </MudItem>
+                    @if (OnChooseDiscount)
+                    {
+                        <MudItem xs="6">
+                            <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["After"] @L["Discount"]</MudText>
+                        </MudItem>
+                        <MudItem xs="6" Class="text-end">
+                            <MudText Typo="Typo.h6" Color="MudBlazor.Color.Tertiary">
+                                @((MarkupString)$"{InvoicePriceAfterDiscount} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
+                            </MudText>
+                        </MudItem>
+                    }
                 }
 
             </MudGrid>
@@ -63,25 +66,23 @@
         <MudItem>
 
             <MudGrid Class="mt-4">
-                @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Confirm).Result && (!IsPaid || InvoicePrice == 0))
+                @if (AuthorizationService.IsGrantedAnyAsync([InvoicePermission.Confirm,CheckoutPermissions.Confirm]).Result
+                    && (!IsPaid || InvoicePrice == 0))
                 {
                     <MudItem sm="12" md="12">
                         <MudNumericField T="decimal" Validation="@( (decimal value) => NumbersValidations.ValidateInvoice(value,InvoicePriceWithVat))" HideSpinButtons="true" ValueChanged="OnAddDiscount" Label="@L["Discount"]" Variant="Variant.Text" Culture="CultureInfo.InvariantCulture" />
                     </MudItem>
 
-                }
-                @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Confirm).Result)
-                {
-                    @if (!IsPaid || InvoicePrice==0)                    
-                    {
-                        <MudItem xs="@(ConfirmSize)" Class="d-flex flex-row justify-content-center">
-                            <MudRadioGroup @bind-Value="@PaymentMethod" Class="d-inline-flex align-content-center">
-                                <MudRadio Value="@(Enums.PaymentMethod.Cash)" Color="MudBlazor.Color.Primary">@L["Cash"]</MudRadio>
-                                <MudRadio Value="@(Enums.PaymentMethod.Cash)" Color="MudBlazor.Color.Secondary">@L["POS"]</MudRadio>
-                            </MudRadioGroup>
-                        </MudItem>
+                
+              
+                    <MudItem xs="@(ConfirmSize)" Class="d-flex flex-row justify-content-center">
+                        <MudRadioGroup @bind-Value="@PaymentMethod" Class="d-inline-flex align-content-center">
+                            <MudRadio Value="@(Enums.PaymentMethod.Cash)" Color="MudBlazor.Color.Primary">@L["Cash"]</MudRadio>
+                            <MudRadio Value="@(Enums.PaymentMethod.Cash)" Color="MudBlazor.Color.Secondary">@L["POS"]</MudRadio>
+                        </MudRadioGroup>
+                    </MudItem>
 
-                    }
+                }
 
 
                     <MudItem xs="@(ConfirmSize)" Class="text-center">
@@ -96,9 +97,13 @@
                         <MudItem xs="@(ConfirmSize/2)" Class="text-center pe-1">
                             <MudButton FullWidth="true" Variant="Variant.Filled" Color="MudBlazor.Color.Error" Disabled="NoInvoice" OnClick="Cancel">@L["Cancel"]</MudButton>
                         </MudItem>
+                     @if (AuthorizationService.IsGrantedAnyAsync(CheckoutPermissions.OpenGate).Result){
+
+
                         <MudItem xs="@(ConfirmSize/2)" Class="text-center ps-1">
                             <MudButton FullWidth="true" Variant="Variant.Filled" Color="MudBlazor.Color.Dark" Disabled="NoInvoice" OnClick="OpenGate">@L["OpenGate"]</MudButton>
                         </MudItem>
+                     }
                     </MudItem>
 
                 }

@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc;
 using System.IO;
+using SmartParking.Enums;
+using SmartParking.Payments;
 
 namespace SmartParking.Controllers;
 
@@ -19,12 +21,14 @@ public class InvoicesController : AbpController
 {
     private readonly IInvoicesAppService _invoicesAppService;
     private readonly IPDFGeneratorAppService _pdfAppservice;
+    private readonly IPaymentAppService _paymentAppService;
 
 
-    public InvoicesController(IInvoicesAppService invoicesAppService, IPDFGeneratorAppService pdfAppservice)
+    public InvoicesController(IInvoicesAppService invoicesAppService, IPDFGeneratorAppService pdfAppservice, IPaymentAppService paymentAppService)
     {
         _invoicesAppService = invoicesAppService;
         _pdfAppservice = pdfAppservice;
+        _paymentAppService = paymentAppService;
     }
     [HttpPost]
     [Authorize]
@@ -50,6 +54,13 @@ public class InvoicesController : AbpController
     {
         var stream = await _pdfAppservice.SaveInvoicePdf(invoiceId);
         return new FileContentResult(stream.GetAllBytes(), "application/pdf");
+    }   
+    
+    [HttpPost("customerpayinvoice")]
+    [Authorize]
+    public async Task<Result<PaymentCheckoutDto>> PayCustomerInvoice(PayCustomerInvoiceDto payCustomerInvoice)
+    {
+      return await _paymentAppService.PayCustomerInvoiceAsync(payCustomerInvoice);
     }
 }
     

@@ -14,7 +14,6 @@ namespace SmartParking.Shifts;
 
 public abstract class ShiftsAppService_Tests<TStartupModule> : SmartParkingApplicationTestBase<TStartupModule>
     where TStartupModule : IAbpModule
-    //IRepository<Shift, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationRepository, IRepository<Garage, int> garageRepository
 {
     private readonly IShiftAppService _shiftAppService;
 
@@ -248,7 +247,7 @@ public abstract class ShiftsAppService_Tests<TStartupModule> : SmartParkingAppli
             StartDate = new DateOnly(2025, 2, 26),
             EndDate = new DateOnly(2025, 2, 26),
             StartTime = new TimeOnly(22, 0), 
-            EndTime = new TimeOnly(22, 59),
+            EndTime = new TimeOnly(23, 0),
             GarageId = 1,
             OrganizationId = 1,
             Status = Enums.Status.Active,

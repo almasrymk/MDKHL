@@ -12,20 +12,17 @@ using System.Threading.Tasks;
 namespace SmartParking.Validations.CustomerValidations;
 
 public class RegisterCustomerDtoValidator : AbstractValidator<CreateUpdateCustomerDto>
-{
-    private readonly IStringLocalizer<SmartParkingResource> _stringLocalizer;
-    
-    public RegisterCustomerDtoValidator(IStringLocalizer<SmartParkingResource> stringLocalizer)
+{    
+    public RegisterCustomerDtoValidator()
     {
-        _stringLocalizer = stringLocalizer;
 
         RuleFor(x => x.ArabicName)
            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-          .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s@#\*\-]*$").WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"));
+          .Matches(ConstantValidations.ArabicName).WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"));
 
         RuleFor(x => x.FullName)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-            .Matches(@"^[a-zA-Z][a-zA-Z0-9/.,\\@#*]*(\s[a-zA-Z0-9/.,\\@#*]+)*$").WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"));
+            .Matches(ConstantValidations.EnglishName).WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"));
 
 
         RuleFor(x => x.Email)
@@ -44,7 +41,7 @@ public class RegisterCustomerDtoValidator : AbstractValidator<CreateUpdateCustom
 
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
-            .Matches(@"(05\d{8}|\+9665\d{8})$")  
+            .Matches(ConstantValidations.WhatsAppNumber)  
             .WithMessage(LocalizationHelper.GetLocalizedString("PhoneValidation"));
         RuleFor(x => x.isActive)
             .Must(value => value == true || value == false)

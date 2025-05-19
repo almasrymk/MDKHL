@@ -24,4 +24,11 @@ public static class SmartParkingPermissions
     public const string ViewNumberOfCustomerCard = ".ViewNumberOfCustomerCard";
     public const string ViewNumberOfEmployeeCard = ".ViewNumberOfEmployeeCard";
     public const string ViewTotalSlotsCard = ".ViewTotalSlotsCard";
+    public const string ConfirmPaying = ".ConfirmPaying";
+    public const string OpenGate = ".OpenGate";
+    public const string Discount = ".Discount";
+    public const string ExportPDF = ".ExportPDF";
+    public const string ExportCSV = ".ExportCSV";
+    public const string ExportExcel = ".ExportExcel";
+    public const string TransactionCheckout = ".TransactionCheckout";
 }

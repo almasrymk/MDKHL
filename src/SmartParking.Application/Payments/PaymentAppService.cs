@@ -108,11 +108,6 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                         checkoutid: checkoutId, entityId: entityId);
 
                 }
-
-
-
-
-
             }
             else
             {
@@ -273,6 +268,44 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         var paymentCheckoutDto = await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
         return paymentCheckoutDto;
     }
+
+    public async Task<Result<PaymentCheckoutDto>> PayCustomerInvoiceAsync(PayCustomerInvoiceDto payCustomerInvoiceDto)
+    {
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var result= await GetInvoiceByIdAsync(payCustomerInvoiceDto.InvoiceId);
+            if (!result.IsSuccess)
+            {
+                throw new Exception (result.Errors.FirstOrDefault());
+            }
+            return await CreateCheckoutPaymentAsync(new PaymentCheckoutRequestDto
+            {
+                InvoiceId = payCustomerInvoiceDto.InvoiceId,
+                OrganizationId = result.Value.OrganizationId,
+                Amount= result.Value.InvoicePrice,
+                PaymentCategory=PaymentCategory.PaymentParking,
+                PaymentMethod= payCustomerInvoiceDto.Method,
+
+            });
+
+        }
+
+    }
+
+    private async Task<Result<Invoice>> GetInvoiceByIdAsync(int invoiceId)
+    {
+        var invoice = await _invoiceRepo.FirstOrDefaultAsync(inv => inv.Id == invoiceId);
+        if (invoice == null)
+        {
+            return Result.Error("Invoice not found");
+        }
+        if (invoice.InvoiceType == InvoiceType.Paid || invoice.InvoicePrice ==0)
+        {
+            return Result.Error("Invoice already paid");
+
+        }
+        return invoice;
+    }
     #endregion
     #region private methods
     private async Task<PaymentCheckoutDto> SavePaymentRequest(PaymentCheckoutRequestDto paymentCheckoutRequest,
@@ -422,6 +455,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             return $"{prefix}{currentYearSuffix}{formattedSequence}";
         }
     }
+
+
     #endregion
 }
 
