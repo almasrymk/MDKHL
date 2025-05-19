@@ -788,7 +788,9 @@
     "PaymentCode": "Payment Code",
     "CannotAssignTwoPackageToSameVehicle": "Vehicle has an active package",
     "AmountOfCash": "Amount Of Cash",
-    "AmountOfVisa" : "Amount Of Visa"
+    "AmountOfVisa": "Amount Of Visa",
+    "Permission:OpenGate": "Permission:OpenGate"
+
   }
 
 }
