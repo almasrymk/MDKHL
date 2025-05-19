@@ -816,7 +816,8 @@
     "PaymentCode": "كود الفواتير",
     "CannotAssignTwoPackageToSameVehicle": "السياره لديها باقه نشطه بالفعل",
     "AmountOfCash": "المبلغ النقدي",
-    "AmountOfVisa" : "المبلغ البنكي"
+    "AmountOfVisa": "المبلغ البنكي",
+    "Permission:View" :  "تفاصيل"
 
   }
 }
