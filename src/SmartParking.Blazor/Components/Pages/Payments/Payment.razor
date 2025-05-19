@@ -3,6 +3,7 @@
 @using SmartParking.Localization
 @using SmartParking.Organizations
 @using SmartParking.Payments
+@using SmartParking.Permissions.PaymentsPermissions
 @using Volo.Abp.MultiTenancy
 @inject ISnackbar Snackbar
 @inject IPaymentWebAppService PaymentWebAppService
@@ -17,4 +18,4 @@
 <PageTitle>@L["Payments"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Payments"]</MudText>
 
-<SPDataGrid PageName=@L["Payments"] Data="@itemData" Menus="@MenuDatas"  ShowMenue="!CurrentTenant.Id.HasValue"  OnSearching="FetchTableData" TotalItemsInTable="TotalItem" ShowFiltering="false" OnClickRowView="HandleView" OnPageChanged="FetchTableData"></SPDataGrid>
+<SPDataGrid PageName=@L["Payments"] Data="@itemData" Menus="@MenuDatas" ShowView="AuthorizationService.IsGrantedAsync(PaymentsPermission.View).Result"  ShowMenue="!CurrentTenant.Id.HasValue" OnSearching="FetchTableData" TotalItemsInTable="TotalItem" ShowFiltering="false" OnClickRowView="HandleView" OnPageChanged="FetchTableData"></SPDataGrid>

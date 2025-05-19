@@ -15,6 +15,7 @@
 @inject NavigationManager Navigation
 @inject ICurrentTenant CurrentTenant
 @inject IOrganizationsAppService OrganizationAppService
+@inject IAuthorizationService AuthorizationService
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 @inherits AbpCrudPageBase<IPackagesAppService, PackageDto, int, PagedAndSortedResultRequestDto, CreateUpdatePackageDto>
@@ -23,5 +24,10 @@
 
 <MudText Typo="Typo.h5" Class="mb-2">@L["Packages"]</MudText>
 
-<SPDataGrid PageName=@L["Packages"] Menus="@MenuDatas" ShowMenue="true&&CurrentTenant.Id==null" Data="@itemData" ShowAdd="HasCreatePermission" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
+<SPDataGrid PageName=@L["Packages"] Menus="@MenuDatas" ShowMenue="true&&CurrentTenant.Id==null" Data="@itemData" 
+            ShowAdd="AuthorizationService.IsGrantedAsync(PackagePermissions.Create).Result"
+            ShowDelete="AuthorizationService.IsGrantedAsync(PackagePermissions.Delete).Result"
+            ShowEdit="AuthorizationService.IsGrantedAsync(PackagePermissions.Edit).Result"
+            ShowView="AuthorizationService.IsGrantedAsync(PackagePermissions.Default).Result"
+            TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
 

@@ -29,6 +29,7 @@
 @inject ISubscriptionAppService SubscriptionAppService
 @inject ICurrentTenant currenttenant
 @inject ICurrentUser currentUser
+@inject IAuthorizationService AuthorizationService
 
 @* @attribute [Authorize(MyAccountPermissions.Default)] *@
 @inherits AbpCrudPageBase<IOrganizationsAppService, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>
@@ -220,7 +221,7 @@
 
                     <div class="d-flex justify-content-between mt-5">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
-                        @if(HasUpdatePermission)
+                        @if (AuthorizationService.IsGrantedAsync(MyAccountPermissions.Edit).Result)
                         {
                             <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="Navigate">@L["Edit"]</MudButton>
                         }

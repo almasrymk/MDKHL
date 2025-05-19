@@ -13,5 +13,5 @@ public static class UserProfilePermissions
     public const string Default = GroupName + PropertyName;
     public const string Edit = Default + SmartParkingPermissions.Edit;
     public const string ChangePassword = Default + SmartParkingPermissions.ChangePassword;
-   // public const string View = Default + SmartParkingPermissions.View;
+    public const string View = Default + SmartParkingPermissions.View;
 }

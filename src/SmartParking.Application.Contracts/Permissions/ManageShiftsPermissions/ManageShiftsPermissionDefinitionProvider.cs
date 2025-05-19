@@ -21,6 +21,7 @@ public class ManageShiftsPermissionDefinitionProvider : PermissionDefinitionProv
         shiftsPermission.AddChild(ShiftPermission.Create, CustomStringLocalizer.L(CustomStringLocalizer.Add));
         shiftsPermission.AddChild(ShiftPermission.Edit, CustomStringLocalizer.L(CustomStringLocalizer.Edit));
         shiftsPermission.AddChild(ShiftPermission.Delete, CustomStringLocalizer.L(CustomStringLocalizer.Delete));
+        shiftsPermission.AddChild(ShiftPermission.View, CustomStringLocalizer.L(CustomStringLocalizer.View));
 
         var MyShiftsPermission = smartParkingGroup.AddPermission(MyShiftPermissions.Default, CustomStringLocalizer.L("Permission:MyShift"));
 

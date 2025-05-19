@@ -794,12 +794,12 @@
     "Permission:PDF Export": "Export PDF",
     "Permission:CSV Export": "Export CSV",
     "Permission:Excel Export": "Export Excel",
-    "Permission:TransactionCheckout": "Checkout",
+    "Permission:TransactionCheckout": "Checkout" , 
     "Permission:Profile": "Profile",
-    "Permission:ChangePassword": "Change Password"
+    "Permission:ChangePassword": "Change Password",
 
 
-
+    "Permission:View": "View"
   }
 
 }

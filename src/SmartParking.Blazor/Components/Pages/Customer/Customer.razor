@@ -20,10 +20,11 @@
 @inject IOrganizationsAppService OrganizationAppService
 @inject IAnalysisAppService AnalysisAppService
 @inject IGenerateFilesAppService GenerateFilesAppService
-@inject IJSRuntime JSRuntime;
+@inject IJSRuntime JSRuntime
+@inject IAuthorizationService AuthorizationService
 
 <PageTitle>@L["Customers"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Customers"]</MudText>
 
-<SPDataGrid PageName=@L["Customers"] Menus="@MenuDatas" ShowMenue="true" Data="@itemData" ShowAdd="HasCreatePermission" ShowDelete="HasDeletePermission" ShowEdit="HasUpdatePermission" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="FetchTableData" ShowAssign=" AuthorizationService.IsGrantedAnyAsync(CustomerPermissions.AddRoleToCustomer).Result" OnClickAssign="AssignRole" ShowCustomerTransactions="AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result || !currrentTenant.Id.HasValue" ShowCustomerTransactionsMethod="ShowCustomerTransactions" OnClickRowView="ViewCustomer"></SPDataGrid>
+<SPDataGrid PageName=@L["Customers"] Menus="@MenuDatas" ShowMenue="true" Data="@itemData" ShowAdd="AuthorizationService.IsGrantedAsync(CustomerPermissions.Create).Result" ShowDelete="AuthorizationService.IsGrantedAsync(CustomerPermissions.Delete).Result" ShowEdit="AuthorizationService.IsGrantedAsync(CustomerPermissions.Edit).Result" OnAdd="HandleAdd" OnClickRowEdit="HandleEdit" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnPageChanged="FetchTableData" OnSearching="FetchTableData" ShowAssign=" AuthorizationService.IsGrantedAnyAsync(CustomerPermissions.AddRoleToCustomer).Result" OnClickAssign="AssignRole" ShowCustomerTransactions="AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result || !currrentTenant.Id.HasValue" ShowCustomerTransactionsMethod="ShowCustomerTransactions" ShowView="AuthorizationService.IsGrantedAsync(CustomerPermissions.Default).Result" OnClickRowView="ViewCustomer"></SPDataGrid>
 

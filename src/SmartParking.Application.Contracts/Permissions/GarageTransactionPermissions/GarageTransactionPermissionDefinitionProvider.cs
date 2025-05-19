@@ -14,8 +14,9 @@ public class GarageTransactionPermissionDefinitionProvider : PermissionDefinitio
     {
         var smartParkingGroup = context.AddGroup(GarageTransactionPermissions.Default, CustomStringLocalizer.L("Permission:GarageTransaction"));
 
-        var garageTransactionPermission = smartParkingGroup.AddPermission(GarageTransactionPermissions.Default, CustomStringLocalizer.L("Permission:GarageTransaction"));
-        garageTransactionPermission.AddChild(GarageTransactionPermissions.Checkout, CustomStringLocalizer.L(CustomStringLocalizer.TransactionCheckout));
+        var transactionPermission = smartParkingGroup.AddPermission(GarageTransactionPermissions.Default, CustomStringLocalizer.L("Permission:GarageTransaction"));
+        transactionPermission.AddChild(GarageTransactionPermissions.View, CustomStringLocalizer.L("Permission:View"));
+        transactionPermissions.AddChild(GarageTransactionPermissions.Checkout, CustomStringLocalizer.L(CustomStringLocalizer.TransactionCheckout));
        
 
     }
