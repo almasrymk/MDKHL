@@ -17,7 +17,8 @@
 <PageTitle>@L["GarageTransactions"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["GarageTransactions"]</MudText>
 
-<SPDataGrid PageName=@L["GarageTransactions"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!CurrentTenant.Id.HasValue" ShowDelete="false" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="@(() => CreateGarageTransaction(_backdropClick))" ShowAdd="false" ShowEdit="false" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
+<SPDataGrid PageName=@L["GarageTransactions"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!CurrentTenant.Id.HasValue"
+            ShowView="AuthorizationService.IsGrantedAsync(GarageTransactionPermissions.View).Result"  ShowDelete="false" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="@(() => CreateGarageTransaction(_backdropClick))" ShowAdd="false" ShowEdit="false" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
 
 
 
