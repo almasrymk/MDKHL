@@ -34,6 +34,7 @@ public static class CustomStringLocalizer
     public const string SecurityManager = "Permission:SecurityManager";
     public const string FinancialManagement = "Permission:FinancialManagement";
     public const string TransactionCheckout = "Permission:TransactionCheckout";
+    public const string ChangePassword = "Permission:ChangePassword";
     public const char For ='ب';
 
     public static LocalizableString L(string name)
