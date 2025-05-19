@@ -817,7 +817,10 @@
     "CannotAssignTwoPackageToSameVehicle": "السياره لديها باقه نشطه بالفعل",
     "AmountOfCash": "المبلغ النقدي",
     "AmountOfVisa": "المبلغ البنكي",
-    "Permission:OpenGate": "فتح البوابة"
+    "Permission:OpenGate": "فتح البوابة",
+    "Permission:PDF Export": "تصدير PDF",
+    "Permission:CSV Export": "تصدير CSV",
+    "Permission:Excel Export": "تصدير Excel"
 
   }
 }
