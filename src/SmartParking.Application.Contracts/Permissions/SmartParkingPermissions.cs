@@ -29,4 +29,5 @@ public static class SmartParkingPermissions
     public const string ExportPDF = ".ExportPDF";
     public const string ExportCSV = ".ExportCSV";
     public const string ExportExcel = ".ExportExcel";
+    public const string TransactionCheckout = ".TransactionCheckout";
 }

@@ -11,5 +11,6 @@ public class GarageTransactionPermissions
     public const string PropertyName = ".GarageTransaction";
     public const string GroupName = SmartParkingPermissions.GroupName;
     public const string Default = GroupName + PropertyName;
+    public const string Checkout = Default + SmartParkingPermissions.TransactionCheckout;
 }
 

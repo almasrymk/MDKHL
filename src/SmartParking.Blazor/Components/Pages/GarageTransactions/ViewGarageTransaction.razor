@@ -8,12 +8,14 @@
 @using SmartParking.Lookups.LicenceType
 @using SmartParking.Organizations
 @using System.Globalization
+@using SmartParking.Permissions.GarageTransactionPermissions
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
 @inject IGarageAppService GaragesAppService
 @inject IOrganizationsAppService OrganizationsAppService
 @inject ICamerasAppService CamerasAppService
 @inject IGarageTransactionEndPointsAppService GarageTransactionAppService
+@inject IAuthorizationService AuthorizationService
 @inject NavigationManager Navigation
 
 <div class="modal-wrapper">
@@ -107,7 +109,8 @@
 			<div class="d-flex align-items-center justify-content-between">
 
 				<MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
-				@if (GarageTransaction.IsIn && GarageTransaction.IsPending == false && GarageTransaction.CanCheckout == true && _organizationDto.HasFreeSlots==false)
+
+				@if (AuthorizationService.IsGrantedAnyAsync(GarageTransactionPermissions.Checkout).Result && (GarageTransaction.IsIn && GarageTransaction.IsPending == false && GarageTransaction.CanCheckout == true && _organizationDto.HasFreeSlots == false))
 				{
 					<MudButton Variant="Variant.Filled"  Color="MudBlazor.Color.Primary" OnClick="PreCheckout"> @L["Checkout"]</MudButton>
 				}

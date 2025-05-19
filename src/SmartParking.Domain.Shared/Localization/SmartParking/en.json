@@ -790,9 +790,13 @@
     "AmountOfCash": "Amount Of Cash",
     "AmountOfVisa": "Amount Of Visa",
     "Permission:OpenGate": "Open Gate",
+    "Permission:Checkout": "Checkout",
     "Permission:PDF Export": "Export PDF",
     "Permission:CSV Export": "Export CSV",
-    "Permission:Excel Export": "Export Excel"
+    "Permission:Excel Export": "Export Excel",
+    "Permission:TransactionCheckout": "Checkout"
+
+
 
   }
 
