@@ -18,5 +18,6 @@ public class ContactPermissionDefinitionProvider : PermissionDefinitionProvider
         cameraPermission.AddChild(ContactPermissions.Create, CustomStringLocalizer.L(CustomStringLocalizer.Add));
         cameraPermission.AddChild(ContactPermissions.Edit, CustomStringLocalizer.L(CustomStringLocalizer.Edit));
         cameraPermission.AddChild(ContactPermissions.Delete, CustomStringLocalizer.L(CustomStringLocalizer.Delete));
+        cameraPermission.AddChild(ContactPermissions.View, CustomStringLocalizer.L(CustomStringLocalizer.View));
     }
 }
