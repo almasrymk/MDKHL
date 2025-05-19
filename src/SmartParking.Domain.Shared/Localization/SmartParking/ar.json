@@ -822,7 +822,9 @@
     "Permission:PDF Export": "تصدير PDF",
     "Permission:CSV Export": "تصدير CSV",
     "Permission:Excel Export": "تصدير Excel",
-    "Permission:TransactionCheckout": "الدفع"
+    "Permission:TransactionCheckout": "الدفع",
+    "Permission:Profile": "الحساب",
+    "Permission:ChangePassword": "تغيير كلمة المرور"
 
 
   }
