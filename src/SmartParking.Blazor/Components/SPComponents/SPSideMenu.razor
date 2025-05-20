@@ -64,10 +64,8 @@
                     <MudNavLink Href="/lastinvoice" Icon="@Icons.Material.Filled.Check">@L["LastInvoice"]</MudNavLink>
 
                 }
-                @if (AuthorizationService.IsGrantedAnyAsync(ShiftPermission.Default).Result || 
-                   AuthorizationService.IsGrantedAnyAsync(UserShiftPermission.Default).Result ||
-                   AuthorizationService.IsGrantedAnyAsync(MyShiftPermissions.Default).Result ||
-                   AuthorizationService.IsGrantedAnyAsync(DailyShiftsPermission.Default).Result || currenttenant.Id == null)
+                @if (AuthorizationService.IsGrantedAnyAsync([ShiftPermission.Default, UserShiftPermission.Default, MyShiftPermissions.Default, DailyShiftsPermission.Default]).Result 
+                   || currenttenant.Id == null)
                 {
                     <MudNavGroup Icon="@Icons.Material.Filled.FilterTiltShift" Title="@L["Shifts"]">
                         @if (AuthorizationService.IsGrantedAnyAsync(ShiftPermission.Default).Result || currenttenant.Id == null)
