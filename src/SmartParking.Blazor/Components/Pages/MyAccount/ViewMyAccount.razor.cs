@@ -212,7 +212,7 @@ public partial class ViewMyAccount
         var Org = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
         int? subsId = Org.SubscriptionId;
 
-        var subscription = await SubscriptionAppService.GetAsync(Org.SubscriptionId ?? 0);
+        var subscription = await SubscriptionAppService.GetAsync(Org.SubscriptionId);
         //change it to garage.subscription
 
         var parameters = new DialogParameters

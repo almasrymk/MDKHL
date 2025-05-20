@@ -14,6 +14,7 @@ public static class CustomStringLocalizer
     public const string Add = "Permission:Create";
     public const string Edit = "Permission:Edit";
     public const string Delete = "Permission:Delete";
+    public const string View = "Permission:View";
     public const string ChanageStatus = "Permission:ChanageStatus";
     public const string AddRoleToCustomer = "Permission:AddRoleToCustomer";
     public const string ViewCustomerCard = "Permission:ViewCustomerCard";
@@ -33,7 +34,10 @@ public static class CustomStringLocalizer
     public const string IT = "Permission:IT";
     public const string SecurityManager = "Permission:SecurityManager";
     public const string FinancialManagement = "Permission:FinancialManagement";
+    public const string TransactionCheckout = "Permission:TransactionCheckout";
+    public const string ChangePassword = "Permission:ChangePassword";
     public const char For ='ب';
+
     public static LocalizableString L(string name)
     {
         return LocalizableString.Create<SmartParkingResource>(name);

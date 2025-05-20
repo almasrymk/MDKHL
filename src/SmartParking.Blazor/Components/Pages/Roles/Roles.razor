@@ -23,8 +23,11 @@
 <MudText Typo="Typo.h5" Class="mb-2">@L["Roles"]</MudText>
 
 <SPDataGrid PageName=@L["Roles"] Data="@itemData"  
-ShowView="AuthorizationService.IsGrantedAsync(CustomIdentityPermissions.Roles.ViewPermissions).Result"
-OnClickRowView="HandleView" ShowDelete="HasDeletePermission"
+            ShowView="AuthorizationService.IsGrantedAsync(CustomIdentityPermissions.Roles.ViewPermissions).Result"
+            OnClickRowView="HandleView"ShowButton="AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.ManagePermissions).Result"
+            ShowDelete ="AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.Delete).Result"
+            ShowAdd="AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.Create).Result" 
+            ShowEdit="AuthorizationService.IsGrantedAsync(IdentityPermissions.Roles.Update).Result"
 TotalItemsInTable="TotalItem" OnPageChanged="FetchTableData" OnSearching="HandleSearch" />
 
 <ViewPermissionRoleModal @ref="ViewPermissionRolesManagementModal" />

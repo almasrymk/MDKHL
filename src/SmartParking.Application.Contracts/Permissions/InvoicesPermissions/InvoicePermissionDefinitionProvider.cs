@@ -19,8 +19,6 @@ public class InvoicePermissionDefinitionProvider : PermissionDefinitionProvider
 
         var invoicePermission = smartParkingGroup.AddPermission(InvoicePermission.Default, CustomStringLocalizer.L("Permission:Invoice"));
         invoicePermission.AddChild(InvoicePermission.Confirm, CustomStringLocalizer.L("Permission:Confirm"));
-
-
-
+        invoicePermission.AddChild(InvoicePermission.View, CustomStringLocalizer.L("Permission:View"));
     }
 }

@@ -16,6 +16,7 @@
 @inject ICurrentTenant currrentTenant
 @inject IPermissionManager PermissionManager
 @inject IOrganizationsAppService OrganizationAppService
+@inject IAuthorizationService AuthorizationService
 @using Microsoft.AspNetCore.Authorization
 @using Volo.Abp.BlazoriseUI.Components.ObjectExtending
 @using Volo.Abp.Identity.Localization
@@ -26,7 +27,12 @@
 <PageTitle>@L["Users"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Users"]</MudText>
 
-<SPDataGrid PageName=@L["Users"] Data="@itemData" Menus="@MenuDatas" ShowMenue="!CurrentTenant.Id.HasValue" OnAdd="HandleAdd" ShowFiltering="false" OnClickRowDelete="OnClickRowDelete" ShowDelete="HasDeletePermission" OnClickRowView="HandleView" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" ShowAssign="false" OnClickRowEdit="HandleEdit" OnClickButton="AddPermission" OnPageChanged="FetchTableData" OnSearching="FetchTableData"></SPDataGrid>
+<SPDataGrid PageName=@L["Users"] Data="@itemData" Menus="@MenuDatas" 
+                                            ShowButton="AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.ManagePermissions).Result"
+                                            ShowMenue="!CurrentTenant.Id.HasValue" OnAdd="HandleAdd" ShowFiltering="false" OnClickRowDelete="OnClickRowDelete"
+                                            ShowDelete="AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.Delete).Result"
+                                            ShowAdd="AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.Create).Result" 
+                                            ShowEdit ="AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.Update).Result" OnClickRowView="HandleView" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" ShowAssign="false" OnClickRowEdit="HandleEdit" OnClickButton="AddPermission" OnPageChanged="FetchTableData" OnSearching="FetchTableData"></SPDataGrid>
 
 
 

@@ -15,14 +15,14 @@ public class CreateUpdateSubscriptionDtoValidator : AbstractValidator<CreateUpda
     {
         RuleFor(x => x.ArabicName)
             .NotEmpty()
-            .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s]*$")
+            .Matches(ConstantValidations.ArabicName)
             .WithMessage("The Arabic name should only contain Arabic letters, digits, punctuation marks, and spaces.")
             .MaximumLength(100)
             .WithMessage("Maximum Length Name must be only 100 Characters");
 
         RuleFor(x => x.EnglishName)
           .NotEmpty()
-          .Matches(@"^[a-zA-Z][a-zA-Z0-9\s]*$")
+          .Matches(ConstantValidations.EnglishName)
           .WithMessage("Name must start with a letter, accept only English letters and numbers, and cannot contain special characters such as ، / . \\ ,.")
           .MaximumLength(100)
           .WithMessage("Maximum Length Name must be only 100 Characters");

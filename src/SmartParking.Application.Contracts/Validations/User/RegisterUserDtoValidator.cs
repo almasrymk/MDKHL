@@ -14,11 +14,9 @@ namespace SmartParking.Validations.User;
 
 public class RegisterUserDtoValidator : AbstractValidator<RegisterInputDto>
 {
-    private readonly IStringLocalizer<SmartParkingResource> _stringLocalizer;
 
-    public RegisterUserDtoValidator(IStringLocalizer<SmartParkingResource> stringLocalizer)
+    public RegisterUserDtoValidator()
     {
-        _stringLocalizer = stringLocalizer;
 
         RuleFor(x => x.Name)
         .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
@@ -40,7 +38,7 @@ public class RegisterUserDtoValidator : AbstractValidator<RegisterInputDto>
         
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
-            .Matches(@"^(05\d{8}|\+966\d{8})$")
+            .Matches(ConstantValidations.WhatsAppNumber)
             .WithMessage(LocalizationHelper.GetLocalizedString("PhoneValidation"));
         
         RuleFor(x => x.IdentificationTypes).Must(value => Enum.IsDefined(typeof(Enums.IdentificationTypes), value))

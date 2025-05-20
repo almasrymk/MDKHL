@@ -20,6 +20,7 @@
 @using SmartParking.Permissions.ShiftsPermissions
 @using SmartParking.Permissions.SubsctriptionPermissions
 @using SmartParking.Permissions.UnLinkedTransactionPermissions
+@using SmartParking.Permissions.UserProfile
 @using SmartParking.Permissions.UserShiftsPermissions
 @using Volo.Abp.Account
 @using Volo.Abp.Identity
@@ -177,7 +178,10 @@
                      </MudNavGroup>
                  }
                  <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="@L["Settings"]" Expanded="false">
+                     @if(AuthorizationService.IsGrantedAnyAsync(UserProfilePermissions.View).Result){
+
                       <MudNavLink Href="/edit-profile" Icon="@Icons.Material.Filled.AccountCircle">@L["Profile"]</MudNavLink>
+                     }
                      @if (AuthorizationService.IsGrantedAnyAsync(IdentityPermissions.Users.Default).Result)
                      {
                          <MudNavLink Href="/users" Icon="@Icons.Material.Filled.Man2">@L["Users"]</MudNavLink>

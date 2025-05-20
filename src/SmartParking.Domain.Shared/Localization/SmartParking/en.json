@@ -788,7 +788,18 @@
     "PaymentCode": "Payment Code",
     "CannotAssignTwoPackageToSameVehicle": "Vehicle has an active package",
     "AmountOfCash": "Amount Of Cash",
-    "AmountOfVisa" : "Amount Of Visa"
+    "AmountOfVisa": "Amount Of Visa",
+    "Permission:OpenGate": "Open Gate",
+    "Permission:Checkout": "Checkout",
+    "Permission:PDF Export": "Export PDF",
+    "Permission:CSV Export": "Export CSV",
+    "Permission:Excel Export": "Export Excel",
+    "Permission:TransactionCheckout": "Checkout" , 
+    "Permission:Profile": "Profile",
+    "Permission:ChangePassword": "Change Password",
+
+
+    "Permission:View": "View"
   }
 
 }

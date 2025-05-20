@@ -1,4 +1,5 @@
-﻿using SmartParking.Invoices;
+﻿using SmartParking.Enums;
+using SmartParking.Invoices;
 using SmartParking.Packages;
 using SmartParking.Results;
 using System;
@@ -18,6 +19,8 @@ public interface IPaymentAppService : ICrudAppService<PaymentDto, Guid, PagedAnd
 
     Task<Result<PayementPackageDto>> GetPackagePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId);
     Task<Result<InvoiceDto>> GetInvoicePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId);
+
+    Task<Result<PaymentCheckoutDto>> PayCustomerInvoiceAsync(PayCustomerInvoiceDto payCustomerInvoiceDto);
 
 
 }

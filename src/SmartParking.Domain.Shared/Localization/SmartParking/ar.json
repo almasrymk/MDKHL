@@ -816,7 +816,16 @@
     "PaymentCode": "كود الفواتير",
     "CannotAssignTwoPackageToSameVehicle": "السياره لديها باقه نشطه بالفعل",
     "AmountOfCash": "المبلغ النقدي",
-    "AmountOfVisa" : "المبلغ البنكي"
+    "AmountOfVisa": "المبلغ البنكي",
+    "Permission:Checkout": "الخروج",
+    "Permission:OpenGate": "فتح البوابة",
+    "Permission:PDF Export": "تصدير PDF",
+    "Permission:CSV Export": "تصدير CSV",
+    "Permission:Excel Export": "تصدير Excel",
+    "Permission:TransactionCheckout": "الدفع" ,
+    "Permission:Profile": "الحساب",
+    "Permission:ChangePassword": "تغيير كلمة المرور",
+    "Permission:View" :  "تفاصيل"
 
   }
 }

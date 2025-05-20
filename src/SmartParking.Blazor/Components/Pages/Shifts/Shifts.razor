@@ -2,6 +2,7 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using SmartParking.Organizations
+@using SmartParking.Permissions.ShiftsPermissions
 @using SmartParking.Shifts
 @using Volo.Abp.Application.Dtos
 @inject IStringLocalizer<SmartParkingResource> L
@@ -10,13 +11,16 @@
 @inject ISnackbar Snackbar
 @inject IShiftAppService ShiftAppService
 @inject IOrganizationsAppService OrganizationAppService
+@inject IAuthorizationService AuthorizationService
 @inherits AbpCrudPageBase<IShiftAppService, ShiftDto, int, PagedAndSortedResultRequestDto, CreateUpdateShiftDto>
 
 
 <PageTitle>@L["Shifts"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Shifts"]</MudText>
-<SPDataGrid PageName=@L["Shifts"] Data="@itemData" Menus="@MenuDatas" ShowAdd="HasCreatePermission" ShowMenue="!CurrentTenant.Id.HasValue"
-            ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnClickRowEdit="OnClickRowEdit"
+<SPDataGrid PageName=@L["Shifts"] Data="@itemData" Menus="@MenuDatas" ShowAdd="AuthorizationService.IsGrantedAsync(ShiftPermission.Create).Result" ShowMenue="!CurrentTenant.Id.HasValue"
+            ShowEdit="AuthorizationService.IsGrantedAsync(ShiftPermission.Edit).Result" ShowDelete="AuthorizationService.IsGrantedAsync(ShiftPermission.Delete).Result" 
+            ShowView ="AuthorizationService.IsGrantedAsync(ShiftPermission.View).Result"
+            TotalItemsInTable="TotalItem" OnClickRowEdit="OnClickRowEdit"
             OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="OpenDialogAsync" OnClickRowView="OnClickRowView" 
-            ShowView="true" OnClickRowDelete="OnClickRowDelete" ShowAssign="true" OnClickAssign="AssignUserDialog"></SPDataGrid>
+            OnClickRowDelete="OnClickRowDelete" ShowAssign="true" OnClickAssign="AssignUserDialog"></SPDataGrid>
 

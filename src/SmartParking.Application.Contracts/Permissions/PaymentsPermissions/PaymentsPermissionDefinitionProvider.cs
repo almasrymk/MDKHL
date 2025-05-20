@@ -15,8 +15,9 @@ public  class PaymentsPermissionDefinitionProvider : PermissionDefinitionProvide
     {
         var smartParkingGroup = context.AddGroup(PaymentsPermission.Default, CustomStringLocalizer.L("Permission:Payment"));
 
-        var organizationPermission = smartParkingGroup.AddPermission(PaymentsPermission.Default, CustomStringLocalizer.L("Permission:Payment"));
+        var paymentPermission = smartParkingGroup.AddPermission(PaymentsPermission.Default, CustomStringLocalizer.L("Permission:Payment"));
 
+        paymentPermission.AddChild(PaymentsPermission.View, CustomStringLocalizer.L("Permission:View"));
 
     }
 }

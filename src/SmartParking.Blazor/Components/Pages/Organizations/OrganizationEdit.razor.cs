@@ -142,7 +142,7 @@ public partial class OrganizationEdit
         var id = int.Parse(Id);
         var organization = await OrganizationAppService.GetAsync(id);
         SelectedSubscription = await SubscriptionAppService.GetAsync(organization.SubscriptionId);
-        MappingDtos(organization);
+        _createUpdateOrganiztionDto = _mapper.Map<CreateUpdateOrganiztionDto>(organization);
         if (organization.Status == Enums.Status.Active)
         {
             Status = true;
@@ -185,10 +185,7 @@ public partial class OrganizationEdit
 
     }
 
-    private void MappingDtos(OrganizationDto organization)
-    {
-        _createUpdateOrganiztionDto = _mapper.Map<CreateUpdateOrganiztionDto>(organization);
-    }
+
     private async Task GetRegions()
     {
 
