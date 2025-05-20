@@ -13,9 +13,9 @@ public class UserProfilePermissionDefinitionProvider : PermissionDefinitionProvi
 {
     public override void Define(IPermissionDefinitionContext context)
     {
-        var smartParkingGroup = context.AddGroup(MyAccountPermissions.Default, CustomStringLocalizer.L("Permission:Profile"));
+        var smartParkingGroup = context.AddGroup(UserProfilePermissions.Default, CustomStringLocalizer.L("Permission:Profile"));
 
-        var userProfilePermission = smartParkingGroup.AddPermission(MyAccountPermissions.Default, CustomStringLocalizer.L("Permission:Profile"));
+        var userProfilePermission = smartParkingGroup.AddPermission(UserProfilePermissions.Default, CustomStringLocalizer.L("Permission:Profile"));
         userProfilePermission.AddChild(UserProfilePermissions.Edit, CustomStringLocalizer.L(CustomStringLocalizer.Edit));
         userProfilePermission.AddChild(UserProfilePermissions.ChangePassword, CustomStringLocalizer.L(CustomStringLocalizer.ChangePassword));
     }
