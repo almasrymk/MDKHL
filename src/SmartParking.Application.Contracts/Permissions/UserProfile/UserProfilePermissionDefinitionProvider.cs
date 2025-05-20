@@ -18,5 +18,6 @@ public class UserProfilePermissionDefinitionProvider : PermissionDefinitionProvi
         var userProfilePermission = smartParkingGroup.AddPermission(UserProfilePermissions.Default, CustomStringLocalizer.L("Permission:Profile"));
         userProfilePermission.AddChild(UserProfilePermissions.Edit, CustomStringLocalizer.L(CustomStringLocalizer.Edit));
         userProfilePermission.AddChild(UserProfilePermissions.ChangePassword, CustomStringLocalizer.L(CustomStringLocalizer.ChangePassword));
+        userProfilePermission.AddChild(UserProfilePermissions.View, CustomStringLocalizer.L(CustomStringLocalizer.View));
     }
 }
