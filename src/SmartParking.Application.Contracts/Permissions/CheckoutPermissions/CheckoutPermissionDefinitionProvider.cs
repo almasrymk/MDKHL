@@ -17,7 +17,7 @@ internal class CheckoutPermissionDefinitionProvider : PermissionDefinitionProvid
         var checkoutPermission = smartParkingGroup.AddPermission(CheckoutPermissions.Default, CustomStringLocalizer.L("Permission:Checkout"));
         checkoutPermission.AddChild(CheckoutPermissions.Confirm, CustomStringLocalizer.L("Permission: Confirm"));
         checkoutPermission.AddChild(CheckoutPermissions.OpenGate, CustomStringLocalizer.L("Permission:OpenGate"));
-        checkoutPermission.AddChild(CheckoutPermissions.Discount, CustomStringLocalizer.L("Permission:Discount"));
+        checkoutPermission.AddChild(CheckoutPermissions.Discount, CustomStringLocalizer.L("Permission:CheckoutDiscount"));
 
     }
 }

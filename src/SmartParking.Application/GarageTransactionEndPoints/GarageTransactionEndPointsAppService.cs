@@ -215,7 +215,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var customerPackageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(createdExitGarageTransaction.OrganizationID, createdExitGarageTransaction.PlateNumber, createdExitGarageTransaction.AccurateTime.Value);
         createdExitGarageTransaction.CustomerCategory = customerPackageDto.CustomerCategory;
         Customer exsitCustomer = await _garageTransactionUtilityAppService.GetCustomer(Guid.Parse(customerId));
-        var _customerInvoicePrice = await CalculationForRegisteredCustomer(entryGarageTransaction.AccurateTime.Value, createdExitGarageTransaction.AccurateTime.Value, organization, customerPackageDto, totalHours);
+        var _customerInvoicePrice = await CalculationForRegisteredCustomer( createdExitGarageTransaction.AccurateTime.Value, entryGarageTransaction.AccurateTime.Value, organization, customerPackageDto, totalHours);
         CreateUpdateInvoiceDto invoice = await InitiateInvoice(entryGarageTransaction.AccurateTime.Value, exsitCustomer, createdExitGarageTransaction, totalHours, _customerInvoicePrice, true);
         return invoice;
 
@@ -541,9 +541,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             PlateNumber = exitTransaction.PlateNumber,
             InvoiceTime = exitTransaction.AccurateTime,
             EntranceTime = entranceTime,
-            CustomerEnName = customer.ArabicName,
-            CustomerArName = customer.IdentityUser.Name,
-            CustomerId = customer.Id,
+            CustomerEnName = customer is null ? customerEnName : customer.IdentityUser.Name ,
+            CustomerArName = customer is null ? customerArName : customer.ArabicName,
+            CustomerId = customer is null ? null :customer.Id,
             IsPackage = isPackage,
             ExitTransactionImage = image,
             EntryTransactionImage = entryTransactionImage,
