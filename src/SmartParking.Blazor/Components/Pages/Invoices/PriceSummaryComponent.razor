@@ -3,6 +3,7 @@
 @using SmartParking.Currency
 @using SmartParking.Enums
 @using SmartParking.Localization
+@using SmartParking.Permissions.GarageTransactionPermissions
 @using SmartParking.Permissions.InvoicesPermissions
 @using SmartParking.Permissions.CheckoutPermissions
 @using Discounts
@@ -85,12 +86,12 @@
                         </MudRadioGroup>
                     </MudItem>
 
-                }
 
 
                     <MudItem xs="@(ConfirmSize)" Class="text-center">
                         <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid ||InvoicePrice==0 || !CanPayInvoice" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ? L["Paid"] : L["CONFIRM"])  </MudButton>
                     </MudItem>
+                }
 
                 
                 @if (ShowOpenGate)
