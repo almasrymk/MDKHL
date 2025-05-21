@@ -114,6 +114,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     else
                     {
                         await _unlinkedGarageTransactionsAppService.CreateAsync(input);
+                        await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(GarageTransaction.GarageId, GarageTransaction.CustomerCategory);
                     }
 
                     _logger.LogInformation($"{DateTime.Now} ====> Get Response {finalResult}");
