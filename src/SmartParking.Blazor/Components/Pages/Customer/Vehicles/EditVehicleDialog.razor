@@ -49,8 +49,10 @@
                                    HelperText=@L["Helper Text"]
                                    Required="true"
                                    Clearable="_clearable">
+                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var licenceType in LicenceTypes)
                             {
+
                                 @if (CultureInfo.CurrentCulture.Name == "en")
                                 {
                                     <MudSelectItem Value="licenceType.Id">@licenceType.EnglishName</MudSelectItem>
@@ -72,8 +74,10 @@
                                    Required="true"
                                    Clearable="_clearable"
                                    ValueChanged="SelectBrand">
+                                 <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var vehiclebrand in VehicleBrands)
                             {
+
                                 @if (CultureInfo.CurrentCulture.Name == "en")
                                 {
                                     <MudSelectItem Value="vehiclebrand.Id">@vehiclebrand.EnglishName</MudSelectItem>
@@ -95,6 +99,8 @@
                                    HelperText=@L["Helper Text"]
                                    Required="true"
                                    Clearable="_clearable">
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+
                             @foreach (var vehiclemodel in VehicleModels)
                             {
                                 @if (CultureInfo.CurrentCulture.Name == "en")

@@ -97,6 +97,7 @@ public partial class OrganizationEdit
         _createUpdateOrganiztionDto.CountryId = int.Parse(CountrySelectValue);
         _createUpdateOrganiztionDto.CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue);
         _createUpdateOrganiztionDto.NumberOfHours = NumberOfHours;
+        _createUpdateOrganiztionDto.Status = Status ? Enums.Status.Active : Enums.Status.Inactive;
 
         try
         {
