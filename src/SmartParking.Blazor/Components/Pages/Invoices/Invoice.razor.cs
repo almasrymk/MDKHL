@@ -124,7 +124,7 @@ public partial class Invoice
         else
         {
             // Retrieve the list of cities from the server
-            var invoiceDto = await AppService.GetListAsync(input);
+            var invoiceDto = await AppService.GetAllInvoicesByOrganizationAsync(input , null);
             TotalItem = (int)invoiceDto.TotalCount;
             CreateTable(invoiceDto);
         }
