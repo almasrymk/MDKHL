@@ -28,7 +28,7 @@ public interface IUnLinkedTransactionAppService:
     /// </summary>
     /// <param name="input">The <see cref="PagedAndSortedResultRequestDto"/> containing pagination and sorting information.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="PagedResultDto{UnLinkedTransactionDto}"/> with the paged list of unlinked transactions.</returns>
-    Task<PagedResultDto<UnLinkedTransactionDto>> GetListAsync(PagedAndSortedResultRequestDto input);
+    Task<PagedResultDto<UnLinkedTransactionDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto  input);
 
     /// <summary>
     /// Retrieves an unlinked transaction asynchronously by its unique identifier.
