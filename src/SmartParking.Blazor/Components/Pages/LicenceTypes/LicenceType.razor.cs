@@ -112,17 +112,19 @@ namespace SmartParking.Blazor.Components.Pages.LicenceTypes
 
 			CurrentPage = pageInfo.PageNumber;
 			RowPerPage = pageInfo.RowsPerPage;
-			Console.WriteLine(RowPerPage);
+			termSearch = pageInfo.SearchTerm;
+			
 			// Create a request object for paged and sorted data
-			var input = new PagedAndSortedResultRequestDto
+			var input = new PagedAndSortedAndSearchResultRequestDto
 			{
 				MaxResultCount = pageInfo.RowsPerPage,
 				SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-				Sorting = pageInfo.SortColumn
+				Sorting = pageInfo.SortColumn , 
+                SearchingTerm = pageInfo.SearchTerm
 			};
 
 			// Retrieve the list of organizations from the server
-			var licenceTypesDto = await LicenceTypesAppService.GetListAsync(input);
+			var licenceTypesDto = await LicenceTypesAppService.GetListLicenceTypesAsync(input);
 			TotalItem = (int)licenceTypesDto.TotalCount;
 			CreateTable(licenceTypesDto);
 

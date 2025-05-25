@@ -62,4 +62,11 @@ public interface ILicenceTypesAppService : ICrudAppService<LicenceTypeDto, int, 
     /// <returns>A task that represents the asynchronous operation. The task result contains a formatted result with a list of all license type DTOs.</returns>
     public Task<Result<List<LicenceTypeDto>>> GetAllLicenceTypesAsync();
 
+    /// <summary>
+    ///  method to retrieve a paged list of license types.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    Task<PagedResultDto<LicenceTypeDto>> GetListLicenceTypesAsync(PagedAndSortedAndSearchResultRequestDto input);
+
 }

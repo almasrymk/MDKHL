@@ -13,5 +13,5 @@
 
 <MudText Typo="Typo.h5" Class="mb-2">@L["LicenceTypes"]</MudText>
 
-<SPDataGrid PageName=@L["LicenceTypes"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="HandleSearch" OnAdd="@(() => CreateLicenceType(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
+<SPDataGrid PageName=@L["LicenceTypes"] Data="@itemData" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="@(() => CreateLicenceType(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
 
