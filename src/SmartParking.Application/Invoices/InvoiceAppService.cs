@@ -274,7 +274,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     }
 
     /// <inheritdoc/>
-	public async Task<PagedResultDto<InvoiceDto>> GetAllInvoicesByOrganizationAsync(PagedAndSortedResultRequestDto input, Guid? tenantId)
+	public async Task<PagedResultDto<InvoiceDto>> GetAllInvoicesByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
         var queryable = await _invoiceRepository.GetQueryableAsync();
         queryable = queryable.Where(t => t.TenantId == tenantId);
@@ -293,6 +293,22 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
                 if (input.Sorting.Contains("InvoiceType"))
                     queryable = queryable = queryable.OrderBy(input.Sorting).ThenBy(_ => _.IsPackage);
             }
+        }
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+            queryable = queryable.Where(or =>
+                or.Id.ToString().Contains(input.SearchingTerm.ToLower()) ||
+                or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.InvoicePrice.ToString().Contains(input.SearchingTerm.ToLower()) ||
+                or.InvoiceNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.CustomerArName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.CustomerEnName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.InvoiceType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.InvoiceTime.ToString()!.Contains(input.SearchingTerm.ToLower()) ||
+                or.TotalHours.ToString().Contains(input.SearchingTerm.ToLower()) ||
+                or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+            );
         }
         var totalCount = await AsyncExecuter.CountAsync(queryable);
         var items = await AsyncExecuter.ToListAsync(

@@ -90,6 +90,8 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 // Handle custom package assignment
                 if (IsCustom)
                 {
+                    //Method  to Check Is Custom Varaiable
+                     CheckIsCustomProperties(_customerPackageDto);
                     _customerPackageDto.CustomerCategory = Customercategory;
                     _customerPackageDto.publishedOfPackage = true;
                     _customerPackageDto.ActivationDateOfPackage = ActivationDate.HasValue && startTime.HasValue
@@ -158,6 +160,30 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
             selectedPackageDto.Clear();
             selectedPackageDto.Add(Packages.Find(x => x.Id == value));
             CustomerPackage = Packages.Find(x => x.Id == value);
+        }
+
+        private void CheckIsCustomProperties (CustomerPackageDto customerPackageDto)
+        {
+            if(ActivationDate  == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("StartDate") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            }
+            if (DectivationDate == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("EndDate") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            }
+            if (startTime == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("StartTime") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            }
+            if (endTime == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("EndTime") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            }
+            if (customerPackageDto.PriceOfPackage == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("Price") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            }
         }
     }
 }

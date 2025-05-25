@@ -180,7 +180,8 @@ public partial class Garage
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
+            Sorting = pageInfo.SortColumn , 
+            SearchingTerm = termSearch
         };
 
         PagedResultDto<GarageDto> garagesDto = new PagedResultDto<GarageDto>();

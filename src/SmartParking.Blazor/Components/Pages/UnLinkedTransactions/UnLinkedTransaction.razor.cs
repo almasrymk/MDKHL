@@ -129,11 +129,13 @@ public partial class UnLinkedTransaction
         else
             sort = pageInfo.SortColumn;
         // Create a request object for paged and sorted data
-        var input = new PagedAndSortedResultRequestDto
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
+            Sorting = pageInfo.SortColumn , 
+            SearchingTerm = termSearch
+            
         };
 
         // Retrieve the list of organizations from the server

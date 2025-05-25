@@ -247,7 +247,10 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         {
             _logger.LogError($"{DateTime.Now} ====>  Entrance Time is null  ");
             _logger.LogError($"{DateTime.Now} ====> Get Response false");
+            var input = ObjectMapper.Map<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>(exitTransaction);
+            await _unlinkedGarageTransactionsAppService.CreateAsync(input);
             await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_garage.Id, CustomerCategoryStatus.Customer);
+            
             return await Task.FromResult(false);
         }
         //getting customer id if found

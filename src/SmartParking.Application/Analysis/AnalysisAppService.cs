@@ -929,7 +929,18 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             if (!input.SearchingTerm.IsNullOrEmpty())
             {
                 resultJoin = resultJoin.Where(_ => _.CustomerEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                _.CustomerArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+                _.CustomerArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) || 
+                _.ArPlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.EnPlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.BrandArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.BrandEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.ModelArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.ModelEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.PackageNameArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.PackageNameEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.ModelYear.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+
                 );
             }
             var totalCount = await AsyncExecuter.CountAsync(resultJoin);
