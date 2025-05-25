@@ -15,5 +15,7 @@ public class UnLinkedTransactionDto
     public DateTime? AccurateTime { get; set; }
     public string VehiclePicture { get; set; }
     public bool IsIn { get; set; }
+    public string OrganizationArabicName { get; set; }
+    public string OrganizationEnglishName { get; set; }
 
 }

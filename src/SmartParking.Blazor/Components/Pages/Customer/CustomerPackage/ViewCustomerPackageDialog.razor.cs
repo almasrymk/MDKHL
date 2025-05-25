@@ -24,6 +24,9 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
 
         [Parameter]
         public string CustomerId { get; set; }
+
+        private const string RLM = "\u200F"; 
+        private const string LRM = "\u200E"; 
         private void Cancel() => MudDialog.Cancel();
         private int TotalItem;
         private TableData itemData = new TableData();
@@ -128,14 +131,9 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ActivationDate"], item.ActivationDateOfPackage.ToString()));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ExpiryDate"], item.ExpiryDate.ToString()));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], (bool)item.publishedOfPackage ? 24 + _localizer[$"Hour"] : $" {item.PublishFromOfPackage} " + " - " + $" {item.PublishToOfPackage}"));
-                if (CultureInfo.CurrentCulture.Name == "ar")
-                {
-                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.ArPlateNumber));
-                }
-                else
-                {
-                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.EnPlateNumber));
-                }
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], $"{RLM}{item.ArPlateNumber} , {LRM}{item.EnPlateNumber}"));
+                
+                
                 tableData.Rows.Add(rowDef);
             }
             itemData = tableData;

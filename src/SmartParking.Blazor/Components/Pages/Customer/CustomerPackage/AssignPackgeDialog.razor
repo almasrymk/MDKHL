@@ -96,6 +96,8 @@
 							Placeholder=@L["Choose"]
 							HelperText=@L["Helper Text"]
 							Clearable="_clearable">
+								<MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+
 								@foreach (var package in Packages)
 								{
 									if (package.PackageStatus != SubscriptionStatus.Active && package.Status!=Status.Active)

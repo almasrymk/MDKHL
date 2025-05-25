@@ -185,7 +185,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     }
 
 
-    public async Task<CameraDto> GetCameraByTypeBelongsToGarageAsync(int garageId, CameraType cameraType)
+    public async Task<Camera> GetCameraByTypeBelongsToGarageAsync(int garageId, CameraType cameraType)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -194,7 +194,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("Camera") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
             }
-            return ObjectMapper.Map<Camera, CameraDto>(camera);
+            return camera;
         }
     }
 
@@ -259,8 +259,9 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         return await Task.FromResult(flag);
     }
 
-    public async Task UpdateEntryTransactionCheckouFromMobile(GarageTransaction entryGarageTransaction)
+    public async Task UpdateEntryTransactionCheckouFromMobile(int entryGarageTransactionId)
     {
+        var entryGarageTransaction =await GetTransactionById(entryGarageTransactionId);
         entryGarageTransaction.CheckoutMobile = DateTime.Now;
         entryGarageTransaction.IsPending = true;
         entryGarageTransaction.CanCheckout = false;
