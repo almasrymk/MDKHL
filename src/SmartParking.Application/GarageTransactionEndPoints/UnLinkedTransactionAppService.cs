@@ -38,9 +38,7 @@ public class UnLinkedTransactionAppService : CrudAppService<UnLinkedTransaction,
 
     public async override Task<UnLinkedTransactionDto> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)
     {
-        input.VehiclePicture = SaveBase64Image(input);
-        if (input.VehiclePicture == null)
-            return null;
+        input.VehiclePicture = SaveBase64Image(input) ?? input.VehiclePicture;
         var result = await base.CreateAsync(input);
         return result;
     }
