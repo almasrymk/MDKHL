@@ -19,6 +19,9 @@ public partial class PriceSummaryComponent
     [Parameter] public int ComponentSize { get; set; }
     [Parameter]
     public EventCallback<decimal> OnValueSelected { get; set; }
+    
+    [Parameter]
+    public bool HasConfirmPermission { get; set; }
 
     public decimal InvoicePriceAfterDiscount { get; set; }
     public decimal InvoicePriceWithVat { get; set; }
