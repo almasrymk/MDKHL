@@ -16,4 +16,4 @@
 <PageTitle>@L["CustomerAndTransactionReport"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["CustomerAndTransactionReport"]</MudText>
 
-<SPDataGrid PageName=@($"{@L["CustomerAndTransactionReport"]}") Data="@itemData" OnPageChanged="FetchData"  TotalItemsInTable="TotalItem"></SPDataGrid>
+<SPDataGrid PageName=@($"{@L["CustomerAndTransactionReport"]}") Data="@itemData" OnPageChanged="FetchData" ShowFiltering="true" OnFiltering="FetchData" TotalItemsInTable="TotalItem"></SPDataGrid>
