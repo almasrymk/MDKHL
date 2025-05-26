@@ -32,15 +32,17 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.EventBus.Distributed;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.PDF;
 
-public class GenerateFilesAppService (IOrganizationsAppService organizationsAppService, IDistributedEventBus eventBus) : IGenerateFilesAppService, ITransientDependency
+public class GenerateFilesAppService(IOrganizationsAppService organizationsAppService, IDistributedEventBus eventBus, ICurrentTenant currentTenant) : IGenerateFilesAppService, ITransientDependency
 {
     private readonly IOrganizationsAppService _organizationsAppService = organizationsAppService;
     private readonly IDistributedEventBus _eventBus = eventBus;
+    private readonly ICurrentTenant _currentTenant = currentTenant;
 
-    
+
 
 
 
@@ -124,10 +126,10 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                         var cellValue = row.Cells?.FirstOrDefault(c => c.Key == header.DisplayName).Value ?? string.Empty;
                         if (row.Cells?.FirstOrDefault(c => c.Key == header.Name).Key != "Id" && header.IsColumnVisible)
                         {
-                          
-                                cellValue = RemoveHtmlTags(cellValue);
-                            
-                            Text txt = CellStyling(header, cellValue, font ,  styleBold);
+
+                            cellValue = RemoveHtmlTags(cellValue);
+
+                            Text txt = CellStyling(header, cellValue, font, styleBold);
                             if (CultureInfo.CurrentCulture.Name == "ar")
                             {
                                 table.AddCell(new Cell().Add(new Paragraph(txt)).SetHeight(24).SetTextAlignment(TextAlignment.CENTER));
@@ -179,10 +181,13 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
             ExcelWorksheet worksheet = package.Workbook.Worksheets.Add(Data.Name);
             System.Data.DataTable table = new System.Data.DataTable();
             string leftImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
-
-            var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
-            string rightImagePath = organization != null && !string.IsNullOrEmpty(organization?.OrganizationPicture) ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
-                                                         : System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
+            string rightImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
+            if (_currentTenant.Id != null)
+            {
+                var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
+                 rightImagePath = organization != null && !string.IsNullOrEmpty(organization?.OrganizationPicture) ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
+                                                             : System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
+            }
             string title = Data.Name;
             foreach (var columns in Data.Columns)
             {
@@ -377,7 +382,7 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
 
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
-            columntable.SetBaseDirection(BaseDirection.RIGHT_TO_LEFT);  
+            columntable.SetBaseDirection(BaseDirection.RIGHT_TO_LEFT);
         }
 
         foreach (var columns in Data.Columns)
@@ -396,7 +401,7 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
                     .SetTextAlignment(TextAlignment.CENTER)
                     )
                     .SetBackgroundColor(new DeviceRgb(211, 211, 211));
-            
+
             columntable.AddHeaderCell(headerCell);
         }
 
@@ -416,7 +421,7 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
         {
             footerTable.AddCell(new Cell().Add(new Paragraph($"Email: {contactMail}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
             footerTable.AddCell(new Cell().Add(new Paragraph($"Phone: {phoneNum}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
-            footerTable.AddCell(new Cell().Add(new Paragraph( $"Address: {address.ArabicWithFontGlyphsToPDF()}")).SetFont(font).SetBorder(Border.NO_BORDER).SetFont(font).SetTextAlignment(TextAlignment.LEFT));
+            footerTable.AddCell(new Cell().Add(new Paragraph($"Address: {address.ArabicWithFontGlyphsToPDF()}")).SetFont(font).SetBorder(Border.NO_BORDER).SetFont(font).SetTextAlignment(TextAlignment.LEFT));
             footerTable.AddCell(new Cell().Add(new Paragraph($" {pageNumber}")).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
         }
         else
@@ -433,7 +438,7 @@ public class GenerateFilesAppService (IOrganizationsAppService organizationsAppS
     /// Applies styling to a table cell based on column definitions and value.
     /// </summary>
     /// <returns>A <see cref="Text"/> object representing the styled cell content.</returns>
-    private static Text CellStyling(ColumnDef header, string cellValue , PdfFont font, Style  styleBold )
+    private static Text CellStyling(ColumnDef header, string cellValue, PdfFont font, Style styleBold)
     {
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
