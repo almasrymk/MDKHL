@@ -15,5 +15,4 @@
 @inject IJSRuntime JSRuntime
 <PageTitle>@L["CustomerPackageReport"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["CustomerPackageReport"]</MudText>
-
-<SPDataGrid PageName=@($"{@L["CustomerPackageReport"]}")  Data="@itemData" OnPageChanged="FetchData" ShowFiltering="true" OnFiltering="FetchData" TotalItemsInTable="TotalItem"></SPDataGrid>
+<SPDataGrid PageName=@($"{@L["CustomerPackageReport"]}") ShowMenue ="true" Menus="MenuDatas"  Data="@itemData" OnPageChanged="FetchData" ShowFiltering="true" OnFiltering="FetchData" TotalItemsInTable="TotalItem"></SPDataGrid>
