@@ -43,7 +43,7 @@ namespace SmartParking.Blazor.Components.Pages.Cameras
             
             await GetAllGarage();
             await GetDataForCamera();
-            await Task.Yield();
+            StateHasChanged();
             await base.OnInitializedAsync();
         }
 
