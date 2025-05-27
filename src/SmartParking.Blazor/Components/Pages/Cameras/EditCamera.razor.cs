@@ -40,6 +40,15 @@ namespace SmartParking.Blazor.Components.Pages.Cameras
         /// </summary>
         protected override async Task OnInitializedAsync()
         {
+            
+            await GetAllGarage();
+            await GetDataForCamera();
+            await Task.Yield();
+            await base.OnInitializedAsync();
+        }
+
+        private async Task GetAllGarage()
+        {
             var result = await GaragesAppService.GetListAsync(new PagedAndSortedResultRequestDto
             {
                 MaxResultCount = 100,
@@ -50,12 +59,15 @@ namespace SmartParking.Blazor.Components.Pages.Cameras
             GarageCode = garage.Code;
             GarageId = garage.Id;
             Camera.OrganizationId = garage.OrganizationId;
+        }
+
+        private async Task GetDataForCamera()
+        {
             CameraBrands = await CameraBrandAppService.GetAllCameraBrandsAsync();
             CameraModels = await CameraModelAppService.GetAllCameraModelsAsync();
             CameraMainTypes = await CameraMainTypeAppService.GetAllCameraMainTypesAsync();
-            isLoaded = true;
-            await base.OnInitializedAsync();
         }
+
         /// <summary>
         /// Submits the edited camera information and handles validation and error messaging.
         /// </summary>
