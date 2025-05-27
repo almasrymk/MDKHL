@@ -330,7 +330,7 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
     public async Task<PagedResultDto<GarageDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
         var queryable = await _repository.GetQueryableAsync();
-        queryable = ApplySearchForMdkhl(input, queryable);
+        queryable = ApplySearchForOrganization(input, queryable);
         queryable = ApplySort(input, queryable);
         var totalCount = await AsyncExecuter.CountAsync(queryable);
         List<Garage> garages = await ApplyPaged(input, queryable);

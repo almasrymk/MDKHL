@@ -54,7 +54,7 @@ public partial class PaymentBankReport
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
             Sorting = paged.SortColumn == "Id" ? CultureInfo.CurrentCulture.Name == "ar" ? "Customers.ArabicName" : "Customers.IdentityUser.Name" : paged.SortColumn,
             SearchingTerm = "",
-            filters = new List<FilterRequestDto>(),
+            filters = paged.Filters,
 
         };
 

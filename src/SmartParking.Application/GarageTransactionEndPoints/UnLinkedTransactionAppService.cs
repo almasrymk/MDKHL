@@ -38,20 +38,55 @@ public class UnLinkedTransactionAppService : CrudAppService<UnLinkedTransaction,
 
     public async override Task<UnLinkedTransactionDto> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)
     {
-        input.VehiclePicture = SaveBase64Image(input);
-        if (input.VehiclePicture == null)
-            return null;
+        input.VehiclePicture = SaveBase64Image(input) ?? input.VehiclePicture;
         var result = await base.CreateAsync(input);
         return result;
     }
     ///<inheritdoc/>
-    public async override  Task<PagedResultDto<UnLinkedTransactionDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<UnLinkedTransactionDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input )
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            return await base.GetListAsync(input);
+            var queryable = await _repository.GetQueryableAsync();
+            if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+            {
+                string search = input.SearchingTerm.ToLower();
+                queryable = queryable.Where(x =>
+                    x.PlateNumber.ToLower().Contains(search.ToLower()) ||
+                    x.DeviceId.ToLower().Contains(search.ToLower()) ||
+                    x.AccurateTime.HasValue.ToString().ToLower().Contains(search.ToLower()) ||
+                    x.SnapTime.HasValue.ToString().ToLower().Contains(search.ToLower())
+
+                );
+            }
+            // Sorting
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                if (input.Sorting.Contains("DESC", StringComparison.OrdinalIgnoreCase))
+                {
+                    var sorting = input.Sorting.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
+                    queryable = queryable.OrderBy(sorting[0] + " descending");
+                }
+                else
+                {
+                    queryable = queryable.OrderBy(input.Sorting);
+                }
+            }
+         
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            var items = await AsyncExecuter.ToListAsync(
+                queryable
+                    .Skip(input.SkipCount)
+                    .Take(input.MaxResultCount)
+            );
+
+            var dtos = ObjectMapper.Map<List<UnLinkedTransaction>, List<UnLinkedTransactionDto>>(items);
+
+            return new PagedResultDto<UnLinkedTransactionDto>(totalCount, dtos);
         }
     }
+    
 
     ///<inheritdoc/>
     public async override  Task<UnLinkedTransactionDto> GetAsync(int id)

@@ -65,6 +65,47 @@ public class LicenceTypesAppService : CrudAppService<LicenceType, LicenceTypeDto
         await ValidateLicenceTypeUniquenessAsync(input, id);
         return await base.UpdateAsync(id, input);
     }
+    public async Task<PagedResultDto<LicenceTypeDto>> GetListLicenceTypesAsync(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        var query =  await _repository.GetQueryableAsync();
+        var queryPlate =  await _plateColorRepository.GetQueryableAsync();
+
+        var queryable = from licenceType in query
+                        join plateColor in queryPlate on licenceType.PlateColorId equals plateColor.Id
+                        select new LicenceTypeDto
+                        {
+                            Id = licenceType.Id,
+                            ArabicName = licenceType.ArabicName,
+                            EnglishName = licenceType.EnglishName,
+                            PlateColorArabicName = plateColor.ArabicName,
+                            PlateColorEnglishName = plateColor.EnglishName
+                        };
+        if(!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+            queryable = queryable.Where(or =>
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.PlateColorArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.PlateColorEnglishName.ToLower().Contains(input.SearchingTerm.ToLower())
+            );
+        }
+        if (!input.Sorting.IsNullOrEmpty())
+        {
+            if (input.Sorting.Contains("DESC"))
+            {
+                var sorting = input.Sorting.Split(' ').ToList();
+                queryable = queryable.OrderBy(sorting[0] + " descending");
+            }
+            else
+            {
+                queryable = queryable.OrderBy(input.Sorting);
+            }
+        }
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+        var licenceTypes = await AsyncExecuter.ToListAsync(queryable);
+        return new PagedResultDto<LicenceTypeDto>(totalCount, licenceTypes);
+    }
     ///<inheritdoc/>
 
     public async Task<PagedResultDto<LicenceTypeDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
@@ -74,9 +115,9 @@ public class LicenceTypesAppService : CrudAppService<LicenceType, LicenceTypeDto
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
             queryable = queryable.Where(or =>
-                or.ArabicName.StartsWith(input.SearchingTerm) ||
-                or.EnglishName.StartsWith(input.SearchingTerm) ||
-                or.Notes.StartsWith(input.SearchingTerm)
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Notes.ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
 

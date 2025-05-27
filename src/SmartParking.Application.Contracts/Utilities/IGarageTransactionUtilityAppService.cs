@@ -19,7 +19,7 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
 {
     Task<Camera> GetCameraByDeviceIdAsync(string deviceId);
 
-    Task<CameraDto> GetCameraByTypeBelongsToGarageAsync(int garageId, CameraType cameraType);
+    Task<Camera> GetCameraByTypeBelongsToGarageAsync(int garageId, CameraType cameraType);
 
     Task<Garage> GetGarageByIdAsync(int garageId);
     Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId, CustomerCategoryStatus category);
@@ -32,7 +32,7 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task<GarageTransaction> GetTransactionById(int garagetransactionId);
     Task CloseEntryTransaction(string? plateNumber);
     Task CloseCheckoutMobileTransaction(string? plateNumber);
-    Task UpdateEntryTransactionCheckouFromMobile(GarageTransaction entryGarageTransaction);
+    Task UpdateEntryTransactionCheckouFromMobile(int entryGarageTransactionId);
     Task<Guid> GetCurrentCustomerId();
     Task<Customer> GetCustomer(Guid customerId);
     Task<Organization> GetOrganization(int OrganizationID);

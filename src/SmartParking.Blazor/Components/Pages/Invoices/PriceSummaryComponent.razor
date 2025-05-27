@@ -71,12 +71,18 @@
                 {
 
                     <MudItem sm="12" md="12">
-                        <MudNumericField T="decimal" Validation="@( (decimal value) => NumbersValidations.ValidateInvoice(value,InvoicePriceWithVat))" HideSpinButtons="true" ValueChanged="OnAddDiscount" Label="@L["Discount"]" Variant="Variant.Text" Culture="CultureInfo.InvariantCulture" />
+                        <div style="display: flex; flex-direction: column;font-weight:bold">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                    @L["SecondHourPrice"]
+                                    @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                                </label>
+                               <MudNumericField T="decimal" Validation="@( (decimal value) => NumbersValidations.ValidateInvoice(value,InvoicePriceWithVat))" HideSpinButtons="true" ValueChanged="OnAddDiscount" Label="@L["Discount"]" Variant="Variant.Text" Culture="CultureInfo.InvariantCulture" />
+                            </div>
                     </MudItem>
                 }
 
                 
-                @if (AuthorizationService.IsGrantedAnyAsync([InvoicePermission.Confirm, CheckoutPermissions.Confirm]).Result
+                @if (HasConfirmPermission
                 && (!IsPaid || InvoicePrice == 0))
                 {
                     <MudItem xs="@(ConfirmSize)" Class="d-flex flex-row justify-content-center">

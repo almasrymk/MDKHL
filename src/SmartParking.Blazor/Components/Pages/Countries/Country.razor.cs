@@ -87,11 +87,12 @@ public partial class Country
     {
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
-        var input = new PagedAndSortedResultRequestDto
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
+            Sorting = pageInfo.SortColumn , 
+            SearchingTerm = termSearch
         };
         var countriesDto = await AppService.GetListAsync(input);
         TotalItem = (int)countriesDto.TotalCount;

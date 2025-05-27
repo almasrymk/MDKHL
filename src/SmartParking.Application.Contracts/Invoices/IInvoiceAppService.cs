@@ -69,7 +69,7 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     /// <param name="input"> PagedAndSortedResultRequestDto</param>
     /// <param name="tenantId"> id of tenant</param>
     /// <returns>PagedResultDto of Invoice Dto</returns>
-    Task<PagedResultDto<InvoiceDto>> GetAllInvoicesByOrganizationAsync(PagedAndSortedResultRequestDto input,Guid? tenantId);
+    Task<PagedResultDto<InvoiceDto>> GetAllInvoicesByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId);
 
     /// <summary>
     /// Asynchronously retrieves the latest invoice for a customer in a specific organization and garage, based on the vehicle's plate number.

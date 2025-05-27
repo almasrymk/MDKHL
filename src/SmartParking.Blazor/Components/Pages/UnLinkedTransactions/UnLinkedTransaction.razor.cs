@@ -17,6 +17,7 @@ using Volo.Abp;
 using System.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Permissions.UnLinkedTransactionPermissions;
+using System.Globalization;
 
 namespace SmartParking.Blazor.Components.Pages.UnLinkedTransactions;
 
@@ -32,6 +33,8 @@ public partial class UnLinkedTransaction
     public int RowPerPage { get; set; } = 10; // Default value is 10
 
     private TableData itemData = new TableData();
+
+    private string sortColumn { get; set; }
 
     private string termSearch;
 
@@ -116,15 +119,23 @@ public partial class UnLinkedTransaction
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-
+        termSearch = pageInfo.SearchTerm;
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
+        sortColumn = pageInfo.SortColumn;
+        string sort;
+        if (pageInfo.SortColumn == "Id")
+            sort = "AccurateTime DESC";
+        else
+            sort = pageInfo.SortColumn;
         // Create a request object for paged and sorted data
-        var input = new PagedAndSortedResultRequestDto
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
+            Sorting = pageInfo.SortColumn , 
+            SearchingTerm = termSearch
+            
         };
 
         // Retrieve the list of organizations from the server

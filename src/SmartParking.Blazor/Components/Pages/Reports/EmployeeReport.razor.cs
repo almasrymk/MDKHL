@@ -58,23 +58,21 @@ partial class EmployeeReport
     private async Task FetchData(PageChangeEventArgs paged)
     {
         string selectvalue = "Employee";
-
+        var filters = paged.Filters;
+        filters.Add(new FilterRequestDto
+        {
+            FilterProperty = "GarageTransaction.CustomerCategory",
+            FilterValue = selectvalue,
+            IsNot = false,
+            TypeFilter = TypeFilter.Enum
+        });
         var request = new PagedAndSortedAndFilteredResultRequestDto
         {
             MaxResultCount = paged.RowsPerPage,
             SkipCount = (paged.PageNumber - 1) * paged.RowsPerPage,
             Sorting = paged.SortColumn == "Id" ? CultureInfo.CurrentCulture.Name == "ar" ? "ArabicName" : "UserName" : paged.SortColumn,
             SearchingTerm = "",
-            filters = new List<FilterRequestDto>
-                {
-                    new FilterRequestDto
-                    {
-                         FilterProperty ="GarageTransaction.CustomerCategory",
-                         FilterValue = selectvalue,
-                         IsNot = false,
-                         TypeFilter = TypeFilter.Enum
-                    }
-                },
+            filters = filters
         };
 
          var garageTransactionAnalyses = await AnalysisAppService.ReportGarageTransactionAsync(request, CurrentTenant.Id);
