@@ -801,6 +801,7 @@
     "Permission: Confirm": "Confirm",
     "Permission:CheckoutDiscount": "Discount",
     "SubscriptionDeleteMessage": "Subscription is active.. It cannot be deleted",
-    "BeneficiariesDetails": "Beneficiaries Details"
+    "BeneficiariesDetails": "Beneficiaries Details",
+    "EndTimeShouldBeGreaterThanStartTime" :  "End Time must be after Start Time"
   }
 }

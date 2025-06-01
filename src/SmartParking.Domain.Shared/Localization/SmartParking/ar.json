@@ -827,8 +827,9 @@
     "Permission:ChangePassword": "تغيير كلمة المرور",
     "Permission:View": "تفاصيل",
     "Permission: Confirm": "تأكيد",
-    "Permission:CheckoutDiscount": "الخصم", 
-    "SubscriptionDeleteMessage" : "هذا الإشترك مفعل حاليا.. لا يمكن الحذف"
-  
+    "Permission:CheckoutDiscount": "الخصم",
+    "SubscriptionDeleteMessage": "هذا الإشترك مفعل حاليا.. لا يمكن الحذف",
+    "EndTimeShouldBeGreaterThanStartTime" :  "وقت النهاية يجب ان يكون بعد وقت البدايه"
+
   }
 }
