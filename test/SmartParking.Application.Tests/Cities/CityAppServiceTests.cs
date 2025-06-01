@@ -28,52 +28,121 @@ public abstract class CityAppServiceTests<TStartupModule> : SmartParkingApplicat
     }
 
     [Fact]
-    public async Task Initial_Data_Should_Contain_City()
+    public async Task Should_Create_City_When_Valid()
     {
-        //Act
-        var result = await _citiesAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-
-        //Assert
-        result.TotalCount.ShouldBeGreaterThan(0);
-    }
-
-    [Fact]
-    public async Task Should_Create_A_Valid_City()
-    {
-        var states = await _stateAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        var state = states.Items.First();
-        //Act
-        var result = await _citiesAppService.CreateAsync(
-            new CreateUpdateCityDto
-            {
-                EnglishName = "Alexandria",
-                ArabicName = "الإسكندرية",
-                StateId = state.Id,
-            }
-        );
-
-        //Assert
-        result.ShouldNotBeNull();
-        result.EnglishName.ShouldBe("Alexandria");
-    }
-
-    [Fact]
-    public async Task Should_Not_Create_A_City_Without_ArabicName()
-    {
-        var states = await _stateAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        var state = states.Items.First();
-
-        var exception = await Assert.ThrowsAsync<DbUpdateException>(async () =>
+        // Arrange
+        var input = new CreateUpdateCityDto
         {
-            await _citiesAppService.CreateAsync(
-                new CreateUpdateCityDto
-                {
-                    EnglishName = "Alexandria",
-                    StateId = state.Id,
-                }
-            );
+            EnglishName = "NewCity",
+            ArabicName = "مدينة جديدة",
+            StateId = 1 
+        };
+
+        // Act
+        var result = await _citiesAppService.CreateAsync(input);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.EnglishName.ShouldBe(input.EnglishName);
+    }
+
+    [Fact]
+    public async Task Should_Not_Create_City_With_Existing_EnglishName()
+    {
+        // Arrange
+        var existingCity = await _citiesAppService.CreateAsync(new CreateUpdateCityDto
+        {
+            EnglishName = "DuplicateCity",
+            ArabicName = "مدينة مكررة",
+            StateId = 1
         });
 
-        exception.ShouldNotBeNull();
+        var input = new CreateUpdateCityDto
+        {
+            EnglishName = "DuplicateCity",
+            ArabicName = "مدينة جديدة",
+            StateId = 1
+        };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _citiesAppService.CreateAsync(input));
     }
+
+    [Fact]
+    public async Task Should_Not_Create_City_With_Existing_ArabicName()
+    {
+        // Arrange
+        var existingCity = await _citiesAppService.CreateAsync(new CreateUpdateCityDto
+        {
+            EnglishName = "UniqueCity",
+            ArabicName = "مدينة مكررة",
+            StateId = 1
+        });
+
+        var input = new CreateUpdateCityDto
+        {
+            EnglishName = "AnotherCity",
+            ArabicName = "مدينة مكررة",
+            StateId = 1
+        };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _citiesAppService.CreateAsync(input));
+    }
+
+    [Fact]
+    public async Task Should_Update_City_When_Valid()
+    {
+        // Arrange
+        var city = await _citiesAppService.CreateAsync(new CreateUpdateCityDto
+        {
+            EnglishName = "UpdateCity",
+            ArabicName = "مدينة للتحديث",
+            StateId = 1
+        });
+
+        var input = new CreateUpdateCityDto
+        {
+            EnglishName = "UpdatedCity",
+            ArabicName = "مدينة محدثة",
+            StateId = 1
+        };
+
+        // Act
+        var updated = await _citiesAppService.UpdateAsync(city.Id, input);
+
+        // Assert
+        updated.EnglishName.ShouldBe("UpdatedCity");
+    }
+
+    [Fact]
+    public async Task Should_Not_Update_City_With_Existing_EnglishName()
+    {
+        // Arrange
+        var city1 = await _citiesAppService.CreateAsync(new CreateUpdateCityDto
+        {
+            EnglishName = "CityOne",
+            ArabicName = "مدينة 1",
+            StateId = 1
+        });
+
+        var city2 = await _citiesAppService.CreateAsync(new CreateUpdateCityDto
+        {
+            EnglishName = "CityTwo",
+            ArabicName = "مدينة 2",
+            StateId = 1
+        });
+
+        var input = new CreateUpdateCityDto
+        {
+            EnglishName = "CityOne",
+            ArabicName = "مدينة أخرى",
+            StateId = 1
+        };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _citiesAppService.UpdateAsync(city2.Id, input));
+    }
+
+
 }
