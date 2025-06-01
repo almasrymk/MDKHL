@@ -407,7 +407,7 @@
     "Return": "Cancel",
     "Type": "Subscription Type",
     "UnLinkedTransaction": "Other",
-    "DeviceId": "Device Id",
+    "DeviceId": "Camera Code",
     "UnLinkedTransactionDeletedSuccessfully": "UnLinked Transaction Deleted Successfully",
     "Can'tDeleteUnLinkedTransaction": "Can't Delete UnLinked Transaction",
     "AddUnLinkedTransaction": "Add UnLinked Transaction",
@@ -802,6 +802,8 @@
     "Permission:CheckoutDiscount": "Discount",
     "SubscriptionDeleteMessage": "Subscription is active.. It cannot be deleted",
     "BeneficiariesDetails": "Beneficiaries Details",
+    "InvalidIPAddressValidation": "Please enter an address like: 192.168.1.1",
+    "InvalidMacAddressValidation": "Please enter an address like: 00:1A:2B:3C:4D:5E",
     "EndTimeShouldBeGreaterThanStartTime": "End Time must be after Start Time",
     "MaxLengthNameValidation": "Maximum Length Name must be only 100 Characters"
 
