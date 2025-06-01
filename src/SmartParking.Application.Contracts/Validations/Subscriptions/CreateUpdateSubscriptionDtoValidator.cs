@@ -15,6 +15,7 @@ public class CreateUpdateSubscriptionDtoValidator : AbstractValidator<CreateUpda
     {
         RuleFor(x => x.ArabicName)
             .NotEmpty()
+            .WithMessage(LocalizationHelper.GetLocalizedString("RequiredNameValidation"))
             .Matches(ConstantValidations.ArabicName)
             .WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"))
             .MaximumLength(100)
@@ -22,6 +23,7 @@ public class CreateUpdateSubscriptionDtoValidator : AbstractValidator<CreateUpda
 
         RuleFor(x => x.EnglishName)
           .NotEmpty()
+          .WithMessage(LocalizationHelper.GetLocalizedString("RequiredNameValidation"))
           .Matches(ConstantValidations.EnglishName)
           .WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"))
           .MaximumLength(100)
