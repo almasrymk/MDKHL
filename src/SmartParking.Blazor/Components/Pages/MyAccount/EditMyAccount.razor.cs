@@ -72,6 +72,7 @@ public partial class EditMyAccount
                 _createUpdateOrganization.OrganizationPicture = await FileHelper.SaveImageFromBase64Async(_organizationPicture, PathHelper.OrganizationFolder);
             await OrganizationAppService.UpdateAsync(_organizationId, _createUpdateOrganization);
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Organization"]} {_createUpdateOrganization.ArabicName}", Severity.Success);
+            Navigation.NavigateTo("/view-my-account");
 
         }
         catch (AbpValidationException validationException)

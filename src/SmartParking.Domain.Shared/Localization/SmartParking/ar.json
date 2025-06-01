@@ -834,6 +834,12 @@
     "RequiredValidation": "الحقل مطلوب",
     "EndTimeShouldBeGreaterThanStartTime": "وقت النهاية يجب ان يكون بعد وقت البدايه",
     "MaxLengthNameValidation": "يجب ألا يزيد طول الاسم عن 100 حرف.",
-    "DuplicationPackageName": "اسم الباقه موجود بالفعل"
+    "DuplicationPackageName": "اسم الباقه موجود بالفعل", 
+    "MaxLengthNameValidation": "يجب ألا يزيد طول الاسم عن 100 حرف.",
+    "MaxLengthTaxValidation": "يجب أن يتكون الرقم الضريبي من 15 رقمًا",
+    "MaxLengthCodeValidation": "يجب أن يتكون كود الفواتير من 3 أحرف إنجليزية كبيرة"
+
+
+
   }
 }

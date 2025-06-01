@@ -217,8 +217,24 @@
                             <MudNumericField T="int" @bind-Value="Graceperiod" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["Graceperiod"]} ({L["Minutes"]})") ReadOnly="true" />
                         </MudItem>
                 
-                        </MudGrid>
-
+                     @if (!IsClose && ClosingHoursStart.HasValue && ClosingHoursEnd.HasValue)
+                    {
+                          <MudItem sm="4">
+                                <MudTextField T="string"
+                                              Label="@L["ClosingHoursStart"]"
+                                              Value="@(ClosingHoursStart?.ToString(@"hh\:mm"))"
+                                              ReadOnly="true"
+                                              Variant="Variant.Text" />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField T="string"
+                                              Label="@L["ClosingHoursEnd"]"
+                                              Value="@(ClosingHoursEnd?.ToString(@"hh\:mm"))"
+                                              ReadOnly="true"
+                                              Variant="Variant.Text" />
+                            </MudItem>
+                      }
+                     </MudGrid>
                     <div class="d-flex justify-content-between mt-5">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
                         @if (AuthorizationService.IsGrantedAsync(MyAccountPermissions.Edit).Result)
