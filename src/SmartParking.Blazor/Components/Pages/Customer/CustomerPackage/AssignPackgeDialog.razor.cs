@@ -107,7 +107,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                     _customerPackageDto.PackageEnglishName = AlertMessages.AlertMessages.PackageNameEn;
                     _customerPackageDto.PublishFromOfPackage = startTime.HasValue ? TimeOnly.FromTimeSpan(startTime.Value) : null;
                     _customerPackageDto.PublishToOfPackage = endTime.HasValue ? TimeOnly.FromTimeSpan(endTime.Value) : null;
-                    if(endTime.Value  <= startTime.Value)
+                    if(ActivationDate == DectivationDate &&endTime.Value  <= startTime.Value)
                         throw new Exception(LocalizationHelper.GetLocalizedString("EndTimeShouldBeGreaterThanStartTime"));
                 }
 
@@ -149,7 +149,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
             if (!value.HasValue || !startTime.HasValue)
                 return null;
 
-            if (value <= startTime)
+            if (ActivationDate == DectivationDate && value <= startTime)
                 return L["EndTimeShouldBeGreaterThanStartTime"];
 
             return null;
