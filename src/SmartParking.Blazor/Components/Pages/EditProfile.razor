@@ -35,7 +35,7 @@
             </div>
             <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["UserName"] @bind-Value="OldProfile.UserName" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
             <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Name"] @bind-Value="OldProfile.Name" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
-            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Email"] @bind-Value="OldProfile.Email" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+            <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Email"] @bind-Value="OldProfile.Email" />
             <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["Contact Phone"] @bind-Value="OldProfile.PhoneNumber" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
             <MudTextField T="string" Placeholder=@L["Type Here"] Label=@L["NationalId"] @bind-Value="OldProfile.NationalId" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
              <MudRadioGroup @bind-Value="@OldProfile.IdentificationTypes"
