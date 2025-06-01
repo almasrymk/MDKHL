@@ -170,9 +170,10 @@
 						<MudItem sm="4">
 							<MudTimePicker Label="@L["EndTime"]"
 							PickerVariant="PickerVariant.Dialog"
-							
 							@bind-Time="endTime"
+							MinTime = "startTime"
 							Required="true"
+							Validation ="ValidateEndTime"
 							RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 						</MudItem>
 						<MudItem sm="4">
@@ -181,7 +182,8 @@
 							Required ="true"
 							RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"/>
 						</MudItem>
-
+					@* 	MinDate = "@( _startDateTimeCreated.HasValue ? _startDateTimeCreated.Value : ( _startDateTime < DateTime.Today ? DateTime.Today : _startDateTime ) )"
+										MaxDate = "_endDateTime" *@
 
 					}
 				</MudGrid>

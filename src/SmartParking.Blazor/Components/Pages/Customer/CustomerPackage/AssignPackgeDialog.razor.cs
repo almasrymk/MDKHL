@@ -107,6 +107,8 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                     _customerPackageDto.PackageEnglishName = AlertMessages.AlertMessages.PackageNameEn;
                     _customerPackageDto.PublishFromOfPackage = startTime.HasValue ? TimeOnly.FromTimeSpan(startTime.Value) : null;
                     _customerPackageDto.PublishToOfPackage = endTime.HasValue ? TimeOnly.FromTimeSpan(endTime.Value) : null;
+                    if(endTime.Value  <= startTime.Value)
+                        throw new Exception(LocalizationHelper.GetLocalizedString("EndTimeShouldBeGreaterThanStartTime"));
                 }
 
                 // Set organization and tenant ID based on the selected organization
@@ -142,7 +144,16 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
             }
         }
+        private string ValidateEndTime(TimeSpan? value)
+        {
+            if (!value.HasValue || !startTime.HasValue)
+                return null;
 
+            if (value <= startTime)
+                return L["EndTimeShouldBeGreaterThanStartTime"];
+
+            return null;
+        }
         /// <summary>
         /// Cancels the edit operation and closes the dialog.
         /// </summary>
