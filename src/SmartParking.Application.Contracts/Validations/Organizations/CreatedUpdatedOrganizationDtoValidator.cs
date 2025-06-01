@@ -106,11 +106,11 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
         RuleFor(x => x.TaxNumber)
            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
            .Length(15).WithMessage(LocalizationHelper.GetLocalizedString("RangeValidation") + " " + 15)
-           .Matches(@"^\d{15}$").WithMessage(LocalizationHelper.GetLocalizedString("OnlyEnglishNumberAllowed")); 
+           .Matches(@"^\d{15}$").WithMessage(LocalizationHelper.GetLocalizedString("MaxLengthTaxValidation")); 
         
         RuleFor(x => x.PaymentCode)
            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
            .Length(3).WithMessage(LocalizationHelper.GetLocalizedString("RangeValidation") + " " + 3)
-           .Matches(@"^[A-Z]{3}$").WithMessage(LocalizationHelper.GetLocalizedString("OnlyEnglishLettersAllowed"));
+           .Matches(@"^[A-Z]{3}$").WithMessage(LocalizationHelper.GetLocalizedString("MaxLengthCodeValidation"));
     }
 }
