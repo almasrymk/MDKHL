@@ -740,7 +740,7 @@ img[style*='width:120px;'] {
                 Paragraph paragraph4 = new Paragraph()
                   .Add(currency) 
                   .Add(new Text($" {paymentPrice.ToString("F2")}")) 
-                  .Add(new Text($": {Discount.ArabicWithFontGlyphsToPDF()} {After.ArabicWithFontGlyphsToPDF()}").SimulateBold()) 
+                  .Add(new Text($": {Discount.ArabicWithFontGlyphsToPDF()} {After.ArabicWithFontGlyphsToPDF()}").SimulateBold())
                   .SetFontSize(12);
 
                 table21.AddCell(new Cell()
@@ -899,6 +899,7 @@ img[style*='width:120px;'] {
               .Add(new Paragraph()
                   .Add(new Text($"{After.ArabicWithFontGlyphsToPDF()+ " " +Discount.ArabicWithFontGlyphsToPDF()}:").SimulateBold())
                   .Add(new Text($" {paymentPrice.ToString("F2")} {Sar.ArabicWithFontGlyphsToPDF()}"))
+                  .Add(currency)
                   .SetFontSize(12)));
 
             }
