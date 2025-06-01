@@ -14,9 +14,10 @@ namespace SmartParking.Authentication;
 
 public class UserCreateDto
 {
+    [MaxLength(277)]
     public string UserName { get; set; }
 
-    
+
     public string Name { get; set; }
 
     
