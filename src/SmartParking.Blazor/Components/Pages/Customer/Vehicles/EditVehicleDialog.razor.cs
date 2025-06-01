@@ -27,18 +27,16 @@ public partial class EditVehicleDialog
     /// </summary>
     [Parameter]
     public int VehicleId { get; set; }
-
     /// <summary>
     /// The vehicle DTO containing the editable data.
     /// </summary>
     [Parameter]
-    public CreateUpdateVehicleDto Vehicle { get; set; } = new CreateUpdateVehicleDto();
+    public CreateUpdateVehicleDto Vehicle { get; set; } 
 
-    IReadOnlyList<PlateColorDto> plateColors = new List<PlateColorDto>();
-    IReadOnlyList<LicenceTypeDto> LicenceTypes = new List<LicenceTypeDto>();
-    IReadOnlyList<VehicleBrandDto> VehicleBrands = new List<VehicleBrandDto>();
-    IReadOnlyList<VehicleModelDto> VehicleModels = new List<VehicleModelDto>();
-
+    List<PlateColorDto> plateColors = new List<PlateColorDto>();
+    List<LicenceTypeDto> LicenceTypes = new List<LicenceTypeDto>();
+    List<VehicleBrandDto> VehicleBrands = new List<VehicleBrandDto>();
+    List<VehicleModelDto> VehicleModels = new List<VehicleModelDto>();
     bool _clearable;
 
     /// <summary>
@@ -72,8 +70,12 @@ public partial class EditVehicleDialog
         var resultLicence = await LicenceTypesAppService.GetAllLicencesAsync();
         LicenceTypes = resultLicence;
 
+        var resultVehicleModel = await VehicleModelAppService.GetAllVehicleModelsAsync();
+        VehicleModels = resultVehicleModel;
+
         var resultVehicleBrand = await VehicleBrandAppService.GetAllVehicleBrandsAsync();
         VehicleBrands = resultVehicleBrand;
+        StateHasChanged();
     }
 
     /// <summary>
