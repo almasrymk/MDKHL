@@ -691,8 +691,8 @@
     "VisitorAndTransactionReport": "Visitor Transactions",
     "VisitorAndTransactionReportName": "Visitor Transactions Reports",
     "Reserved": "Reserved",
-    "CustomerAndPaymentReport": "Customers Payments",
-    "CustomerAndPaymentReports": "Customers Payments Report",
+    "CustomerAndPaymentReport": "Cash Payments",
+    "CustomerAndPaymentReports": "Cash Payments Report",
     "CustomerPackageReport": "Customers Packages",
     "PaymentMehtodReport": "Bank Payments",
     "PaymentsMehtodReport": "Bank Payments Report",
@@ -805,6 +805,7 @@
     "InvalidIPAddressValidation": "Please enter an address like: 192.168.1.1",
     "InvalidMacAddressValidation": "Please enter an address like: 00:1A:2B:3C:4D:5E",
     "EndTimeShouldBeGreaterThanStartTime": "End Time must be after Start Time",
-    "MaxLengthNameValidation": "Maximum Length Name must be only 100 Characters"
+    "MaxLengthNameValidation": "Maximum Length Name must be only 100 Characters",
+    "DuplicationPackageName": "Package name already exists"
   }
 }
