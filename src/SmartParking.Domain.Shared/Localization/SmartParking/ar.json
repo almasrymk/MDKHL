@@ -829,7 +829,9 @@
     "Permission: Confirm": "تأكيد",
     "Permission:CheckoutDiscount": "الخصم",
     "SubscriptionDeleteMessage": "هذا الإشترك مفعل حاليا.. لا يمكن الحذف",
-    "EndTimeShouldBeGreaterThanStartTime" :  "وقت النهاية يجب ان يكون بعد وقت البدايه"
+    "EndTimeShouldBeGreaterThanStartTime": "وقت النهاية يجب ان يكون بعد وقت البدايه",
+    "MaxLengthNameValidation": "يجب ألا يزيد طول الاسم عن 100 حرف."
+
 
   }
 }
