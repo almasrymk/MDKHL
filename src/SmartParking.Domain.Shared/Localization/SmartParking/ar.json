@@ -833,7 +833,10 @@
     "InvalidMacAddressValidation": "الرجاء إدخال عنوان مثل: 00:1A:2B:3C:4D:5E",
     "RequiredValidation": "الحقل مطلوب",
     "EndTimeShouldBeGreaterThanStartTime": "وقت النهاية يجب ان يكون بعد وقت البدايه",
-    "MaxLengthNameValidation": "يجب ألا يزيد طول الاسم عن 100 حرف."
+    "MaxLengthNameValidation": "يجب ألا يزيد طول الاسم عن 100 حرف.",
+    "MaxLengthTaxValidation": "يجب أن يتكون الرقم الضريبي من 15 رقمًا",
+    "MaxLengthCodeValidation": "يجب أن يتكون كود الفواتير من 3 أحرف إنجليزية كبيرة"
+
 
 
   }
