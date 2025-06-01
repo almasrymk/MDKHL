@@ -5,6 +5,7 @@ using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Filters;
+using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.Permissions.PackagePermissions;
@@ -209,11 +210,23 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
             {
                 input.ActivationDate = DateTime.Now;
             }
-
+            await CheckExistNameForUpdate(id, input);
             return await base.UpdateAsync(id, input);
         }
 
     }
+    /// <inheritdoc/>
+    public override async Task<PackageDto> CreateAsync(CreateUpdatePackageDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            await CheckExistName(input);
+            return await base.CreateAsync(input);
+        }
+    }
+
+
+
     /// <inheritdoc/>
     public override Task<PackageDto> GetAsync(int id)
     {
@@ -360,7 +373,24 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
             return await ProcessDataToMapDto(input, queryable);
         }
     }
-
+    private async Task CheckExistName(CreateUpdatePackageDto input)
+    {
+        var query = await _repository.GetQueryableAsync();
+        var packageEn = await query.Where(x => x.EnglishName == input.EnglishName || x.ArabicName == input.ArabicName).FirstOrDefaultAsync();
+        if (packageEn != null)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("DuplicationPackageName"));
+        }
+    }
+    private async Task CheckExistNameForUpdate(int Id, CreateUpdatePackageDto input)
+    {
+        var query = await _repository.GetQueryableAsync();
+        var packageEn = await query.Where(x => (x.EnglishName == input.EnglishName || x.ArabicName == input.ArabicName) && x.Id != Id).FirstOrDefaultAsync();
+        if (packageEn != null)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("DuplicationPackageName"));
+        }
+    }
     #endregion
 
 }
