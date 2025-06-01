@@ -71,7 +71,6 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
            .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.FullDayPrice)
-          .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
           .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.NumberOfHours)
