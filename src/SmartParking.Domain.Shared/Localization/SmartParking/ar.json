@@ -827,8 +827,13 @@
     "Permission:ChangePassword": "تغيير كلمة المرور",
     "Permission:View": "تفاصيل",
     "Permission: Confirm": "تأكيد",
-    "Permission:CheckoutDiscount": "الخصم", 
-    "SubscriptionDeleteMessage" : "هذا الإشترك مفعل حاليا.. لا يمكن الحذف"
-  
+    "Permission:CheckoutDiscount": "الخصم",
+    "SubscriptionDeleteMessage": "هذا الإشترك مفعل حاليا.. لا يمكن الحذف",
+    "InvalidIPAddressValidation": "الرجاء إدخال عنوان مثل: 192.168.1.1",
+    "InvalidMacAddressValidation": "الرجاء إدخال عنوان مثل: 00:1A:2B:3C:4D:5E",
+    "RequiredValidation": "الحقل مطلوب"
+
+
+
   }
 }
