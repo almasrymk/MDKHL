@@ -399,7 +399,6 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             ks.EndDate > input.StartDate
         );
 
-        // Check for exact match as well
         bool exactMatch = await _keeperShiftRepository.AnyAsync(ks =>
             ks.KeeperId == input.KeeperId &&
             ks.ShiftId == input.ShiftId &&
