@@ -809,7 +809,9 @@
     "DuplicationPackageName": "Package name already exists",
     "MaxLengthNameValidation": "Maximum Length Name must be only 100 Characters",
     "MaxLengthTaxValidation": "Tax number must be 15 digits",
-    "MaxLengthCodeValidation": "Payment code must be 3 capital English letters"
+    "MaxLengthCodeValidation": "Payment code must be 3 capital English letters",
+    "keeper": "Keeper",
+    "NoRole": "No Role"
 
   }
 }
