@@ -395,7 +395,8 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         bool alreadyAssigned = await _keeperShiftRepository.AnyAsync(ks =>
             ks.KeeperId == input.KeeperId &&
             ks.ShiftId == input.ShiftId &&
-            ks.EndDate >= input.StartDate);
+            ks.StartDate < input.EndDate && 
+            ks.EndDate > input.StartDate);
 
         if (alreadyAssigned)
         {
