@@ -218,7 +218,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 {
                     return Result<LoginResultDto>.Invalid(new Results.ValidationError
                     {
-                        ErrorCode = "403",
+                        ErrorCode = "423",
                         ErrorMessage = "Verfiy phone number"
                     });
                 }
