@@ -248,8 +248,8 @@
         var organizationsList = await organizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         _organizations = organizationsList.Items.ToList();
         currentStatus = Package.Status;
-        timeSpanFrom = Package.PublishFrom.ToTimeSpan();
-        timeSpanTo = Package.PublishTo.ToTimeSpan();
+        timeSpanFrom = Package.PublishFrom?.ToTimeSpan();
+        timeSpanTo = Package.PublishTo?.ToTimeSpan();
         ActivationDate = Package.ActivationDate;
         DectivationDate = Package.DeactivationDate;
         var packageTypesList = await packageTypesAppService.GetAllListAsync();
