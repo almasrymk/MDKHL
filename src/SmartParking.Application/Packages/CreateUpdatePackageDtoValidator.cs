@@ -13,16 +13,16 @@ namespace SmartParking.Packages
 				.NotEmpty().MaximumLength(100)
 				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
                 .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s]*$")
-				.WithMessage("The Arabic name should only contains Arabic letters, digits, punctuation marks, and spaces.");
+				.WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"));
 
 			RuleFor(x => x.EnglishName)
 				.NotEmpty()
 				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
                 .MaximumLength(100)
 				.Matches(@"^[a-zA-Z][a-zA-Z0-9/.,\\]*(\s[a-zA-Z0-9/.,\\]+)*$")
-				.WithMessage("The Englis name should only contains English letters, digits, punctuation marks, and spaces.");
+                .WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"));
 
-			RuleFor(x => x.Description)
+            RuleFor(x => x.Description)
 			   .NotEmpty()
 			   .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
 			   .MaximumLength(500);
@@ -30,17 +30,19 @@ namespace SmartParking.Packages
 			RuleFor(x => x.PackageTypeId)
 				.NotEmpty()
 				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-                .GreaterThan(0)
-				.WithMessage("Package Type is invalid");
+				.GreaterThan(0)
+				.WithMessage(LocalizationHelper.GetLocalizedString("PackageTypeValidation"));
+
 
 
 			RuleFor(x => x.Price)
 				.NotEmpty()
 				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-                .GreaterThan(-1)
-				.WithMessage("Price mustnt be negative.")
+				.GreaterThan(-1)
+				.WithMessage(LocalizationHelper.GetLocalizedString("PriceValidation"))
 				.PrecisionScale(18, 2, false)
-				.WithMessage("Price must not have more than two decimal places and must be less than 18 digits.");
+				.WithMessage(LocalizationHelper.GetLocalizedString("PriceRangeValidation"));
+
             RuleFor(x => x.PublishFrom)
 				.NotEmpty().When(x => !x.Published)
 				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
@@ -49,9 +51,10 @@ namespace SmartParking.Packages
 				.NotEmpty().When(x => !x.Published)
 				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
     
-            RuleFor(x => x.DurationOfPackage).NotEmpty().GreaterThanOrEqualTo(1);
+            RuleFor(x => x.DurationOfPackage).NotEmpty().GreaterThanOrEqualTo(1).WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            ;
 
-		}
+        }
 
 
 		//private bool BeAValidTime(TimeOnly time)
