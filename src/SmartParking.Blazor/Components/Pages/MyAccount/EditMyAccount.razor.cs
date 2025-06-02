@@ -38,7 +38,6 @@ public partial class EditMyAccount
     private bool _isPictureChanged { get; set; }
     private string _organizationPicture { get; set; }
     private int _numberOfHours { get; set; }
-
     private DateTime? _crExpiryDate { get; set; }
     private TimeSpan? _closingHoursStart { get; set; }
     private TimeSpan? _closingHoursEnd { get; set; }
@@ -67,8 +66,18 @@ public partial class EditMyAccount
     
         try
         {
-            _createUpdateOrganization.IsClose = PackageValidations.GetOrganizationIsCloseAfterTimeValidity(_isClose, _createUpdateOrganization.ClosingHoursStart, _createUpdateOrganization.ClosingHoursEnd);
-            if (_isPictureChanged)
+            _createUpdateOrganization.NumberOfHours = _numberOfHours;
+            _createUpdateOrganization.ClosingHoursEnd = _closingHoursEnd.HasValue
+                ? TimeOnly.FromTimeSpan(_closingHoursEnd.Value)
+                : null;
+            _createUpdateOrganization.ClosingHoursStart = _closingHoursStart.HasValue
+                ? TimeOnly.FromTimeSpan(_closingHoursStart.Value)
+                : null;
+            _createUpdateOrganization.IsClose = PackageValidations.GetOrganizationIsCloseAfterTimeValidity(
+                _createUpdateOrganization.IsClose,
+                _createUpdateOrganization.ClosingHoursStart,
+                _createUpdateOrganization.ClosingHoursEnd
+            ); if (_isPictureChanged)
                 _createUpdateOrganization.OrganizationPicture = await FileHelper.SaveImageFromBase64Async(_organizationPicture, PathHelper.OrganizationFolder);
             await OrganizationAppService.UpdateAsync(_organizationId, _createUpdateOrganization);
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Organization"]} {_createUpdateOrganization.ArabicName}", Severity.Success);
@@ -135,6 +144,7 @@ public partial class EditMyAccount
         _crExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         _closingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
         _closingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
+        _numberOfHours = organization.NumberOfHours;
         _citySelectValue = organization.CityId.ToString();
         _countrySelectValue = organization.CountryId.ToString();
         _regionSelectValue = organization.RegionId.ToString();
