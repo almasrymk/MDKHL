@@ -62,10 +62,10 @@
                                              For="@(() => createUpdatePackage.Price)"
                                              Variant="Variant.Text"
                                              Required="true"
-                                             Min="0"
+                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                                              HideSpinButtons="true"
                                              class="@(CultureInfo.CurrentCulture.Name == "ar" ? "custom-numeric-field" : "")"
-                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                                             />
                         </div>
                     </MudItem>
 
@@ -73,7 +73,6 @@
                         <MudNumericField @bind-Value="createUpdatePackage.DurationOfPackage"
                         For="@(() => createUpdatePackage.DurationOfPackage)"
                         Variant="Variant.Text"
-                        Min="0" 
                         HideSpinButtons="true"
                         Required="true"
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
@@ -115,18 +114,20 @@
 
 
                     <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="@PackageTypeId" Label="@L["PackageType"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"] Required>
+                        <MudSelect @bind-Value="@createUpdatePackage.PackageTypeId" Label="@L["PackageType"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"]
+                                   Required ="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
 
                             @foreach (var type in packageTypes)
                             {
                                 if (CultureInfo.CurrentCulture.Name == "en")
                                 {
-                                     <MudSelectItem T="string" Value="@type.Id.ToString()">
+                                     <MudSelectItem  Value="@type.Id">
                                          @type.EnglishName
                                      </MudSelectItem>
                                 }
                                 else{
-                                    <MudSelectItem T="string" Value="@type.Id.ToString()">
+                                    <MudSelectItem Value="@type.Id">
                                         @type.ArabicName
                                     </MudSelectItem>
                                 }
@@ -134,16 +135,16 @@
                         </MudSelect>
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="CustomerCategory"
+                        <MudSelect @bind-Value="createUpdatePackage.CustomerCategory"
                         Label="@L["customer category"]"
                         Placeholder="@L[ "Choose"]"
                         HelperText=@L["Helper Text"]
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Required>
+
                             @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
                             {
-                                <MudSelectItem Value="@category.ToString()">
-
+                                <MudSelectItem Value="@category">
                                     @category.ToString()
                                 </MudSelectItem>
                             }
@@ -160,8 +161,6 @@
                     </MudItem>
                     @if(createUpdatePackage.Published == false)
                     {
-
-
                         <MudItem sm="4" md="4">
                             <MudTimePicker Variant="Variant.Text"
                             Class="w-100"
@@ -188,6 +187,9 @@
                     }
 
                     <MudItem sm="12">
+                        <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                            @L["Description"]
+                        </label>
                         <MudTextField @bind-Value="createUpdatePackage.Description"
                         For="@(() => createUpdatePackage.Description)"
                         Variant="Variant.Outlined"
@@ -196,8 +198,7 @@
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         Lines="5"
                         Placeholder=@L["Type Here"]
-                        Label="@L["Description"]" />
-
+                       />
                     </MudItem>
 
 
@@ -299,9 +300,8 @@
 
     private async Task Submit()
     {
-        createUpdatePackage.PackageTypeId = int.Parse(PackageTypeId);
         createUpdatePackage.OrganizationId = int.Parse(OrganizationId);
-        createUpdatePackage.CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), CustomerCategory);
+         // = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), CustomerCategory);
         if (CurrentTenant.Id == null)
         {
             createUpdatePackage.TenantId = _organizations.FirstOrDefault(x => x.Id == createUpdatePackage.OrganizationId).TenantId;
@@ -309,25 +309,16 @@
 
         try
         {
-            if(form.IsValid)
-            {
-                createUpdatePackage.Published = createUpdatePackage.Published || PackageValidations.CheckPackageTimeValiditity(createUpdatePackage.PublishFrom, createUpdatePackage.PublishTo);
-                createUpdatePackage.ActivationDate = DateTime.Now;
-                createUpdatePackage.PackageStatus = SubscriptionStatus.Draft;
-                createUpdatePackage.Status = Status.Inactive;
-                await PackagesAppService.CreateAsync(createUpdatePackage);
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {createUpdatePackage.ArabicName}", Severity.Success);
-                MudDialog.Close(DialogResult.Ok(true));
-                await Task.Delay(1000);
-                NavigationManager.NavigateTo("/package", true);
-            }
-            else
-            {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}", Severity.Error);
-
-            }
-            
-            }
+            createUpdatePackage.Published = createUpdatePackage.Published || PackageValidations.CheckPackageTimeValiditity(createUpdatePackage.PublishFrom, createUpdatePackage.PublishTo);
+            createUpdatePackage.ActivationDate = DateTime.Now;
+            createUpdatePackage.PackageStatus = SubscriptionStatus.Draft;
+            createUpdatePackage.Status = Status.Inactive;
+            await PackagesAppService.CreateAsync(createUpdatePackage);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {createUpdatePackage.ArabicName}", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+            await Task.Delay(1000);
+            NavigationManager.NavigateTo("/package", true);
+        }
         catch (AbpValidationException validationException)
         {
             foreach (var validationError in validationException.ValidationErrors)
@@ -337,19 +328,12 @@
         }
         catch (BusinessException ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message}", Severity.Error);
         }
-       
         catch (Exception ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
         }
-
-
-        
-
     }
     private void Cancel()
     {

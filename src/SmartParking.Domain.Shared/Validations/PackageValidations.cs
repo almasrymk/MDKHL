@@ -9,8 +9,10 @@ namespace SmartParking.Validations;
 public static class PackageValidations
 {
     public static bool CheckPackageTimeValiditity(TimeOnly? From, TimeOnly? To) {
-        
-        if(From.Value==To.Value) return true;
+        if (!From.HasValue || !To.HasValue)
+            return false;
+        if(From.Value==To.Value)
+            return true;
         return false;
     
     }

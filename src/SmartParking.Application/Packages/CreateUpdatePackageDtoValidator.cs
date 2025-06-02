@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using SmartParking.Localization;
 using System;
 using System.Data;
 
@@ -10,34 +11,45 @@ namespace SmartParking.Packages
         {
             RuleFor(x => x.ArabicName)
 				.NotEmpty().MaximumLength(100)
-				.Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s]*$")
+				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+                .Matches(@"^[\p{IsArabic}][\p{IsArabic}\d،\.\,\/\\\s]*$")
 				.WithMessage("The Arabic name should only contains Arabic letters, digits, punctuation marks, and spaces.");
 
 			RuleFor(x => x.EnglishName)
-				.NotEmpty().MaximumLength(100)
+				.NotEmpty()
+				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+                .MaximumLength(100)
 				.Matches(@"^[a-zA-Z][a-zA-Z0-9/.,\\]*(\s[a-zA-Z0-9/.,\\]+)*$")
 				.WithMessage("The Englis name should only contains English letters, digits, punctuation marks, and spaces.");
 
 			RuleFor(x => x.Description)
-			   .NotEmpty().MaximumLength(500);
+			   .NotEmpty()
+			   .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+			   .MaximumLength(500);
 
 			RuleFor(x => x.PackageTypeId)
 				.NotEmpty()
-				.GreaterThan(0)
+				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+                .GreaterThan(0)
 				.WithMessage("Package Type is invalid");
 
 
 			RuleFor(x => x.Price)
-				.GreaterThan(-1)
+				.NotEmpty()
+				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+                .GreaterThan(-1)
 				.WithMessage("Price mustnt be negative.")
 				.PrecisionScale(18, 2, false)
 				.WithMessage("Price must not have more than two decimal places and must be less than 18 digits.");
+            RuleFor(x => x.PublishFrom)
+				.NotEmpty().When(x => !x.Published)
+				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
-
-            RuleFor(x => x.PublishTo);
-				//.Must(BeAValidTime).WithMessage("End time is not a valid time.");
-
-			RuleFor(x => x.DurationOfPackage).NotEmpty().GreaterThanOrEqualTo(1);
+            RuleFor(x => x.PublishTo)
+				.NotEmpty().When(x => !x.Published)
+				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+    
+            RuleFor(x => x.DurationOfPackage).NotEmpty().GreaterThanOrEqualTo(1);
 
 		}
 

@@ -170,12 +170,15 @@
                         </MudItem>
                     }
                     <MudItem sm="12">
+                        <label style="font-size: 0.75rem; margin-bottom: 4px;  ">
+                            @L["Description"]
+                        </label>
                         <MudTextField @bind-Value="Package.Description"
                         For="@(() => Package.Description)"
                         Variant="Variant.Outlined"
                         Class="w-100"
                         Lines="5"
-                        Label="@L["Description"]" />
+                         />
 
                     </MudItem>
                     <MudItem sm="12" md="12" Class="d-flex justify-content-between">
