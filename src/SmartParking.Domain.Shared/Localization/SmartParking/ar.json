@@ -13,6 +13,7 @@
     "Apply Filter": "تطبيق",
     "Arabic Capital": "إسم العاصمة بالعربية",
     "ArabicName": "الإسم ",
+    "Arabic Name": "الإسم ",
     "Back": "عودة",
     "BrandName": "العلامة التجارية",
     "CameraIP": "عنوان IP",
@@ -135,7 +136,9 @@
     "Profile": "حساب تعريفي",
     "Profile Details": "تفاصيل الملف الشخصي",
     "Publish From": "توقيت الاتاحة من",
+    "PublishFrom": "توقيت الاتاحة من",
     "Publish To": "توقيت الاتاحة إلى",
+    "PublishTo": "توقيت الاتاحة إلى",
     "Published": "الوقت",
     "Region": "المنطقة",
     "RegionCreatedSuccessfully": "تم إنشاء المنطقة بنجاح",
@@ -839,7 +842,20 @@
     "MaxLengthTaxValidation": "يجب أن يتكون الرقم الضريبي من 15 رقمًا",
     "MaxLengthCodeValidation": "يجب أن يتكون كود الفواتير من 3 أحرف إنجليزية كبيرة",
     "keeper": "حارس",
-    "NoRole": "بدون دور"
+    "NoRole": "بدون دور",
+    "PackageTypeValidation": "نوع الباقة غير صحيح",
+    "PriceValidation": "السعر لا يمكن ان يكون اقل من صفر",
+    "PriceRangeValidation": "يجب ألا يحتوي السعر على أكثر من منزلتين عشريتين ويجب أن يكون أقل من 18 رقمًا",
+    "DurationOfPackage": "المدة"
+
+
+
+
+
+
+
+
+
 
 
 
