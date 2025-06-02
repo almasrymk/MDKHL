@@ -175,6 +175,7 @@
     "Vehicles": "Vehicles",
     "TotalHours": "Duration",
     "InvoiceCreatedSuccessfully": "Mapping Created Successfully",
+    "CheckoutConfirm": "Invoice Paid Successfully",
     "Can'tCreateInvoice": "Can't Create Mapping",
     "OrganizationArabicName": "Org ArName",
     "GarageName": "Garage Name",
