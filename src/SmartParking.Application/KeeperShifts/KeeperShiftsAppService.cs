@@ -395,14 +395,24 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         bool alreadyAssigned = await _keeperShiftRepository.AnyAsync(ks =>
             ks.KeeperId == input.KeeperId &&
             ks.ShiftId == input.ShiftId &&
-            ks.StartDate < input.EndDate && 
-            ks.EndDate > input.StartDate);
+            ks.StartDate < input.EndDate &&
+            ks.EndDate > input.StartDate
+        );
 
-        if (alreadyAssigned)
+        // Check for exact match as well
+        bool exactMatch = await _keeperShiftRepository.AnyAsync(ks =>
+            ks.KeeperId == input.KeeperId &&
+            ks.ShiftId == input.ShiftId &&
+            ks.StartDate == input.StartDate &&
+            ks.EndDate == input.EndDate
+        );
+
+        if (alreadyAssigned || exactMatch)
         {
             throw new BusinessException(LocalizationHelper.GetLocalizedString("KeeperAlreadyAssignedToShift"));
         }
     }
+
 
     /// <summary>
     /// Applies a search filter to the given KeeperShift query based on the search term provided.
