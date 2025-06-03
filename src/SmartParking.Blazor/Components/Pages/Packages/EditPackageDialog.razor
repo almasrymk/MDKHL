@@ -170,12 +170,15 @@
                         </MudItem>
                     }
                     <MudItem sm="12">
+                        <label style="font-size: 0.75rem; margin-bottom: 4px;  ">
+                            @L["Description"]
+                        </label>
                         <MudTextField @bind-Value="Package.Description"
                         For="@(() => Package.Description)"
                         Variant="Variant.Outlined"
                         Class="w-100"
                         Lines="5"
-                        Label="@L["Description"]" />
+                         />
 
                     </MudItem>
                     <MudItem sm="12" md="12" Class="d-flex justify-content-between">
@@ -245,8 +248,8 @@
         var organizationsList = await organizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         _organizations = organizationsList.Items.ToList();
         currentStatus = Package.Status;
-        timeSpanFrom = Package.PublishFrom.ToTimeSpan();
-        timeSpanTo = Package.PublishTo.ToTimeSpan();
+        timeSpanFrom = Package.PublishFrom?.ToTimeSpan();
+        timeSpanTo = Package.PublishTo?.ToTimeSpan();
         ActivationDate = Package.ActivationDate;
         DectivationDate = Package.DeactivationDate;
         var packageTypesList = await packageTypesAppService.GetAllListAsync();

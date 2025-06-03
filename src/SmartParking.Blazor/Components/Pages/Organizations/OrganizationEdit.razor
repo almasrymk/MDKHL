@@ -76,95 +76,97 @@
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
+                            <MudItem sm="4">
+                                <MudSelect T="string" Variant="Variant.Text"
+                                           Label=@L["Country"]
+                                           Placeholder=@L["Choose"]
+                                           HelperText=@L["Helper Text"]
+                                           Value="@CountrySelectValue"
+                                           ValueChanged="OnCountryChanged"
+                                           Required>
+                                    <MudSelectItem Disabled="true" Value="CountryNameEdit"></MudSelectItem>
+                                    @foreach (var country in countries)
+                                    {
+                                        if (CultureInfo.CurrentCulture.Name == "en")
+                                        {
+                                            <MudSelectItem Value="@country.Id.ToString()">@country.EnglishName</MudSelectItem>
+                                        }
+                                        else
+                                        {
+                                            <MudSelectItem Value="@country.Id.ToString()">@country.ArabicName</MudSelectItem>
+                                        }
+                                    }
+                                </MudSelect>
+                            </MudItem>
 
-                        <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
-                                       Label=@L["Country"]
-                                       Placeholder=@L["Choose"]
-                                       HelperText=@L["Helper Text"]
-                                       @bind-Value="@CountrySelectValue"
-                                       @onchange="GetRegions">
-                                <MudSelectItem Disabled="true" Value="CountryNameEdit"></MudSelectItem>
-                                @foreach (var country in countries)
-                                {
-                                    if (CultureInfo.CurrentCulture.Name == "en")
+                            <MudItem sm="4">
+                                <MudSelect T="string" Variant="Variant.Text"
+                                           Label=@L["Region"]
+                                           Placeholder=@L["Choose"]
+                                           HelperText=@L["Helper Text"]
+                                           Value="@RegionSelectValue"
+                                           ValueChanged="OnRegionChanged"
+                                           Required>
+                                    <MudSelectItem Disabled="true" Value="RegionNameEdit"></MudSelectItem>
+                                    @foreach (var region in regions)
                                     {
-                                        <MudSelectItem Value="country.Id.ToString()">@country.EnglishName</MudSelectItem>
+                                        if (CultureInfo.CurrentCulture.Name == "en")
+                                        {
+                                            <MudSelectItem Value="@region.Id.ToString()">@region.EnglishName</MudSelectItem>
+                                        }
+                                        else
+                                        {
+                                            <MudSelectItem Value="@region.Id.ToString()">@region.ArabicName</MudSelectItem>
+                                        }
                                     }
-                                    else
-                                    {
-                                        <MudSelectItem Value="country.Id.ToString()">@country.ArabicName</MudSelectItem>
-                                    }
-                                }
+                                </MudSelect>
+                            </MudItem>
 
-                            </MudSelect>
-                        </MudItem>
+                            <MudItem sm="4">
+                                <MudSelect T="string" Variant="Variant.Text"
+                                           Label=@L["State"]
+                                           Placeholder=@L["Choose"]
+                                           HelperText=@L["Helper Text"]
+                                           Value="@StateSelectValue"
+                                           ValueChanged="OnStateChanged"
+                                           Required>
+                                    <MudSelectItem Disabled="true" Value="StateNameEdit"></MudSelectItem>
+                                    @foreach (var state in states)
+                                    {
+                                        if (CultureInfo.CurrentCulture.Name == "en")
+                                        {
+                                            <MudSelectItem Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
+                                        }
+                                        else
+                                        {
+                                            <MudSelectItem Value="@state.Id.ToString()">@state.ArabicName</MudSelectItem>
+                                        }
+                                    }
+                                </MudSelect>
+                            </MudItem>
 
-                        <MudItem sm="4">
-                            <MudSelect T="string" Variant="Variant.Text"
-                                       Label=@L["Region"]
-                                       Placeholder=@L["Choose"]
-                                       HelperText=@L["Helper Text"]
-                                       @bind-Value="RegionSelectValue"
-                                       @onchange="GetStates">
-                                <MudSelectItem Disabled="true" Value="RegionNameEdit"></MudSelectItem>
-                                @foreach (var region in regions)
-                                {
-                                    if (CultureInfo.CurrentCulture.Name == "en")
+                            <MudItem sm="4">
+                                <MudSelect T="string" Variant="Variant.Text"
+                                           Label=@L["City"]
+                                           Placeholder=@L["Choose"]
+                                           HelperText=@L["Helper Text"]
+                                           Value="@CitySelectValue"
+                                           ValueChanged="OnCityChanged"
+                                           Required>
+                                    <MudSelectItem Disabled="true" Value="CityNameEdit"></MudSelectItem>
+                                    @foreach (var city in cities)
                                     {
-                                        <MudSelectItem Value="@region.Id.ToString()">@region.EnglishName</MudSelectItem>
+                                        if (CultureInfo.CurrentCulture.Name == "en")
+                                        {
+                                            <MudSelectItem Value="@city.Id.ToString()">@city.EnglishName</MudSelectItem>
+                                        }
+                                        else
+                                        {
+                                            <MudSelectItem Value="@city.Id.ToString()">@city.ArabicName</MudSelectItem>
+                                        }
                                     }
-                                    else
-                                    {
-                                        <MudSelectItem Value="@region.Id.ToString()">@region.ArabicName</MudSelectItem>
-                                    }
-                                }
-                            </MudSelect>
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudSelect T="string" Variant="Variant.Text"
-                                       Label=@L["State"]
-                                       Placeholder=@L["Choose"]
-                                       HelperText=@L["Helper Text"]
-                                       Text="@StateNameEdit"
-                                       @onchange="GetCities">
-                                <MudSelectItem Value="StateNameEdit"></MudSelectItem>
-                                @foreach (var state in states)
-                                {
-                                    if (CultureInfo.CurrentCulture.Name == "en")
-                                    {
-                                        <MudSelectItem Value="@state.Id.ToString()">@state.EnglishName</MudSelectItem>
-                                    }
-                                    else
-                                    {
+                                </MudSelect>
 
-                                        <MudSelectItem Value="@state.Id.ToString()">@state.ArabicName</MudSelectItem>
-
-                                    }
-
-                                }
-                            </MudSelect>
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudSelect Variant="Variant.Text"
-                                       Label=@L["City"]
-                                       Placeholder=@L["Choose"]
-                                       HelperText=@L["Helper Text"]
-                                       @bind-Value="@CitySelectValue">
-                                <MudSelectItem Disabled="true" Value="CityNameEdit"></MudSelectItem>
-                                @foreach (var city in cities)
-                                {
-
-                                    if (CultureInfo.CurrentCulture.Name == "en")
-                                    {
-                                        <MudSelectItem Value="city.Id.ToString()">@city.EnglishName</MudSelectItem>
-                                    }
-                                    else
-                                    {
-                                        <MudSelectItem Value="city.Id.ToString()">@city.ArabicName</MudSelectItem>
-                                    }
-                                }
-                            </MudSelect>
                         </MudItem>
                         <MudItem sm="4">
                             <MudSwitch Label=@L["Status Active"] Disabled="!HasChangeStatusPermission" LabelPosition="LabelPosition.Start" @bind-Value="Status" Color="MudBlazor.Color.Primary" />
@@ -306,7 +308,7 @@
                         <MudItem sm="4">
                             <div style="display: flex; flex-direction: column;font-weight:bold">
                                 <label style="font-size: 0.75rem; margin-bottom: 4px;">
-                                    @L["FullDay"]
+                                    @L["FullDayPrice"]
                                     @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
                                 </label>
                                 <MudNumericField T="decimal" Immediate="true"

@@ -66,14 +66,14 @@
                         </MudSelect>
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudSelect T="int"
+                        <MudSelect @bind-Value="@Vehicle.VehicleBrandId"
                                    Variant="Variant.Text"
                                    Label="@L["VehicleBrand"]"
                                    Placeholder=@L["Choose"]
                                    HelperText=@L["Helper Text"]
                                    Required="true"
                                    Clearable="_clearable"
-                                   ValueChanged="SelectBrand">
+                                   >
                                  <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var vehiclebrand in VehicleBrands)
                             {

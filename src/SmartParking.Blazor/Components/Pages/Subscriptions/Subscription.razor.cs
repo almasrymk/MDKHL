@@ -161,13 +161,13 @@ public partial class Subscription
         if (CultureInfo.CurrentCulture.Name == "en")
         { 
              tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "English Name", IsFilterable = false, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionTypeEn", IsFilterable = true, PropertyName = "Subscription.TypeEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionType", IsFilterable = true, PropertyName = "SubscriptionType.TypeEn", IsSortable = true, TypeFilter = TypeFilter.Text });
         
         }
         else
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "Arabic Name", IsFilterable = false, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionTypeAr", IsFilterable = true, PropertyName = "Subscription.TypeAr", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SubscriptionType"], Name = "SubscriptionType", IsFilterable = true, PropertyName = "SubscriptionType.TypeAr", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         }
         tableData.Columns.Add(new ColumnDef()

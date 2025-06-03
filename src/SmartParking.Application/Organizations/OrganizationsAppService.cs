@@ -9,6 +9,7 @@ using SmartParking.Entities.Subscriptions;
 using SmartParking.EnumDescriptions;
 using SmartParking.Enums;
 using SmartParking.Filters;
+using SmartParking.Localization;
 using SmartParking.Lookups;
 using SmartParking.Repositories;
 using SmartParking.Results;
@@ -30,6 +31,7 @@ using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectExtending;
 using Volo.Abp.TenantManagement;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Organizations;
 
@@ -69,6 +71,9 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         Tenant tenant = await CreateTenat(input);
         var role = await AddRole(tenant.Id);
         await CheckCommercial(input);
+        await CheckCommercialRegistrationNumber(input.CommercialRegistrationNumber);
+        await CheckTaxNumber(input.TaxNumber);
+        await CheckInvoiceCode(input.PaymentCode); 
         Organization organization = await CreateOrganization(input, tenant);
         await AddUser(input, tenant, organization, role);
         organization.Code = CodeGenerator(organization.Id);
@@ -111,6 +116,21 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         {
             var organization = await IsFoundOrganizationAsync(id);
             var city = await _cityAppService.GetAsync(input.CityId);
+
+            if (organization.CommercialRegistrationNumber != input.CommercialRegistrationNumber)
+            {
+                await CheckCommercialRegistrationNumber(input.CommercialRegistrationNumber);
+            }
+
+            if (organization.TaxIdentificationNumber != input.TaxNumber)
+            {
+                await CheckTaxNumber(input.TaxNumber);
+            }
+
+            if (organization.PaymentCode != input.PaymentCode)
+            {
+                await CheckInvoiceCode(input.PaymentCode);
+            }
             if (organization.Address != input.Address || organization.Address == null)
             {
                 CheckAdress(input, city, organization);
@@ -351,6 +371,34 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
             throw new BusinessException(EnumValues.GetEnumDescription(OrganizationCreationValidations.CommercialRegistrationNumber) + query.First().ArabicName);
         }
     }
+    private async Task CheckCommercialRegistrationNumber(string commercialRegistrationNumber)
+    {
+        var count = await _repository.CountAsync(x => x.CommercialRegistrationNumber == commercialRegistrationNumber);
+        if (count > 0)
+        {
+            throw new Exception($"{LocalizationHelper.GetLocalizedString("CommercialRegistrationNumber")} - {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
+        }
+    }
+
+    private async Task CheckTaxNumber(string taxIdentificationNumber)
+    {
+        var count = await _repository.CountAsync(x => x.TaxIdentificationNumber == taxIdentificationNumber);
+        if (count > 0)
+        {
+            throw new Exception($"{LocalizationHelper.GetLocalizedString("TaxNumber")} - {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
+        }
+    }
+
+    private async Task CheckInvoiceCode(string paymentCode)
+    {
+        var count = await _repository.CountAsync(x => x.PaymentCode == paymentCode);
+        if (count > 0)
+        {
+            throw new Exception($"{LocalizationHelper.GetLocalizedString("PaymentCode")}  -  {LocalizationHelper.GetLocalizedString("DuplicateValidation")}");
+        }
+    }
+
+
 
     /// <summary>
     /// Creates a new tenant and persists it to the repository.

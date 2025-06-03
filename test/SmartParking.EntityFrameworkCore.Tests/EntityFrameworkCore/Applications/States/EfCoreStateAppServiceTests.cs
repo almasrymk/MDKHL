@@ -7,4 +7,5 @@ namespace SmartParking.EntityFrameworkCore.Applications.States;
 
 public class EfCoreStateAppServiceTests : StateAppServiceTests<SmartParkingEntityFrameworkCoreTestModule>
 {
+
 }

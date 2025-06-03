@@ -139,13 +139,17 @@
                
 
                     <MudItem sm="12">
+                       @*  <MudText>@L["Description"]</MudText> *@
+                        <label style="font-size: 0.75rem; margin-bottom: 4px; color: rgba(0, 0, 0, 0.38); cursor: default;">
+                            @L["Description"]
+                        </label>
                         <MudTextField @bind-Value="Package.Description"
                                       For="@(() => Package.Description)"
                                       Variant="Variant.Outlined"
                                       Class="w-100"
                                       Lines="5"
                                       Disabled='true'
-                                      Label=@L["Description"] />
+                                      />
 
                     </MudItem>
 

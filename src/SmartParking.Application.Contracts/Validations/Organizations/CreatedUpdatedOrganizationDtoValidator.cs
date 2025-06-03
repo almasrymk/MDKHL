@@ -58,6 +58,9 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
         RuleFor(x=>x.FirstHourPrice)
             .GreaterThanOrEqualTo(0);
 
+        RuleFor(x=>x.Graceperiod)
+            .GreaterThanOrEqualTo(0);
+
         RuleFor(x => x.SecondHourPrice)
             .GreaterThanOrEqualTo(0);
 
@@ -68,11 +71,10 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
            .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.FullDayPrice)
-          .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
           .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.NumberOfHours)
-         .GreaterThanOrEqualTo(0);
+        .InclusiveBetween(0, 24);
 
         RuleFor(x => x.BuildingNumber)
             .NotEmpty()
@@ -93,7 +95,7 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
         RuleFor(x=>x.District)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .Matches(@"^[A-Za-z\u0600-\u06FF\s]{3,20}$")
-           .MaximumLength(20).WithMessage(LocalizationHelper.GetLocalizedString("StreetValidation"));
+            .MaximumLength(20).WithMessage(LocalizationHelper.GetLocalizedString("StreetValidation"));
 
         RuleFor(x => x.StreetName)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
@@ -103,11 +105,11 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
         RuleFor(x => x.TaxNumber)
            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
            .Length(15).WithMessage(LocalizationHelper.GetLocalizedString("RangeValidation") + " " + 15)
-           .Matches(@"^\d{15}$").WithMessage(LocalizationHelper.GetLocalizedString("OnlyEnglishNumberAllowed")); 
+           .Matches(@"^\d{15}$").WithMessage(LocalizationHelper.GetLocalizedString("MaxLengthTaxValidation")); 
         
         RuleFor(x => x.PaymentCode)
            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
            .Length(3).WithMessage(LocalizationHelper.GetLocalizedString("RangeValidation") + " " + 3)
-           .Matches(@"^[A-Z]{3}$").WithMessage(LocalizationHelper.GetLocalizedString("OnlyEnglishLettersAllowed"));
+           .Matches(@"^[A-Z]{3}$").WithMessage(LocalizationHelper.GetLocalizedString("MaxLengthCodeValidation"));
     }
 }

@@ -134,7 +134,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         await CheckExistanceOfDependencies(input);
         var _overlapExpression = GetTimeOverlapExpression(input.StartTime, input.EndTime, input.StartDate, input.EndDate, input.GarageId, input.IsFullDay, input.Status);
         var _sameShiftExpression = NotSameEntityExpression(id);
-        if ((await HasOverlappingShift(_overlapExpression.And(_sameShiftExpression)))  && (Shift.Status == Status.Active))
+        if ((await HasOverlappingShift(_overlapExpression.And(_sameShiftExpression)))  && (input.Status == Status.Active))
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("ShiftOverlapValidation"));
         }
