@@ -724,6 +724,8 @@
     "CustomerAndPaymentReport": "المدفوعات النقديه",
     "CustomerAndPaymentReports": "تقرير بالمدفوعات النقديه",
     "CustomerPackageReport": "باقات العملاء",
+    "EmployeePackageReport": "باقات الموظفين",
+    "VisitorPackageReport": "باقات الزوار",
     "PaymentMehtodReport": "المدفوعات البنكية",
     "PaymentsMehtodReport": "تقرير بالمدفوعات البنكية",
     "Keeper": "يمكن ان يعين له وردية عمل",
@@ -839,7 +841,6 @@
     "EndTimeShouldBeGreaterThanStartTime": "وقت النهاية يجب ان يكون بعد وقت البدايه",
     "MaxLengthNameValidation": "يجب ألا يزيد طول الاسم عن 100 حرف.",
     "DuplicationPackageName": "اسم الباقه موجود بالفعل",
-    "MaxLengthNameValidation": "يجب ألا يزيد طول الاسم عن 100 حرف.",
     "MaxLengthTaxValidation": "يجب أن يتكون الرقم الضريبي من 15 رقمًا",
     "MaxLengthCodeValidation": "يجب أن يتكون كود الفواتير من 3 أحرف إنجليزية كبيرة",
     "keeper": "حارس",
@@ -847,7 +848,7 @@
     "PackageTypeValidation": "نوع الباقة غير صحيح",
     "PriceValidation": "السعر لا يمكن ان يكون اقل من صفر",
     "PriceRangeValidation": "يجب ألا يحتوي السعر على أكثر من منزلتين عشريتين ويجب أن يكون أقل من 18 رقمًا",
-    "DurationOfPackage": "المدة"
+    "DurationOfPackage": "المدة" ,
 
 
 
@@ -857,6 +858,7 @@
 
 
 
+    "Report" : "تقرير"
 
 
 

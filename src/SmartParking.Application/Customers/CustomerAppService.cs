@@ -92,6 +92,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
             }
             var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
+            customer.IdentificationTypes = input.IdentificationType;
             UserDto userCreated;
             if (input.IsUser)
             {

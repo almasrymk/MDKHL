@@ -585,10 +585,10 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var query = await _paymentRepository.GetQueryableAsync();
             var organizations = await _orgRepo.GetQueryableAsync();
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
+            query = query.Where(_ => _.PaymentMethod == PaymentMethod.Cash);
             var resultJoin = from payment in query
-                             where tenantId.HasValue ? payment.TenantId == tenantId.Value : true
-
-                             where payment.CustomerId != null
+                             where tenantId.HasValue ? payment.TenantId == tenantId.Value : true && payment.PaymentMethod == PaymentMethod.Cash
+                             where payment.CustomerId != null 
                              join organization in organizations
                              on payment.OrganizationId equals organization.Id
                              select new PaymentDto
@@ -635,10 +635,9 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var organizations = await _orgRepo.GetQueryableAsync();
 
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
+            query = query.Where(_ => _.PaymentMethod != PaymentMethod.Cash);
             var resultJoin = from payment in query
                              where tenantId.HasValue ? payment.TenantId == tenantId.Value : true
-
-                             where payment.PaymentMethod == PaymentMethod.Cash
                              join organization in organizations
                              on payment.OrganizationId equals organization.Id
                              select new PaymentDto
@@ -939,7 +938,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 _.PackageNameArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 _.PackageNameEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 _.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                _.ModelYear.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+                _.ModelYear.ToLower().Contains(input.SearchingTerm.ToLower())
 
                 );
             }
@@ -977,6 +976,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                              ModifiedTime = TimeOnly.FromDateTime((DateTime)customer.LastModificationTime),
                              ModifiedDate = DateOnly.FromDateTime((DateTime)customer.LastModificationTime),
                          };
+          
             if (!input.Sorting.IsNullOrEmpty())
             {
                 if (input.Sorting.Contains("DESC"))
@@ -988,7 +988,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 {
                     result = result.OrderBy(input.Sorting);
                 }
-
             }
             if (input.filters.Count > 0)
             {
@@ -998,15 +997,15 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                     result = result.Where(filterExpression);
                 }
             }
-            if (!input.SearchingTerm.IsNullOrEmpty())
-            {
-                result = result
-                    .Where(_ => _.BeneficiaryNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                            _.BeneficiaryNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                            _.PackageCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                            _.BeneficiaryStatus.ToLower().Contains(input.SearchingTerm.ToLower())
-                );
-            }
+            //if (!input.SearchingTerm.IsNullOrEmpty())
+            //{
+            //    result = result
+            //        .Where(_ => _.BeneficiaryNameAr.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            //                _.BeneficiaryNameEn.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            //                _.PackageCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+            //                _.BeneficiaryStatus.ToLower().Contains(input.SearchingTerm.ToLower())
+            //    );
+            //}
             var totalCount = await AsyncExecuter.CountAsync(result);
             result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
             IList<CustomerAnalysis> finalResult = await AsyncExecuter.ToListAsync(result);
