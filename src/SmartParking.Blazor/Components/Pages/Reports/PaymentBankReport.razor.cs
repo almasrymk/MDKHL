@@ -31,7 +31,6 @@ public partial class PaymentBankReport
     public PaymentBankReport(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
-
     }
     protected async override Task OnInitializedAsync()
     {
@@ -40,12 +39,38 @@ public partial class PaymentBankReport
 
             Navigation.NavigateTo("/Account/AccessDenied", true);
         }
+        await CreateMenue(itemData.Columns);
     }
+    private async Task CreateMenue(List<ColumnDef> columns)
+    {
+        var MenuDatasTable = new List<MudMenuData>
+        {
+           await CreateColumnVisibilityMenue(columns)
+        };
+        MenuDatas = MenuDatasTable;
 
-    
-   
-   
-   
+    }
+    private async Task<MudMenuData> CreateColumnVisibilityMenue(List<ColumnDef> columns)
+    {
+        var items = new List<MenuItem>();
+        foreach (var item in columns)
+        {
+            items.Add(new MenuItem { MenueName = "ColumnVisibility", Label = item.DisplayName, ISColumnVisibility = true, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectColumnVisibilityAsync(selectedValue)) });
+        }
+        await Task.Yield();
+        return new MudMenuData
+        {
+            Name = L["ColumnVisibility"],
+            Label = L["ColumnVisibilitySelector"],
+            Items = items,
+            IsMenueColumnVisible = true
+        };
+    }
+    private async Task HandleSelectColumnVisibilityAsync(string valueOfMenue)
+    {
+        ColumnVisibility = valueOfMenue;
+        await Task.Yield();
+    }
     private async Task FetchData(PageChangeEventArgs paged)
     {
         var request = new PagedAndSortedAndFilteredResultRequestDto
@@ -57,10 +82,24 @@ public partial class PaymentBankReport
             filters = paged.Filters,
 
         };
-
         var payments = await AnalysisAppService.ReportCustomerPaymentForPaymentMethod(request, CurrentTenant.Id);
         TotalItem = (int)payments.TotalCount;
-        itemData = await CreateTableHelper.CreateDataTableForPayments(payments.Items.ToList());
+        if (paged.IsExport)
+        {
+            itemDataIsExport.Columns = itemData.Columns;
+            itemData = await CreateTableHelper.CreateDataTableForPayments(payments.Items.ToList());
+            itemData.Columns = itemDataIsExport.Columns;
+        }
+        else if (!ColumnVisibility.IsNullOrWhiteSpace() && (IsEnter && paged.IsExport == false))
+        {
+            itemData.Columns.FirstOrDefault(c => c.DisplayName == ColumnVisibility).IsColumnVisible = !itemData.Columns.FirstOrDefault(c => c.DisplayName == ColumnVisibility).IsColumnVisible;
+        }
+        else
+        {
+            itemData = await CreateTableHelper.CreateDataTableForPayments(payments.Items.ToList());
+            IsEnter = true;
+        }
         itemData.Name = LocalizationHelper.GetLocalizedString("PaymentsMehtodReport");
+        await CreateMenue(itemData.Columns);
     }
 }

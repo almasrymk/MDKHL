@@ -44,14 +44,15 @@
                         Placeholder=@L["Type Here"]
                         Label=@L["EnglishName"] />
                     </MudItem>
-                    <MudItem sm="6" md="6">
-                        <MudDatePicker Variant="Variant.Text"
-                        Class="w-100"
-                        @bind-Date="_startDateTime"
-                       IsDateDisabledFunc="@((DateTime dt) => dt < DateTime.Today)" 
-                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        PickerVariant="PickerVariant.Dialog"
-                        Label="@L["StartDate"]" />
+                     <MudItem sm="6" md="6">
+                 <MudDatePicker 
+                    Variant="Variant.Text"
+                    Class="w-100"
+                    @bind-Date="_startDateTime"
+                    PickerVariant="PickerVariant.Dialog"
+                    Label="@L["StartDate"]"
+                    RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                    IsDateDisabledFunc="@(dt => !_startDateTime.HasValue || dt < DateTime.Today && dt != _startDateTime.Value.Date)" />
                     </MudItem>
                     <MudItem sm="6" md="6">
                         <MudDatePicker Variant="Variant.Text"

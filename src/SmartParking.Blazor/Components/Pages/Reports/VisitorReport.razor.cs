@@ -55,6 +55,36 @@ partial class VisitorReport
         else
             Navigation.NavigateTo("/Account/AccessDenied", true);
     }
+    private async Task CreateMenue(List<ColumnDef> columns)
+    {
+        var MenuDatasTable = new List<MudMenuData>
+        {
+           await CreateColumnVisibilityMenue(columns)
+        };
+        MenuDatas = MenuDatasTable;
+
+    }
+    private async Task<MudMenuData> CreateColumnVisibilityMenue(List<ColumnDef> columns)
+    {
+        var items = new List<MenuItem>();
+        foreach (var item in columns)
+        {
+            items.Add(new MenuItem { MenueName = "ColumnVisibility", Label = item.DisplayName, ISColumnVisibility = true, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectColumnVisibilityAsync(selectedValue)) });
+        }
+        await Task.Yield();
+        return new MudMenuData
+        {
+            Name = L["ColumnVisibility"],
+            Label = L["ColumnVisibilitySelector"],
+            Items = items,
+            IsMenueColumnVisible = true
+        };
+    }
+    private async Task HandleSelectColumnVisibilityAsync(string valueOfMenue)
+    {
+        ColumnVisibility = valueOfMenue;
+        await Task.Yield();
+    }
     private async Task FetchData(PageChangeEventArgs paged)
     {
         string selectvalue = "Visitor";
@@ -74,11 +104,24 @@ partial class VisitorReport
             SearchingTerm = "",
             filters = filters
         };
-
          var garageTransactionAnalyses = await AnalysisAppService.ReportGarageTransactionAsync(request, CurrentTenant.Id);
          TotalItem = (int)garageTransactionAnalyses.TotalCount;
-        itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList(), CurrentTenant.Id);
+        if (paged.IsExport)
+        {
+            itemDataIsExport.Columns = itemData.Columns;
+            itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList(), CurrentTenant.Id);
+            itemData.Columns = itemDataIsExport.Columns;
+        }
+        else if (!ColumnVisibility.IsNullOrWhiteSpace() && (IsEnter && paged.IsExport == false))
+        {
+            itemData.Columns.FirstOrDefault(c => c.DisplayName == ColumnVisibility).IsColumnVisible = !itemData.Columns.FirstOrDefault(c => c.DisplayName == ColumnVisibility).IsColumnVisible;
+        }
+        else
+        {
+            itemData = await CreateTableHelper.CreateDataTableForGarageTransaction(garageTransactionAnalyses.Items.ToList(), CurrentTenant.Id);
+            IsEnter = true;
+        }
         itemData.Name = LocalizationHelper.GetLocalizedString("VisitorAndTransactionReportName");
-
+        await CreateMenue(itemData.Columns);
     }
 }

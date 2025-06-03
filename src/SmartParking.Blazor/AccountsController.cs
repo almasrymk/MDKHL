@@ -76,6 +76,10 @@ public class AccountsController : ControllerBase
     [HttpGet("/logOut")]
     public async Task<ActionResult> Logout()
     {
+        if (currentTenant.Id.HasValue)
+        {
+            Response.Cookies.Delete(TenantResolverConsts.DefaultTenantKey);
+        }
         await _authenticationApp.LogOutAsync();
         return LocalRedirect($"/Account/Login"); 
     }

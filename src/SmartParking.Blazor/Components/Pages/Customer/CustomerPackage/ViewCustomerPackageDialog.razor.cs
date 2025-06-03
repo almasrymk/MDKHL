@@ -49,7 +49,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
         /// <returns>A task representing the asynchronous operation.</returns>
         private async Task FetchTableData(PageChangeEventArgs pageInfo)
         {
-            var input = new PagedAndSortedResultRequestDto
+            var input = new PagedAndSortedAndSearchResultRequestDto
             {
                 MaxResultCount = pageInfo.RowsPerPage,
                 SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,

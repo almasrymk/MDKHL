@@ -90,6 +90,12 @@ namespace SmartParking.Packages
         /// 
         Task<PackageDto> UpdateAsync(int id, CreateUpdatePackageDto input);
         /// <summary>
+        /// abstract method to create Package
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        Task<PackageDto> CreateAsync(CreateUpdatePackageDto input);
+        /// <summary>
         /// abstract method to search for package
         /// </summary>
         /// <param name="input">Criteria Of searching</param>

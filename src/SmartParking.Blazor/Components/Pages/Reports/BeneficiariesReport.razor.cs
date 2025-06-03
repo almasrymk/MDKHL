@@ -49,11 +49,8 @@ partial class BeneficiariesReport
     }
     protected async override Task OnInitializedAsync()
     {
-
-
         if ((!await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager)) && (!await AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT)))
         {
-
             Navigation.NavigateTo("/Account/AccessDenied", true);
         }
         await CreateMenue(itemData.Columns);
@@ -64,11 +61,8 @@ partial class BeneficiariesReport
         {
            await CreateReportsMenue() ,
            await CreateColumnVisibilityMenue(columns)
-
-
         };
         MenuDatas = MenuDatasTable;
-
 
     }
     private async Task<MudMenuData> CreateColumnVisibilityMenue(List<ColumnDef> columns)

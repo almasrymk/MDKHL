@@ -29,13 +29,12 @@ namespace SmartParking.Blazor.Components.Pages.Organizations
             organizations = organizationsList.Items.ToList();
             var packageTypesList = await packageTypesAppService.GetListAsync(new PagedAndSortedResultRequestDto());
             packageTypes = packageTypesList.Items.ToList();
-            timeSpanFrom = createUpdatePackage.PublishFrom.ToTimeSpan();
-            timeSpanTo = createUpdatePackage.PublishTo.ToTimeSpan();
+            timeSpanFrom = createUpdatePackage.PublishFrom?.ToTimeSpan();
+            timeSpanTo = createUpdatePackage.PublishTo?.ToTimeSpan();
             await base.OnInitializedAsync();
         }
         private void OnTimeFromChanged(TimeSpan? value)
         {
-            // Handle null case and update CreateUpdatePackage.PublishFrom
             if (value.HasValue)
             {
                 timeSpanFrom = value;
@@ -44,7 +43,6 @@ namespace SmartParking.Blazor.Components.Pages.Organizations
         }
         private void OnTimeToChanged(TimeSpan? value)
         {
-            // Handle null case and update CreateUpdatePackage.PublishTo
             if (value.HasValue)
             {
                 timeSpanTo = value;

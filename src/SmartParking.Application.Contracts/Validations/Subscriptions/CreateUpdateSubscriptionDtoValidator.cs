@@ -15,17 +15,19 @@ public class CreateUpdateSubscriptionDtoValidator : AbstractValidator<CreateUpda
     {
         RuleFor(x => x.ArabicName)
             .NotEmpty()
+            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .Matches(ConstantValidations.ArabicName)
-            .WithMessage("The Arabic name should only contain Arabic letters, digits, punctuation marks, and spaces.")
+            .WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"))
             .MaximumLength(100)
-            .WithMessage("Maximum Length Name must be only 100 Characters");
+            .WithMessage(LocalizationHelper.GetLocalizedString("MaxLengthNameValidation"));
 
         RuleFor(x => x.EnglishName)
           .NotEmpty()
+          .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
           .Matches(ConstantValidations.EnglishName)
-          .WithMessage("Name must start with a letter, accept only English letters and numbers, and cannot contain special characters such as ، / . \\ ,.")
+          .WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"))
           .MaximumLength(100)
-          .WithMessage("Maximum Length Name must be only 100 Characters");
+          .WithMessage(LocalizationHelper.GetLocalizedString("MaxLengthNameValidation"));
 
         RuleFor(x => x.SubscriptionDescription)
             .NotEmpty();

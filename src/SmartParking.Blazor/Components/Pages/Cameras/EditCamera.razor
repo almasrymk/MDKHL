@@ -12,6 +12,12 @@
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.Validation
+@using SmartParking.Currency
+@using SmartParking.Lookups
+@using SmartParking.Organizations
+@using SmartParking.Packages
+@using SmartParking.Validations
+@using Volo.Abp.MultiTenancy
 @inject ICamerasAppService CamerasAppService
 @inject IGarageAppService GaragesAppService
 @inject NavigationManager Navigation
@@ -20,9 +26,11 @@
 @inject ICameraBrandAppService CameraBrandAppService 
 @inject ICameraModelAppService CameraModelAppService 
 @inject ICameraMainTypeAppService CameraMainTypeAppService 
+
 <PageTitle>@L["Edit Camera"]</PageTitle>
 
 <div class="modal-wrapper">
+
 	<MudDialog class="mud-modal">
 		<TitleContent>
 			<MudText Typo="Typo.h6">@L["Edit"]</MudText>
@@ -30,10 +38,11 @@
 		<DialogContent>
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
 				<MudGrid>
-
+				
 					<MudItem sm="12" md="12">
 						<MudText Class="text-bold">@L["CameraAccessData"]</MudText>
-					</MudItem>					<MudItem sm="6" md="6">
+					</MudItem>					
+					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="Camera.UserName"
 									  Immediate="true"
 									  Required
@@ -67,44 +76,33 @@
 						Required="true"
 						RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
 					</MudItem>
-
-					<MudItem sm="6">
-						<MudSelect 
-						@bind-Value="@Camera.BrandNameId"
-						Variant="Variant.Text"
-						Label="@L["BrandName"]"
-						HelperText=@L["Helper Text"]
-						Placeholder=@L["Choose"]
-						Required="true"
-						Immediate="true"
-						RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-						Clearable="_clearable">
-							<MudSelectItem Value="0" Disabled>@L["Choose"]</MudSelectItem>
-							@foreach (var cameraBrand in CameraBrands)
+				
+					
+					<MudItem sm="6" md ="6">
+						<MudSelect @bind-Value="@Camera.BrandNameId" Label="@L["BrandName"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"] Required>
+							<MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+							@foreach (var type in CameraBrands)
 							{
 								@if (CultureInfo.CurrentCulture.Name == "en")
 								{
-									<MudSelectItem Value="cameraBrand.Id">@cameraBrand.EnglishName</MudSelectItem>
+									<MudSelectItem Value="@type.Id">
+										@type.EnglishName
+									</MudSelectItem>
 								}
 								else
 								{
-									<MudSelectItem Value="cameraBrand.Id">@cameraBrand.ArabicName</MudSelectItem>
+									<MudSelectItem  Value="@type.Id">
+										@type.ArabicName
+									</MudSelectItem>
 								}
-
 							}
 						</MudSelect>
 					</MudItem>
 
-					<MudItem sm="6">
-						<MudSelect @bind-Value="@Camera.ModelId"
-						Variant="Variant.Text"
-						Label="@L["Model"]"
-						HelperText=@L["Helper Text"]
-						Placeholder=@L["Choose"]
-						Required="true"
-						RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-						Clearable="_clearable">
-							<MudSelectItem Value="0" Disabled>@L["Choose"]</MudSelectItem>
+					<MudItem sm="6" md="6">
+						<MudSelect 
+						@bind-Value="@Camera.ModelId" Variant="Variant.Text" 	Label="@L["Model"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"]   Required>
+							<MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
 							@foreach (var cameraModel in CameraModels)
 							{
 								@if (CultureInfo.CurrentCulture.Name == "en")
@@ -113,22 +111,15 @@
 								}
 								else
 								{
-									<MudSelectItem  Value="cameraModel.Id">@cameraModel.ArabicName</MudSelectItem>
+									<MudSelectItem Value="cameraModel.Id">@cameraModel.ArabicName</MudSelectItem>
 								}
 							}
 						</MudSelect>
 					</MudItem>
 
 					<MudItem sm="6">
-						<MudSelect @bind-Value="@Camera.MainTypeId"
-						Variant="Variant.Text"
-						Label="@L["MainType"]"
-						HelperText=@L["Helper Text"]
-						Placeholder=@L["Choose"]
-						Required="true"
-						RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-						Clearable="_clearable">
-							<MudSelectItem Value="0" Disabled>@L["Choose"]</MudSelectItem>
+						<MudSelect @bind-Value="@Camera.MainTypeId" 	Variant="Variant.Text" 	Label="@L["MainType"]" HelperText=@L["Helper Text"] 	Placeholder=@L["Choose"] Required>
+							<MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
 							@foreach (var cameraMainType in CameraMainTypes)
 							{
 								@if (CultureInfo.CurrentCulture.Name == "en")
@@ -139,7 +130,6 @@
 								{
 									<MudSelectItem Value="cameraMainType.Id">@cameraMainType.ArabicName</MudSelectItem>
 								}
-
 							}
 						</MudSelect>
 					</MudItem>
@@ -217,6 +207,7 @@
 							</MudRadioGroup>
 						</div>
 					</MudItem>
+					
 				</MudGrid>
 			</MudForm>
 		</DialogContent>
@@ -232,6 +223,7 @@
 		</DialogActions>
 
 	</MudDialog>
+	
 
 </div>
 

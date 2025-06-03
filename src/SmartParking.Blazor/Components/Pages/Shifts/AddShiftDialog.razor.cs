@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using iText.Kernel.Pdf.Canvas.Parser.ClipperLib;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Garages;
+using SmartParking.Localization;
 using SmartParking.Shifts;
 using SmartParking.Validations;
 using Volo.Abp;
@@ -52,9 +54,9 @@ namespace SmartParking.Blazor.Components.Pages.Shifts
         }
         private async Task Submit()
         {
-
             try
             {
+                CheckInputsDateAndTime();
                 var garage = Garages.Find(x => x.Id == shiftDto.GarageId);
                 shiftDto.OrganizationId = garage.OrganizationId;
                 shiftDto.TenantId = CurrentTenant.Id;
@@ -89,6 +91,27 @@ namespace SmartParking.Blazor.Components.Pages.Shifts
 
 
         }
+
+        private void CheckInputsDateAndTime()
+        {
+            if (_startDateTime == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("StartDate") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            }
+            if (_endDateTime == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("EndDate") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            }
+            if (_timeSpanStart == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("StartTime") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            }
+            if (_timeSpanEnd == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("EndTime") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            }
+        }
+
         private void Cancel()
         {
             MudDialog.Cancel();

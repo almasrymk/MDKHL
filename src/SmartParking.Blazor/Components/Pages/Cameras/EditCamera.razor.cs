@@ -17,7 +17,7 @@ namespace SmartParking.Blazor.Components.Pages.Cameras
     /// <summary>
     /// Partial class for editing an existing camera.
     /// </summary>
-    partial class EditCamera
+    public partial class EditCamera
     {
         [CascadingParameter]
         private IMudDialogInstance MudDialogAdd { get; set; }
@@ -26,38 +26,46 @@ namespace SmartParking.Blazor.Components.Pages.Cameras
         [Parameter]
         public int UpdatedId { get; set; }
         public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
-
         private bool _clearable;
         private MudForm form;
         private int OrgId { get; set; }
         private string GarageCode { get; set; }
-
+        private bool isLoaded = false;
         private int GarageId { get; set; }
-
-        private IList<CameraBrandDto> CameraBrands = new List<CameraBrandDto>();
-        private IList<CameraModelDto> CameraModels = new List<CameraModelDto>();
-        private IList<CameraMainTypeDto> CameraMainTypes = new List<CameraMainTypeDto>();
-
+        private List<CameraBrandDto> CameraBrands = new List<CameraBrandDto>();
+        private List<CameraModelDto> CameraModels = new List<CameraModelDto>();
+        private List<CameraMainTypeDto> CameraMainTypes = new List<CameraMainTypeDto>();
         /// <summary>
         /// Initializes data required for the form, such as camera brands, models, types, and garages.
         /// </summary>
-        protected override async void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            CameraBrands = await CameraBrandAppService.GetAllCameraBrandsAsync();
-            CameraModels = await CameraModelAppService.GetAllCameraModelsAsync();
-            CameraMainTypes = await CameraMainTypeAppService.GetAllCameraMainTypesAsync();
+            
+            await GetAllGarage();
+            await GetDataForCamera();
+            StateHasChanged();
+            await base.OnInitializedAsync();
+        }
 
+        private async Task GetAllGarage()
+        {
             var result = await GaragesAppService.GetListAsync(new PagedAndSortedResultRequestDto
             {
                 MaxResultCount = 100,
                 SkipCount = 0
             });
-
             Garages = result.Items.ToList();
             var garage = Garages.Find(x => x.Id == Camera.GarageId);
             GarageCode = garage.Code;
             GarageId = garage.Id;
             Camera.OrganizationId = garage.OrganizationId;
+        }
+
+        private async Task GetDataForCamera()
+        {
+            CameraBrands = await CameraBrandAppService.GetAllCameraBrandsAsync();
+            CameraModels = await CameraModelAppService.GetAllCameraModelsAsync();
+            CameraMainTypes = await CameraMainTypeAppService.GetAllCameraMainTypesAsync();
         }
 
         /// <summary>
@@ -73,25 +81,21 @@ namespace SmartParking.Blazor.Components.Pages.Cameras
                     Camera.OrganizationId = newGarage.OrganizationId;
                     Camera.TenantId = newGarage.TenantId;
                 }
-
                 if (string.IsNullOrEmpty(Camera.DeviceId))
                 {
                     SnackBar.ShowSnackbar(Snackbar,
                         $"{LocalizationHelper.GetLocalizedString("VaildtionError")}: " +
                         $"{LocalizationHelper.GetLocalizedString("DeviceId")} - " +
-                        $"{LocalizationHelper.GetLocalizedString("EmptyValidation")}",
+                        $"{LocalizationHelper.GetLocalizedString("RequiredValidation")}",
                         Severity.Error);
                     return;
                 }
-
                 await CamerasAppService.UpdateAsync(UpdatedId, Camera);
                 MudDialogAdd.Close(DialogResult.Ok(true));
-
                 SnackBar.ShowSnackbar(Snackbar,
                     $"{L[AlertMessages.AlertMessages.SUCCESS]} " +
                     $"{L[AlertMessages.AlertMessages.UPDATE]} {Camera.Name}",
                     Severity.Success);
-
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/cameras", forceLoad: true);
             }
