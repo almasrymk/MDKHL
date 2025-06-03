@@ -88,6 +88,41 @@ public partial class OrganizationEdit
     }
     private async Task Update()
     {
+        if (string.IsNullOrWhiteSpace(CountrySelectValue))
+        {
+            SnackBar.ShowSnackbar(
+                Snackbar,
+                $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} {L["Country"]} {L["EmptyValidation"]}",
+                Severity.Error
+            );
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(RegionSelectValue))
+        {
+            SnackBar.ShowSnackbar(
+                          Snackbar,
+                          $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}  {L["Region"]} {L["EmptyValidation"]}",
+                          Severity.Error
+                      ); return;
+        }
+        if (string.IsNullOrWhiteSpace(StateSelectValue))
+        {
+            SnackBar.ShowSnackbar(
+                          Snackbar,
+                          $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} {L["State"]} {L["EmptyValidation"]}",
+                          Severity.Error
+                      ); return;
+        }
+       
+        if (string.IsNullOrWhiteSpace(CitySelectValue))
+        {
+            SnackBar.ShowSnackbar(
+                          Snackbar,
+                          $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}  {L["City"]} {L["EmptyValidation"]}",
+                          Severity.Error
+                      ); return;
+        }
+
         var id = int.Parse(Id);
         _createUpdateOrganiztionDto.ClosingHoursStart = TimeOnly.FromTimeSpan(ClosingHoursStart ?? TimeSpan.MinValue);
         _createUpdateOrganiztionDto.ClosingHoursEnd = TimeOnly.FromTimeSpan(ClosingHoursEnd ?? TimeSpan.MaxValue);
@@ -105,11 +140,11 @@ public partial class OrganizationEdit
 
             if (IsPictureChanged)
                 _createUpdateOrganiztionDto.OrganizationPicture = await FileHelper.SaveImageFromBase64Async(OrganizationPicture, PathHelper.OrganizationFolder);
+
             var oragnization = await OrganizationAppService.UpdateAsync(id, _createUpdateOrganiztionDto);
 
             Navigation.NavigateTo("/organizations");
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Organization"]} {_createUpdateOrganiztionDto.ArabicName}", Severity.Success);
-
         }
         catch (AbpValidationException validationException)
         {
@@ -120,7 +155,6 @@ public partial class OrganizationEdit
         }
         catch (BusinessException ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
         }
         catch (AuthenticationException ex)
@@ -129,10 +163,10 @@ public partial class OrganizationEdit
         }
         catch (Exception ex)
         {
-
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
     }
+
     private void Cancel()
     {
         Navigation.NavigateTo("/organizations");
@@ -187,49 +221,102 @@ public partial class OrganizationEdit
     }
 
 
-    private async Task GetRegions()
+    private async Task OnCountryChanged(string value)
     {
-
-        if (CountrySelectValue != null)
+        if (string.IsNullOrWhiteSpace(value))
         {
-            regions = await RegionAppService.GetRegionByCountry(int.Parse(CountrySelectValue));
+            CountrySelectValue = "";
+            RegionSelectValue = "";
+            StateSelectValue = "";
+            CitySelectValue = "";
+
+            regions.Clear();
+            states.Clear();
+            cities.Clear();
+            return;
         }
 
-    }
-    private async Task GetCities()
-    {
+        CountrySelectValue = value;
+        RegionSelectValue = "";
+        StateSelectValue = "";
+        CitySelectValue = "";
 
-        if (StateSelectValue != null)
+        regions = await RegionAppService.GetRegionByCountry(int.Parse(value));
+        states.Clear();
+        cities.Clear();
+    }
+
+    private async Task OnRegionChanged(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
         {
-            cities = await CitiesAppService.GetCityByState(int.Parse(StateSelectValue));
+            RegionSelectValue = "";
+            StateSelectValue = "";
+            CitySelectValue = "";
+
+            states.Clear();
+            cities.Clear();
+            return;
         }
 
+        RegionSelectValue = value;
+        StateSelectValue = "";
+        CitySelectValue = "";
+
+        states = await StateAppService.GetStateLookupByRegionAsync(int.Parse(value));
+        cities.Clear();
     }
-    private async Task GetStates()
+
+    private async Task OnStateChanged(string value)
     {
-
-        if (RegionSelectValue != null)
+        if (string.IsNullOrWhiteSpace(value))
         {
-            states = await StateAppService.GetStateLookupByRegionAsync(int.Parse(RegionSelectValue));
-
+            StateSelectValue = "";
+            CitySelectValue = "";
+            cities.Clear();
+            return;
         }
 
+        StateSelectValue = value;
+        CitySelectValue = "";
+
+        cities = await CitiesAppService.GetCityByState(int.Parse(value));
     }
+
+    private Task OnCityChanged(string value)
+    {
+        CitySelectValue = string.IsNullOrWhiteSpace(value) ? "" : value;
+        return Task.CompletedTask;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         HasChangeStatusPermission = await AuthorizationService.IsGrantedAsync(OrganizationPermissions.ChanageStatus);
+
         await FetchData();
 
         countries = await CountriesAppService.GetCountryLookupAsync();
 
-        await GetRegions();
+        if (!string.IsNullOrWhiteSpace(CountrySelectValue))
+        {
+            regions = await RegionAppService.GetRegionByCountry(int.Parse(CountrySelectValue));
+        }
 
-        await GetStates();
+        if (!string.IsNullOrWhiteSpace(RegionSelectValue))
+        {
+            states = await StateAppService.GetStateLookupByRegionAsync(int.Parse(RegionSelectValue));
+        }
 
-        await GetCities();
+        if (!string.IsNullOrWhiteSpace(StateSelectValue))
+        {
+            cities = await CitiesAppService.GetCityByState(int.Parse(StateSelectValue));
+        }
+       
+
         SubscriptionDtos = await SubscriptionAppService.GetAllAsync();
-
     }
+
+
     private async Task ViewGarages()
     {
         var id = int.Parse(Id);
