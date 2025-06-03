@@ -694,6 +694,8 @@
     "CustomerAndPaymentReport": "Cash Payments",
     "CustomerAndPaymentReports": "Cash Payments Report",
     "CustomerPackageReport": "Customers Packages",
+    "EmployeePackageReport": "Employees Packages",
+    "VisitorPackageReport": "Visitors Packages",
     "PaymentMehtodReport": "Bank Payments",
     "PaymentsMehtodReport": "Bank Payments Report",
     "RequestTime": "Request Time",
@@ -807,9 +809,9 @@
     "EndTimeShouldBeGreaterThanStartTime": "End Time must be after Start Time",
     "MaxLengthNameValidation": "Maximum Length Name must be only 100 Characters",
     "DuplicationPackageName": "Package name already exists",
-    "MaxLengthNameValidation": "Maximum Length Name must be only 100 Characters",
     "MaxLengthTaxValidation": "Tax number must be 15 digits",
-    "MaxLengthCodeValidation": "Payment code must be 3 capital English letters"
+    "MaxLengthCodeValidation": "Payment code must be 3 capital English letters",
+    "Report" : "Report"
 
   }
 }
