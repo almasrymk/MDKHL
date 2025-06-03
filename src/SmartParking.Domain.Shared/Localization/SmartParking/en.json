@@ -19,6 +19,7 @@
     "Main Data": "Main Data",
     "Type Here": "Type Here",
     "ArabicName": "Arabic Name",
+    "Arabic Name": "Arabic Name",
     "EnglishName": "Name",
     "English Name": "Name",
     "CommercialRegistrationNumber": "CR Number",
@@ -174,6 +175,7 @@
     "Vehicles": "Vehicles",
     "TotalHours": "Duration",
     "InvoiceCreatedSuccessfully": "Mapping Created Successfully",
+    "CheckoutConfirm": "Invoice Paid Successfully",
     "Can'tCreateInvoice": "Can't Create Mapping",
     "OrganizationArabicName": "Org ArName",
     "GarageName": "Garage Name",
@@ -627,7 +629,7 @@
     "ExitImage": "Exit Image",
     "LastInvoice": "Check out",
     "AtGate": "In front of gate.",
-    "ChooseGarage": "Can't add without choose garage",
+    "ChooseGarage": "Garage Is Required",
     "OTPCorrect": "OTP Verified correctly",
     "OTPIncorrect": "OTP Is In-correct",
     "NotMatchValidation": "doesn't match ",
@@ -811,6 +813,11 @@
     "DuplicationPackageName": "Package name already exists",
     "MaxLengthTaxValidation": "Tax number must be 15 digits",
     "MaxLengthCodeValidation": "Payment code must be 3 capital English letters",
+    "keeper": "Keeper",
+    "NoRole": "No Role",
+    "PackageTypeValidation": "Package Type is invalid",
+    "PriceValidation": "Price can't' be negative.",
+    "PriceRangeValidation": "Price must not have more than two decimal places and must be less than 18 digits",
     "Report" : "Report"
 
   }

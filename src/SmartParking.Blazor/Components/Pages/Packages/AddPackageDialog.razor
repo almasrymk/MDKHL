@@ -264,8 +264,8 @@
         _organizations = organizationsList.Items.ToList();
         var packageTypesList = await packageTypesAppService.GetAllListAsync();
         packageTypes = packageTypesList;
-        timeSpanFrom = createUpdatePackage.PublishFrom.ToTimeSpan();
-        timeSpanTo = createUpdatePackage.PublishTo.ToTimeSpan();
+        timeSpanFrom = createUpdatePackage.PublishFrom?.ToTimeSpan();
+        timeSpanTo = createUpdatePackage.PublishTo?.ToTimeSpan();
         if(CurrentTenant.Id!=null){
             var id = await organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
             OrganizationId = id.ToString();
@@ -273,30 +273,31 @@
         await base.OnInitializedAsync();
     }
     private void OnTimeFromChanged(TimeSpan? value)
+{
+    if (value.HasValue)
     {
-        if (value.HasValue)
-        {
-            timeSpanFrom = value;
-            createUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(value.Value);
-        }
-        else
-        {
-            createUpdatePackage.PublishFrom = new TimeOnly(0,0,0);
-        }
+        timeSpanFrom = value;
+        createUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(value.Value);
     }
-    private void OnTimeToChanged(TimeSpan? value)
+    else
     {
-        // Handle null case and update CreateUpdatePackage.PublishTo
-        if (value.HasValue)
-        {
-            timeSpanTo = value;
-            createUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(value.Value);
-        }
-        else
-        {
-            createUpdatePackage.PublishTo = new TimeOnly(0,0,0);
-        }
+        createUpdatePackage.PublishFrom =null ; 
     }
+}
+
+private void OnTimeToChanged(TimeSpan? value)
+{
+    if (value.HasValue)
+    {
+        timeSpanTo = value;
+        createUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(value.Value);
+    }
+    else
+    {
+        createUpdatePackage.PublishTo = null; 
+    }
+}
+
 
     private async Task Submit()
     {

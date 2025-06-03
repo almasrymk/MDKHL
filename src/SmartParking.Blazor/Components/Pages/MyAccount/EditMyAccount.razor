@@ -274,13 +274,13 @@
                             <MudSwitch Label="@L["IsClose"]" LabelPosition="LabelPosition.End" @bind-Value="_createUpdateOrganization.IsClose" Color="MudBlazor.Color.Primary" />
                         </MudItem>
 
-                        @if (_createUpdateOrganization.IsNumberOfHoursExceeded)
+                        @if (_createUpdateOrganization.IsNumberOfHoursExceeded==true)
                         {
                             <MudItem sm="6">
                                 <MudNumericField T="int" Immediate="true" Required="@_createUpdateOrganization.IsNumberOfHoursExceeded" @bind-Value="@_numberOfHours" Min="0" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["NumberOfHours"]" />
                             </MudItem>
                         }
-                        @if (_createUpdateOrganization.IsClose)
+                        @if (_createUpdateOrganization.IsClose==true)
                         {
                             <MudItem sm="6">
                                 <MudTimePicker Required="@_createUpdateOrganization.IsClose" Label="@L["ClosingHoursStart"]" Placeholder="@L["Type Here"]" TimeFormat="h:mm tt" @bind-Time="_closingHoursStart" ShowToolbar="false" />
