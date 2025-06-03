@@ -31,6 +31,7 @@ namespace SmartParking.KeeperShifts
         /// <param name="input">Pagination, sorting, and search parameters.</param>
         /// <returns>Paged result of <see cref="KeeperShiftDto"/> for the current user.</returns>
         Task<PagedResultDto<KeeperShiftDto>> GetMyShiftsForCurrentUser(Guid? TenantId, PagedAndSortedAndSearchResultRequestDto input);
+        Task<List<KeeperShiftDto>> GetAllMyShiftsForCurrentUser(Guid? TenantId);
 
         /// <summary>
         /// Retrieves a single Keeper Shift by its ID.
