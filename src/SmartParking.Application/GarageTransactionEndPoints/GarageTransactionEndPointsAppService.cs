@@ -366,7 +366,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         var _lastInvoiceForPlateNumber = await _invoiceAppService.GetLatestInvoiceForCustomerInOrganizationGarage(exitTransaction.PlateNumber, exitTransaction.OrganizationID, exitTransaction.GarageId);
         await _garageTransactionUtilityAppService.CloseCheckoutMobileTransaction(exitTransaction.PlateNumber);
-        _logger.LogInformation($"{DateTime.Now} ====> Customer ID : {customer.Id}");
+        _logger.LogInformation($"{DateTime.Now} ====> Customer ID : {customer?.Id}");
         _logger.LogInformation($"{DateTime.Now} ====> PlateNumber  : {exitTransaction.PlateNumber}");
         var PassGraceTime = await CheckIfPassGracePeriod(exitTransaction.AccurateTime.Value, _lastInvoiceForPlateNumber.Value.InvoiceTime, organization.Graceperiod);
         return PassGraceTime switch
