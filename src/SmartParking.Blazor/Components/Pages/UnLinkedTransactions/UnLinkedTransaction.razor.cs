@@ -139,7 +139,7 @@ public partial class UnLinkedTransaction
         };
 
         // Retrieve the list of organizations from the server
-        var unLinkedTransactions = await UnLinkedTransactionAppService.GetListAsync(input);
+        var unLinkedTransactions = await UnLinkedTransactionAppService.GetListMdkhlAsync(input);
         TotalItem = (int)unLinkedTransactions.TotalCount;
         CreateTable(unLinkedTransactions);
 

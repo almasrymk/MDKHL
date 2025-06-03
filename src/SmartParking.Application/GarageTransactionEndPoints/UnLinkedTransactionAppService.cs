@@ -43,7 +43,7 @@ public class UnLinkedTransactionAppService : CrudAppService<UnLinkedTransaction,
         return result;
     }
     ///<inheritdoc/>
-    public async Task<PagedResultDto<UnLinkedTransactionDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input )
+    public async Task<PagedResultDto<UnLinkedTransactionDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input )
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
