@@ -15,11 +15,10 @@ namespace SmartParking.GarageTransactionEndPoints;
 
 public interface IGarageTransactionEndPointsAppService : IApplicationService
 {
+    /// <summary>
+    /// Method used to recieve transaction request from camera.
+    /// </summary>
+    /// <param name="input">Transaction dto</param>
+    /// <returns>flag if true opens gate </returns>
     Task<Boolean> CreateAsync(CreateUpdateGarageTransactionEndPointDto input);
-    Task<Result<InvoiceDto>> CustomerCheckoutFromHisMobile(int garageTransactionId);
-    Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutFromHisMobile(int garageTransactionId);
-    Task<Result<InvoiceDto>> CustomerCheckoutFromKeeperMobile(int garageTransactionId);
-    Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutFromKeeperMobile(int garageTransactionId);
-
-
 }

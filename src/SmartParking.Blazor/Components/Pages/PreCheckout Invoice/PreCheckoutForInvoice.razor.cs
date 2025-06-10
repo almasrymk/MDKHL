@@ -27,7 +27,7 @@ public partial class PreCheckoutForInvoice
 
     private async Task PayInvoice()
     {
-        var invoice = await GarageTransactionEndPoint.CustomerCheckoutFromKeeperMobile(GarageTransactionId);
+        var invoice = await keeperTransactionsAppService.Checkout(GarageTransactionId);
         Id = invoice.Value.Id;
         if (Discount != default)
         {
@@ -62,6 +62,6 @@ public partial class PreCheckoutForInvoice
     protected override async Task OnInitializedAsync()
     {
         GarageTransactionDto = await GarageTransactionAppService.GetAsync(GarageTransactionId);
-        Invoice = await GarageTransactionEndPoint.CustomerPreCheckoutFromKeeperMobile(GarageTransactionId);
+        Invoice = await keeperTransactionsAppService.PreCheckout(GarageTransactionId);
     }
 }

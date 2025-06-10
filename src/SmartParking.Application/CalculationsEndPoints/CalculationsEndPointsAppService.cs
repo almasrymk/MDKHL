@@ -31,103 +31,6 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         return hoursDiff;
     }
     ///<inheritdoc/>
-    public decimal CalculatePriceForExceededHours(int totalHours, Organization organization)
-    {
-        decimal price = 0;
-        if (totalHours > organization.NumberOfHours)
-        {
-            int fullDaysCustomerHasStayed = 0;
-            if (totalHours >= 24)
-            {
-                fullDaysCustomerHasStayed = totalHours / 24;
-                totalHours %= 24;
-            }
-            else
-            {
-                fullDaysCustomerHasStayed = 1;
-                totalHours = 0;
-            }
-            price += (fullDaysCustomerHasStayed * organization.FullDayPrice);
-        }
-        price += CalculatePriceHours(organization, totalHours);
-        return price;
-
-    }
-    ///<inheritdoc/>
-    public decimal CalculatePriceForOrganizationIsClosedAndExceededHours(Organization organization, DateTime exitTime, DateTime entranceTime)
-    {
-        (double specialHours, double normalHours) = CalculateHours(exitTime, entranceTime, organization.ClosingHoursStart, organization.ClosingHoursEnd);
-        var closingHour = Math.Ceiling((organization.ClosingHoursEnd - organization.ClosingHoursStart).TotalHours);
-        double price = 0;
-        double totalDays = Math.Ceiling(specialHours / closingHour);
-        price += totalDays * (double)organization.FullDayPrice;
-        price += ((int)(normalHours / 24)) * (double)organization.FullDayPrice;
-        normalHours -= ((int)(normalHours / 24)) * 24;
-        if (normalHours > organization.NumberOfHours)
-        {
-            price += (double)organization.FullDayPrice;
-            normalHours = 0;
-        }
-        price += (double)CalculatePriceHours(organization, (int)normalHours);
-        return (decimal)price;
-
-    }
-    ///<inheritdoc/>
-    public decimal CalculatePriceForOrganizationIsClosed(int totalHours, Organization organization, DateTime exitTime, DateTime entranceTime)
-    {
-
-        (double specialHours, double normalHours) = CalculateHours(exitTime, entranceTime, organization.ClosingHoursStart, organization.ClosingHoursEnd);
-        var closingHour = Math.Ceiling((organization.ClosingHoursEnd - organization.ClosingHoursStart).TotalHours);
-        double price = 0;
-        if (closingHour == 0)
-        {
-            return organization.FullDayPrice * (totalHours / 24 + totalHours % 24 > 0 ? 1 : 0);
-        }
-        double totalDays = Math.Ceiling(specialHours / closingHour);
-        price += totalDays * (double)organization.FullDayPrice;
-        if ((int)normalHours + (int)specialHours > 24)
-        {
-            price += (double)CalculatePriceHoursExceededDay(organization, (int)normalHours + (int)specialHours);
-            price -= totalDays * closingHour * (double)organization.AdditionalHourPrice;
-        }
-        else
-        {
-            price += (double)CalculatePriceHoursExceededDay(organization, (int)normalHours);
-        }
-        return (decimal)price;
-    }
-    ///<inheritdoc/>
-    public decimal CalculatePriceHours(Organization organization, int hours)
-    {
-        decimal price = 0;
-        price += hours > 0 ? organization.FirstHourPrice : 0;
-        hours--;
-        price += hours > 0 ? organization.SecondHourPrice : 0;
-        hours--;
-        price += hours > 0 ? organization.ThirdHourPrice : 0;
-        hours--;
-        price += hours > 0 ? (hours * organization.AdditionalHourPrice) : 0;
-        return price;
-    }
-    ///<inheritdoc/>
-    public decimal CalculatePriceHoursExceededDay(Organization organization, int hours)
-    {
-        decimal price = 0;
-        while (hours > 0)
-        {
-            price += hours > 0 ? organization.FirstHourPrice : 0;
-            hours--;
-            price += hours > 0 ? organization.SecondHourPrice : 0;
-            hours--;
-            price += hours > 0 ? organization.ThirdHourPrice : 0;
-            hours--;
-            price += hours > 0 ? (Math.Min(hours, 21) * organization.AdditionalHourPrice) : 0;
-            hours -= 21;
-
-        }
-        return price;
-    }
-    ///<inheritdoc/>
     public (double, double) CalculateHours(DateTime exitTime, DateTime entrenceTime, TimeOnly ClosingHoursStart, TimeOnly ClosingHoursEnd)
     {
         TimeSpan totalDuration = exitTime - entrenceTime;
@@ -247,10 +150,179 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         return timeDifference.TotalHours > 0 ?
             (int)Math.Ceiling(timeDifference.TotalHours / 24) : 0;
     }
+    ///<inheritdoc/>
+    public decimal CalculateInvoiceCases(DateTime entranceTime, int totalHours, DateTime exitTime, Organization organization)
+    {
+        //4 Cases
+        return (organization.IsNumberOfHoursExceeded, organization.IsClose) switch
+        {
+            (false, false) => CalculatePriceHoursExceededDay(organization, totalHours),
+            (true, false) => CalculatePriceForExceededHours(totalHours, organization),
+            (false, true) => CalculatePriceForOrganizationIsClosed(totalHours, organization, exitTime, entranceTime),
+            (true, true) => CalculatePriceForOrganizationIsClosedAndExceededHours(organization, exitTime, entranceTime),
+        };
+    
+    }
+    ///<inheritdoc/>
+    public decimal CalculationForRegisteredCustomer(DateTime? exitTime, DateTime? entranceTime, Organization organization, CustomerPackageDto? packageDto, int totalHours)
+    {
+        return (packageDto, packageDto?.Package, packageDto?.IsCustomPackage) switch
+        {
+            (null, _, _) or (not null, null, false) => CalculateInvoiceCases(entranceTime.Value, totalHours, exitTime.Value, organization),
+            (not null, not null, _) or (not null, null, true) => CalculateInvoiceForCustomerPackageType(entranceTime.Value, organization, packageDto, exitTime.Value),
+        };
+    }
     #endregion
 
     #region Private Methods Calculations
+    /// <summary>
+    /// Method calculates price depends on package type
+    /// </summary>
+    /// <param name="entranceTime">entrance time</param>
+    /// <param name="organization">organization</param>
+    /// <param name="packageDto">package</param>
+    /// <param name="exitTime">exit time</param>
+    /// <returns>price of invoice</returns>
+    public decimal CalculateInvoiceForCustomerPackageType(DateTime entranceTime, Organization organization, CustomerPackageDto packageDto, DateTime exitTime)
+    {
+        decimal price;
+        if (packageDto.IsCustomPackage)
+        {
+            var totaldays = CalculateTimeForCustomPackage(exitTime, packageDto);
+            price = totaldays * organization.FullDayPrice;
+        }
+        else
+        {
+            var THoursOutPackage = CalculateTimeDependsOnPackage(entranceTime, exitTime, packageDto);
+            price = THoursOutPackage * organization.AdditionalHourPrice;
+        }
+        return price;
+    }
+    /// <summary>
+    /// Calculates the price for exceeded hours.
+    /// </summary>
+    /// <param name="totalHours">The total number of hours.</param>
+    /// <param name="organization">The organization.</param>
+    /// <returns>The calculated price.</returns>
+    private decimal CalculatePriceForExceededHours(int totalHours, Organization organization)
+    {
+        decimal price = 0;
+        if (totalHours > organization.NumberOfHours)
+        {
+            int fullDaysCustomerHasStayed = 0;
+            if (totalHours >= 24)
+            {
+                fullDaysCustomerHasStayed = totalHours / 24;
+                totalHours %= 24;
+            }
+            else
+            {
+                fullDaysCustomerHasStayed = 1;
+                totalHours = 0;
+            }
+            price += (fullDaysCustomerHasStayed * organization.FullDayPrice);
+        }
+        price += CalculatePriceHours(organization, totalHours);
+        return price;
 
+    }
+    /// <summary>
+    /// Calculates the price for an organization that is closed and has exceeded hours.
+    /// </summary>
+    /// <param name="organization">The organization.</param>
+    /// <param name="exitTime">The exit time.</param>
+    /// <param name="entranceTime">The entrance time.</param>
+    /// <returns>The calculated price.</returns>
+    private decimal CalculatePriceForOrganizationIsClosedAndExceededHours(Organization organization, DateTime exitTime, DateTime entranceTime)
+    {
+        (double specialHours, double normalHours) = CalculateHours(exitTime, entranceTime, organization.ClosingHoursStart, organization.ClosingHoursEnd);
+        var closingHour = Math.Ceiling((organization.ClosingHoursEnd - organization.ClosingHoursStart).TotalHours);
+        double price = 0;
+        double totalDays = Math.Ceiling(specialHours / closingHour);
+        price += totalDays * (double)organization.FullDayPrice;
+        price += ((int)(normalHours / 24)) * (double)organization.FullDayPrice;
+        normalHours -= ((int)(normalHours / 24)) * 24;
+        if (normalHours > organization.NumberOfHours)
+        {
+            price += (double)organization.FullDayPrice;
+            normalHours = 0;
+        }
+        price += (double)CalculatePriceHours(organization, (int)normalHours);
+        return (decimal)price;
+
+    }
+    /// <summary>
+    /// Calculates the price for an organization that is closed.
+    /// </summary>
+    /// <param name="totalHours">The total number of hours.</param>
+    /// <param name="organization">The organization.</param>
+    /// <param name="exitTime">The exit time.</param>
+    /// <param name="entranceTime">The entrance time.</param>
+    /// <returns>The calculated price.</returns>
+    private decimal CalculatePriceForOrganizationIsClosed(int totalHours, Organization organization, DateTime exitTime, DateTime entranceTime)
+    {
+
+        (double specialHours, double normalHours) = CalculateHours(exitTime, entranceTime, organization.ClosingHoursStart, organization.ClosingHoursEnd);
+        var closingHour = Math.Ceiling((organization.ClosingHoursEnd - organization.ClosingHoursStart).TotalHours);
+        double price = 0;
+        if (closingHour == 0)
+        {
+            return organization.FullDayPrice * (totalHours / 24 + totalHours % 24 > 0 ? 1 : 0);
+        }
+        double totalDays = Math.Ceiling(specialHours / closingHour);
+        price += totalDays * (double)organization.FullDayPrice;
+        if ((int)normalHours + (int)specialHours > 24)
+        {
+            price += (double)CalculatePriceHoursExceededDay(organization, (int)normalHours + (int)specialHours);
+            price -= totalDays * closingHour * (double)organization.AdditionalHourPrice;
+        }
+        else
+        {
+            price += (double)CalculatePriceHoursExceededDay(organization, (int)normalHours);
+        }
+        return (decimal)price;
+    }
+    /// <summary>
+    /// Calculates the price for hours.
+    /// </summary>
+    /// <param name="organization">The organization.</param>
+    /// <param name="hours">The number of hours.</param>
+    /// <returns>The calculated price.</returns>
+    private decimal CalculatePriceHours(Organization organization, int hours)
+    {
+        decimal price = 0;
+        price += hours > 0 ? organization.FirstHourPrice : 0;
+        hours--;
+        price += hours > 0 ? organization.SecondHourPrice : 0;
+        hours--;
+        price += hours > 0 ? organization.ThirdHourPrice : 0;
+        hours--;
+        price += hours > 0 ? (hours * organization.AdditionalHourPrice) : 0;
+        return price;
+    }
+    /// <summary>
+    /// Calculates the price for hours exceeded in a day.
+    /// </summary>
+    /// <param name="organization">The organization.</param>
+    /// <param name="hours">The number of hours.</param>
+    /// <returns>The calculated price.</returns>
+    private decimal CalculatePriceHoursExceededDay(Organization organization, int hours)
+    {
+        decimal price = 0;
+        while (hours > 0)
+        {
+            price += hours > 0 ? organization.FirstHourPrice : 0;
+            hours--;
+            price += hours > 0 ? organization.SecondHourPrice : 0;
+            hours--;
+            price += hours > 0 ? organization.ThirdHourPrice : 0;
+            hours--;
+            price += hours > 0 ? (Math.Min(hours, 21) * organization.AdditionalHourPrice) : 0;
+            hours -= 21;
+
+        }
+        return price;
+    }
     /// <summary>
     /// Removes seconds, milliseconds, and microseconds from a DateTime object.
     /// </summary>
@@ -365,5 +437,6 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         }
         return _hoursOutOfPackage;
     }
+
     #endregion
 }
