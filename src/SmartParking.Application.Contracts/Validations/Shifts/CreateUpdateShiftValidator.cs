@@ -26,11 +26,13 @@ public class CreateUpdateShiftValidator : AbstractValidator<CreateUpdateShiftDto
          .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
         RuleFor(x => x.StartDate)
+            .NotEmpty()
             .Must(x => x != DateOnly.MinValue)
             .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
         RuleFor(x => x.EndDate)
-            .Must(x => x != DateOnly.MinValue)
+            .NotEmpty()
+            .Must(x => x != DateOnly.MinValue )
             .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
         RuleFor(x => x.StartDate)

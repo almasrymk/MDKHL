@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
+using NUglify.JavaScript.Visitors;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
@@ -80,10 +81,20 @@ public partial class CustomerPackage
     {
         var itemsInMenue = new List<MenuItem>
         {
+
             new MenuItem { MenueName = "Reports",
                 Label = LocalizationHelper.GetLocalizedString("CustomerPackageReport"), ISColumnVisibility = false,
                 OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await CustomerPackageReportsAsync("Customer"))
+            } ,
+             new MenuItem { MenueName = "Reports",
+                Label = LocalizationHelper.GetLocalizedString("EmployeePackageReport"), ISColumnVisibility = false,
+                OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await CustomerPackageReportsAsync("Employee"))
+            } ,
+                             new MenuItem { MenueName = "Reports",
+                Label = LocalizationHelper.GetLocalizedString("VisitorPackageReport"), ISColumnVisibility = false,
+                OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await CustomerPackageReportsAsync("Visitor"))
             }
+
         };
         await Task.Yield();
         return new MudMenuData
@@ -123,12 +134,12 @@ public partial class CustomerPackage
             items = await CreateTableHelper.CreateDataTableForCustomerPackages(customerPackages.Items.ToList());
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
-                items.Name = LocalizationHelper.GetLocalizedString("Report") + " " + CustomStringLocalizer.For + LocalizationHelper.GetLocalizedString("CustomerPackageReport");
+                items.Name = LocalizationHelper.GetLocalizedString("Report") + " " + CustomStringLocalizer.For + LocalizationHelper.GetLocalizedString($"{selectvalue}PackageReport");
 
             }
             else
             {
-                items.Name = LocalizationHelper.GetLocalizedString("CustomerPackageReport") + " " + LocalizationHelper.GetLocalizedString("Report");
+                items.Name = LocalizationHelper.GetLocalizedString($"{selectvalue}PackageReport") + " " + LocalizationHelper.GetLocalizedString("Report");
 
             }
             await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);

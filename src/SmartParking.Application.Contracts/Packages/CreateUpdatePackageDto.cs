@@ -14,8 +14,8 @@ public class CreateUpdatePackageDto
         public decimal Price { get; set; }
         public string Description { get; set; }
         public bool Published { get; set; }
-        public TimeOnly PublishFrom { get; set; }
-        public TimeOnly PublishTo { get; set; }
+        public TimeOnly? PublishFrom { get; set; }
+        public TimeOnly? PublishTo { get; set; }
         public int OrganizationId { get; set; }
         public SubscriptionStatus PackageStatus { get; set; }
         public CustomerCategoryStatus CustomerCategory { get; set; }

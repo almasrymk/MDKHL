@@ -166,8 +166,8 @@ public partial class Organization
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch // The term to use for filtering results
+            Sorting = pageInfo.SortColumn ,
+             SearchingTerm = termSearch // The term to use for filtering results
         };
 
         // Call the service to perform the search based on the input parameters
@@ -189,11 +189,12 @@ public partial class Organization
         RowPerPage = pageInfo.RowsPerPage;
         Console.WriteLine(RowPerPage);
         // Create a request object for paged and sorted data
-        var input = new PagedAndSortedResultRequestDto
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch // The term to use for filtering results
         };
 
         // Retrieve the list of organizations from the server

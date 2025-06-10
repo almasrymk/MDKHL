@@ -197,7 +197,14 @@ public partial class Invoice
             rowDef.Cells.Add(new KeyValuePair<string, string>(
                 $"{_localizer["InvoicePrice"]}",
                 $"{item.InvoicePrice} {IconHtml}"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceType"],!item.IsPackage?_localizer[$"{item.InvoiceType.ToString()}"]: _localizer[$"Package"]));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+                _localizer["InvoiceType"],
+                item.InvoiceType.ToString() == "UnPaid"
+                    ? _localizer["UnPaid"]
+                    : (item.IsPackage
+                        ? _localizer["Package"]
+                        : _localizer["PaymentParking"])
+            ));
 
             tableData.Rows.Add(rowDef);
         }

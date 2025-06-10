@@ -7,6 +7,7 @@ using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
 using SmartParking.Helpers;
 using SmartParking.Localization;
 using SmartParking.PDF;
@@ -130,7 +131,7 @@ public partial class PaymentReport
                 SkipCount = 0,
                 Sorting = CultureInfo.CurrentCulture.Name == "ar" ? "Customers.ArabicName" : "Customers.IdentityUser.Name",
                 SearchingTerm = "",
-                filters = new List<FilterRequestDto>()   
+                filters = new List<FilterRequestDto>()
             };
 
             var payments = await AnalysisAppService.ReportCustomerPayment(request, CurrentTenant.Id);

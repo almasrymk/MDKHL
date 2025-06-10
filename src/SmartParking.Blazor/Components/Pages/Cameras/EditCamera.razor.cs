@@ -86,7 +86,7 @@ namespace SmartParking.Blazor.Components.Pages.Cameras
                     SnackBar.ShowSnackbar(Snackbar,
                         $"{LocalizationHelper.GetLocalizedString("VaildtionError")}: " +
                         $"{LocalizationHelper.GetLocalizedString("DeviceId")} - " +
-                        $"{LocalizationHelper.GetLocalizedString("EmptyValidation")}",
+                        $"{LocalizationHelper.GetLocalizedString("RequiredValidation")}",
                         Severity.Error);
                     return;
                 }

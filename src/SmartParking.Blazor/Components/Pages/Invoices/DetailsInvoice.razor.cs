@@ -65,8 +65,7 @@ public partial class DetailsInvoice
         PaymentCheckoutDto payment = await RequestToPaymentCheckout();
         if (payment != null)
         {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
-
+            SnackBar.ShowSnackbar(Snackbar, $"{L["CheckoutConfirm"]}", MudBlazor.Severity.Success);
             await Task.Delay(1000);
             Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
         }
