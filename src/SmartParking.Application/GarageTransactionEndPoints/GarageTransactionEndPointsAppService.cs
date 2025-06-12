@@ -214,6 +214,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         //Save Exit Transaction
         var _createdExitGarageTransaction = await _garageTransactionsAppService.CreateAsync(exitTransaction);
         _initialInvoice.GarageTransactionExitId = _createdExitGarageTransaction.Id;
+        _initialInvoice.ExitTransactionImage = _createdExitGarageTransaction.VehiclePicture;
         //Save Invoice
         await _invoiceAppService.CreateAsync(_initialInvoice);
         //Opens Gate Depends On Invoice Price
