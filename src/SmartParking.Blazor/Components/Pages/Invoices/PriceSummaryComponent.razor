@@ -67,19 +67,25 @@
         <MudItem>
 
             <MudGrid Class="mt-4">
-                @if (AuthorizationService.IsGrantedAnyAsync(CheckoutPermissions.Discount).Result)
-                {
+              @if (AuthorizationService.IsGrantedAnyAsync(CheckoutPermissions.Discount).Result)
+                        {
+                            <MudItem sm="12" md="12">
+                                <div style="display: flex; flex-direction: column; font-weight: bold;">
+                                    <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                        @L["Discount"]
+                                        @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                                    </label>
 
-                    <MudItem sm="12" md="12">
-                        <div style="display: flex; flex-direction: column;font-weight:bold">
-                                <label style="font-size: 0.75rem; margin-bottom: 4px;">
-                                    @L["SecondHourPrice"]
-                                    @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
-                                </label>
-                               <MudNumericField T="decimal" Validation="@( (decimal value) => NumbersValidations.ValidateInvoice(value,InvoicePriceWithVat))" HideSpinButtons="true" ValueChanged="OnAddDiscount" Label="@L["Discount"]" Variant="Variant.Text" Culture="CultureInfo.InvariantCulture" />
-                            </div>
-                    </MudItem>
-                }
+                                    <MudNumericField T="decimal"
+                                                     Validation="@( (decimal value) => NumbersValidations.ValidateInvoice(value, InvoicePriceWithVat))"
+                                                     HideSpinButtons="true"
+                                                     ValueChanged="OnAddDiscount"
+                                                     Variant="Variant.Text"
+                                                     Culture="CultureInfo.InvariantCulture" />
+                                </div>
+                            </MudItem>
+                        }
+
 
                 
                 @if (HasConfirmPermission

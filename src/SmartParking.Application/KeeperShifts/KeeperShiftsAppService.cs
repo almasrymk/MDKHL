@@ -132,6 +132,51 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         };
 
     }
+    public async Task<List<KeeperShiftDto>> GetAllMyShiftsForCurrentUser(Guid? userId)
+    {
+        var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
+        var queryGarage = await _garageRepository.GetQueryableAsync();
+        var queryUser = await _userRepository.GetQueryableAsync();
+        var queryShift = await _shiftRepository.GetQueryableAsync();
+        var currentDate = DateOnly.FromDateTime(DateTime.Now);
+        var currentTime = TimeOnly.FromDateTime(DateTime.Now);
+
+        var result = from keepershift in queryKeeperShift
+                     where userId.HasValue ? keepershift.KeeperId == userId : true
+                     orderby
+                        keepershift.StartDate <= currentDate
+                        && keepershift.EndDate >= currentDate descending,
+                        keepershift.StartTime <= currentTime
+                        && keepershift.EndTime >= currentTime descending,
+                        keepershift.StartTime > currentTime descending
+                     join garage in queryGarage on keepershift.GarageId equals garage.Id
+                     join user in queryUser on keepershift.KeeperId equals user.Id
+                     join shift in queryShift on keepershift.ShiftId equals shift.Id
+                     select new KeeperShiftDto
+                     {
+                         Id = keepershift.Id,
+                         KeeperId = keepershift.KeeperId,
+                         KeeperName = user.Name,
+                         GarageNameAr = garage.NameAr,
+                         GarageNameEn = garage.NameEn,
+                         OrganizationId = keepershift.OrganizationId,
+                         OrganizationNameAr = string.Empty,
+                         OrganizationNameEn = string.Empty,
+                         GarageId = keepershift.GarageId,
+                         ShiftId = keepershift.ShiftId,
+                         StartDate = keepershift.StartDate,
+                         EndDate = keepershift.EndDate,
+                         StartTime = keepershift.StartTime,
+                         EndTime = keepershift.EndTime,
+                         ArabicName = shift.ArabicName,
+                         EnglishName = shift.EnglishName,
+                         TenantId = keepershift.TenantId,
+                         IsFullDay = keepershift.IsFullDay
+                     };
+
+        return result.ToList();
+    }
+
     /// <inheritdoc/>
     public async Task<PagedResultDto<KeeperShiftDto>> GetListAssignedShiftsToUserForMdkhal(Guid? tenantId, Guid? userId, PagedAndSortedAndSearchResultRequestDto input)
     {
