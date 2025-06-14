@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.Enums
+namespace SmartParking.Enums;
+
+public enum WatcherType
 {
-    public enum CameraType
-    {
-        Entry,
-        Exit
-    }
+    Entry,
+    Exit
 }

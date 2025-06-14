@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SmartParking.Configurations;
 using SmartParking.Entities;
 using SmartParking.Entities.Banners;
-using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Discounts;
 using SmartParking.Entities.GarageTransactions;
@@ -91,6 +91,8 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<GarageCategories> GarageCategories { get; set; }
     // public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Customer> Customers { get; set; }
+    public DbSet<Watcher> Watchers { get; set; }
+    public DbSet<Dispenser> Dispensers { get; set; }
     public DbSet<Camera> Cameras { get; set; }
     public DbSet<CustomerCategory> CustomerCategories { get; set; }
     public DbSet<PackageCategory> PackageCategories { get; set; }

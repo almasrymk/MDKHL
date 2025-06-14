@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.CustomerPackages;
-using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Organizations;
@@ -79,13 +79,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         {
             switch (GarageTransaction.CameraType)
             {
-                case CameraType.Exit:
+                case WatcherType.Exit:
                     //Returns Flase if Organization Configuration Has No Exit Camera
                     if (_hasFreeSlots)
                         return false;
                     return await HandleCameraExit(GarageTransaction,organization);
 
-                case CameraType.Entry:
+                case WatcherType.Entry:
                     var customerPackageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber( GarageTransaction.OrganizationID, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value);
                     GarageTransaction.CustomerCategory = customerPackageDto is not null ? customerPackageDto.CustomerCategory : CustomerCategoryStatus.Customer;
                     bool _hasActivePackage = customerPackageDto is not null;
@@ -390,8 +390,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             OrganizationID = camera.OrganizationId,
             TenantId = camera.TenantId,
             CameraType = camera.CameraType,
-            IsIn = camera.CameraType == CameraType.Exit ? false : true,
-            IsMapped = camera.CameraType == CameraType.Entry ? false : true,
+            IsIn = camera.CameraType == WatcherType.Exit ? false : true,
+            IsMapped = camera.CameraType == WatcherType.Entry ? false : true,
 
         };
     }

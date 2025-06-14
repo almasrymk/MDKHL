@@ -1,5 +1,4 @@
 ﻿using SmartParking.Cameras;
-using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Localization;
@@ -19,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Customers;
 using Volo.Abp;
 using SmartParking.Invoices;
+using SmartParking.Entities.Cameras.Watchers;
 
 
 namespace SmartParking.Utilities;
@@ -65,7 +65,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
 
 
             var latestTransaction = query
-                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == CameraType.Exit && gt.IsIn == true)
+                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Exit && gt.IsIn == true)
                     .OrderByDescending(gt => gt.AccurateTime)
                     .FirstOrDefault();
 
@@ -94,7 +94,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         using (DataFilter.Disable<IMultiTenant>())
         {
             var query = await _garageTransactionRepoistory.GetQueryableAsync();
-            query.Where(gt => gt.CameraType == CameraType.Exit);
+            query.Where(gt => gt.CameraType == WatcherType.Exit);
             await SaveClosedEntryTransaction(plateNumber, query);
         }
     }
@@ -126,7 +126,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
 
             var query = await _garageTransactionRepoistory.GetQueryableAsync();
             var latestTransaction = query
-                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == CameraType.Entry && gt.IsIn == true)
+                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == true)
                     .OrderByDescending(gt => gt.AccurateTime) 
                     .FirstOrDefault();
             return latestTransaction?.VehiclePicture;
@@ -139,7 +139,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         {
             var query = await _garageTransactionRepoistory.GetQueryableAsync();
             var latestTransaction = query
-                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == CameraType.Entry && gt.IsIn == true)
+                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == true)
                     .OrderByDescending(gt => gt.AccurateTime)
                     .FirstOrDefault();
             return ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(latestTransaction);
@@ -186,7 +186,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     }
 
 
-    public async Task<Camera> GetCameraByTypeBelongsToGarageAsync(int garageId, CameraType cameraType)
+    public async Task<Camera> GetCameraByTypeBelongsToGarageAsync(int garageId, WatcherType cameraType)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -314,7 +314,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             IsIn = true,
             CheckoutMobile = DateTime.Now,
             VehiclePicture = EntryPicture,
-            CameraType = CameraType.Exit
+            CameraType = WatcherType.Exit
         };
     }
     [RemoteService(false)]

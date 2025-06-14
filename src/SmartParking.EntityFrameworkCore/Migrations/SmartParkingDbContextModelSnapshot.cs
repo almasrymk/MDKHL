@@ -24,6 +24,8 @@ namespace SmartParking.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.HasSequence("WatcherSequence");
+
             modelBuilder.Entity("SmartParking.Entities.Banners.Banner", b =>
                 {
                     b.Property<int>("Id")
@@ -80,19 +82,14 @@ namespace SmartParking.Migrations
                     b.ToTable("Banners");
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Cameras.Camera", b =>
+            modelBuilder.Entity("SmartParking.Entities.Cameras.Watcher.Watcher", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasDefaultValueSql("nextval('\"WatcherSequence\"')");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BrandNameId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("CameraIP")
-                        .HasColumnType("text");
+                    NpgsqlPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"));
 
                     b.Property<int>("CameraType")
                         .HasColumnType("integer");
@@ -133,23 +130,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<string>("MacAddress")
-                        .HasColumnType("text");
-
-                    b.Property<int>("MainTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ModelId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("text");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -158,22 +143,11 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
 
-                    b.Property<string>("UserName")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("BrandNameId");
+                    b.ToTable((string)null);
 
-                    b.HasIndex("GarageId");
-
-                    b.HasIndex("MainTypeId");
-
-                    b.HasIndex("ModelId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("Cameras");
+                    b.UseTpcMappingStrategy();
                 });
 
             modelBuilder.Entity("SmartParking.Entities.City", b =>
@@ -4697,47 +4671,52 @@ namespace SmartParking.Migrations
                     b.ToTable("AbpTenantConnectionStrings", (string)null);
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Cameras.Camera", b =>
+            modelBuilder.Entity("SmartParking.Entities.Cameras.Watcher.Camera", b =>
                 {
-                    b.HasOne("SmartParking.Entities.Lookups.CameraBrand", "BrandName")
-                        .WithMany()
-                        .HasForeignKey("BrandNameId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.HasBaseType("SmartParking.Entities.Cameras.Watcher.Watcher");
 
-                    b.HasOne("SmartParking.Entities.Organizations.Garage", "Garage")
-                        .WithMany()
-                        .HasForeignKey("GarageId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.Property<int>("BrandNameId")
+                        .HasColumnType("integer");
 
-                    b.HasOne("SmartParking.Entities.Lookups.CameraMainType", "MainType")
-                        .WithMany()
-                        .HasForeignKey("MainTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.Property<string>("CameraIP")
+                        .HasColumnType("text");
 
-                    b.HasOne("SmartParking.Entities.Lookups.CameraModel", "Model")
-                        .WithMany()
-                        .HasForeignKey("ModelId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.Property<string>("MacAddress")
+                        .HasColumnType("text");
 
-                    b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
-                        .WithMany("Cameras")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.Property<int>("MainTypeId")
+                        .HasColumnType("integer");
 
-                    b.Navigation("BrandName");
+                    b.Property<int>("ModelId")
+                        .HasColumnType("integer");
 
-                    b.Navigation("Garage");
+                    b.Property<string>("Password")
+                        .HasColumnType("text");
 
-                    b.Navigation("MainType");
+                    b.Property<string>("UserName")
+                        .HasColumnType("text");
 
-                    b.Navigation("Model");
+                    b.HasIndex("BrandNameId");
 
-                    b.Navigation("Organization");
+                    b.HasIndex("GarageId");
+
+                    b.HasIndex("MainTypeId");
+
+                    b.HasIndex("ModelId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.ToTable("Cameras", (string)null);
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Cameras.Watcher.Dispenser", b =>
+                {
+                    b.HasBaseType("SmartParking.Entities.Cameras.Watcher.Watcher");
+
+                    b.Property<int>("TotalRemainNumber")
+                        .HasColumnType("integer");
+
+                    b.ToTable("Dispensers", (string)null);
                 });
 
             modelBuilder.Entity("SmartParking.Entities.City", b =>
@@ -4764,7 +4743,7 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.GarageTransactions.GarageTransaction", b =>
                 {
-                    b.HasOne("SmartParking.Entities.Cameras.Camera", "Camera")
+                    b.HasOne("SmartParking.Entities.Cameras.Watcher.Camera", "Camera")
                         .WithMany()
                         .HasForeignKey("CameraId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -5236,6 +5215,49 @@ namespace SmartParking.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.Cameras.Watcher.Camera", b =>
+                {
+                    b.HasOne("SmartParking.Entities.Lookups.CameraBrand", "BrandName")
+                        .WithMany()
+                        .HasForeignKey("BrandNameId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SmartParking.Entities.Organizations.Garage", "Garage")
+                        .WithMany()
+                        .HasForeignKey("GarageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SmartParking.Entities.Lookups.CameraMainType", "MainType")
+                        .WithMany()
+                        .HasForeignKey("MainTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SmartParking.Entities.Lookups.CameraModel", "Model")
+                        .WithMany()
+                        .HasForeignKey("ModelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SmartParking.Entities.Organizations.Organization", "Organization")
+                        .WithMany("Cameras")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BrandName");
+
+                    b.Navigation("Garage");
+
+                    b.Navigation("MainType");
+
+                    b.Navigation("Model");
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Country", b =>

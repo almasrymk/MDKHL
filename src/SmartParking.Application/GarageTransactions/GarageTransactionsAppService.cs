@@ -1,6 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Http;
-using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
@@ -274,7 +274,7 @@ public class GarageTransactionsAppService :
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("Transaction") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
-        if (transactionDto.CameraType == CameraType.Exit)
+        if (transactionDto.CameraType == WatcherType.Exit)
         {
             await UnMappingEntryTransactionForDeletedExit(transactionDto.PlateNumber);
         }
@@ -438,7 +438,7 @@ public class GarageTransactionsAppService :
         var query = await _repository.GetQueryableAsync();
 
         var latestTransaction = query
-                .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == CameraType.Entry && gt.IsIn == false && gt.IsMapped==true)
+                .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == false && gt.IsMapped==true)
                 .OrderByDescending(gt => gt.AccurateTime) 
                 .FirstOrDefault();
         latestTransaction.IsIn = true;
