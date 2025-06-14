@@ -1,5 +1,5 @@
 ﻿using SmartParking.Cameras;
-using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Organizations;
@@ -20,7 +20,7 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
 {
     Task<Camera> GetCameraByDeviceIdAsync(string deviceId);
 
-    Task<Camera> GetCameraByTypeBelongsToGarageAsync(int garageId, CameraType cameraType);
+    Task<Camera> GetCameraByTypeBelongsToGarageAsync(int garageId, WatcherType cameraType);
 
     Task<Garage> GetGarageByIdAsync(int garageId);
     Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId, CustomerCategoryStatus category);

@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.CustomerPackages;
-using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Customers;
-using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.GarageTransactions;
@@ -79,16 +78,16 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         {
             switch (GarageTransaction.CameraType)
             {
-                case CameraType.Exit:
+                case WatcherType.Exit:
                     //Returns Flase if Organization Configuration Has No Exit Camera
                     if (_hasFreeSlots)
                         return false;
-                    return await HandleExit(GarageTransaction,organization);
+                    return await HandleExit(GarageTransaction, organization.Id);
 
-                case CameraType.Entry:
+                case WatcherType.Entry:
                     return await HandleEntrance(input, _hasFreeSlots, _hasPackageOnly, GarageTransaction);
-                    
-            };
+            }
+
         }
         catch (Exception ex)
         {
@@ -136,8 +135,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     /// <param name="exitTransaction">Exit transaction dto</param>
     /// <param name="organization">Organization</param>
     /// <returns>true to open gate otherwise false</returns>
-    public async Task<bool> HandleExit(CreateUpdateGarageTransactionDto exitTransaction, Organization organization)
+    public async Task<bool> HandleExit(CreateUpdateGarageTransactionDto exitTransaction, int organizationId)
     {
+        var organization = await _garageTransactionUtilityAppService.GetOrganization(organizationId);
         bool _requestToGate;
         //getting entrance transaction
         var _entryTransaction = await _garageTransactionUtilityAppService.FindEntranceTime(exitTransaction.PlateNumber);
@@ -400,8 +400,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             OrganizationID = camera.OrganizationId,
             TenantId = camera.TenantId,
             CameraType = camera.CameraType,
-            IsIn = camera.CameraType == CameraType.Exit ? false : true,
-            IsMapped = camera.CameraType == CameraType.Entry ? false : true,
+            IsIn = camera.CameraType == WatcherType.Exit ? false : true,
+            IsMapped = camera.CameraType == WatcherType.Entry ? false : true,
 
         };
     }

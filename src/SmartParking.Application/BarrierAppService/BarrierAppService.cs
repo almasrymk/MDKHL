@@ -9,7 +9,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SmartParking.DispenserAppService;
+namespace SmartParking.BarrierAppService;
 
 public class BarrierAppService : SmartParkingAppService, IBarrierAppService
 {
@@ -20,7 +20,7 @@ public class BarrierAppService : SmartParkingAppService, IBarrierAppService
         _websocketConnectionManager = websocketConnectionManager;
     }
 
-    public async Task<bool> OpenBarrier(int organizationId, BarrierRequest request)
+    public async Task<bool> CallingBarrier(int organizationId, BarrierRequest request)
     {
         try
         {

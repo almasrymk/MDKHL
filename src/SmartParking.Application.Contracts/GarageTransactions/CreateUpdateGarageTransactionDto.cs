@@ -17,7 +17,7 @@ namespace SmartParking.GarageTransactions
 		public int OrganizationID { get; set; }
 		public int GarageId { get; set; }
 		public string VehiclePicture { get; set; }
-		public CameraType CameraType { get; set; }
+		public WatcherType CameraType { get; set; }
 		public Guid? TenantId { get; set; }
         public bool IsIn { get; set; }
         public bool IsMapped { get; set; }
