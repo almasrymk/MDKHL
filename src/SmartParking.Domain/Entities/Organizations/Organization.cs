@@ -1,4 +1,4 @@
-﻿using SmartParking.Entities.Cameras;
+﻿using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Subscriptions;
 using System;

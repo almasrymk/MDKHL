@@ -20,7 +20,7 @@ public class GarageTransactionAnalysis
     public string GarageName{ get; set; }
     public string GarageNameAr { get; set; }
     public string UserName { get; set; }
-    public CameraType CameraType { get; set; }
+    public WatcherType CameraType { get; set; }
     public string PlateNumber { get; set; }
     public DateTime? AccurateTime { get; set; }
     public string OrganizationName { get; set; }

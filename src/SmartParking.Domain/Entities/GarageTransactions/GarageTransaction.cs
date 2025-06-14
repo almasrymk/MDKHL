@@ -1,4 +1,4 @@
-﻿using SmartParking.Entities.Cameras;
+﻿using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using System;
@@ -24,7 +24,7 @@ public class GarageTransaction : FullAuditedEntity<int>, IMultiTenant
        public virtual Garage Garage { get; set; }
        public int GarageId { get; set; }
        public string VehiclePicture { get; set; }
-       public CameraType CameraType { get; set; }
+       public WatcherType CameraType { get; set; }
        public Guid? TenantId { get; set; }
        public bool IsIn { get; set; }
        public DateTime? CheckoutMobile { get; set; }
