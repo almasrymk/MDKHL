@@ -289,6 +289,8 @@ public class SmartParkingBlazorModule : AbpModule
                 true);
                 options.CustomSchemaIds(type => type.FullName);
                 options.DocumentFilter<CustomSwaggerFilter>();
+                options.SchemaFilter<IgnorePropertyInSwaggerFilter>();
+
 
             }
         );
