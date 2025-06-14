@@ -74,6 +74,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         }
     }
     /// <inheritdoc/>
+    
     public async Task<PagedResultDto<KeeperShiftDto>> GetMyShiftsForCurrentUser(Guid? userId, PagedAndSortedAndSearchResultRequestDto input)
     {
         var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();
@@ -132,6 +133,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
         };
 
     }
+    [RemoteService(false)]
     public async Task<List<KeeperShiftDto>> GetAllMyShiftsForCurrentUser(Guid? userId)
     {
         var queryKeeperShift = await _keeperShiftRepository.GetQueryableAsync();

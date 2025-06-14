@@ -10,13 +10,12 @@ namespace SmartParking.WebSockets;
 
 public interface IWebSocketConnectionManager
 {
-
-    Task AddConnection(string organizationId, string connectionId, WebSocket socket);
-    Task<WebSocket?> GetConnection(string organizationId, string connectionId);
-    Task<IEnumerable<WebSocket>> GetConnectionsByOrganization(string organizationId);
-    Task RemoveConnectionAsync(string organizationId, string connectionId);
+    Task AddConnection(string connectionId, WebSocket socket);
+    Task<WebSocket?> GetConnection(string connectionId);
+    Task<bool> TryGetConnection(string connectionId, out WebSocket socket);
+    ConcurrentDictionary<string, WebSocket> GetAllConnections();
+    Task RemoveConnectionAsync(string connectionId);
     Task CloseAllConnectionsAsync();
-    ConcurrentDictionary<string, ConcurrentDictionary<string, WebSocket>> GetAllConnections();
-
 }
+
 
