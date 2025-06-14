@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SmartParking.DispenserAppService;
 using SmartParking.Events;
 using SmartParking.KeeperShifts;
 using SmartParking.Utilities;
@@ -38,6 +39,7 @@ public class SmartParkingApplicationModule : AbpModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddTransient<IInvoiceUtilityAppService, InvoiceUtilityAppService>();
+        context.Services.AddTransient<IBarrierAppService, BarrierAppService>();
         context.Services.AddSingleton<KeeperShiftSingletonService>();
         context.Services.AddSingleton<IWebSocketConnectionManager, WebSocketConnectionManager>();
         context.Services.AddScoped<IHandlerService, HandlerService>();
