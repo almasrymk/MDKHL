@@ -818,7 +818,11 @@
     "PackageTypeValidation": "Package Type is invalid",
     "PriceValidation": "Price can't' be negative.",
     "PriceRangeValidation": "Price must not have more than two decimal places and must be less than 18 digits",
-    "Report" : "Report"
+    "Report": "Report",
+    "Dispenser": "Dispenser",
+    "Permission:Dispenser": "Dispenser Management",
+    "New Dispenser": "New Dispenser"
+
 
   }
 }

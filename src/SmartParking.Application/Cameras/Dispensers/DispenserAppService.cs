@@ -45,6 +45,30 @@ public class DispenserAppService : CrudAppService<Dispenser, DispenserDto, int, 
         }
     }
 
+    public override Task<DispenserDto> GetAsync(int id)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            return base.GetAsync(id);
+        }
+    }
+
+    public override Task<DispenserDto> UpdateAsync(int id, CreateUpdateDispenserDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            return base.UpdateAsync(id, input);
+        }
+    }
+
+    public override Task DeleteAsync(int id)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            return base.DeleteAsync(id);
+
+        }
+    }
 
     private static IQueryable<Dispenser> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Dispenser> queryable)
     {

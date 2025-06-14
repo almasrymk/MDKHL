@@ -311,7 +311,7 @@
     "Organization Customers": "عمـلاء المنشأة",
     "Organization Subscription": "إشتراك المنشأة",
     "Checkout": "الدفع",
-    "CheckoutConfirm":"تم دفع الفاتورة بنجاح",
+    "CheckoutConfirm": "تم دفع الفاتورة بنجاح",
     "Favorite": "المفضلة",
     "Status Draft": "مسودة",
     "Logout": "تسجـيل الخـروج",
@@ -515,6 +515,7 @@
     "Administration": "الإدارة",
     "Roles": "الادوار",
     "Permission:Camera": "موديول الكاميرا",
+    "Permission:Dispenser": "موديول الموزّع",
     "Permission:Create": "اضافة",
     "Permission:Edit": "تعديل",
     "Permission:Delete": "حذف",
@@ -848,17 +849,10 @@
     "PackageTypeValidation": "نوع الباقة غير صحيح",
     "PriceValidation": "السعر لا يمكن ان يكون اقل من صفر",
     "PriceRangeValidation": "يجب ألا يحتوي السعر على أكثر من منزلتين عشريتين ويجب أن يكون أقل من 18 رقمًا",
-    "DurationOfPackage": "المدة" ,
-
-
-
-
-
-
-
-
-
-    "Report" : "تقرير"
+    "DurationOfPackage": "المدة",
+    "Report": "تقرير",
+    "Dispenser": "الموزّع",
+    "New Dispenser" : "اضافة موزع"
 
 
 
