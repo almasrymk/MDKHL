@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
-namespace SmartParking.Dispenser;
+namespace SmartParking.DispenserEndPoint;
 
-public interface IDispenserAppService : IApplicationService
+public interface IDispenserEndPointsAppService : IApplicationService
 {
     Task<bool> Entry(EntryDto request);
     Task<bool> PreEntry(PreEntryDto request);

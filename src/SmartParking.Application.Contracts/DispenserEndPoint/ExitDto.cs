@@ -1,14 +1,13 @@
 ﻿using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.Dispenser;
+namespace SmartParking.DispenserEndPoint;
 
-public class EntryDto
+public class ExitDto
 {
     public string ActTime { get; set; }
     public string ArriveTime { get; set; }
@@ -27,5 +26,6 @@ public class EntryDto
     public int? TotRemianNum { get; set; }
     public string VehicleClass { get; set; }
     public string VttDevChnId { get; set; }
-    public string LaneNO { get; set; }
+    public string LeaveTime { get; set; }
+    public string LaneNO { get; set; } 
 }

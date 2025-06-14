@@ -1,15 +1,17 @@
 ﻿using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.Dispenser;
+namespace SmartParking.DispenserEndPoint;
 
-public class PreEntryDto
+public class EntryDto
 {
     public string ActTime { get; set; }
+    public string ArriveTime { get; set; }
     public string CarAccessCurId { get; set; }
     public string? CarImgData { get; set; }
     public string CarNum { get; set; }
@@ -19,11 +21,10 @@ public class PreEntryDto
     public int LaneType { get; set; }
     public string ParkingLot { get; set; }
     public string ParkingLotCode { get; set; }
-    public string PreArriveTime { get; set; }
     public PushType PushType { get; set; }
     public string SluiceDevChnId { get; set; }
     public string SluiceDevChnName { get; set; }
-    public int TotRemianNum { get; set; }
+    public int? TotRemianNum { get; set; }
     public string VehicleClass { get; set; }
     public string VttDevChnId { get; set; }
     public string LaneNO { get; set; }

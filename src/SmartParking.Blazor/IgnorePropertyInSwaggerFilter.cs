@@ -1,5 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
-using SmartParking.DispenserAppService;
+using SmartParking.BarrierAppService;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace SmartParking.Blazor;
