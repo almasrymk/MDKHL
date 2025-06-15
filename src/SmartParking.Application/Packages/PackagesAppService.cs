@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
@@ -239,6 +240,24 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
         }
         return base.GetAsync(id);
 
+    }
+
+    [RemoteService(false)]
+    public async Task<Result<PackageDto>> GetForMobileAsync(int id)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            try
+            {
+                var result = await GetAsync(id);
+                return Result<PackageDto>.Success(result);
+            }
+            catch
+            {
+                return Result<PackageDto>.NotFound("Package not found");
+
+            }
+        }
     }
     #endregion
 
