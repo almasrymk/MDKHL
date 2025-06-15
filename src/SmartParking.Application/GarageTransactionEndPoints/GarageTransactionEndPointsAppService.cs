@@ -1,6 +1,7 @@
 ﻿using Castle.Core.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Asn1.Ocsp;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Cameras.Watchers;
@@ -70,6 +71,11 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         input.PlateNumber = input.PlateNumber.Replace(" ", "");
         //Load Organization Configurations.
         var organization = await _garageTransactionUtilityAppService.GetOrganization(camera.OrganizationId);
+        if (organization.CameraTransaction == false)
+        {
+            _logger.LogInformation($"No Organization for : {input.DeviceID}");
+            return false;
+        }
         var (_hasFreeSlots, _hasPackageOnly)=(organization.HasFreeSlots, organization.HasPackageOnly) ;
         //Initiate a CreateUpdateGarageTransaction .
         CreateUpdateGarageTransactionDto GarageTransaction = InitiateCreateGarageTransactionDto(input, camera);

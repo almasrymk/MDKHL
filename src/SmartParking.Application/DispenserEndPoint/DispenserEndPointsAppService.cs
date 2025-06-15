@@ -48,7 +48,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
                 return false;
             }
             var _organization = await _organizationRepository.FirstOrDefaultAsync(org => org.Id == _dispenser.OrganizationId);
-            if (_dispenser == null)
+            if (_organization == null || _organization.DispenserTransaction==false)
             {
                 _logger.LogInformation($"No Organization for : {request.LaneNO}");
                 return false;
@@ -72,7 +72,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
                 return false;
             }
             var _organization = await _organizationRepository.FirstOrDefaultAsync(org=>org.Id==_dispenser.OrganizationId);
-            if (_dispenser == null)
+            if (_organization == null|| _organization.DispenserTransaction == false)
             {
                 _logger.LogInformation($"No Organization for : {request.LaneNO}");
                 return false;
