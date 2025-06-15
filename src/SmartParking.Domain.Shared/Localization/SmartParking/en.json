@@ -422,9 +422,9 @@
     "Max Number Of Users": "Available Users",
     "Max Number Of Customers": "Available Customers",
     "Max Number Of Beneficiaries": "Available Beneficiaries",
-    "Max Slots For Employees": "Max Slots For Employees",
-    "Max Slots For Customers": "Max Slots For Customers",
-    "Max Slots For Free": "Free Slots",
+    "MaxSlotsForEmployess": "Max Slots For Employees",
+    "MaxSlotsForCustomers": "Max Slots For Customers",
+    "MaxSlotsForFree": "Free Slots",
     "Employees": "Employees",
     "Details for Employee": "Details for Employee",
     "CameraName": "Camera Name",
@@ -818,7 +818,7 @@
     "PackageTypeValidation": "Package Type is invalid",
     "PriceValidation": "Price can't' be negative.",
     "PriceRangeValidation": "Price must not have more than two decimal places and must be less than 18 digits",
-    "Report" : "Report"
+    "Report": "Report"
 
   }
 }
