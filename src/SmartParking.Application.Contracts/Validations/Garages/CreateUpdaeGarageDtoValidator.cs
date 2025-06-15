@@ -34,6 +34,21 @@ public class CreateUpdaeGarageDtoValidator : AbstractValidator<CreateUpdateGarag
             .GreaterThan(0).WithMessage(LocalizationHelper.GetLocalizedString("GreaterZeroValidtion"))
             .LessThan(9999).WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
 
+        RuleFor(x => x.MaxSlotsForCustomers)
+          .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+          .GreaterThan(0).WithMessage(LocalizationHelper.GetLocalizedString("GreaterZeroValidtion"))
+          .LessThan(9999).WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
+
+        RuleFor(x => x.MaxSlotsForEmployess)
+       .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+       .GreaterThan(0).WithMessage(LocalizationHelper.GetLocalizedString("GreaterZeroValidtion"))
+       .LessThan(9999).WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
+
+        RuleFor(x => x.MaxSlotsForFree)
+       .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+       .GreaterThan(0).WithMessage(LocalizationHelper.GetLocalizedString("GreaterZeroValidtion"))
+       .LessThan(9999).WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
+
         RuleFor(x => x.OrganizationId)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .GreaterThan(0).WithMessage(LocalizationHelper.GetLocalizedString("GreaterZeroValidtion"));
