@@ -15,10 +15,10 @@ public class GarageTransaction : FullAuditedEntity<int>, IMultiTenant
 {
 
        public virtual Camera Camera { get; set; }
-       public int CameraId { get; set; }
+       public int? CameraId { get; set; }
        public string? PlateNumber { get; set; } 
        public DateTime? SnapTime { get; set; }
-	public DateTime? AccurateTime { get; set; }
+	   public DateTime? AccurateTime { get; set; }
        public virtual Organization Organization { get; set; }
        public int OrganizationID { get; set; }
        public virtual Garage Garage { get; set; }
@@ -33,6 +33,9 @@ public class GarageTransaction : FullAuditedEntity<int>, IMultiTenant
        public bool? IsPending { get; set; }
        public CustomerCategoryStatus CustomerCategory { get; set; }
        public bool CanCheckout { get; set; }
+       public int? DispenserId { get; set; }
+       public string? LaneNO { get; set; }
+
 
 
 

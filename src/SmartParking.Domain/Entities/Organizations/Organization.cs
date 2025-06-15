@@ -49,15 +49,14 @@ public class Organization : BaseEntity
     public int SecondaryNumber { get; set; }
     public int PostalCode { get; set; }
     public string District { get; set; }
-
     public int UsedSlots { get; set; }
     public int FreeMinutes { get; set; }
     public int Graceperiod { get; set; }
-
     public string TaxIdentificationNumber { get; set; }
     public bool HasFreeSlots { get; set; }
-
     public bool HasPackageOnly { get; set; }
-
     public string PaymentCode { get; set; }
+    public bool DispenserTransaction { get; set; }
+    public bool CameraTransaction { get; set; } 
+
 }

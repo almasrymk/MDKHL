@@ -82,7 +82,7 @@ namespace SmartParking.Migrations
                     b.ToTable("Banners");
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Cameras.Watcher.Watcher", b =>
+            modelBuilder.Entity("SmartParking.Entities.Cameras.Watchers.Watcher", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -499,7 +499,7 @@ namespace SmartParking.Migrations
                     b.Property<DateTime?>("AccurateTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("CameraId")
+                    b.Property<int?>("CameraId")
                         .HasColumnType("integer");
 
                     b.Property<int>("CameraType")
@@ -530,6 +530,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
 
+                    b.Property<int?>("DispenserId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("GarageId")
                         .HasColumnType("integer");
 
@@ -547,6 +550,9 @@ namespace SmartParking.Migrations
 
                     b.Property<bool?>("IsPending")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("LaneNO")
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("timestamp without time zone")
@@ -1710,6 +1716,9 @@ namespace SmartParking.Migrations
                     b.Property<DateOnly>("CRExpiryDate")
                         .HasColumnType("date");
 
+                    b.Property<bool>("CameraTransaction")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("CityId")
                         .HasColumnType("integer");
 
@@ -1747,6 +1756,9 @@ namespace SmartParking.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("DispenserTransaction")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("District")
                         .HasColumnType("text");
@@ -4671,9 +4683,9 @@ namespace SmartParking.Migrations
                     b.ToTable("AbpTenantConnectionStrings", (string)null);
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Cameras.Watcher.Camera", b =>
+            modelBuilder.Entity("SmartParking.Entities.Cameras.Watchers.Camera", b =>
                 {
-                    b.HasBaseType("SmartParking.Entities.Cameras.Watcher.Watcher");
+                    b.HasBaseType("SmartParking.Entities.Cameras.Watchers.Watcher");
 
                     b.Property<int>("BrandNameId")
                         .HasColumnType("integer");
@@ -4709,9 +4721,9 @@ namespace SmartParking.Migrations
                     b.ToTable("Cameras", (string)null);
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Cameras.Watcher.Dispenser", b =>
+            modelBuilder.Entity("SmartParking.Entities.Cameras.Watchers.Dispenser", b =>
                 {
-                    b.HasBaseType("SmartParking.Entities.Cameras.Watcher.Watcher");
+                    b.HasBaseType("SmartParking.Entities.Cameras.Watchers.Watcher");
 
                     b.Property<int>("TotalRemainNumber")
                         .HasColumnType("integer");
@@ -4743,11 +4755,9 @@ namespace SmartParking.Migrations
 
             modelBuilder.Entity("SmartParking.Entities.GarageTransactions.GarageTransaction", b =>
                 {
-                    b.HasOne("SmartParking.Entities.Cameras.Watcher.Camera", "Camera")
+                    b.HasOne("SmartParking.Entities.Cameras.Watchers.Camera", "Camera")
                         .WithMany()
-                        .HasForeignKey("CameraId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CameraId");
 
                     b.HasOne("SmartParking.Entities.Organizations.Garage", "Garage")
                         .WithMany()
@@ -5217,7 +5227,7 @@ namespace SmartParking.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SmartParking.Entities.Cameras.Watcher.Camera", b =>
+            modelBuilder.Entity("SmartParking.Entities.Cameras.Watchers.Camera", b =>
                 {
                     b.HasOne("SmartParking.Entities.Lookups.CameraBrand", "BrandName")
                         .WithMany()
