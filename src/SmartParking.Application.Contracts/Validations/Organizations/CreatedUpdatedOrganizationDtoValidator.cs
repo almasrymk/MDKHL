@@ -16,9 +16,12 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
     public CreatedUpdatedOrganizationDtoValidator()
     {
         RuleFor(x => x.CommercialRegistrationNumber)
-            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-            .Length(10);
-        
+      .Length(10).WithMessage(LocalizationHelper.GetLocalizedString("RangeValidation") + " " + 10);
+
+        RuleFor(x => x.CommercialRegistrationNumber)
+            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+
+  
         RuleFor(x => x.UserName)
             .Matches(ConstantValidations.EnglishName).WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"));
 
@@ -94,12 +97,12 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
 
         RuleFor(x=>x.District)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-            .Matches(@"^[A-Za-z\u0600-\u06FF\s]{3,20}$")
+            .Matches(@"^[A-Za-z\u0600-\u06FF\s]{3,20}$").WithMessage(LocalizationHelper.GetLocalizedString("StreetValidation"))
             .MaximumLength(20).WithMessage(LocalizationHelper.GetLocalizedString("StreetValidation"));
 
         RuleFor(x => x.StreetName)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-           .Matches(@"^[A-Za-z\u0600-\u06FF\s]{3,20}$")
+           .Matches(@"^[A-Za-z\u0600-\u06FF\s]{3,20}$").WithMessage(LocalizationHelper.GetLocalizedString("StreetValidation"))
            .MaximumLength(20).WithMessage(LocalizationHelper.GetLocalizedString("StreetValidation"));
 
         RuleFor(x => x.TaxNumber)
