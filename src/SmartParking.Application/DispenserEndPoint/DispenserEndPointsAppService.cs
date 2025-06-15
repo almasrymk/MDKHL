@@ -48,7 +48,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
                 return false;
             }
             var _organization = await _organizationRepository.FirstOrDefaultAsync(org => org.Id == _dispenser.OrganizationId);
-            if (_dispenser == null)
+            if (_organization == null || _organization.DispenserTransaction==false)
             {
                 _logger.LogInformation($"No Organization for : {request.LaneNO}");
                 return false;
@@ -72,7 +72,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
                 return false;
             }
             var _organization = await _organizationRepository.FirstOrDefaultAsync(org=>org.Id==_dispenser.OrganizationId);
-            if (_dispenser == null)
+            if (_organization == null|| _organization.DispenserTransaction == false)
             {
                 _logger.LogInformation($"No Organization for : {request.LaneNO}");
                 return false;
@@ -104,13 +104,14 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             SnapTime = DateTime.ParseExact(input.ActTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture),
             VehiclePicture = input.CarImgData,
             PlateNumber = input.CarNum,
-            CameraId = dispenser.Id,
+            DispenserId = dispenser.Id,
+            LaneNO = input.LaneNO,
             GarageId = dispenser.GarageId,
             OrganizationID = dispenser.OrganizationId,
             TenantId = dispenser.TenantId,
-            CameraType = input.LaneType==0?WatcherType.Entry:WatcherType.Exit,
-            IsIn = input.LaneType == 1 ? false : true,
-            IsMapped = input.LaneType == 0 ? false : true,
+            CameraType = WatcherType.Entry,
+            IsIn = true,
+            IsMapped = false,
 
         };
     }
@@ -128,13 +129,14 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             SnapTime = DateTime.ParseExact(input.ActTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture),
             VehiclePicture = input.CarImgData,
             PlateNumber = input.CarNum,
-            CameraId = dispenser.Id,
+            DispenserId = dispenser.Id,
+            LaneNO = input.LaneNO,
             GarageId = dispenser.GarageId,
             OrganizationID = dispenser.OrganizationId,
             TenantId = dispenser.TenantId,
-            CameraType = input.LaneType==0?WatcherType.Entry:WatcherType.Exit,
-            IsIn = input.LaneType == 1 ? false : true,
-            IsMapped = input.LaneType == 0 ? false : true,
+            CameraType = WatcherType.Exit,
+            IsIn = false ,
+            IsMapped = true,
 
         };
     }
@@ -153,6 +155,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             SnapTime = DateTime.ParseExact(input.ActTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture),
             VehiclePicture = input.CarImgData,
             PlateNumber = input.CarNum,
+            DeviceID = input.LaneNO
         };
     }
     #endregion
