@@ -66,6 +66,14 @@
 
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
                         <MudItem sm="4">
+                            <MudSwitch Label="" @bind-Value="_createUpdateOrganiztionDto.CameraTransaction" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <MudSwitch Label="Dispenser Transaction" @bind-Value="_createUpdateOrganiztionDto.DispenserTransaction" Color="MudBlazor.Color.Primary" />
+
+                        </MudItem>
+                        <MudItem sm="4">
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.PhoneNumber" Placeholder=@L["Type Here"] Label=@L["Contact Phone"] />
                         </MudItem>
                         <MudItem sm="4">
