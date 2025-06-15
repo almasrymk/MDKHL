@@ -108,5 +108,13 @@ namespace SmartParking.Packages
         /// <returns>Camera Dto</returns>
         Task<PagedResultDto<PackageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 
+
+        /// <summary>
+        /// abstract method to get Package by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>returns Package Dto</returns>
+
+        Task<Result<PackageDto>> GetForMobileAsync(int id);
     }
 }
