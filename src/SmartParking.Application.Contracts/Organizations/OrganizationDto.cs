@@ -69,6 +69,8 @@ public class OrganizationDto :AuditedEntityDto<int>
     public bool HasFreeSlots { get; set; }
     public bool HasPackageOnly { get; set; }
     public string PaymentCode { get; set; }
+    public bool DispenserTransaction { get; set; }
+    public bool CameraTransaction { get; set; }
 
 
 
