@@ -74,15 +74,15 @@ public partial class PackagePayment
         {
 
             new MenuItem { MenueName = "Customers",
-                Label = LocalizationHelper.GetLocalizedString("Customers"), ISColumnVisibility = false,
+                Label = LocalizationHelper.GetLocalizedString("CustomerPackageReport"), ISColumnVisibility = false,
                 OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await PackageReportsAsync("Customer"))
             } ,
                 new MenuItem { MenueName = "Employees",
-                Label = LocalizationHelper.GetLocalizedString("Employees"), ISColumnVisibility = false,
+                Label = LocalizationHelper.GetLocalizedString("EmployeePackageReport"), ISColumnVisibility = false,
                 OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await PackageReportsAsync("Employee"))
             } ,
                 new MenuItem { MenueName = "Visitors",
-                Label = LocalizationHelper.GetLocalizedString("Visitors"), ISColumnVisibility = false,
+                Label = LocalizationHelper.GetLocalizedString("VisitorPackageReport"), ISColumnVisibility = false,
                 OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await PackageReportsAsync("Visitor"))
             }
         };
