@@ -17,7 +17,8 @@ public partial class OrganizationView
     private string Code { get; set; }
     [Parameter]
     public string Id { get; set; }  // Capture string ID
- 
+    public TimeSpan? ClosingHoursStart { get; set; }
+    public TimeSpan? ClosingHoursEnd { get; set; }
     private string CountrySelectValue { get; set; }
     private string CitySelectValue { get; set; }
 
@@ -34,6 +35,9 @@ public partial class OrganizationView
     {
         var id = int.Parse(Id);
         organization = await OrganizationsAppService.GetAsync(id);       
+        ClosingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
+        ClosingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
+       CRExpiryDate =   organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
         if (organization.Status == Enums.Status.Active)
         {
             Status = 1;
