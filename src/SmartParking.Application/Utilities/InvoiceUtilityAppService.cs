@@ -130,8 +130,8 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
     public async Task<bool> SendRequestToOpenGate(int ExitGarageTransactionId)
     {
 
-        var cameraId = await GarageTransactionAppService.GetCameraIdByGarageTransactionId(ExitGarageTransactionId);
-        var camera = await CameraAppService.GetAsync(cameraId);
+        var garageTransactionDto = await GarageTransactionAppService.GetAsync(ExitGarageTransactionId);
+        var camera = await CameraAppService.GetAsync(garageTransactionDto.CameraId.Value);
         var openGateBody = new OpenGateRequestDto
         {
             ip = camera.CameraIP,

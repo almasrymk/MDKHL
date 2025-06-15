@@ -41,7 +41,7 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
         var customerId = await _garageTransactionUtilityAppService.GetCurrentCustomerId();
         var Customer = await _garageTransactionUtilityAppService.GetCustomer(customerId);
         var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
-        var createdExitGarageTransaction =await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction.PlateNumber,entryGarageTransaction.VehiclePicture,entryGarageTransaction.OrganizationID,entryGarageTransaction.GarageId,entryGarageTransaction.CameraId,entryGarageTransaction.TenantId!.Value);
+        var createdExitGarageTransaction =await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction.PlateNumber,entryGarageTransaction.VehiclePicture,entryGarageTransaction.OrganizationID,entryGarageTransaction.GarageId,entryGarageTransaction.CameraId.Value,entryGarageTransaction.TenantId!.Value);
         var invoice = await PreCheckoutFlow(entryGarageTransaction.AccurateTime.Value, createdExitGarageTransaction, Customer);
         return invoice;
 
@@ -51,7 +51,7 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
     {
 
         var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
-        var createdExitGarageTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction.PlateNumber, entryGarageTransaction.VehiclePicture, entryGarageTransaction.OrganizationID, entryGarageTransaction.GarageId, entryGarageTransaction.CameraId, entryGarageTransaction.TenantId!.Value);
+        var createdExitGarageTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction.PlateNumber, entryGarageTransaction.VehiclePicture, entryGarageTransaction.OrganizationID, entryGarageTransaction.GarageId, entryGarageTransaction.CameraId.Value, entryGarageTransaction.TenantId!.Value);
         var lstCheckout = entryGarageTransaction.CheckoutMobile.HasValue ? entryGarageTransaction.CheckoutMobile.Value : DateTime.MinValue;
         var _garageTransactionDto = ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(entryGarageTransaction);
         if (!(_garageTransactionDto.IsIn && _garageTransactionDto.IsPending == false && _garageTransactionDto.CanCheckout == true))
