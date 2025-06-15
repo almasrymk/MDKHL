@@ -9,7 +9,7 @@ namespace SmartParking.GarageTransactions
 {
 	public class CreateUpdateGarageTransactionDto
 	{
-		public int CameraId { get; set; }
+		public int? CameraId { get; set; }
 		public string? PlateNumber { get; set; }
 		public DateTime? SnapTime { get; set; }
 		public DateTime? AccurateTime { get; set; }
@@ -25,6 +25,8 @@ namespace SmartParking.GarageTransactions
         public bool? IsPending { get; set; }
         public CustomerCategoryStatus CustomerCategory { get; set; } = CustomerCategoryStatus.Customer;
 		public bool CanCheckout { get; set; } = true;
+        public int? DispenserId { get; set; }
+        public string? LaneNO { get; set; }
 
 
 
