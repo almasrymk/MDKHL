@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
@@ -20,6 +19,7 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 using System.Linq.Dynamic.Core;
 using SmartParking.Filters;
+using SmartParking.Entities.Cameras.Watchers;
 
 namespace SmartParking.Cameras;
 

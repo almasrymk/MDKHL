@@ -9,7 +9,6 @@ using System;
 using SmartParking.Entities;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Organizations;
-using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Shifts;
 using SmartParking.Entities.Discounts;
@@ -17,6 +16,7 @@ using Volo.Abp.Identity;
 using SmartParking.Entities.Vehicles;
 using Volo.Abp.TenantManagement;
 using SmartParking.Entities.Customers;
+using SmartParking.Entities.Cameras.Watchers;
 
 namespace SmartParking;
 
@@ -373,7 +373,7 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
                     DeviceId = "233f1b26-9350-eb14-03e7-78934a049350",             // Add a unique code
                     CameraIP = "192.168.1.10",   // Add camera IP address
                     MacAddress = "00:11:22:33:44:55", // Add MAC address
-                    CameraType = CameraType.Entry,            // Set camera type
+                    CameraType = WatcherType.Entry,            // Set camera type
                     Status = Status.Active,      // Set the status of the camera
                     TenantId = null,              // Set TenantId if multi-tenant, or null
                     OrganizationId = organizationTest.Id,
@@ -389,7 +389,7 @@ public class SmartParkingTestDataSeedContributor : IDataSeedContributor, ITransi
                      DeviceId = "df9a5b33-adf7-f454-49dd-d9624605adf7",             // Add a unique code
                      CameraIP = "192.168.1.11",   // Add camera IP address
                      MacAddress = "00:11:22:33:44:55", // Add MAC address
-                     CameraType = CameraType.Exit,            // Set camera type
+                     CameraType = WatcherType.Exit,            // Set camera type
                      Status = Status.Active,      // Set the status of the camera
                      TenantId = null,              // Set TenantId if multi-tenant, or null
                      OrganizationId = organizationTest.Id,

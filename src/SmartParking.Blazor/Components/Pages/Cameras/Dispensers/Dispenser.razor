@@ -1,0 +1,22 @@
+﻿@page "/dispensers"
+@using AutoMapper
+@using Microsoft.Extensions.Localization
+@using SmartParking.Cameras.Watchers.Dispensers
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
+@inject IDispenserAppService DispenserAppService
+@inject IOrganizationsAppService OrganizationAppService
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
+@inject IMapper _mapper
+@inherits AbpCrudPageBase<IDispenserAppService, DispenserDto, int, PagedAndSortedResultRequestDto, CreateUpdateDispenserDto>
+
+<PageTitle>@L["Cameras"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Cameras"]</MudText>
+
+<SPDataGrid PageName=@L["Cameras"] Data="@itemData" Menus="@MenuDatas" ShowAdd="HasCreatePermission" ShowMenue="!CurrentTenant.Id.HasValue" ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete" ></SPDataGrid>

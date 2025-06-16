@@ -11,27 +11,27 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
-namespace SmartParking.GarageTransactions
-{
-    public interface IGarageTransactionsAppService :
-	 ICrudAppService<
-		GarageTransactionDto,
-		int,
-		PagedAndSortedResultRequestDto,
-		CreateUpdateGarageTransactionDto
-		>
-	{
-		public Task<PagedResultDto<GarageTransactionDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
-		Task<PagedResultDto<GarageTransactionDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input);
+namespace SmartParking.GarageTransactions;
 
-		/// <summary>
-		/// abstract method to filter of cameras
-		/// </summary>
-		/// <param name="input">specifies max number of camera and if it sorted or not and filter</param>
-		/// <returns>Camera Dto</returns>
-		public Task<PagedResultDto<GarageTransactionDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
-		Task<PagedResultDto<GarageTransactionDto>> FilterForMDKHL(PagedAndSortedAndFilteredResultRequestDto input);
-		public Task<GarageTransactionDto> CreateAsync(CreateUpdateGarageTransactionDto input);
+    public interface IGarageTransactionsAppService :
+ ICrudAppService<
+	GarageTransactionDto,
+	int,
+	PagedAndSortedResultRequestDto,
+	CreateUpdateGarageTransactionDto
+	>
+{
+	public Task<PagedResultDto<GarageTransactionDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+	Task<PagedResultDto<GarageTransactionDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input);
+
+	/// <summary>
+	/// abstract method to filter of cameras
+	/// </summary>
+	/// <param name="input">specifies max number of camera and if it sorted or not and filter</param>
+	/// <returns>Camera Dto</returns>
+	public Task<PagedResultDto<GarageTransactionDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
+	Task<PagedResultDto<GarageTransactionDto>> FilterForMDKHL(PagedAndSortedAndFilteredResultRequestDto input);
+	public Task<GarageTransactionDto> CreateAsync(CreateUpdateGarageTransactionDto input);
         public Task<GarageTransactionDto> GetAsync(int id);
 
 
@@ -44,22 +44,18 @@ namespace SmartParking.GarageTransactions
         /// <returns>Paged Result of garage transactions</returns>
         Task<PagedResultDto<GarageTransactionDto>> GetAllListAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId);
 
-		/// <summary>
-		/// Method used to get all garage transactions by organization
-		/// </summary>
-		/// <param name="input">Input used for pagination</param>
-		/// <param name="tenantId">id of tenant</param>
-		/// <returns>Paged Result of garage transactions</returns>
-		Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId);
+	/// <summary>
+	/// Method used to get all garage transactions by organization
+	/// </summary>
+	/// <param name="input">Input used for pagination</param>
+	/// <param name="tenantId">id of tenant</param>
+	/// <returns>Paged Result of garage transactions</returns>
+	Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId);
 
-		Task<Result<List<GarageTransactionDto>>> GetCustomerTransactionsInOrganization(int organizationId);
-		string SaveBase64Image(CreateUpdateGarageTransactionDto input);
+	Task<Result<List<GarageTransactionDto>>> GetCustomerTransactionsInOrganization(int organizationId);
+	string SaveBase64Image(CreateUpdateGarageTransactionDto input);
 
-		Task<int> GetCameraIdByGarageTransactionId(int garageTransactionId);
-
-		
-		
+	
 
 
     }
-}

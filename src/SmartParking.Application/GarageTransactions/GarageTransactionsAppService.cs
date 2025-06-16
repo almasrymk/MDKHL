@@ -1,6 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Http;
-using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
@@ -76,7 +76,12 @@ public class GarageTransactionsAppService :
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            return await base.GetAsync(id);
+            var garagetransaction = await base.GetAsync(id);
+            if (garagetransaction == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("Transaction") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            }
+            return garagetransaction;
 
         }
 
@@ -274,7 +279,7 @@ public class GarageTransactionsAppService :
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("Transaction") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
-        if (transactionDto.CameraType == CameraType.Exit)
+        if (transactionDto.CameraType == WatcherType.Exit)
         {
             await UnMappingEntryTransactionForDeletedExit(transactionDto.PlateNumber);
         }
@@ -370,15 +375,6 @@ public class GarageTransactionsAppService :
         }
     }
 
-    public async Task<int> GetCameraIdByGarageTransactionId(int garageTransactionId)
-    {
-        var garagetransaction = await _repository.FindAsync(garageTransactionId);
-        if (garagetransaction == null)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Transaction") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-        }
-        return garagetransaction.CameraId;
-    }
     #endregion
     #region Private Methods
     private static IQueryable<GarageTransaction> ApplyFilterTenant(Guid? tenantId, IQueryable<GarageTransaction> queryable)
@@ -438,7 +434,7 @@ public class GarageTransactionsAppService :
         var query = await _repository.GetQueryableAsync();
 
         var latestTransaction = query
-                .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == CameraType.Entry && gt.IsIn == false && gt.IsMapped==true)
+                .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == false && gt.IsMapped==true)
                 .OrderByDescending(gt => gt.AccurateTime) 
                 .FirstOrDefault();
         latestTransaction.IsIn = true;

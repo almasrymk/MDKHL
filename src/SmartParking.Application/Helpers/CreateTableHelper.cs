@@ -61,7 +61,7 @@ public static class CreateTableHelper
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("GarageName"), Name = "GarageName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "GarageNameAr", IsFilterable = true });
 
         }
-        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CameraType"), Name = "CameraType", TypeFilter = TypeFilter.Enum, IsSortable = true, TypeOfColumn = typeof(CameraType), IsFilterable = true, PropertyName = "CameraType" });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CameraType"), Name = "CameraType", TypeFilter = TypeFilter.Enum, IsSortable = true, TypeOfColumn = typeof(WatcherType), IsFilterable = true, PropertyName = "CameraType" });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AccurateDate"), Name = "AccurateDate", TypeFilter = TypeFilter.DateOnly, IsSortable = true, PropertyName = "TransactionDate", IsFilterable = true, TypeOfColumn = typeof(DateOnly) });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("AccurateTime"), Name = "AccurateTime", TypeFilter = TypeFilter.Time, IsSortable = true, PropertyName = "TransactionTime", IsFilterable = true, TypeOfColumn = typeof(TimeOnly) });
         if (currentTenant == null)

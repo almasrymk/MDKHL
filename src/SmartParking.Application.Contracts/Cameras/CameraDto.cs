@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Lookups;
+﻿using SmartParking.Cameras.Watchers;
+using SmartParking.Entities.Lookups;
 using SmartParking.Enums;
 using SmartParking.Garages;
 using SmartParking.Lookups.CameraBrands;
@@ -9,24 +10,16 @@ using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Cameras;
 
-public class CameraDto: AuditedEntityDto<int>
+public class CameraDto: WatcherDto
 {
-    public string Name { get; set; }
     public string UserName { get; set; }
     public string Password { get; set; }
     public CameraModelDto Model { get; set; }
     public CameraMainTypeDto MainType { get; set; }
     public CameraBrandDto BrandName { get; set; }
-    public string DeviceId { get; set; }
     public string CameraIP { get; set; }
     public string MacAddress { get; set; }
-    public CameraType CameraType { get; set; }
-    public int GarageId { get; set; }
-
     public string GarageNameAr { get; set; }
     public string GarageNameEn { get; set; }
-
-    public Status Status { get; set; }
     public GarageDto Garage { get; set; }
-    public Guid? TenantId { get; set; }
 }

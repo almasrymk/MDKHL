@@ -289,6 +289,8 @@ public class SmartParkingBlazorModule : AbpModule
                 true);
                 options.CustomSchemaIds(type => type.FullName);
                 options.DocumentFilter<CustomSwaggerFilter>();
+                options.SchemaFilter<IgnorePropertyInSwaggerFilter>();
+
 
             }
         );
@@ -388,6 +390,12 @@ public class SmartParkingBlazorModule : AbpModule
         app.UseMiniProfiler(); 
 
         app.UseRouting();
+        app.UseWebSockets(new WebSocketOptions
+        {
+            KeepAliveInterval = TimeSpan.FromMinutes(2)
+        });
+
+
 
         app.UseAuthentication(); // Authentication middleware should be before UseAuthorization and UseEndpoints
         app.UseAuthorization();

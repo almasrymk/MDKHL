@@ -1,0 +1,145 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Cameras
+@using SmartParking.Cameras.Watchers.Dispensers
+@using SmartParking.Enums
+@using SmartParking.Garages
+@using SmartParking.Localization
+@using System.Globalization
+@using System.Security.Authentication
+@using SmartParking.Lookups.CameraBrands
+@using SmartParking.Lookups.CameraMainType
+@using SmartParking.Lookups.CameraModel
+@using Volo.Abp
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.Validation
+@inject IDialogService DialogService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IGarageAppService GaragesAppService
+@inject ISnackbar Snackbar
+@inject IDispenserAppService DispensersAppService
+
+
+<PageTitle>@L["New Dispenser"]</PageTitle>
+@inject NavigationManager Navigation
+
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["Add NEW"]</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                <MudGrid>
+
+                    <MudItem sm="6">
+                        <MudTextField @bind-Value="Dispenser.Name"
+                                      For="@(() => Dispenser.Name)"
+                                      Immediate="true"
+                                      Required="true"
+                                      Placeholder="@L["Name"]"
+                                      Label="@L["Name"]"
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="Dispenser.DeviceId"
+                                      Immediate="true"
+                                      Placeholder="@L["Enter DeviceId"]"
+                                      Label="@L["Code"]" />
+                    </MudItem>
+                    @if (CultureInfo.CurrentCulture.Name == "en")
+                    {
+                        <MudItem sm="6">
+                            <MudSelect @bind-Value="@Dispenser.GarageId"
+                                       Variant="Variant.Text"
+                                       Label="@L["EnGarageName"]"
+                                       Placeholder="Choose"
+                                       Required
+                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
+                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                                @foreach (var garage in Garages)
+                                {
+                                    if (garage.Status != Enums.Status.Active)
+                                        continue;
+                                    <MudSelectItem Value="garage.Id">@garage.NameEn</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    }
+                    else
+                    {
+                        <MudItem sm="6">
+                            <MudSelect @bind-Value="@Dispenser.GarageId"
+                                       Variant="Variant.Text"
+                                       Label="@L["ArGarageName"]"
+                                       Placeholder=@L["Choose"]
+                                       Required
+                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
+                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                                @foreach (var garage in Garages)
+                                {
+                                    if (garage.Status != Enums.Status.Active)
+                                        continue;
+                                    <MudSelectItem Value="garage.Id">@garage.NameAr</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+
+                    }
+
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="Dispenser.GarageId"
+                                      For="@(() => Dispenser.GarageId)"
+                                      Immediate="true"
+                                      Disabled=true
+                                      Label="@L["GarageId"]" />
+                    </MudItem>
+                    <MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
+                        <div Class="d-flex flex-row justify-content-between">
+
+
+                            <MudRadioGroup @bind-Value="@Dispenser.CameraType" Class="d-inline-flex align-content-center">
+                                <MudRadio Value="@(Enums.WatcherType.Entry)" Color="MudBlazor.Color.Primary">@L["Entry"]</MudRadio>
+                                <MudRadio Value="@(Enums.WatcherType.Exit)" Color="MudBlazor.Color.Error">@L["Exit"]</MudRadio>
+                            </MudRadioGroup>
+                        </div>
+                    </MudItem>
+
+                    <MudItem sm="6" md="6" Class="d-inline-flex justify-content-center">
+                        <div Class="d-flex flex-row justify-content-between">
+
+
+
+                            <MudRadioGroup @bind-Value="@Dispenser.Status" Class="d-inline-flex align-content-center">
+
+                                <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Active"]</MudRadio>
+                                <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["InActive"]</MudRadio>
+                            </MudRadioGroup>
+                        </div>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+
+        </DialogContent>
+
+        <DialogActions>
+            <DialogActionComponent ButtonOneLabel="@L["Back"]"
+                                   ButtonOneClick="CancelEdit"
+                                   ButtonOneVariant="MudBlazor.Variant.Filled"
+                                   ButtonOneColor="MudBlazor.Color.Dark"
+                                   ButtonTwoColor="MudBlazor.Color.Primary"
+                                   ButtonTwoLabel="@L["Save"]"
+                                   ButtonTwoClick="SubmitEdit"
+                                   ButtonTwoVariant="MudBlazor.Variant.Filled" />
+        </DialogActions>
+
+
+    </MudDialog>
+
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>

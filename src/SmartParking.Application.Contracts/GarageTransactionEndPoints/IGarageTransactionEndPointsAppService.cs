@@ -1,5 +1,6 @@
 ﻿using SmartParking.CustomerPackages;
 using SmartParking.Entities.Customers;
+using SmartParking.Entities.Organizations;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Payments;
@@ -21,4 +22,7 @@ public interface IGarageTransactionEndPointsAppService : IApplicationService
     /// <param name="input">Transaction dto</param>
     /// <returns>flag if true opens gate </returns>
     Task<Boolean> CreateAsync(CreateUpdateGarageTransactionEndPointDto input);
+
+    Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, CreateUpdateGarageTransactionDto GarageTransaction);
+    Task<bool> HandleExit(CreateUpdateGarageTransactionDto exitTransaction, int organizationId);
 }

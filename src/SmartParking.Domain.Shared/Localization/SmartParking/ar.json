@@ -57,6 +57,7 @@
     "CountryEnglishName": "إسم البلد بالإنجليزية",
     "CountryUpdatedSuccessfully": "تم تعديل الدولة بنجاح",
     "CR Expiry Date": "تاريخ إنتهاء السجل التجاري",
+    "CRExpiryDate": "تاريخ إنتهاء السجل التجاري",
     "Create": "حفظ",
     "CREATE NEW": "إنشاء جديد",
     "Dashboard": "الرئيسية",
@@ -311,7 +312,7 @@
     "Organization Customers": "عمـلاء المنشأة",
     "Organization Subscription": "إشتراك المنشأة",
     "Checkout": "الدفع",
-    "CheckoutConfirm":"تم دفع الفاتورة بنجاح",
+    "CheckoutConfirm": "تم دفع الفاتورة بنجاح",
     "Favorite": "المفضلة",
     "Status Draft": "مسودة",
     "Logout": "تسجـيل الخـروج",
@@ -444,9 +445,9 @@
     "Max Number Of Users": "المتاح من المستخدمين",
     "Max Number Of Customers": "المتاح من العملاء",
     "Max Number Of Beneficiaries": "المتاح من المستفيدين",
-    "Max Slots For Customers": "عدد أماكن الركن المتاح للعملاء",
-    "Max Slots For Employees": "عدد أماكن الركن المتاح للموظفين",
-    "Max Slots For Free": "عدد أماكن الركن المتاح مجانًا ",
+    "MaxSlotsForCustomers": "عدد أماكن الركن المتاح للعملاء",
+    "MaxSlotsForEmployess": "عدد أماكن الركن المتاح للموظفين",
+    "MaxSlotsForFree": "عدد أماكن الركن المتاح مجانًا ",
     "ParkingSlots": "عدد أماكن الوقوف",
     "Employees": "الموظفين",
     "Details for Employee": "تفاصيل للموظف",
@@ -515,6 +516,7 @@
     "Administration": "الإدارة",
     "Roles": "الادوار",
     "Permission:Camera": "موديول الكاميرا",
+    "Permission:Dispenser": "موديول الموزّع",
     "Permission:Create": "اضافة",
     "Permission:Edit": "تعديل",
     "Permission:Delete": "حذف",
@@ -848,17 +850,10 @@
     "PackageTypeValidation": "نوع الباقة غير صحيح",
     "PriceValidation": "السعر لا يمكن ان يكون اقل من صفر",
     "PriceRangeValidation": "يجب ألا يحتوي السعر على أكثر من منزلتين عشريتين ويجب أن يكون أقل من 18 رقمًا",
-    "DurationOfPackage": "المدة" ,
-
-
-
-
-
-
-
-
-
-    "Report" : "تقرير"
+    "DurationOfPackage": "المدة",
+    "Report": "تقرير",
+    "Dispenser": "الموزّع",
+    "New Dispenser" : "اضافة موزع"
 
 
 

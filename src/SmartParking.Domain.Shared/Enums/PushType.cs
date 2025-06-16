@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.Enums
+namespace SmartParking.Enums;
+
+public enum PushType
 {
-    public enum CameraType
-    {
-        Entry,
-        Exit
-    }
+    PreEntry = 1,
+    Entry = 2,
 }

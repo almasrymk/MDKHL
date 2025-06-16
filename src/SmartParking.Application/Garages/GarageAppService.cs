@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using SmartParking.Entities.Cameras;
+using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
@@ -410,14 +410,14 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         var garage = await _repository.FirstOrDefaultAsync(x => x.Id == id);
         if (garage == null)
             throw new Exception("There is no garage related to that id");
-
         var org = await _organizationRepository.GetAsync(garage.OrganizationId);
-        if (org != null)
-            org.ActiveGarages--;
-
         if (garage.Status == Status.Deleted)
             throw new Exception("Can't Delete an already deleted Garage");
-
+        if (org != null && garage.Status == Status.Active)
+        {
+            org.ActiveGarages--;
+            org.UsedSlots -= garage.MaxCapacity;
+        }
         garage.Status = Status.Deleted;
         await base.DeleteAsync(id);
     }
@@ -435,15 +435,15 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             Garage garage = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (garage == null)
                 throw new Exception("There is no garage related to that id");
-
-            var org = await _organizationRepository.GetAsync(garage.OrganizationId);
-            if (org != null)
-                org.ActiveGarages--;
-
             if (garage.Status == Status.Deleted)
                 throw new Exception("Can't Delete an already deleted Garage");
 
-            UpdateOrganizationUsageDelete(org, garage.MaxCapacity);
+            var org = await _organizationRepository.GetAsync(garage.OrganizationId);
+            if (org != null && garage.Status == Status.Active)
+            {
+                org.ActiveGarages--;
+                org.UsedSlots -= garage.MaxCapacity;
+            }
             await _repository.HardDeleteAsync(garage);
         }
     }
@@ -750,7 +750,8 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         {
             (Status.Inactive, Status.Active) => UpdateGarageWhenNewInActiveOldActive(organization, existingGarage),
             (Status.Active, Status.Inactive) => UpdateGarageWhenNewActiveOldInActive(input, organization, existingGarage),
-            (Status.Active, Status.Active) => UpdateGarageWhenNewOldActive(input, organization, existingGarage)
+            (Status.Active, Status.Active) => UpdateGarageWhenNewOldActive(input, organization, existingGarage)  , 
+            (Status.Inactive, Status.Inactive) => Task.CompletedTask
         });
     }
 

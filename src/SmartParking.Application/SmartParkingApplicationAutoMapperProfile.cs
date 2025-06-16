@@ -3,7 +3,6 @@ using SmartParking.Cameras;
 using SmartParking.CustomerCategories;
 using SmartParking.DefaultPackages;
 using SmartParking.Entities.Banners;
-using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
@@ -54,6 +53,8 @@ using SmartParking.Entities.StateManagements;
 using SmartParking.StateManagements;
 using SmartParking.Entities.Discounts;
 using SmartParking.Discounts;
+using SmartParking.Entities.Cameras.Watchers;
+using SmartParking.Cameras.Watchers.Dispensers;
 
 namespace SmartParking;
 
@@ -130,6 +131,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         .ForMember(dest => dest.GarageNameEn, opt => opt.MapFrom(src => src.Garage.NameEn));
         CreateMap<CreateUpdateCameraDto, Camera>();
         CreateMap<CameraDto, CreateUpdateCameraDto>();
+
+        CreateMap<Dispenser, DispenserDto>();
+        CreateMap<CreateUpdateDispenserDto, Dispenser>();
+        CreateMap<DispenserDto, CreateUpdateDispenserDto>();
 
         CreateMap<PlateColor, PlateColorDto>();
 		CreateMap<CreateUpdatePlateColorDto, PlateColor>();

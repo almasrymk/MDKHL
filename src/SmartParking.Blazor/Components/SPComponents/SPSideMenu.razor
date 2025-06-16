@@ -8,6 +8,7 @@
 @using SmartParking.Permissions.CustomerPermissions
 @using SmartParking.Permissions.DailyShiftsPermissions
 @using SmartParking.Permissions.Discounts
+@using SmartParking.Permissions.DispenserPermissions
 @using SmartParking.Permissions.GaragePermissions
 @using SmartParking.Permissions.GarageTransactionPermissions
 @using SmartParking.Permissions.InvoicesPermissions
@@ -95,6 +96,11 @@
                  @if (AuthorizationService.IsGrantedAnyAsync(CameraPermissions.Default).Result)
                  {
                      <MudNavLink Href="/cameras" Icon="@Icons.Material.Filled.CameraAlt">@L["Cameras"]</MudNavLink>
+                 }
+
+                @if (AuthorizationService.IsGrantedAnyAsync(DispenserPermissions.Default).Result || currenttenant.Id == null)
+                 {
+                     <MudNavLink Href="/dispensers" Icon="@Icons.Material.Filled.EmojiTransportation">@L["Dispensers"]</MudNavLink>
                  }
                  @if (AuthorizationService.IsGrantedAnyAsync(SubscriptionPermissions.Default).Result && currenttenant.Id is null)
                  {

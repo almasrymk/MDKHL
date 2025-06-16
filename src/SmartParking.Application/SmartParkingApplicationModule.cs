@@ -1,10 +1,17 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using SmartParking.BarrierAppService;
+using SmartParking.DispenserEndPoint;
 using SmartParking.Events;
 using SmartParking.KeeperShifts;
 using SmartParking.Utilities;
+using SmartParking.WebSockets;
+using System;
+using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.AspNetCore.ExceptionHandling;
 using Volo.Abp.AutoMapper;
+using Volo.Abp.BackgroundWorkers;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.FluentValidation;
 using Volo.Abp.Identity;
@@ -12,6 +19,7 @@ using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
+using Volo.Abp.Threading;
 
 namespace SmartParking;
 
@@ -32,7 +40,12 @@ public class SmartParkingApplicationModule : AbpModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddTransient<IInvoiceUtilityAppService, InvoiceUtilityAppService>();
+        context.Services.AddTransient<IBarrierAppService, BarrierAppService.BarrierAppService>();
+        context.Services.AddTransient<IDispenserEndPointsAppService, DispenserEndPointsAppService>();
         context.Services.AddSingleton<KeeperShiftSingletonService>();
+        context.Services.AddSingleton<IWebSocketConnectionManager, WebSocketConnectionManager>();
+        context.Services.AddScoped<IHandlerService, HandlerService>();
+        context.Services.AddTransient<WebSocketHeartbeatWorker>();
         Configure<AbpAutoMapperOptions>(options =>
         {
             options.AddMaps<SmartParkingApplicationModule>();
@@ -42,7 +55,19 @@ public class SmartParkingApplicationModule : AbpModule
             options.SendExceptionsDetailsToClients = true;
             options.SendStackTraceToClients = false;
         });
-
+        
     }
+
+    public override void OnApplicationInitialization(ApplicationInitializationContext context)
+    {
+
+        var backgroundWorkerManager = context.ServiceProvider.GetRequiredService<IBackgroundWorkerManager>();
+
+        var worker = context.ServiceProvider.GetRequiredService<WebSocketHeartbeatWorker>();
+        backgroundWorkerManager.AddAsync(worker);
+
+        base.OnApplicationInitialization(context);
+    }
+
 
 }

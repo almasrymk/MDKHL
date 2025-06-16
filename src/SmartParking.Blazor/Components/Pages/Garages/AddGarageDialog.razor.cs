@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
 using SmartParking.Validations;
@@ -53,11 +54,11 @@ public partial class AddGarageDialog
                 SnackBar.ShowSnackbar(Snackbar, $"{garage.NameEn} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.SUCCESS]}", Severity.Success);
                 MudDialogAdd.Close(DialogResult.Ok(true));
                 await Task.Delay(1000);
-                NavigationManager.NavigateTo("/garages",true);
+                NavigationManager.NavigateTo("/garages", true);
             }
             else
             {
-                SnackBar.ShowSnackbar(Snackbar,$"{garage.NameEn} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{garage.NameEn} {L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}", Severity.Error);
             }
         }
         catch (AbpValidationException validationException)
