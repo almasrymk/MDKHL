@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Polly.Caching;
 using SmartParking.DailyShifts;
@@ -21,6 +22,8 @@ using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Controllers
 {
+    [Route("api/mobile/shift")]
+    [ApiController]
     public class ShiftController : AbpController
     {
         private readonly IRepository<DailyShift, int> _repository;
@@ -32,12 +35,13 @@ namespace SmartParking.Controllers
         private readonly IDataFilter _dataFilter;
         private readonly IMapper _mapper;
         private readonly IDailyShiftAppService _dailyShiftAppService;
+        private readonly IKeeperShiftsAppService _keeperShiftAppService;
         private readonly ISingletonService<StateManagementDto, int> _singletonService;
 
         public ShiftController(IRepository<KeeperShift, int> keeperrepository
            , IRepository<Garage, int> garagerepository, IRepository<Organization, int> orgrepository,
            IRepository<Shift, int> shiftrepository, IMyUserRepository userrepository,
-            IDataFilter dataFilter, IMapper mapper, IRepository<DailyShift, int> repository, IDailyShiftAppService dailyShiftAppService , ISingletonService<StateManagementDto, int> singletonService)
+            IDataFilter dataFilter, IMapper mapper, IRepository<DailyShift, int> repository, IDailyShiftAppService dailyShiftAppService , IKeeperShiftsAppService keeperShiftAppService, ISingletonService<StateManagementDto, int> singletonService)
 
         {
             _keeperShiftRepository = keeperrepository;
@@ -50,9 +54,11 @@ namespace SmartParking.Controllers
             _repository = repository;
             _dailyShiftAppService = dailyShiftAppService;
             _singletonService = singletonService;
+            _keeperShiftAppService = keeperShiftAppService;
         }
 
         [HttpPost("startshift")]
+        [Authorize]
         public async Task<Result<DailyShiftDto>> StartShift([FromBody]CreateUpdateDailyShiftDto keeperShiftDto)
         {
             try
@@ -67,6 +73,7 @@ namespace SmartParking.Controllers
             }
         }
         [HttpPost("endshift")]
+        [Authorize]
         public async Task<Result<DailyShiftDto>> EndShift([FromBody] CreateUpdateDailyShiftDto keeperShiftDto)
         {
             try
@@ -80,5 +87,14 @@ namespace SmartParking.Controllers
                 return Result.Error("Can't End");
             }
         }
+        [HttpGet("getmyshifts")]
+        [Authorize]
+        public async Task<Result<List<KeeperShiftDto>>> GetMyShifts()
+        {
+            var userId = CurrentUser.Id;
+            var shifts = await _keeperShiftAppService.GetAllMyShiftsForCurrentUser(userId);
+            return Result<List<KeeperShiftDto>>.Success(shifts);
+        }
+
     }
 }

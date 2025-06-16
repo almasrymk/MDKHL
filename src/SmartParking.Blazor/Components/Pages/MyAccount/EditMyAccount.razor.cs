@@ -10,6 +10,7 @@ using SmartParking.Enums;
 using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
 using SmartParking.Lookups.State;
+using SmartParking.LookupsAppServices;
 using SmartParking.Organizations;
 using SmartParking.Permissions.GaragePermissions;
 using SmartParking.Permissions.MyAccount;
@@ -20,210 +21,329 @@ using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Validation;
 
-
-namespace SmartParking.Blazor.Components.Pages.MyAccount;
-
-public partial class EditMyAccount
+namespace SmartParking.Blazor.Components.Pages.MyAccount
 {
-    private bool _isClose { get; set; }
-    private string _cityNameEdit { get; set; }
-    private string _countryNameEdit { get; set; }
-    private string _regionNameEdit { get; set; }
-    private string _stateNameEdit { get; set; }
-    private string _countrySelectValue { get; set; }
-    private string _citySelectValue { get; set; }
-    private string _regionSelectValue { get; set; }
-    private string _stateSelectValue { get; set; }
-    private bool HasChangeStatusPermission { get; set; }
-    private bool _isPictureChanged { get; set; }
-    private string _organizationPicture { get; set; }
-    private int _numberOfHours { get; set; }
-    private DateTime? _crExpiryDate { get; set; }
-    private TimeSpan? _closingHoursStart { get; set; }
-    private TimeSpan? _closingHoursEnd { get; set; }
-    private string _code { get; set; }
-    private string _address { get; set; }
-    private CreateUpdateOrganiztionDto _createUpdateOrganization { get; set; } = new();
-    private int _organizationId;
-    private readonly IMapper _mapper;
-    private bool _status=true;
-
-    public EditMyAccount(IMapper mapper)
+    public partial class EditMyAccount
     {
-        CreatePolicyName = GaragePermissions.Create;
-        UpdatePolicyName = GaragePermissions.Edit;
-        DeletePolicyName = GaragePermissions.Delete;
-        _mapper = mapper;
-    }
+        private bool _isClose { get; set; }
+        private string _cityNameEdit { get; set; }
+        private string _countryNameEdit { get; set; }
+        private string _regionNameEdit { get; set; }
+        private string _stateNameEdit { get; set; }
+        private string _countrySelectValue { get; set; }
+        private string _citySelectValue { get; set; }
+        private string _regionSelectValue { get; set; }
+        private string _stateSelectValue { get; set; }
+        private bool HasChangeStatusPermission { get; set; }
+        private bool _isPictureChanged { get; set; }
+        private string _organizationPicture { get; set; }
+        private int _numberOfHours { get; set; }
+        private DateTime? _crExpiryDate { get; set; }
+        private TimeSpan? _closingHoursStart { get; set; }
+        private TimeSpan? _closingHoursEnd { get; set; }
+        private string _code { get; set; }
+        private string _address { get; set; }
+        private CreateUpdateOrganiztionDto _createUpdateOrganization { get; set; } = new();
+        private int _organizationId;
+        private readonly IMapper _mapper;
+        private bool _status = true;
 
-    IList<StateLookupDto> _states = new List<StateLookupDto>();
-    IList<RegionLookupDto> _regions = new List<RegionLookupDto>();
-    IReadOnlyList<CountryLookupDto> _countries = new List<CountryLookupDto>();
-    IList<CityLookupDto> _cities = new List<CityLookupDto>();
-
-    private async Task Update()
-    {
-    
-        try
+        public EditMyAccount(IMapper mapper)
         {
-            _createUpdateOrganization.NumberOfHours = _numberOfHours;
-            _createUpdateOrganization.ClosingHoursEnd = _closingHoursEnd.HasValue
-                ? TimeOnly.FromTimeSpan(_closingHoursEnd.Value)
-                : null;
-            _createUpdateOrganization.ClosingHoursStart = _closingHoursStart.HasValue
-                ? TimeOnly.FromTimeSpan(_closingHoursStart.Value)
-                : null;
-            _createUpdateOrganization.IsClose = PackageValidations.GetOrganizationIsCloseAfterTimeValidity(
-                _createUpdateOrganization.IsClose,
-                _createUpdateOrganization.ClosingHoursStart,
-                _createUpdateOrganization.ClosingHoursEnd
-            ); if (_isPictureChanged)
-                _createUpdateOrganization.OrganizationPicture = await FileHelper.SaveImageFromBase64Async(_organizationPicture, PathHelper.OrganizationFolder);
-            await OrganizationAppService.UpdateAsync(_organizationId, _createUpdateOrganization);
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Organization"]} {_createUpdateOrganization.ArabicName}", Severity.Success);
-            Navigation.NavigateTo("/view-my-account");
-
+            CreatePolicyName = GaragePermissions.Create;
+            UpdatePolicyName = GaragePermissions.Edit;
+            DeletePolicyName = GaragePermissions.Delete;
+            _mapper = mapper;
         }
-        catch (AbpValidationException validationException)
+
+        IList<StateLookupDto> _states = new List<StateLookupDto>();
+        IList<RegionLookupDto> _regions = new List<RegionLookupDto>();
+        IReadOnlyList<CountryLookupDto> _countries = new List<CountryLookupDto>();
+        IList<CityLookupDto> _cities = new List<CityLookupDto>();
+
+        private async Task Update()
         {
-            foreach (var validationError in validationException.ValidationErrors)
+            if (string.IsNullOrWhiteSpace(_countrySelectValue))
             {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(
+                    Snackbar,
+                    $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} {L["Country"]} {L["EmptyValidation"]}",
+                    Severity.Error
+                );
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(_regionSelectValue))
+            {
+                SnackBar.ShowSnackbar(
+                    Snackbar,
+                    $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}  {L["Region"]} {L["EmptyValidation"]}",
+                    Severity.Error
+                );
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(_stateSelectValue))
+            {
+                SnackBar.ShowSnackbar(
+                    Snackbar,
+                    $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} {L["State"]} {L["EmptyValidation"]}",
+                    Severity.Error
+                );
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(_citySelectValue))
+            {
+                SnackBar.ShowSnackbar(
+                    Snackbar,
+                    $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}  {L["City"]} {L["EmptyValidation"]}",
+                    Severity.Error
+                );
+                return;
+            }
+
+            try
+            {
+                _createUpdateOrganization.NumberOfHours = _numberOfHours;
+                _createUpdateOrganization.ClosingHoursEnd = _closingHoursEnd.HasValue
+                    ? TimeOnly.FromTimeSpan(_closingHoursEnd.Value)
+                    : null;
+                _createUpdateOrganization.ClosingHoursStart = _closingHoursStart.HasValue
+                    ? TimeOnly.FromTimeSpan(_closingHoursStart.Value)
+                    : null;
+
+                _createUpdateOrganization.IsClose = PackageValidations.GetOrganizationIsCloseAfterTimeValidity(
+                    _createUpdateOrganization.IsClose,
+                    _createUpdateOrganization.ClosingHoursStart,
+                    _createUpdateOrganization.ClosingHoursEnd
+                );
+
+                if (_isPictureChanged)
+                    _createUpdateOrganization.OrganizationPicture = await FileHelper.SaveImageFromBase64Async(_organizationPicture, PathHelper.OrganizationFolder);
+
+                await OrganizationAppService.UpdateAsync(_organizationId, _createUpdateOrganization);
+
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {L["Organization"]} {_createUpdateOrganization.ArabicName}", Severity.Success);
+
+                Navigation.NavigateTo("/view-my-account");
+            }
+            catch (AbpValidationException validationException)
+            {
+                foreach (var validationError in validationException.ValidationErrors)
+                {
+                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+                }
+            }
+            catch (BusinessException ex)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
+            }
+            catch (AuthenticationException ex)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
+            }
+            catch (Exception ex)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
             }
         }
-        catch (BusinessException ex)
-        {
 
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
-        }
-        catch (AuthenticationException ex)
+        private void Cancel()
         {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
-        }
-        catch (Exception ex)
-        {
-
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
-        }
-    }
-    private void Cancel()
-    {
             Navigation.NavigateTo("/view-my-account");
-    }
-    private async Task FetchData()
-    {
-        var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
-        _organizationId = organization.Id;
-        _organizationPicture = organization.OrganizationPicture ?? "";
-        _address=organization.Address;
-        _createUpdateOrganization = _mapper.Map<CreateUpdateOrganiztionDto>(organization);
-        if (organization.Status == Enums.Status.Active)
-        {
-            _status = true;
         }
-        else
+
+        private async Task FetchData()
         {
-            _status = false;
+            var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+            _organizationId = organization.Id;
+            _organizationPicture = organization.OrganizationPicture ?? "";
+            _address = organization.Address;
+            _createUpdateOrganization = _mapper.Map<CreateUpdateOrganiztionDto>(organization);
+
+            _status = organization.Status == Enums.Status.Active;
+
+            if (CultureInfo.CurrentCulture.Name == "en")
+            {
+                _cityNameEdit = organization.CityName;
+                _countryNameEdit = organization.CountryName;
+                _regionNameEdit = organization.RegionName;
+                _stateNameEdit = organization.StateName;
+            }
+            else
+            {
+                _cityNameEdit = organization.CityNameAr;
+                _countryNameEdit = organization.CountryNameAr;
+                _regionNameEdit = organization.RegionNameAr;
+                _stateNameEdit = organization.StateNameAr;
+            }
+
+            _stateSelectValue = organization.StateId.ToString();
+            _crExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
+            _closingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
+            _closingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
+            _numberOfHours = organization.NumberOfHours;
+            _citySelectValue = organization.CityId.ToString();
+            _countrySelectValue = organization.CountryId.ToString();
+            _regionSelectValue = organization.RegionId.ToString();
+            _code = organization.Code;
         }
-        if (CultureInfo.CurrentCulture.Name == "en")
-        {
-            _cityNameEdit = organization.CityName;
-            _countryNameEdit = organization.CountryName;
-            _regionNameEdit = organization.RegionName;
-            _stateNameEdit = organization.StateName;
 
+        protected override async Task OnInitializedAsync()
+        {
+            HasChangeStatusPermission = await AuthorizationService.IsGrantedAsync(MyAccountPermissions.ChanageStatus);
+
+            await FetchData();
+
+            _countries = await CountriesAppService.GetCountryLookupAsync();
+
+            if (!string.IsNullOrWhiteSpace(_countrySelectValue))
+            {
+                _regions = await RegionAppService.GetRegionByCountry(int.Parse(_countrySelectValue));
+            }
+
+            if (!string.IsNullOrWhiteSpace(_regionSelectValue))
+            {
+                _states = await StateAppService.GetStateLookupByRegionAsync(int.Parse(_regionSelectValue));
+            }
+
+            if (!string.IsNullOrWhiteSpace(_stateSelectValue))
+            {
+                _cities = await CitiesAppService.GetCityByState(int.Parse(_stateSelectValue));
+            }
+
+
+            await base.OnInitializedAsync();
         }
-        else
+
+        private async Task OnCountryChanged(string value)
         {
-            _cityNameEdit = organization.CityNameAr;
-            _countryNameEdit = organization.CountryNameAr;
-            _regionNameEdit = organization.RegionNameAr;
-            _stateNameEdit = organization.StateNameAr;
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                _countrySelectValue = "";
+                _regionSelectValue = "";
+                _stateSelectValue = "";
+                _citySelectValue = "";
+
+                _regions.Clear();
+                _states.Clear();
+                _cities.Clear();
+                return;
+            }
+
+            _countrySelectValue = value;
+            _regionSelectValue = "";
+            _stateSelectValue = "";
+            _citySelectValue = "";
+
+            _regions = await RegionAppService.GetRegionByCountry(int.Parse(value));
+            _states.Clear();
+            _cities.Clear();
         }
-        _stateSelectValue = organization.StateId.ToString();
-        _crExpiryDate = organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
-        _closingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
-        _closingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
-        _numberOfHours = organization.NumberOfHours;
-        _citySelectValue = organization.CityId.ToString();
-        _countrySelectValue = organization.CountryId.ToString();
-        _regionSelectValue = organization.RegionId.ToString();
-        _code = organization.Code;
 
-
-
-    }
-    protected override async Task OnInitializedAsync()
-    {
-        HasChangeStatusPermission = await AuthorizationService.IsGrantedAsync(MyAccountPermissions.ChanageStatus);
-        _states = await StateAppService.GetStateLookupAsync();
-        _regions = await StateAppService.GetRegionLookupAsync();
-        _countries = await CountriesAppService.GetCountryLookupAsync();
-        _cities = await CitiesAppService.GetCityLookupAsync();
-        await FetchData();
-        await base.OnInitializedAsync();
-
-
-    }
-    private async Task ViewGarages()
-    {
-        var id = await OrganizationAppService.GetOrganizationIdByTenant(currenttenant.Id.Value);
-        var parameters = new DialogParameters
+        private async Task OnRegionChanged(string value)
         {
-            ["organizationId"] = id
-        };
-        var dialog = await Dialog.ShowAsync<GarageDialog>("view garage", parameters);
-    }
-    private async Task ViewCategories()
-    {
-        var id = await OrganizationAppService.GetOrganizationIdByTenant(currenttenant.Id.Value);
-        var parameters = new DialogParameters
-        {
-            ["organizationId"] = id
-        };
-        var dialog = await Dialog.ShowAsync<CategoriesDialog>("view garage", parameters);
-    }
-    private async Task ViewCustomers()
-    {
-        var id = await OrganizationAppService.GetOrganizationIdByTenant(currenttenant.Id.Value);
-        var parameters = new DialogParameters
-        {
-            ["organizationId"] = id
-        };
-        var dialog = await Dialog.ShowAsync<CustomerDialog>("view package", parameters);
-    }
-    private async Task ViewUsers()
-    {
-        var id = await OrganizationAppService.GetOrganizationIdByTenant(currenttenant.Id.Value);
-        var parameters = new DialogParameters
-        {
-            ["organizationId"] = id
-        };
-        var dialog = await Dialog.ShowAsync<UsersDialog>("view users", parameters);
-    }
-    private async Task ViewSubscription()
-    {
-        var Org = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
-        int? subsId = Org.SubscriptionId;
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                _regionSelectValue = "";
+                _stateSelectValue = "";
+                _citySelectValue = "";
 
-        var subscription = await SubscriptionAppService.GetAsync(Org.SubscriptionId);
+                _states.Clear();
+                _cities.Clear();
+                return;
+            }
 
-        var parameters = new DialogParameters
-        {
-            ["subscription"] = subscription
-        };
-        await Dialog.ShowAsync<OrganizationSubscriptionDialog>("view DetailsSubscription", parameters);
-    }
-    private async Task OnImageUpload(IBrowserFile file)
-    {
-        var imageFile = file;
-        if (imageFile != null)
-        {
-            _organizationPicture = await ImageHelper.GetImageBase64Async(imageFile);
-            _isPictureChanged = true;
-            StateHasChanged();
+            _regionSelectValue = value;
+            _stateSelectValue = "";
+            _citySelectValue = "";
+
+            _states = await StateAppService.GetStateLookupByRegionAsync(int.Parse(value));
+            _cities.Clear();
         }
-    }
 
- 
+        private async Task OnStateChanged(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                _stateSelectValue = "";
+                _citySelectValue = "";
+                _cities.Clear();
+                return;
+            }
+
+            _stateSelectValue = value;
+            _citySelectValue = "";
+
+            _cities = await CitiesAppService.GetCityByState(int.Parse(value));
+        }
+
+        private Task OnCityChanged(string value)
+        {
+            _citySelectValue = string.IsNullOrWhiteSpace(value) ? "" : value;
+            return Task.CompletedTask;
+        }
+        private async Task ViewGarages()
+        {
+            var id = await OrganizationAppService.GetOrganizationIdByTenant(currenttenant.Id.Value);
+            var parameters = new DialogParameters
+            {
+                ["organizationId"] = id
+            };
+            var dialog = await Dialog.ShowAsync<GarageDialog>("view garage", parameters);
+        }
+        private async Task ViewCategories()
+        {
+            var id = await OrganizationAppService.GetOrganizationIdByTenant(currenttenant.Id.Value);
+            var parameters = new DialogParameters
+            {
+                ["organizationId"] = id
+            };
+            var dialog = await Dialog.ShowAsync<CategoriesDialog>("view garage", parameters);
+        }
+        private async Task ViewCustomers()
+        {
+            var id = await OrganizationAppService.GetOrganizationIdByTenant(currenttenant.Id.Value);
+            var parameters = new DialogParameters
+            {
+                ["organizationId"] = id
+            };
+            var dialog = await Dialog.ShowAsync<CustomerDialog>("view package", parameters);
+        }
+        private async Task ViewUsers()
+        {
+            var id = await OrganizationAppService.GetOrganizationIdByTenant(currenttenant.Id.Value);
+            var parameters = new DialogParameters
+            {
+                ["organizationId"] = id
+            };
+            var dialog = await Dialog.ShowAsync<UsersDialog>("view users", parameters);
+        }
+        private async Task ViewSubscription()
+        {
+            var Org = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+            int? subsId = Org.SubscriptionId;
+
+            var subscription = await SubscriptionAppService.GetAsync(Org.SubscriptionId);
+
+            var parameters = new DialogParameters
+            {
+                ["subscription"] = subscription
+            };
+            await Dialog.ShowAsync<OrganizationSubscriptionDialog>("view DetailsSubscription", parameters);
+        }
+        private async Task OnImageUpload(IBrowserFile file)
+        {
+            var imageFile = file;
+            if (imageFile != null)
+            {
+                _organizationPicture = await ImageHelper.GetImageBase64Async(imageFile);
+                _isPictureChanged = true;
+                StateHasChanged();
+            }
+        }
+
+
+    }
 }

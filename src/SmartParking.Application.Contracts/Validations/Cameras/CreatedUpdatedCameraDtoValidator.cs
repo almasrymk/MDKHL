@@ -58,8 +58,6 @@ public class CreatedUpdatedCameraDtoValidator : AbstractValidator<CreateUpdateCa
             .NotEmpty()
             .WithMessage(LocalizationHelper.GetLocalizedString("RequiredValidation"));
 
-        RuleFor(x => x.DeviceId)
-            .NotEmpty()
-            .WithMessage(LocalizationHelper.GetLocalizedString("RequiredValidation"));
+        
     }
 }

@@ -156,11 +156,14 @@ namespace SmartParking.LookupsAppServices
         ///<inheritdoc/>
         public async Task<List<CityLookupDto>> GetCityByState(int stateId)
         {
-            var query = await _repository.GetQueryableAsync();
-            query = query.Where(r => r.StateId == stateId);
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                var query = await _repository.GetQueryableAsync();
+                query = query.Where(r => r.StateId == stateId);
 
-            var cities = await AsyncExecuter.ToListAsync(query);
-            return ObjectMapper.Map<List<City>, List<CityLookupDto>>(cities);
+                var cities = await AsyncExecuter.ToListAsync(query);
+                return ObjectMapper.Map<List<City>, List<CityLookupDto>>(cities);
+            }
         }
 
         #endregion

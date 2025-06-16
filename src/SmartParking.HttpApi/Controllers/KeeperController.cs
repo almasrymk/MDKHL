@@ -32,25 +32,24 @@ public class KeeperController : AbpController
     private readonly ICurrentTenant _currentTenant;
     private readonly ICurrentUser _currentUser;
     private readonly IInvoiceAppService _invoiceAppService;
-    private readonly IGarageTransactionEndPointsAppService _garageTransactionEndPointsAppService;
+    private readonly IKeeperTransactionsAppService _keeperTransactionsAppService;
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
     private readonly IDiscountAppService _discountAppService;
     private readonly IInvoiceUtilityAppService _invoiceUtilityAppService;
-    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService, 
-        ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService,IDiscountAppService discountAppService,
-        IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IUsersAppService usersAppService, 
-        IInvoiceUtilityAppService invoiceUtilityAppService = null, IGarageTransactionsAppService garageTransactionsAppService = null)
+    public KeeperController(IKeeperAppService keeperAppService, IAuthenticationAppService authenticationAppService,
+        ICurrentUser currentUser, ICurrentTenant currentTenant, IInvoiceAppService invoiceAppService, IDiscountAppService discountAppService,
+        IUsersAppService usersAppService, IInvoiceUtilityAppService invoiceUtilityAppService = null, IGarageTransactionsAppService garageTransactionsAppService = null, IKeeperTransactionsAppService keeperTransactionsAppService = null)
     {
         _keeperAppService = keeperAppService;
         _authenticationAppService = authenticationAppService;
         _currentUser = currentUser;
         _currentTenant = currentTenant;
         _invoiceAppService = invoiceAppService;
-        _garageTransactionEndPointsAppService = garageTransactionEndPointsAppService;
         _usersAppService = usersAppService;
         _invoiceUtilityAppService = invoiceUtilityAppService;
         _garageTransactionsAppService = garageTransactionsAppService;
         _discountAppService = discountAppService;
+        _keeperTransactionsAppService = keeperTransactionsAppService;
     }
 
     [HttpPost("login")]
@@ -204,7 +203,7 @@ public class KeeperController : AbpController
     [Authorize]
     public async Task<Result<InvoiceMobileDto>> KeeperCheckoutForTransaction(int transactionId, string PaymentType,decimal DiscountValue)
     {
-        var invoice = await _garageTransactionEndPointsAppService.CustomerCheckoutFromKeeperMobile(transactionId);
+        var invoice = await _keeperTransactionsAppService.Checkout(transactionId);
         return await _keeperAppService.PayCashForCustomerRequestAsync(invoice.Value.Id, PaymentType, DiscountValue);
     }
 
@@ -213,7 +212,7 @@ public class KeeperController : AbpController
     [Authorize]
     public async Task<Result<CreateUpdateInvoiceDto>> KeeperPreCheckoutForTransaction(int transactionId)
     {
-        var invoice = await _garageTransactionEndPointsAppService.CustomerPreCheckoutFromKeeperMobile(transactionId);
+        var invoice = await _keeperTransactionsAppService.PreCheckout(transactionId);
         return invoice;
     }
 

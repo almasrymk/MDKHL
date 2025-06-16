@@ -17,6 +17,8 @@ using System.Linq;
 using Volo.Abp.Data;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Customers;
+using Volo.Abp;
+using SmartParking.Invoices;
 
 
 namespace SmartParking.Utilities;
@@ -31,9 +33,8 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     private readonly IRepository<Customer, Guid> _customerRepoistory;
     private readonly IRepository<Organization, int> _organizationRepoistory;
     private readonly IDataFilter _dataFilter;
-
-
-
+    private string customerEnName { get; set; } = "unknown";
+    private string customerArName { get; set; } = "غير معرف";
 
     public GarageTransactionUtilityAppService(
         ILogger<GarageTransactionUtilityAppService> logger,
@@ -298,5 +299,51 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         }
 
     }
+    [RemoteService(false)]
+    public async Task<CreateUpdateGarageTransactionDto> InitiateExitGarageTransactionForMobileCheckout(string PlateNumber , string EntryPicture , int OrganizationId , int GarageId,int CameraId , Guid TenantId)
+    {
+        return new CreateUpdateGarageTransactionDto
+        {
+            AccurateTime = DateTime.Now,
+            PlateNumber = PlateNumber,
+            GarageId = GarageId,
+            OrganizationID = OrganizationId,
+            CameraId = CameraId,
+            SnapTime = DateTime.Now,
+            TenantId = TenantId,
+            IsIn = true,
+            CheckoutMobile = DateTime.Now,
+            VehiclePicture = EntryPicture,
+            CameraType = CameraType.Exit
+        };
+    }
+    [RemoteService(false)]
+    public async Task<CreateUpdateInvoiceDto> InitiateInvoice(DateTime entranceTime, CreateUpdateGarageTransactionDto exitTransaction, int totalHours, decimal price, bool isPackage , Customer customer = null)
+    {
+        var entryTransactionImage =await FindEntranceImage(exitTransaction.PlateNumber);
+        var invoice =  new CreateUpdateInvoiceDto
+        {
+            GarageId = exitTransaction.GarageId,
+            InvoiceNumber = "",
+            InvoicePrice = price,
+            InvoiceType = price > 0 ? InvoiceType.UnPaid : InvoiceType.Paid,
+            OrganizationId = exitTransaction.OrganizationID,
+            TotalHours = totalHours,
+            PlateNumber = exitTransaction.PlateNumber,
+            InvoiceTime = exitTransaction.AccurateTime,
+            EntranceTime = entranceTime,
+            CustomerEnName = customer is null ? customerEnName : customer!.IdentityUser?.Name,
+            CustomerArName = customer is null ? customerArName : customer!.ArabicName,
+            CustomerId = customer is null ? null : customer!.Id,
+            IsPackage = isPackage,
+            ExitTransactionImage = exitTransaction.VehiclePicture,
+            EntryTransactionImage = entryTransactionImage,
 
+        };
+
+        return invoice;
+    }
 }
+
+
+

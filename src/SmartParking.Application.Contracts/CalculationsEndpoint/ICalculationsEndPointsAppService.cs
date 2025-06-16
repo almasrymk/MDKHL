@@ -27,49 +27,6 @@ public interface ICalculationsEndPointsAppService : ITransientDependency
     int CalculateTime(DateTime startTime, DateTime endTime, int FreeMinutes);
 
     /// <summary>
-    /// Calculates the price for exceeded hours.
-    /// </summary>
-    /// <param name="totalHours">The total number of hours.</param>
-    /// <param name="organization">The organization.</param>
-    /// <returns>The calculated price.</returns>
-    decimal CalculatePriceForExceededHours(int totalHours, Organization organization);
-
-    /// <summary>
-    /// Calculates the price for an organization that is closed and has exceeded hours.
-    /// </summary>
-    /// <param name="organization">The organization.</param>
-    /// <param name="exitTime">The exit time.</param>
-    /// <param name="entranceTime">The entrance time.</param>
-    /// <returns>The calculated price.</returns>
-    decimal CalculatePriceForOrganizationIsClosedAndExceededHours(Organization organization, DateTime exitTime, DateTime entranceTime);
-
-    /// <summary>
-    /// Calculates the price for an organization that is closed.
-    /// </summary>
-    /// <param name="totalHours">The total number of hours.</param>
-    /// <param name="organization">The organization.</param>
-    /// <param name="exitTime">The exit time.</param>
-    /// <param name="entranceTime">The entrance time.</param>
-    /// <returns>The calculated price.</returns>
-    decimal CalculatePriceForOrganizationIsClosed(int totalHours, Organization organization, DateTime exitTime, DateTime entranceTime);
-
-    /// <summary>
-    /// Calculates the price for hours.
-    /// </summary>
-    /// <param name="organization">The organization.</param>
-    /// <param name="hours">The number of hours.</param>
-    /// <returns>The calculated price.</returns>
-    decimal CalculatePriceHours(Organization organization, int hours);
-
-    /// <summary>
-    /// Calculates the price for hours exceeded in a day.
-    /// </summary>
-    /// <param name="organization">The organization.</param>
-    /// <param name="hours">The number of hours.</param>
-    /// <returns>The calculated price.</returns>
-    decimal CalculatePriceHoursExceededDay(Organization organization, int hours);
-
-    /// <summary>
     /// Calculates the hours between an exit and entrance time, taking into account closing hours.
     /// </summary>
     /// <param name="exitTime">The exit time.</param>
@@ -95,4 +52,18 @@ public interface ICalculationsEndPointsAppService : ITransientDependency
     /// <param name="packageDto">The package DTO.</param>
     /// <returns>The calculated time.</returns>
     int CalculateTimeForCustomPackage(DateTime? exitTime, CustomerPackageDto packageDto);
+
+    /// <summary>
+    /// Method used to calculate invoice depends on Organization Configurations
+    /// </summary>
+    /// <param name="entranceTime">entrance time</param>
+    /// <param name="totalHours">total hours of staying</param>
+    /// <param name="exitTime">exit time</param>
+    /// <param name="organization">organization</param>
+    /// <returns>price of invoice</returns>
+    decimal CalculateInvoiceCases(DateTime entranceTime, int totalHours, DateTime exitTime, Organization organization);
+    
+    decimal CalculationForRegisteredCustomer(DateTime? exitTime, DateTime? entranceTime, Organization organization, CustomerPackageDto? packageDto, int totalHours);
+
+
 }

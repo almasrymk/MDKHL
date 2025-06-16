@@ -12,11 +12,11 @@
 @using SmartParking.Utilities
 @using System.Globalization
 @inject IStringLocalizer<SmartParkingResource> L
-@inject IGarageTransactionEndPointsAppService GarageTransactionEndPoint
 @inject IGarageTransactionsAppService GarageTransactionAppService
 @inject IInvoiceAppService InvoiceAppService
 @inject IPaymentAppService PaymentAppSerivce
 @inject NavigationManager Navigation
+@inject IKeeperTransactionsAppService keeperTransactionsAppService
 @inject ISnackbar Snackbar
 
 <PageTitle>@L["PreInvoice"]</PageTitle>

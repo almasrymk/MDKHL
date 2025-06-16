@@ -20,12 +20,14 @@ namespace SmartParking.Controllers;
 public class GarageTransactionController : ControllerBase
 {
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
-    private readonly IGarageTransactionEndPointsAppService _garageTransactionEndPointsAppService;
+    private readonly ICustomerMobileTransactionsAppService _customerGarageTransactionsAppService;
 
-    public GarageTransactionController(IGarageTransactionsAppService garageTransactionsAppService, IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService)
+
+
+    public GarageTransactionController(IGarageTransactionsAppService garageTransactionsAppService, ICustomerMobileTransactionsAppService customerGarageTransactionsAppService)
     {
         _garageTransactionsAppService = garageTransactionsAppService;
-        _garageTransactionEndPointsAppService = garageTransactionEndPointsAppService;
+        _customerGarageTransactionsAppService = customerGarageTransactionsAppService;
     }
 
     [HttpGet("carsingarage")]
@@ -40,7 +42,7 @@ public class GarageTransactionController : ControllerBase
     [Authorize]
     public async Task<Result<InvoiceDto>> CustomerCheckoutForTransaction(int transactionId)
     {
-        return await _garageTransactionEndPointsAppService.CustomerCheckoutFromHisMobile(transactionId);
+        return await _customerGarageTransactionsAppService.Checkout(transactionId);
 
     }
     
@@ -48,7 +50,7 @@ public class GarageTransactionController : ControllerBase
     [Authorize]
     public async Task<Result<CreateUpdateInvoiceDto>> CustomerPreCheckoutForTransaction(int transactionId)
     {
-      return await _garageTransactionEndPointsAppService.CustomerPreCheckoutFromHisMobile(transactionId);
+      return await _customerGarageTransactionsAppService.PreCheckout(transactionId);
 
     }
 
