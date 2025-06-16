@@ -87,10 +87,6 @@ public class CustomerPackagesAppService:
 
             var result = await AsyncExecuter.ToListAsync(query);
 
-            if (result.Count == 0)
-            {
-                return Result<List<CustomerPackageDto>>.NotFound();
-            }
             var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
             return Result<List<CustomerPackageDto>>.Success(packageMap);
         }
