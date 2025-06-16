@@ -410,17 +410,14 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
         var garage = await _repository.FirstOrDefaultAsync(x => x.Id == id);
         if (garage == null)
             throw new Exception("There is no garage related to that id");
-
         var org = await _organizationRepository.GetAsync(garage.OrganizationId);
-        if (org != null)
+        if (garage.Status == Status.Deleted)
+            throw new Exception("Can't Delete an already deleted Garage");
+        if (org != null && garage.Status == Status.Active)
         {
             org.ActiveGarages--;
             org.UsedSlots -= garage.MaxCapacity;
         }
-
-        if (garage.Status == Status.Deleted)
-            throw new Exception("Can't Delete an already deleted Garage");
-
         garage.Status = Status.Deleted;
         await base.DeleteAsync(id);
     }
@@ -438,16 +435,15 @@ public class GarageAppService : CrudAppService<Garage, GarageDto, int, PagedAndS
             Garage garage = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (garage == null)
                 throw new Exception("There is no garage related to that id");
+            if (garage.Status == Status.Deleted)
+                throw new Exception("Can't Delete an already deleted Garage");
 
             var org = await _organizationRepository.GetAsync(garage.OrganizationId);
-            if (org != null)
+            if (org != null && garage.Status == Status.Active)
             {
                 org.ActiveGarages--;
                 org.UsedSlots -= garage.MaxCapacity;
             }
-
-            if (garage.Status == Status.Deleted)
-                throw new Exception("Can't Delete an already deleted Garage");
             await _repository.HardDeleteAsync(garage);
         }
     }
