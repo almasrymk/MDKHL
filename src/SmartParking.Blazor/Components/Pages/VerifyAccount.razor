@@ -8,7 +8,7 @@
 @inject IAuthenticationAppService AuthenticationAppService
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
-
+@inject UserNameState UserNameState
 
 
 <PageTitle>@L["Verify account"]</PageTitle>
@@ -42,7 +42,7 @@
 
 
         </MudGrid>
-        <MudText Class="text-center my-5">@L["Didn't receive the code .."]<MudLink href="#" Color="MudBlazor.Color.Dark" Underline="Underline.Always" Class="fw-bold" OnClick="Send">@L["Resend"]</MudLink></MudText>
+        <MudText Class="text-center my-5">@L["Didn't receive the code .."]<MudLink Color="MudBlazor.Color.Dark" Underline="Underline.Always" Class="fw-bold" OnClick="Send">@L["Resend"]</MudLink></MudText>
         <MudButton Class="mx-auto w-50 mt-7" Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="Submit">@L["VERIFY"]</MudButton>
     </MudForm>
 </div>
@@ -53,7 +53,7 @@
     private MudForm otpForm;
 
 
-    private async void Send(){
+    private async Task Send(){
 
         try{
             var result=await AuthenticationAppService.GenerateOTPForUser(UserName);
@@ -62,14 +62,15 @@
 
         }
     }
-    private async void Submit(){
+    private async Task Submit(){
 
         var result = await AuthenticationAppService.VerifyOtp(UserName, Otp);
         if(result){
             var Name = await AuthenticationAppService.GetUserNameByPhoneNumber(UserName);
             Snackbar.Add(@L["OTPCorrect"], Severity.Success);
             await Task.Delay(1000);
-            Navigation.NavigateTo($"/change-password/{UserName}");
+            UserNameState.UserName = UserName;
+            Navigation.NavigateTo($"/change-password" );
         }
         else{
             Snackbar.Add(@L["OTPIncorrect"], Severity.Error);
