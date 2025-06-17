@@ -146,7 +146,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var organization = await _garageTransactionUtilityAppService.GetOrganization(organizationId);
         bool _requestToGate;
         //getting entrance transaction
-        var _entryTransaction = await _garageTransactionUtilityAppService.FindEntranceTime(exitTransaction.PlateNumber);
+        var _entryTransaction = await _garageTransactionUtilityAppService.FindEntranceTransaction(exitTransaction.PlateNumber , exitTransaction.TicketId , organization.DispenserTransaction , organization.CameraTransaction);
         //geeting garage
         var _garage = await _garageTransactionUtilityAppService.GetGarageByIdAsync(exitTransaction.GarageId);
         if (_entryTransaction == null)

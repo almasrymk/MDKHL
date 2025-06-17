@@ -12,4 +12,5 @@ public interface IDispenserEndPointsAppService : IApplicationService
     Task<bool> Entry(EntryDto request);
     Task<bool> PreEntry(PreEntryDto request);
     Task<bool> Exit(ExitDto request);
+    Task<bool> PreExit(PreExitDto request);
 }
