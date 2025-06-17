@@ -823,7 +823,9 @@
     "Dispenser": "Dispenser",
     "Permission:Dispenser": "Dispenser Management",
     "New Dispenser": "New Dispenser",
-    "DurationOfPackage": "Duration of Package"
+    "DurationOfPackage": "Duration of Package",
+    "CameraTransaction": "Camera Transactions",
+    "DispenserTransaction": "Dispenser Transactions"
 
 
   }
