@@ -27,9 +27,7 @@ namespace SmartParking.GarageTransactions
 		public bool CanCheckout { get; set; } = true;
         public int? DispenserId { get; set; }
         public string? LaneNO { get; set; }
-
-
-
+        public string? TicketId { get; set; }
 
     }
 }
