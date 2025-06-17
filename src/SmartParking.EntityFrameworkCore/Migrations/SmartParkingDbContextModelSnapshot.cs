@@ -578,6 +578,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
 
+                    b.Property<string>("TicketId")
+                        .HasColumnType("text");
+
                     b.Property<string>("VehiclePicture")
                         .HasColumnType("text");
 

@@ -140,7 +140,7 @@ public partial class Dispenser
     {
         var tableData = new TableData()
         {
-            Name = L["Dispenser"],
+            Name = L["Dispensers"],
             ShowHeader = true
         };
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });

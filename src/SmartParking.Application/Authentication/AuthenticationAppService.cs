@@ -61,7 +61,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly IAuthenticationUtility _authenticationUtility;
     private readonly IUsersAppService _usersAppService;
     private readonly TaqnyatSmsOptionsDto _options;
-    private readonly HttpClient _httpClient;
+    private  HttpClient _httpClient;
     private readonly ICurrentTenant _currentTenant;
     private readonly IOrganizationsAppService _organizationsAppService;
 
@@ -458,8 +458,10 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     public async Task<bool> SendSms(string phoneNumber, string message)
     {
-
-        _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_options.ApiKey}");
+        if (!_httpClient.DefaultRequestHeaders.Contains("Authorization"))
+        {
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_options.ApiKey}");
+        }
 
         var payload = new
         {

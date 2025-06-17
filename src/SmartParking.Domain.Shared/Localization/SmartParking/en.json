@@ -823,7 +823,12 @@
     "Dispenser": "Dispenser",
     "Permission:Dispenser": "Dispenser Management",
     "New Dispenser": "New Dispenser",
-    "DurationOfPackage": "Duration of Package"
+    "DurationOfPackage": "Duration of Package",
+    "CameraTransaction": "Camera Transactions",
+    "DispenserTransaction": "Dispenser Transactions",
+    "RangeNumberValildation": " The value must be between 0 and 9999",
+    "Dispensers": "Dispensers"
+
 
 
   }

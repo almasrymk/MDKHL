@@ -1,5 +1,5 @@
 {
-  "culture": "ar",
+    "culture": "ar",
   "texts": {
     "Actions": "الإجراءات",
     "Active": "مفعل",
@@ -853,9 +853,13 @@
     "DurationOfPackage": "المدة",
     "Report": "تقرير",
     "Dispenser": "الموزّع",
-    "New Dispenser" : "اضافة موزع"
+    "New Dispenser": "اضافة موزع",
+    "CameraTransaction": "حركات بالكاميرا",
+    "DispenserTransaction": "حركات بالموزع",
+    "RangeNumberValildation": ". يجب أن تكون القيمة بين 0 - 9999",
+    "Dispensers": "الموزّعات"
 
 
 
   }
-}
+  }

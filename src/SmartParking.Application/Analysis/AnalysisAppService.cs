@@ -871,6 +871,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  ArPlateNumber = vehicle.ArPlateNumber,
                                  EnPlateNumber = vehicle.EnPlateNumber,
                                  CustomerEnglishName = vehicle.Customer.IdentityUser.Name,
+                                 UserName = vehicle.Customer.IdentityUser.PhoneNumber , 
                                  CustomerArabicName = vehicle.Customer.ArabicName,
                                  BrandArabicName = vehicle.VehicleBrand.ArabicName,
                                  BrandEnglishName = vehicle.VehicleBrand.EnglishName,
