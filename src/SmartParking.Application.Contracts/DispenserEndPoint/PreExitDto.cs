@@ -32,16 +32,14 @@ public class PreExitDto
     public string TotRemianNum { get; set; }
     public string VehicleClass { get; set; }
     public string VttDevChnId { get; set; }
-
-    public class DiscountMoneyDto
-    {
-        public List<MoneyDto> Money { get; set; }
-
-        public class MoneyDto
-        {
-            public string Name { get; set; }
-            public string Remark { get; set; }
-            public double Value { get; set; }
-        }
-    }
+}
+public class DiscountMoneyDto
+{
+    public List<MoneyDto> Money { get; set; }
+}
+public class MoneyDto
+{
+    public string Name { get; set; }
+    public string Remark { get; set; }
+    public double Value { get; set; }
 }
