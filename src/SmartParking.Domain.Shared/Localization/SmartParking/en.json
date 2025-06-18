@@ -827,7 +827,8 @@
     "CameraTransaction": "Camera Transactions",
     "DispenserTransaction": "Dispenser Transactions",
     "RangeNumberValildation": " The value must be between 0 and 9999",
-    "Dispensers": "Dispensers"
+    "Dispensers": "Dispensers",
+    "OrganizationHoursHeader" :  "How to Calculate Hours"
 
 
 
