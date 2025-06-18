@@ -10,16 +10,18 @@
 @using SmartParking.Lookups.CameraBrands
 @using SmartParking.Lookups.CameraMainType
 @using SmartParking.Lookups.CameraModel
+@using SmartParking.Organizations
 @using Volo.Abp
 @using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
 @using Volo.Abp.Validation
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IGarageAppService GaragesAppService
 @inject ISnackbar Snackbar
 @inject IDispenserAppService DispensersAppService
-
-
+@inject IOrganizationsAppService OrganizationAppService
+@inject ICurrentTenant CurrentTenant
 <PageTitle>@L["New Dispenser"]</PageTitle>
 @inject NavigationManager Navigation
 
@@ -31,7 +33,6 @@
         <DialogContent>
             <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
                 <MudGrid>
-
                     <MudItem sm="6">
                         <MudTextField @bind-Value="DispenserDto.Name"
                                       For="@(() => DispenserDto.Name)"
@@ -47,12 +48,40 @@
                                       Placeholder="@L["Enter DeviceId"]"
                                       Label="@L["Code"]" />
                     </MudItem>
-                    @if (CultureInfo.CurrentCulture.Name == "en")
+                    @if(CurrentTenant.Id == null )
+                    {
+                        <MudItem sm="6" md="6">
+                        <MudSelect
+                                   T= "int"
+                                    Label="@L["Organization"]"
+                                   Placeholder="Choose"
+                                     ValueChanged="OnChangeOrganization"
+                                   Required="true"
+                                    RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                            @foreach (var org in organizations.Items)
+                            {
+                                if (org.Status != Enums.Status.Active)
+                                    continue;
+                                    if(CultureInfo.CurrentCulture.Name == "ar")
+                                     {
+                                         <MudSelectItem Value="org.Id">@org.ArabicName</MudSelectItem>
+                                     }
+                                     else
+                                     {
+                                         <MudSelectItem Value="org.Id">@org.EnglishName</MudSelectItem>
+                                     }
+                            }
+                        </MudSelect>
+                        </MudItem>
+                        }
+                    @if (CultureInfo.CurrentCulture.Name == "en"  )
                     {
                         <MudItem sm="6">
                             <MudSelect @bind-Value="@DispenserDto.GarageId"
                                        Variant="Variant.Text"
                                        Label="@L["EnGarageName"]"
+                                       Disabled="CurrentTenant.Id == null && DispenserDto.OrganizationId == 0 "
                                        Placeholder="Choose"
                                        Required
                                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
@@ -73,6 +102,7 @@
                                        Variant="Variant.Text"
                                        Label="@L["ArGarageName"]"
                                        Placeholder=@L["Choose"]
+                                       Disabled="CurrentTenant.Id == null && DispenserDto.OrganizationId == 0 "
                                        Required
                                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
                                 <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>

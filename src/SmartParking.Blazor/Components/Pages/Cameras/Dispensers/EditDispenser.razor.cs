@@ -9,9 +9,11 @@ using SmartParking.Lookups.CameraBrands;
 using SmartParking.Lookups.CameraMainType;
 using SmartParking.Lookups.CameraModel;
 using SmartParking.LookupsAppServices;
+using SmartParking.Organizations;
 using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Cameras.Dispensers;
@@ -25,23 +27,41 @@ public partial class EditDispenser
     [Parameter]
     public int UpdatedId { get; set; }
     public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
+    public List<GarageDto> garages { get; set; } = new List<GarageDto>();
     private bool _clearable;
     private MudForm form;
     private int OrgId { get; set; }
     private string GarageCode { get; set; }
     private bool isLoaded = false;
+    private PagedResultDto<OrganizationDto> organizations = new PagedResultDto<OrganizationDto>();
     private int GarageId { get; set; }
     /// <summary>
     /// Initializes data required for the form, such as camera brands, models, types, and garages.
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-
+  
         await GetAllGarage();
+        if (CurrentTenant.Id == null)
+        {
+            organizations = await OrganizationsAppService.GetListAsync(new PagedAndSortedResultRequestDto
+            {
+                SkipCount = 0,
+                MaxResultCount = 100
+            });
+        }
+        var result    = await GaragesAppService.GetGarageByOrganization(new PagedAndSortedResultRequestDto {  SkipCount = 0, MaxResultCount = 100 }, Dispenser.OrganizationId);
+        garages = result.Items.ToList();
         StateHasChanged();
         await base.OnInitializedAsync();
     }
-
+    private async Task OnChangeOrganization(int organizationID)
+    {
+        Dispenser.GarageId = 0;
+        Dispenser.OrganizationId = organizationID;
+        var  result = await GaragesAppService.GetGarageByOrganization( new PagedAndSortedResultRequestDto { SkipCount = 0, MaxResultCount = 100 }, organizationID);
+        garages =  result.Items.ToList();
+    }
     private async Task GetAllGarage()
     {
         var result = await GaragesAppService.GetListAsync(new PagedAndSortedResultRequestDto
@@ -50,6 +70,7 @@ public partial class EditDispenser
             SkipCount = 0
         });
         Garages = result.Items.ToList();
+        garages = Garages;
         var garage = Garages.Find(x => x.Id == Dispenser.GarageId);
         GarageCode = garage.Code;
         GarageId = garage.Id;
