@@ -79,10 +79,10 @@ public partial class MyShifts
         {
             
                 var state = await keeperShiftSingletonService.GetAsync(FirstItem.Id);
-                if (state != null)
+                if (state != null && currentDate >= FirstItem.StartDate && currentDate <= FirstItem.EndDate)
                 {
-                    IsStartShift = false;
-                    IsEndShift = true;
+                     IsStartShift = false;
+                     IsEndShift = true;
                     StateHasChanged();
                 }
                 else if(currentTime >= FirstItem.StartTime && currentTime <= FirstItem.EndTime && currentDate >= FirstItem.StartDate && currentDate <= FirstItem.EndDate)
