@@ -19,12 +19,13 @@ public class PreExitDto
     public string CarType { get; set; }
     public DiscountMoneyDto DiscountMoney { get; set; }
     public string LaneNO { get; set; }
-    public int LaneType { get; set; }
+    public string LaneType { get; set; }
     public string LeaveTime { get; set; }
     public string ParkingLot { get; set; }
     public string ParkingLotCode { get; set; }
     public string ParkingTimeLength { get; set; }
     public string PayMoney { get; set; }
+    public string PaymentType { get; set; }
     public int PushType { get; set; }
     public string SluiceDevChnId { get; set; }
     public string SluiceDevChnName { get; set; }
