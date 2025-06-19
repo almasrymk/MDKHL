@@ -78,7 +78,7 @@ public class Program
                 var body = await reader.ReadToEndAsync();
                 request.Body.Position = 0;
 
-                Log.Information("HTTP Request: {Method} {Path} - Body: {Body}", request.Method, request.Path, body.Truncate(400));
+                Log.Information("HTTP Request: {Method} {Path} - Body: {Body}", request.Method, request.Path, body);
 
                 await next();
 
