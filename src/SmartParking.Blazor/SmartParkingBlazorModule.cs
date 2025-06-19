@@ -364,10 +364,10 @@ public class SmartParkingBlazorModule : AbpModule
         {
 
             app.UseExceptionHandler("/Error");
-            app.UseHsts();
+         //   app.UseHsts();
         }
 
-        app.UseHttpsRedirection();
+       // app.UseHttpsRedirection();
         app.UseCorrelationId();
         app.UseStaticFiles();
         app.MapAbpStaticAssets();
