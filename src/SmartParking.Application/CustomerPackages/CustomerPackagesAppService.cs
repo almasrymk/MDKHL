@@ -260,6 +260,15 @@ public class CustomerPackagesAppService:
 
         }
     }
+
+    public override async Task<CustomerPackageDto> GetAsync(int id)
+    {
+        using(_dataFilter.Disable<IMultiTenant>())
+        {
+            return await base.GetAsync(id);
+
+        }
+    }
     #endregion
 
     #region private methods 
