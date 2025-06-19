@@ -28,6 +28,6 @@ public class VehicleCustomerReportDto
     public TimeOnly? ModifiedTime { get; set; }
     public DateOnly? ModifiedDate { get; set; }
     public CustomerCategoryStatus CustomerCategory { get; set; }
-    public string? PackageNameArabicName { get; set; }
-    public string? PackageNameEnglishName { get; set; }
+    public string PackageNameArabicName { get; set; }
+    public string PackageNameEnglishName { get; set; }
 }

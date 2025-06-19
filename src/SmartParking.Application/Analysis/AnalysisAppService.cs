@@ -860,12 +860,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var query = await _vehicleRepository.GetQueryableAsync();
             var userQuery = await _myUserRepository.GetQueryableAsync();
             var packageCustomerQuery = await _customerPackageRepository.GetQueryableAsync();
-            var resultJoin = from vehicle in query
-                             join packageCustomer in packageCustomerQuery
-                             on new { vehicle.ArPlateNumber, vehicle.EnPlateNumber }
-                             equals new { packageCustomer.ArPlateNumber, packageCustomer.EnPlateNumber }
-                             into vehiclePackageGroup
-                             from packageCustomer in vehiclePackageGroup.DefaultIfEmpty()
+            var resultJoin =
+                             from vehicle in query
                              select new VehicleCustomerReportDto
                              {
                                  ArPlateNumber = vehicle.ArPlateNumber,
@@ -885,24 +881,26 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  ModifiedDate = DateOnly.FromDateTime((DateTime)vehicle.LastModificationTime),
                                  ModelYear = vehicle.ModelYear,
                                  TenantId = vehicle.TenantId,
-                                 CustomerCategory = packageCustomer.CustomerCategory == null ? CustomerCategoryStatus.None :
+                                 CustomerCategory = 
                                  packageCustomerQuery
-                                        .Where(_ => _.ExpiryDate >= DateTime.Now)
+                                         .Where(_ => _.ArPlateNumber == vehicle.ArPlateNumber &&
+                                         _.EnPlateNumber == vehicle.EnPlateNumber && _.CustomerPackageStatus == CustomerPackageStatus.Active)
                                         .Select(_ => _.CustomerCategory).FirstOrDefault(),
-
-                                 PackageNameArabicName =
-                                    packageCustomerQuery
-                                        .Where(_ => _.ArPlateNumber == vehicle.ArPlateNumber &&
-                                                    _.EnPlateNumber == vehicle.EnPlateNumber &&
-                                                    _.ExpiryDate >= DateTime.Now)
-                                        .Select(_ => _.PackageArabicName).FirstOrDefault(),
-                                 PackageNameEnglishName = packageCustomerQuery
-                                        .Where(_ => _.ArPlateNumber == vehicle.ArPlateNumber &&
-                                                    _.EnPlateNumber == vehicle.EnPlateNumber &&
-                                                    _.ExpiryDate >= DateTime.Now)
-                                        .Select(_ => _.PackageEnglishName).FirstOrDefault()
+                                 PackageNameArabicName = string.Join(", ",
+                                                                        packageCustomerQuery
+                                                                            .Where(_ => _.ArPlateNumber == vehicle.ArPlateNumber &&
+                                                                                        _.EnPlateNumber == vehicle.EnPlateNumber && _.CustomerPackageStatus == CustomerPackageStatus.Active)
+                                                                            .Select(_ => _.PackageArabicName)
+                                                                            .Where(name => !string.IsNullOrWhiteSpace(name)) 
+                                                                            .Distinct() )  , 
+                                 PackageNameEnglishName = string.Join(", ",
+                                                                        packageCustomerQuery
+                                                                            .Where(_ => _.ArPlateNumber == vehicle.ArPlateNumber &&
+                                                                                        _.EnPlateNumber == vehicle.EnPlateNumber && _.CustomerPackageStatus == CustomerPackageStatus.Active)
+                                                                            .Select(_ => _.PackageArabicName)
+                                                                            .Where(name => !string.IsNullOrWhiteSpace(name))
+                                                                            .Distinct() )
                              };
-
             if (tenantId.HasValue)
                 resultJoin = resultJoin.Where(_ => _.TenantId == tenantId);
             if (!input.Sorting.IsNullOrEmpty())
@@ -916,7 +914,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 {
                     resultJoin = resultJoin.OrderBy(input.Sorting);
                 }
-
             }
             if (input.filters.Count > 0)
             {
@@ -926,10 +923,12 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                     resultJoin = resultJoin.Where(filterExpression);
                 }
             }
+            var result = await AsyncExecuter.ToListAsync(resultJoin);
             if (!input.SearchingTerm.IsNullOrEmpty())
             {
-                resultJoin = resultJoin.Where(_ => _.CustomerEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                _.CustomerArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) || 
+                result = result.Where
+                    (_ => _.CustomerEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.CustomerArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 _.ArPlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 _.EnPlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 _.BrandArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
@@ -939,13 +938,12 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 _.PackageNameArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 _.PackageNameEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 _.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                _.ModelYear.ToLower().Contains(input.SearchingTerm.ToLower())
-
-                );
+                _.ModelYear.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                _.UserName.ToLower().Contains(input.SearchingTerm.ToLower())
+                ).ToList() ;
             }
-            var totalCount = await AsyncExecuter.CountAsync(resultJoin);
-            resultJoin = resultJoin.Skip(input.SkipCount).Take(input.MaxResultCount);
-            var result = await AsyncExecuter.ToListAsync(resultJoin);
+            var totalCount = result.Count();
+            result =  result.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             return new PagedResultDto<VehicleCustomerReportDto>
             {
                 Items = result,

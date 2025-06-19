@@ -259,8 +259,14 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["AccurateTime"], Name = "AccurateTime", IsFilterable = true, PropertyName = "AccurateTime", IsSortable = true, TypeFilter = TypeFilter.Text });
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SnapTime"], Name = "SnapTime", IsFilterable = true, PropertyName = "SnapTime", IsSortable = true, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CameraType"], Name = "CameraType", IsFilterable = true, PropertyName = "CameraType", IsSortable = true, TypeFilter = TypeFilter.Enum });
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "CustomerCategory", IsFilterable = true, PropertyName = "CustomerCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Mapped"], Name = "Mapped", IsFilterable = true, PropertyName = "IsMapped", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["TicketId"], Name = "TicketId", IsFilterable = true, PropertyName = "TicketId", IsSortable = true, TypeFilter = TypeFilter.Enum });
+         
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "CustomerCategory", IsFilterable = true, PropertyName = "CustomerCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
+			
+			
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Mapped"], Name = "Mapped", IsFilterable = true, PropertyName = "IsMapped", IsSortable = true, TypeFilter = TypeFilter.Text });
+
+
 
 			foreach (var item in garageTransactions.Items)
 			{
@@ -282,7 +288,9 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["AccurateTime"], item.AccurateTime.ToString()));
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SnapTime"], item.SnapTime.ToString()));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CameraType"],_localizer[$"{item.CameraType.ToString()}"]));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"],_localizer[$"{item.CustomerCategory.ToString()?? "NotCustomer"}"]));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["TicketId"],item.TicketId));
+               
+				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"],_localizer[$"{item.CustomerCategory.ToString()?? "NotCustomer"}"]));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Mapped"],_localizer[$"{item.IsMapped.ToString()}"]));
 
                 //rowDef.Cells.Add(new KeyValuePair<string, string>("Notes", item.Notes.ToString()));

@@ -74,14 +74,20 @@
 						Disabled=true
 						Label="@L["Garage Name"]" />
 					</MudItem>
+				
 					<MudItem sm="6" md="6">
 						<MudTextField
 						Value="@L[$"{CustomerCategory}"]"
 						Immediate="true"
 						Disabled=true
 						Label="@L["customer category"]" />
-					</MudItem> 
-
+					</MudItem>
+					<MudItem sm="6" md="6">
+						<MudTextField Value="GarageTransaction.TicketId"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["TicketId"]" />
+					</MudItem>
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="cameraCode"
 						For="@(() => cameraCode)"
@@ -112,7 +118,7 @@
 
 				<MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
 
-				@if (AuthorizationService.IsGrantedAnyAsync(GarageTransactionPermissions.Checkout).Result && (GarageTransaction.IsIn && GarageTransaction.IsPending == false && GarageTransaction.CanCheckout == true && _organizationDto.HasFreeSlots == false)&&GarageTransaction.CameraId.HasValue)
+				@if (AuthorizationService.IsGrantedAnyAsync(GarageTransactionPermissions.Checkout).Result && (GarageTransaction.IsIn && GarageTransaction.IsPending == false && GarageTransaction.CanCheckout == true && _organizationDto.HasFreeSlots == false))
 				{
 					<MudButton Variant="Variant.Filled"  Color="MudBlazor.Color.Primary" OnClick="PreCheckout"> @L["Checkout"]</MudButton>
 				}
