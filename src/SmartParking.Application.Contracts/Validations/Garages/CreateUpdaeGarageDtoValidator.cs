@@ -34,6 +34,17 @@ public class CreateUpdaeGarageDtoValidator : AbstractValidator<CreateUpdateGarag
             .GreaterThan(0).WithMessage(LocalizationHelper.GetLocalizedString("GreaterZeroValidtion"))
             .LessThan(9999).WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
 
+        RuleFor(x => x.MaxSlotsForCustomers)
+              .InclusiveBetween(0, to: 9999).WithMessage(LocalizationHelper.GetLocalizedString("RangeNumberValildation") );
+
+
+        RuleFor(x => x.MaxSlotsForEmployess)
+             .InclusiveBetween(0, to: 9999).WithMessage(LocalizationHelper.GetLocalizedString("RangeNumberValildation"));
+
+
+        RuleFor(x => x.MaxSlotsForFree)
+       .InclusiveBetween(0, to: 9999).WithMessage(LocalizationHelper.GetLocalizedString("RangeNumberValildation"));
+
         RuleFor(x => x.OrganizationId)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
             .GreaterThan(0).WithMessage(LocalizationHelper.GetLocalizedString("GreaterZeroValidtion"));

@@ -27,6 +27,7 @@
     "Max Capacity": "Parking Slots",
     "Choose your date": "Choose your date",
     "CR Expiry Date": "CR Expiry Date",
+    "CRExpiryDate": "CR Expiry Date",
     "License Expiry Date": "License Expiry Date",
     "Emaraa Id": "Emaraa Id",
     "State Id": "State Id",
@@ -422,9 +423,9 @@
     "Max Number Of Users": "Available Users",
     "Max Number Of Customers": "Available Customers",
     "Max Number Of Beneficiaries": "Available Beneficiaries",
-    "Max Slots For Employees": "Max Slots For Employees",
-    "Max Slots For Customers": "Max Slots For Customers",
-    "Max Slots For Free": "Free Slots",
+    "MaxSlotsForEmployess": "Max Slots For Employees",
+    "MaxSlotsForCustomers": "Max Slots For Customers",
+    "MaxSlotsForFree": "Free Slots",
     "Employees": "Employees",
     "Details for Employee": "Details for Employee",
     "CameraName": "Camera Name",
@@ -821,7 +822,14 @@
     "Report": "Report",
     "Dispenser": "Dispenser",
     "Permission:Dispenser": "Dispenser Management",
-    "New Dispenser": "New Dispenser"
+    "New Dispenser": "New Dispenser",
+    "DurationOfPackage": "Duration of Package",
+    "CameraTransaction": "Camera Transactions",
+    "DispenserTransaction": "Dispenser Transactions",
+    "RangeNumberValildation": " The value must be between 0 and 9999",
+    "Dispensers": "Dispensers",
+    "OrganizationHoursHeader" :  "How to Calculate Hours"
+
 
 
   }

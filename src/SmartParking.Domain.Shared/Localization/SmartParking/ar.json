@@ -1,5 +1,5 @@
 {
-  "culture": "ar",
+    "culture": "ar",
   "texts": {
     "Actions": "الإجراءات",
     "Active": "مفعل",
@@ -57,6 +57,7 @@
     "CountryEnglishName": "إسم البلد بالإنجليزية",
     "CountryUpdatedSuccessfully": "تم تعديل الدولة بنجاح",
     "CR Expiry Date": "تاريخ إنتهاء السجل التجاري",
+    "CRExpiryDate": "تاريخ إنتهاء السجل التجاري",
     "Create": "حفظ",
     "CREATE NEW": "إنشاء جديد",
     "Dashboard": "الرئيسية",
@@ -444,9 +445,9 @@
     "Max Number Of Users": "المتاح من المستخدمين",
     "Max Number Of Customers": "المتاح من العملاء",
     "Max Number Of Beneficiaries": "المتاح من المستفيدين",
-    "Max Slots For Customers": "عدد أماكن الركن المتاح للعملاء",
-    "Max Slots For Employees": "عدد أماكن الركن المتاح للموظفين",
-    "Max Slots For Free": "عدد أماكن الركن المتاح مجانًا ",
+    "MaxSlotsForCustomers": "عدد أماكن الركن المتاح للعملاء",
+    "MaxSlotsForEmployess": "عدد أماكن الركن المتاح للموظفين",
+    "MaxSlotsForFree": "عدد أماكن الركن المتاح مجانًا ",
     "ParkingSlots": "عدد أماكن الوقوف",
     "Employees": "الموظفين",
     "Details for Employee": "تفاصيل للموظف",
@@ -852,9 +853,14 @@
     "DurationOfPackage": "المدة",
     "Report": "تقرير",
     "Dispenser": "الموزّع",
-    "New Dispenser" : "اضافة موزع"
+    "New Dispenser": "اضافة موزع",
+    "CameraTransaction": "حركات بالكاميرا",
+    "DispenserTransaction": "حركات بالموزع",
+    "RangeNumberValildation": ". يجب أن تكون القيمة بين 0 - 9999",
+    "Dispensers": "الموزّعات",
+    "OrganizationHoursHeader" :  "طريقة احتساب الساعات"
 
 
 
   }
-}
+  }

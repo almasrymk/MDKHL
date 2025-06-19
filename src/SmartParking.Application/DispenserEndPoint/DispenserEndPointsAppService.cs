@@ -32,12 +32,38 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
         _organizationRepository = organizationRepository;
     }
     #region public methods
-    public Task<bool> Entry(EntryDto request)
+    public async Task<bool> Entry(EntryDto request)
     {
-        return Task.FromResult(true);
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis => dis.DeviceId == request.LaneNO);
+            if (_dispenser == null)
+            {
+                _logger.LogInformation($"No Dispenser for : {request.LaneNO}");
+                return false;
+            }
+            var _organization = await _organizationRepository.FirstOrDefaultAsync(org => org.Id == _dispenser.OrganizationId);
+            if (_organization == null || _organization.DispenserTransaction == false)
+            {
+                _logger.LogInformation($"No Organization for : {request.LaneNO}");
+                return false;
+            }
+            var _unlinkedDto = InitiateUnlinkedTransactionDto(request);
+            var _garageTransactionDto = InitiateCreateGarageTransactionDtoForPreEntry(request, _dispenser);
+
+            var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _garageTransactionDto);
+            await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = request.CarNum, laneNO = request.LaneNO, operatorType = result == false ? 2 : 5 });
+            return result;
+        }
     }
 
-    public async Task<bool> Exit(ExitDto request)
+    public Task<bool> Exit(ExitDto request)
+    {
+        return Task.FromResult(true);
+
+    }
+    public async Task<bool> PreExit(PreExitDto request)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -48,7 +74,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
                 return false;
             }
             var _organization = await _organizationRepository.FirstOrDefaultAsync(org => org.Id == _dispenser.OrganizationId);
-            if (_organization == null || _organization.DispenserTransaction==false)
+            if (_organization == null || _organization.DispenserTransaction == false)
             {
                 _logger.LogInformation($"No Organization for : {request.LaneNO}");
                 return false;
@@ -59,32 +85,10 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             return result;
         }
     }
-
-    public async Task<bool> PreEntry(PreEntryDto request)
+    public Task<bool> PreEntry(PreEntryDto request)
     {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
+       return Task.FromResult(true);
 
-            var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis=>dis.DeviceId==request.LaneNO);
-            if (_dispenser == null)
-            {
-                _logger.LogInformation($"No Dispenser for : {request.LaneNO}");
-                return false;
-            }
-            var _organization = await _organizationRepository.FirstOrDefaultAsync(org=>org.Id==_dispenser.OrganizationId);
-            if (_organization == null|| _organization.DispenserTransaction == false)
-            {
-                _logger.LogInformation($"No Organization for : {request.LaneNO}");
-                return false;
-            }
-            var _unlinkedDto= InitiateUnlinkedTransactionDto(request);
-            var _garageTransactionDto = InitiateCreateGarageTransactionDtoForPreEntry(request, _dispenser);
-
-            var result =await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _garageTransactionDto);
-            await _barrierAppService.CallingBarrier(_organization.Id , new BarrierRequest { carNum=request.CarNum,laneNO=request.LaneNO,operatorType = result ==false ? 2 :5});
-            return result;
-        }
-    
 
     }
     #endregion
@@ -96,7 +100,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     /// <param name="input">CreateUpdateGarageTransaction EndPoint Dto</param>
     /// <param name="dispenser">Dispenser which sends transaction</param>
     /// <returns>create update garage transaction dto</returns>
-    private CreateUpdateGarageTransactionDto InitiateCreateGarageTransactionDtoForPreEntry(PreEntryDto input,Dispenser dispenser )
+    private CreateUpdateGarageTransactionDto InitiateCreateGarageTransactionDtoForPreEntry(EntryDto input,Dispenser dispenser )
     {
         return new CreateUpdateGarageTransactionDto
         {
@@ -112,6 +116,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             CameraType = WatcherType.Entry,
             IsIn = true,
             IsMapped = false,
+            TicketId=input.TicketID,
 
         };
     }
@@ -121,7 +126,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     /// <param name="input">CreateUpdateGarageTransaction EndPoint Dto</param>
     /// <param name="dispenser">Dispenser which sends transaction</param>
     /// <returns>create update garage transaction dto</returns>
-    private CreateUpdateGarageTransactionDto InitiateCreateGarageTransactionDtoForExit(ExitDto input,Dispenser dispenser )
+    private CreateUpdateGarageTransactionDto InitiateCreateGarageTransactionDtoForExit(PreExitDto input,Dispenser dispenser )
     {
         return new CreateUpdateGarageTransactionDto
         {
@@ -137,6 +142,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             CameraType = WatcherType.Exit,
             IsIn = false ,
             IsMapped = true,
+            TicketId=input.TicketID,
 
         };
     }
@@ -147,7 +153,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     /// <param name="input">CreateUpdateGarageTransaction EndPoint Dto</param>
     /// <param name="dispenser">Dispenser which sends transaction</param>
     /// <returns>create update garage transaction dto</returns>
-    private CreateUpdateGarageTransactionEndPointDto InitiateUnlinkedTransactionDto(PreEntryDto input )
+    private CreateUpdateGarageTransactionEndPointDto InitiateUnlinkedTransactionDto(EntryDto input )
     {
         return new CreateUpdateGarageTransactionEndPointDto
         {
@@ -158,6 +164,8 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             DeviceID = input.LaneNO
         };
     }
+
+   
     #endregion
 
 

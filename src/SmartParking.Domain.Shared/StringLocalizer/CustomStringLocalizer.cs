@@ -37,6 +37,7 @@ public static class CustomStringLocalizer
     public const string TransactionCheckout = "Permission:TransactionCheckout";
     public const string ChangePassword = "Permission:ChangePassword";
     public const char For ='ب';
+    public const char ForArabic ='ل';
 
     public static LocalizableString L(string name)
     {

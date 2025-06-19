@@ -24,7 +24,8 @@ namespace SmartParking.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.HasSequence("WatcherSequence");
+            modelBuilder.HasSequence<int>("dispenser_seq")
+                .StartsAt(1000L);
 
             modelBuilder.Entity("SmartParking.Entities.Banners.Banner", b =>
                 {
@@ -87,9 +88,7 @@ namespace SmartParking.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasDefaultValueSql("nextval('\"WatcherSequence\"')");
-
-                    NpgsqlPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"));
+                        .HasDefaultValueSql("nextval('dispenser_seq')");
 
                     b.Property<int>("CameraType")
                         .HasColumnType("integer");
@@ -577,6 +576,9 @@ namespace SmartParking.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("TenantId");
+
+                    b.Property<string>("TicketId")
+                        .HasColumnType("text");
 
                     b.Property<string>("VehiclePicture")
                         .HasColumnType("text");

@@ -5,13 +5,16 @@
 @using SmartParking.Garages
 @using SmartParking.Localization
 @using System.Globalization
+@using SmartParking.Organizations
 @using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
 @inject ICamerasAppService CamerasAppService
 @inject IGarageAppService GaragesAppService
-
+@inject IOrganizationsAppService OrganizationAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
-
+@inject ICurrentTenant CurrentTenant
+@inject IGarageAppService GaragesAppService
 <div class="modal-wrapper">
 	<MudDialog class="mud-modal">
 		<TitleContent>
@@ -34,8 +37,49 @@
 									  Disabled=true
 									  Label="@L["Code"]" />
 					</MudItem>
+					@if(CurrentTenant.Id == null )
+					{
+						@if(CultureInfo.CurrentCulture.Name == "en")
+						{
+							<MudItem sm="6" md="6">
+								<MudTextField @bind-Value="organization.EnglishName"
+											  Immediate="true"
+											  Disabled=true
+											  Label="@L["Organization"]" />
+							</MudItem>
+						}
+						else
+						{
+							<MudItem sm="6" md="6">
+								<MudTextField @bind-Value="organization.ArabicName"
+											  Immediate="true"
+											  Disabled=true
+											  Label="@L["Organization"]" />
+							</MudItem>
+						}
+						
+						
+					}
+					@if (CultureInfo.CurrentCulture.Name == "en")
+					{
+						<MudItem sm="6" md="6">
+							<MudTextField @bind-Value="garage.NameEn"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["GarageName"]" />
+						</MudItem>
+					}
+					else
+					{
+						<MudItem sm="6" md="6">
+							<MudTextField @bind-Value="garage.NameAr"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["GarageName"]" />
+						</MudItem>
+					}
+		
 
-					
 
 					<MudItem sm="6" md="6">
 						<MudTextField T="string"

@@ -21,6 +21,7 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Reflection.Emit;
 using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -259,6 +260,9 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
             // Apply a global query filter to the Tenant entity
             b.HasQueryFilter(t => !t.IsDeleted); // Example filter for soft deletion
         });
+        builder.HasSequence<int>("dispenser_seq")
+            .StartsAt(1000)
+            .IncrementsBy(1);
         builder.ApplyConfigurationsFromAssembly(typeof(SmartParkingDbContext).Assembly);
         
         /* Configure your own tables/entities inside here */

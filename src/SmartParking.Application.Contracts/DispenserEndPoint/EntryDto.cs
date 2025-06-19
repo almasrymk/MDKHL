@@ -12,20 +12,22 @@ public class EntryDto
 {
     public string ActTime { get; set; }
     public string ArriveTime { get; set; }
+    public string BusinessType { get; set; }
     public string CarAccessCurId { get; set; }
-    public string? CarImgData { get; set; }
+    public string CarImgData { get; set; }
     public string CarNum { get; set; }
-    public int? CarNumcolor { get; set; }
-    public string? CarPlateImgData { get; set; }
+    public int CarNumcolor { get; set; }
+    public string CarPlateImgData { get; set; }
     public string CarType { get; set; }
+    public string LaneNO { get; set; }
     public int LaneType { get; set; }
     public string ParkingLot { get; set; }
     public string ParkingLotCode { get; set; }
-    public PushType PushType { get; set; }
+    public int PushType { get; set; }
     public string SluiceDevChnId { get; set; }
     public string SluiceDevChnName { get; set; }
-    public int? TotRemianNum { get; set; }
+    public string TicketID { get; set; }
+    public int TotRemianNum { get; set; }
     public string VehicleClass { get; set; }
     public string VttDevChnId { get; set; }
-    public string LaneNO { get; set; }
 }

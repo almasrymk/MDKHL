@@ -35,6 +35,7 @@ public class GarageTransaction : FullAuditedEntity<int>, IMultiTenant
        public bool CanCheckout { get; set; }
        public int? DispenserId { get; set; }
        public string? LaneNO { get; set; }
+       public string? TicketId { get; set; }
 
 
 

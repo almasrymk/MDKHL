@@ -123,23 +123,44 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-
             var query = await _garageTransactionRepoistory.GetQueryableAsync();
             var latestTransaction = query
                     .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == true)
-                    .OrderByDescending(gt => gt.AccurateTime) 
+                    .OrderByDescending(gt => gt.AccurateTime)
                     .FirstOrDefault();
-            return latestTransaction?.VehiclePicture;
-        } 
+            return latestTransaction.VehiclePicture;
+        }
     }
 
-    public async Task<GarageTransactionDto?> FindEntranceTime(string? plateNumber)
+    public async Task<GarageTransactionDto?> FindEntranceTransaction(string? PlateNumber , string? TicketId, bool DispenserTransaction, bool CameraTransaction)
+    {
+            GarageTransactionDto result = null!;
+            if (DispenserTransaction)
+                result = await GetTransactionByDispenser(TicketId);
+            if (CameraTransaction && result==null)
+                result = await GetTransactionByCamera(PlateNumber);
+            return result;   
+    }
+
+    private async Task<GarageTransactionDto?> GetTransactionByCamera(string? plateNumber)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
             var query = await _garageTransactionRepoistory.GetQueryableAsync();
             var latestTransaction = query
                     .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == true)
+                    .OrderByDescending(gt => gt.AccurateTime)
+                    .FirstOrDefault();
+            return ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(latestTransaction);
+        }
+    }
+    private async Task<GarageTransactionDto?> GetTransactionByDispenser(string? TicketId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _garageTransactionRepoistory.GetQueryableAsync();
+            var latestTransaction = query
+                    .Where(gt => gt.TicketId == TicketId && gt.CameraType == WatcherType.Entry && gt.IsIn == true)
                     .OrderByDescending(gt => gt.AccurateTime)
                     .FirstOrDefault();
             return ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(latestTransaction);
