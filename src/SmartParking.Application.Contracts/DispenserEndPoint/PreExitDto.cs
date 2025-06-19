@@ -23,7 +23,7 @@ public class PreExitDto
     public string LeaveTime { get; set; }
     public string ParkingLot { get; set; }
     public string ParkingLotCode { get; set; }
-    public int ParkingTimeLength { get; set; }
+    public string ParkingTimeLength { get; set; }
     public string PayMoney { get; set; }
     public int PushType { get; set; }
     public string SluiceDevChnId { get; set; }
