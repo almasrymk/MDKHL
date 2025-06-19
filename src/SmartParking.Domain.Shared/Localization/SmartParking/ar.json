@@ -858,7 +858,8 @@
     "DispenserTransaction": "حركات بالموزع",
     "RangeNumberValildation": ". يجب أن تكون القيمة بين 0 - 9999",
     "Dispensers": "الموزّعات",
-    "OrganizationHoursHeader" :  "طريقة احتساب الساعات"
+    "OrganizationHoursHeader": "طريقة احتساب الساعات", 
+    "TicketId" :  "رقم التذكرة"
 
 
 
