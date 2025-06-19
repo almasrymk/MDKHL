@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartParking.Cameras.Watchers.Dispensers;
 using SmartParking.Entities.Cameras.Watchers;
+using SmartParking.Entities.Organizations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,37 +13,70 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.Cameras.Dispensers;
 
 public class DispenserAppService : CrudAppService<Dispenser, DispenserDto, int, PagedAndSortedResultRequestDto, CreateUpdateDispenserDto>, IDispenserAppService
 {
     private readonly IRepository<Dispenser, int> _repository;
+    private readonly IRepository<Organization, int> _orgRepository;
+    private readonly IRepository<Garage, int> _garageRepository;
     private readonly IDataFilter _dataFilter;
 
-    public DispenserAppService(IRepository<Dispenser, int> repository, IDataFilter dataFilter) : base(repository)
+    public DispenserAppService(IRepository<Dispenser, int> repository, IDataFilter dataFilter, IRepository<Organization, int> orgRepository, IRepository<Garage, int> garageRepository) : base(repository)
     {
         _repository = repository;
         _dataFilter = dataFilter;
+        _orgRepository = orgRepository;
+        _garageRepository = garageRepository;
     }
 
     [Route("GetAllDispensers")]
     public async Task<PagedResultDto<DispenserDto>> GetAllAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
+        if (CurrentTenant.Id == null)
         {
-            var queryable = await _repository.GetQueryableAsync();
-            queryable = ApplyTenant(tenantId, queryable);
-            queryable = ApplySearch(input, queryable);
-            queryable = ApplySort(input, queryable);
-            var totalCount = await AsyncExecuter.CountAsync(queryable);
-            List<Dispenser> dispensers = await ApplyPaged(input, queryable);
-            var dispensersDto = ObjectMapper.Map<List<Dispenser>, List<DispenserDto>>(dispensers);
-            return new PagedResultDto<DispenserDto>(
-                totalCount,
-                dispensersDto
-            );
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await GetList(input, tenantId);
+            }
         }
+        return await GetList(input, null);
+    }
+
+    private async Task<PagedResultDto<DispenserDto>> GetList(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
+    {
+        var queryable = await _repository.GetQueryableAsync();
+        var orgRepo = await _orgRepository.GetQueryableAsync();
+        var garageRepo = await _garageRepository.GetQueryableAsync();
+        var dispenserQuery = from dispenser in queryable
+                             join _org in orgRepo on dispenser.OrganizationId equals _org.Id
+                             join _garage in garageRepo on dispenser.GarageId equals _garage.Id
+                             select new DispenserDto
+                             {
+                                 Id = dispenser.Id,
+                                 DeviceId = dispenser.DeviceId,
+                                 Name = dispenser.Name,
+                                 OrganizationNameAr = _org.ArabicName,
+                                 TotalRemainNumber = dispenser.TotalRemainNumber,
+                                 CameraType = dispenser.CameraType,
+                                 Status = dispenser.Status,
+                                 OrganizationNameEn = _org.EnglishName,
+                                 GarageNameAr = _garage.NameAr,
+                                 GarageNameEn = _garage.NameEn,
+                             };
+
+        dispenserQuery = ApplyTenant(tenantId, dispenserQuery);
+        dispenserQuery = ApplySearch(input, dispenserQuery);
+        dispenserQuery = ApplySort(input, dispenserQuery);
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        List<DispenserDto> dispensers = await ApplyPaged(input, dispenserQuery);
+
+        return new PagedResultDto<DispenserDto>(
+            totalCount,
+            dispensers
+        );
     }
 
     public override Task<DispenserDto> GetAsync(int id)
@@ -70,7 +104,7 @@ public class DispenserAppService : CrudAppService<Dispenser, DispenserDto, int, 
         }
     }
 
-    private static IQueryable<Dispenser> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Dispenser> queryable)
+    private static IQueryable<DispenserDto> ApplySort(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DispenserDto> queryable)
     {
         if (!input.Sorting.IsNullOrEmpty())
         {
@@ -88,26 +122,31 @@ public class DispenserAppService : CrudAppService<Dispenser, DispenserDto, int, 
     }
 
 
-    private async Task<List<Dispenser>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Dispenser> queryable)
+    private async Task<List<DispenserDto>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DispenserDto> queryable)
     {
         queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-        var cameras = await AsyncExecuter.ToListAsync(queryable);
-        return cameras;
+        var dispensers = await AsyncExecuter.ToListAsync(queryable);
+        return dispensers;
     }
 
-    private static IQueryable<Dispenser> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Dispenser> queryable)
+    private static IQueryable<DispenserDto> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<DispenserDto> queryable)
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
             queryable = queryable.Where(or =>
                 or.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.DeviceId.ToLower().Contains(input.SearchingTerm.ToLower()) 
-                           );
+                or.DeviceId.ToLower().Contains(input.SearchingTerm.ToLower())  ||
+                or.OrganizationNameAr.ToLower().Contains(input.SearchingTerm.ToLower())  ||
+                or.OrganizationNameEn.ToLower().Contains(input.SearchingTerm.ToLower())  ||
+                or.GarageNameAr.ToLower().Contains(input.SearchingTerm.ToLower())  ||
+                or.GarageNameEn.ToLower().Contains(input.SearchingTerm.ToLower())  ||
+                or.Status.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) 
+           );
         }
         return queryable;
     }
 
-    private static IQueryable<Dispenser> ApplyTenant(Guid? tenantId, IQueryable<Dispenser> queryable)
+    private static IQueryable<DispenserDto> ApplyTenant(Guid? tenantId, IQueryable<DispenserDto> queryable)
     {
         if (tenantId.HasValue)
             queryable = queryable.Where(_ => _.TenantId == tenantId);
