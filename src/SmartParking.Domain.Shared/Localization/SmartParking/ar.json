@@ -857,7 +857,8 @@
     "CameraTransaction": "حركات بالكاميرا",
     "DispenserTransaction": "حركات بالموزع",
     "RangeNumberValildation": ". يجب أن تكون القيمة بين 0 - 9999",
-    "Dispensers": "الموزّعات"
+    "Dispensers": "الموزّعات",
+    "OrganizationHoursHeader" :  "طريقة احتساب الساعات"
 
 
 
