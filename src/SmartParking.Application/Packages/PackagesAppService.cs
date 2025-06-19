@@ -229,16 +229,13 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
 
 
     /// <inheritdoc/>
-    public override Task<PackageDto> GetAsync(int id)
+    public async override Task<PackageDto> GetAsync(int id)
     {
-        if (CurrentTenant.Id == null)
+
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                return base.GetAsync(id);
-            }
+            return await base.GetAsync(id);
         }
-        return base.GetAsync(id);
 
     }
 
