@@ -51,8 +51,8 @@ public class PackagesController : ControllerBase
     
     [HttpGet("getpackagebyid/{packageId}")]
     [Authorize]
-    public async Task<Result<PackageDto>> GetPackageById(int packageId)
+    public async Task<Result<CustomerPackageDto>> GetPackageById(int packageId)
     {
-       return await _packages.GetForMobileAsync(packageId);
+       return await _customerPackagesApp.GetAsync(packageId);
     }
 }
