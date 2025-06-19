@@ -12,6 +12,8 @@ using MudBlazor.Services;
 using Blazored.LocalStorage;
 using SmartParking.Blazor.Hubs;
 using SmartParking.Blazor.Events;
+using Microsoft.AspNetCore.HttpLogging;
+using System.Text;
 
 
 
@@ -42,6 +44,16 @@ public class Program
             builder.Host.AddAppSettingsSecretsJson()
                 .UseAutofac()
                 .UseSerilog();
+            builder.Services.AddHttpLogging(logging =>
+            {
+                logging.LoggingFields = HttpLoggingFields.All;
+                    logging.RequestBodyLogLimit = 4096;
+                    logging.ResponseBodyLogLimit = 4096;
+                    logging.CombineLogs = true;
+
+
+            });
+
 
             builder.Services.AddMudServices();
             builder.Services.AddBlazoredLocalStorage();
@@ -55,6 +67,24 @@ public class Program
 
 
             var app = builder.Build();
+            app.UseSerilogRequestLogging();
+            app.UseHttpLogging();
+            app.Use(async (context, next) =>
+            {
+                context.Request.EnableBuffering();
+
+                var request = context.Request;
+                var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true);
+                var body = await reader.ReadToEndAsync();
+                request.Body.Position = 0;
+
+                Log.Information("HTTP Request: {Method} {Path} - Body: {Body}", request.Method, request.Path, body.Truncate(400));
+
+                await next();
+
+                Log.Information("HTTP Response: {StatusCode}", context.Response.StatusCode);
+            });
+
             await app.InitializeApplicationAsync();
             app.MapHub<NotificationHub>("/notification");
             await app.RunAsync();
