@@ -68,37 +68,35 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     }
     public async Task<bool> PreExit(JsonElement request)
     {
-        string ticketId = null;
-        string laneNo = null;
-        string image = null;
-
-        if (request.TryGetProperty("ticketID", out var ticketProp))
-            ticketId = ticketProp.GetString();
-
-        if (request.TryGetProperty("laneNO", out var laneProp))
-            laneNo = laneProp.GetString();
-
-        if (request.TryGetProperty("carImgData", out var imageProp))
-            image = imageProp.GetString();
+       
         using (DataFilter.Disable<IMultiTenant>())
         {
+            _logger.LogError($"{DateTime.Now} => start pre exit ");
+            var laneNo = GetString(request , "laneNO");
+            _logger.LogInformation($"Lane Number is found : {laneNo}");
             var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis => dis.DeviceId == laneNo);
             if (_dispenser == null)
             {
                 _logger.LogInformation($"No Dispenser for : {laneNo}");
                 return false;
             }
+            _logger.LogInformation($"Dispenser is found");
+
             var _organization = await _organizationRepository.FirstOrDefaultAsync(org => org.Id == _dispenser.OrganizationId);
             if (_organization == null || _organization.DispenserTransaction == false)
             {
                 _logger.LogInformation($"No Organization for : {laneNo}");
                 return false;
             }
+            _logger.LogInformation($"Organization is found");
+
             var _garageTransactionDto = InitiateCreateGarageTransactionDtoForExit(request, _dispenser);
-            if(_garageTransactionDto.PlateNumber == null &&  _garageTransactionDto.TicketId == null)
+
+            if (_garageTransactionDto.PlateNumber == null &&  _garageTransactionDto.TicketId == null)
             {
                 return false;
             }
+            _logger.LogError($"{DateTime.Now} from pre - exit , Garage Transaction object  ====>  {JsonSerializer.Serialize(new { _garageTransactionDto})}");
             var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization.Id);
             await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = _garageTransactionDto.PlateNumber, laneNO = _garageTransactionDto.LaneNO, operatorType = result == false ? 2 : 5 });
             return result;
@@ -145,27 +143,13 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     /// <param name="input">CreateUpdateGarageTransaction EndPoint Dto</param>
     /// <param name="dispenser">Dispenser which sends transaction</param>
     /// <returns>create update garage transaction dto</returns>
+
     private CreateUpdateGarageTransactionDto InitiateCreateGarageTransactionDtoForExit(JsonElement input, Dispenser dispenser)
     {
-        string GetString(JsonElement element, string propertyName)
-        {
-            return element.TryGetProperty(propertyName, out var prop) ? prop.GetString() : null;
-        }
-
-        DateTime ParseDateTime(string dateStr)
-        {
-            if (DateTime.TryParseExact(dateStr, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var result))
-                return result;
-
-            return DateTime.Now;
-        }
-
-        var actTimeStr = GetString(input, "actTime");
-
         return new CreateUpdateGarageTransactionDto
         {
-            AccurateTime = ParseDateTime(actTimeStr),
-            SnapTime = ParseDateTime(actTimeStr),
+            AccurateTime = ParseDateTime(input, "actTime"),
+            SnapTime = ParseDateTime(input, "actTime"),
             VehiclePicture = GetString(input, "carImgData"),
             PlateNumber = GetString(input, "carNum"),
             DispenserId = dispenser.Id,
@@ -179,6 +163,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             TicketId = GetString(input, "ticketID")
         };
     }
+
 
 
     /// <summary>
@@ -199,7 +184,24 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
         };
     }
 
-   
+    public static string GetString(JsonElement element, string propertyName)
+    {
+        return element.TryGetProperty(propertyName, out var prop) && prop.ValueKind != JsonValueKind.Null
+            ? prop.GetString()
+            : null;
+    }
+
+    public static DateTime ParseDateTime(JsonElement element, string propertyName, string format = "yyyyMMddHHmmss")
+    {
+        if (element.TryGetProperty(propertyName, out var prop) &&
+            prop.ValueKind == JsonValueKind.String &&
+            DateTime.TryParseExact(prop.GetString(), format, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
+        {
+            return dt;
+        }
+
+        return DateTime.Now;
+    }
     #endregion
 
 
