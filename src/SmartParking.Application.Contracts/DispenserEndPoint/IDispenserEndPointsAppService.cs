@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
@@ -12,5 +14,5 @@ public interface IDispenserEndPointsAppService : IApplicationService
     Task<bool> Entry(EntryDto request);
     Task<bool> PreEntry(PreEntryDto request);
     Task<bool> Exit(ExitDto request);
-    Task<bool> PreExit(PreExitDto request);
+    Task<bool> PreExit(JsonElement request);
 }

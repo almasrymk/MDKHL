@@ -18,7 +18,6 @@ namespace SmartParking.Validations.GarageTransactions
             RuleFor(x=>x.PlateNumber);
             RuleFor(x => x.GarageId).NotEmpty();
             RuleFor(x => x.OrganizationID).NotEmpty();
-            RuleFor(x => x.VehiclePicture).NotEmpty();
 
         }
     }
