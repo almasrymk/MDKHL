@@ -12,6 +12,9 @@ using System;
 using Microsoft.Extensions.Logging;
 using SmartParking.Entities.Organizations;
 using Volo.Abp.MultiTenancy;
+using static QRCoder.PayloadGenerator;
+using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace SmartParking.DispenserEndPoint;
 
@@ -63,25 +66,41 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
         return Task.FromResult(true);
 
     }
-    public async Task<bool> PreExit(PreExitDto request)
+    public async Task<bool> PreExit(JsonElement request)
     {
+        string ticketId = null;
+        string laneNo = null;
+        string image = null;
+
+        if (request.TryGetProperty("ticketID", out var ticketProp))
+            ticketId = ticketProp.GetString();
+
+        if (request.TryGetProperty("laneNO", out var laneProp))
+            laneNo = laneProp.GetString();
+
+        if (request.TryGetProperty("carImgData", out var imageProp))
+            image = imageProp.GetString();
         using (DataFilter.Disable<IMultiTenant>())
         {
-            var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis => dis.DeviceId == request.LaneNO);
+            var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis => dis.DeviceId == laneNo);
             if (_dispenser == null)
             {
-                _logger.LogInformation($"No Dispenser for : {request.LaneNO}");
+                _logger.LogInformation($"No Dispenser for : {laneNo}");
                 return false;
             }
             var _organization = await _organizationRepository.FirstOrDefaultAsync(org => org.Id == _dispenser.OrganizationId);
             if (_organization == null || _organization.DispenserTransaction == false)
             {
-                _logger.LogInformation($"No Organization for : {request.LaneNO}");
+                _logger.LogInformation($"No Organization for : {laneNo}");
                 return false;
             }
             var _garageTransactionDto = InitiateCreateGarageTransactionDtoForExit(request, _dispenser);
+            if(_garageTransactionDto.PlateNumber == null &&  _garageTransactionDto.TicketId == null)
+            {
+                return false;
+            }
             var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization.Id);
-            await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = request.CarNum, laneNO = request.LaneNO, operatorType = result == false ? 2 : 5 });
+            await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = _garageTransactionDto.PlateNumber, laneNO = _garageTransactionDto.LaneNO, operatorType = result == false ? 2 : 5 });
             return result;
         }
     }
@@ -126,27 +145,42 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     /// <param name="input">CreateUpdateGarageTransaction EndPoint Dto</param>
     /// <param name="dispenser">Dispenser which sends transaction</param>
     /// <returns>create update garage transaction dto</returns>
-    private CreateUpdateGarageTransactionDto InitiateCreateGarageTransactionDtoForExit(PreExitDto input,Dispenser dispenser )
+    private CreateUpdateGarageTransactionDto InitiateCreateGarageTransactionDtoForExit(JsonElement input, Dispenser dispenser)
     {
+        string GetString(JsonElement element, string propertyName)
+        {
+            return element.TryGetProperty(propertyName, out var prop) ? prop.GetString() : null;
+        }
+
+        DateTime ParseDateTime(string dateStr)
+        {
+            if (DateTime.TryParseExact(dateStr, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var result))
+                return result;
+
+            return DateTime.Now;
+        }
+
+        var actTimeStr = GetString(input, "actTime");
+
         return new CreateUpdateGarageTransactionDto
         {
-            AccurateTime = DateTime.ParseExact(input.ActTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture),
-            SnapTime = DateTime.ParseExact(input.ActTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture),
-            VehiclePicture = input.CarImgData,
-            PlateNumber = input.CarNum,
+            AccurateTime = ParseDateTime(actTimeStr),
+            SnapTime = ParseDateTime(actTimeStr),
+            VehiclePicture = GetString(input, "carImgData"),
+            PlateNumber = GetString(input, "carNum"),
             DispenserId = dispenser.Id,
-            LaneNO = input.LaneNO,
+            LaneNO = GetString(input, "laneNO"),
             GarageId = dispenser.GarageId,
             OrganizationID = dispenser.OrganizationId,
             TenantId = dispenser.TenantId,
             CameraType = WatcherType.Exit,
-            IsIn = false ,
+            IsIn = false,
             IsMapped = true,
-            TicketId=input.TicketID,
-
+            TicketId = GetString(input, "ticketID")
         };
     }
-    
+
+
     /// <summary>
     /// Method used to initate a create garage transaction dto.
     /// </summary>
