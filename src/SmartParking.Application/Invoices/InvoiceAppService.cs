@@ -276,8 +276,24 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     /// <inheritdoc/>
 	public async Task<PagedResultDto<InvoiceDto>> GetAllInvoicesByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
+        if (CurrentTenant.Id == null)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return await GetAll(input, null);
+            }
+        }
+        return await GetAll(input, tenantId);
+
+    }
+
+    private async Task<PagedResultDto<InvoiceDto>> GetAll(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
+    {
         var queryable = await _invoiceRepository.GetQueryableAsync();
-        queryable = queryable.Where(t => t.TenantId == tenantId);
+        if (tenantId.HasValue)
+        {
+            queryable = queryable.Where(t => t.TenantId == tenantId);
+        }
         if (!input.Sorting.IsNullOrEmpty())
         {
             if (input.Sorting.Contains("DESC"))
@@ -311,16 +327,16 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             );
         }
         var totalCount = await AsyncExecuter.CountAsync(queryable);
-        var items = await AsyncExecuter.ToListAsync(
-            queryable
+        queryable = queryable
                 .Skip(input.SkipCount)
-                .Take(input.MaxResultCount)
-        );
+                .Take(input.MaxResultCount);
+        var items = await AsyncExecuter.ToListAsync(queryable);
         // Map entities to DTOs
-        var incoicesDtos = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(items);
+        var invoicesDtos = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(items);
         // Return paged result
-        return new PagedResultDto<InvoiceDto>(totalCount, incoicesDtos);
+        return new PagedResultDto<InvoiceDto>(totalCount, invoicesDtos);
     }
+
     /// <inheritdoc/>
 
     public async Task<Result<InvoiceDto>> GetLatestInvoiceForCustomerInOrganizationGarage(string PlateNumber, int OrganizationId, int GarageId)
