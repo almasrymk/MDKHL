@@ -9,6 +9,7 @@ using System.Linq;
 using SmartParking.Blazor.Components.Shared;
 using System.Security.Authentication;
 using SmartParking.Enums;
+using Volo.Abp;
 
 namespace SmartParking.Blazor.Components.Pages.Subscriptions;
 
@@ -80,8 +81,6 @@ public partial class EditSubscriptionDialog
 
         try
         {
-            if(editForm.IsValid)
-            {
                 var input = new CreateUpdateSubscriptionDto
                 {
                     ArabicName = subscription.ArabicName,
@@ -112,15 +111,6 @@ public partial class EditSubscriptionDialog
                     await Task.Delay(1000);
                     Navigation.NavigateTo("/subscriptions", true);
                 }
-            }
-            else
-            {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}", Severity.Error);
-
-            }
-            // Create the input object for update
-
-
         }
         catch (AbpValidationException validationException)
         {
@@ -129,16 +119,17 @@ public partial class EditSubscriptionDialog
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
         }
+        catch (BusinessException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}{L[AlertMessages.AlertMessages.ADD]} : {ex.Code}", Severity.Error);
+        }
         catch (AuthenticationException ex)
         {
-
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message}", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}{L[AlertMessages.AlertMessages.ADD]}: {ex.Message} ", Severity.Error);
         }
-
         catch (Exception ex)
         {
-
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
         }
     }
 

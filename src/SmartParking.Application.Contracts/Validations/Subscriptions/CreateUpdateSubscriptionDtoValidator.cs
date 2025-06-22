@@ -14,20 +14,20 @@ public class CreateUpdateSubscriptionDtoValidator : AbstractValidator<CreateUpda
     public CreateUpdateSubscriptionDtoValidator()
     {
         RuleFor(x => x.ArabicName)
-            .NotEmpty()
-            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+            .MaximumLength(100)
+            .WithMessage(LocalizationHelper.GetLocalizedString("MaxLengthNameValidation"))
             .Matches(ConstantValidations.ArabicName)
             .WithMessage(LocalizationHelper.GetLocalizedString("ArabicNameValidtion"))
-            .MaximumLength(100)
-            .WithMessage(LocalizationHelper.GetLocalizedString("MaxLengthNameValidation"));
+             .NotEmpty()
+            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
         RuleFor(x => x.EnglishName)
-          .NotEmpty()
-          .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+                 .MaximumLength(100)
+          .WithMessage(LocalizationHelper.GetLocalizedString("MaxLengthNameValidation"))
           .Matches(ConstantValidations.EnglishName)
           .WithMessage(LocalizationHelper.GetLocalizedString("EnglishNameValidtion"))
-          .MaximumLength(100)
-          .WithMessage(LocalizationHelper.GetLocalizedString("MaxLengthNameValidation"));
+               .NotEmpty()
+          .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
         RuleFor(x => x.SubscriptionDescription)
             .NotEmpty();
@@ -38,41 +38,31 @@ public class CreateUpdateSubscriptionDtoValidator : AbstractValidator<CreateUpda
     
 
         RuleFor(x => x.NumberOfUsers)
-         .NotEmpty()
-         .GreaterThan(0)
-         .LessThan(10000)
-         .WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
+       .InclusiveBetween(0, to: 9999).WithMessage(LocalizationHelper.GetLocalizedString("RangeNumberValildation"))
+             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
         RuleFor(x => x.NumbersOfGarages)
-        .NotEmpty()
-        .GreaterThan(0)
-        .LessThan(10000)
-        .WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
+        .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+         .InclusiveBetween(0, to: 9999).WithMessage(LocalizationHelper.GetLocalizedString("RangeNumberValildation"));
 
         RuleFor(x => x.NumberOfCameras)
-        .NotEmpty()
-        .GreaterThan(0)
-        .LessThan(10000)
-        .WithMessage( LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
+         .InclusiveBetween(0, to: 9999).WithMessage(LocalizationHelper.GetLocalizedString("RangeNumberValildation"))
+             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
 
         RuleFor(x => x.NumberOfCustomers)
-        .NotEmpty()
-        .GreaterThan(0)
-        .LessThan(10000)
-        .WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
+          .InclusiveBetween(0, to: 9999).WithMessage(LocalizationHelper.GetLocalizedString("RangeNumberValildation"))
+             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
 
         RuleFor(x => x.ParkingSlot)
-       .NotEmpty()
-       .GreaterThan(0)
-       .LessThan(10000)
-        .WithMessage(LocalizationHelper.GetLocalizedString("LessThan9999Validation"));
-        
+         .InclusiveBetween(0, to: 9999).WithMessage(LocalizationHelper.GetLocalizedString("RangeNumberValildation"))
+             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
-        RuleFor(x => x.SubscriptionTypeId)
-        .NotEmpty()
-        .GreaterThan(0);
+
+        RuleFor(x => x.SubscriptionTypeId) 
+        .GreaterThan(0).WithMessage(LocalizationHelper.GetLocalizedString("GreaterZeroValidtion"))
+        .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
     }
 
 }
