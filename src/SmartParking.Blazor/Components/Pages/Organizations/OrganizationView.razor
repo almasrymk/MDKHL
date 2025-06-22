@@ -127,17 +127,14 @@
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
                         @if (CultureInfo.CurrentCulture.Name == "en")
                         {
-
-
                             <MudItem sm="4">
-                                <MudTextField ReadOnly="true" @bind-Value="organization.SubscriptionEnglishName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
+                                <MudTextField ReadOnly="true" @bind-Value="organization.SubscriptionEnglishName" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SubscriptionName"]" />
                             </MudItem>
                         }
                         else
                         {
-
                             <MudItem sm="4">
-                                <MudNumericField ReadOnly="true" @bind-Value="organization.SubscriptionArabicName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
+                                <MudTextField ReadOnly="true" @bind-Value="organization.SubscriptionArabicName" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SubscriptionName"]" />
                             </MudItem>
                         }
                         <MudItem sm="4">
