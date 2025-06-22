@@ -55,8 +55,6 @@ public partial class AddSubscriptionDialog
         // Call your service to create the subscription
         try
         {
-            if(form.IsValid)
-            {
                 input.NumbersOfGarages = BoundNumberOfGarages;
                 input.NumberOfCustomers = BoundNumberOfCustomers;
                 input.NumberOfUsers = BoundNumberOfUsers;
@@ -85,38 +83,26 @@ public partial class AddSubscriptionDialog
                     SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} {input.ArabicName}", Severity.Error);
 
                 }
-            }
-            else
-            {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}", Severity.Error);
-
-            }
-        }
             
-        catch (AbpValidationException abpValidationException)
+        }
+        catch (AbpValidationException validationException)
         {
-            string errors = string.Empty;
-            foreach (var error in abpValidationException.ValidationErrors)
+            foreach (var validationError in validationException.ValidationErrors)
             {
-                errors += error;
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[error.MemberNames.First()]} - {error.ErrorMessage}", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
             }
-
         }
-        catch (BusinessException businessException)
+        catch (BusinessException ex)
         {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {businessException.Message}", Severity.Error);
-
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}{L[AlertMessages.AlertMessages.ADD]} : {ex.Code}", Severity.Error);
         }
-
         catch (AuthenticationException ex)
         {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]}{L[AlertMessages.AlertMessages.ADD]}: {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
-
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
         }
 
     }
