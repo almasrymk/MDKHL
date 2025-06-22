@@ -82,19 +82,22 @@
 						Disabled=true
 						Label="@L["customer category"]" />
 					</MudItem>
-					<MudItem sm="6" md="6">
-						<MudTextField Value="GarageTransaction.TicketId"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["TicketId"]" />
-					</MudItem>
+					@if (GarageTransaction.TicketId != null){
+						<MudItem sm="6" md="6">
+							<MudTextField Value="GarageTransaction.TicketId"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["TicketId"]" />
+						</MudItem>
+					}
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="cameraCode"
-						For="@(() => cameraCode)"
-						Immediate="true"
-						Disabled=true
-						Label="@L["CameraId"]" />
+									  For="@(() => cameraCode)"
+									  Immediate="true"
+									  Disabled="true"
+									  Label="@((GarageTransaction.TicketId == null ? L["CameraId"] : L["Dispenser"]))" />
 					</MudItem>
+
 
 					<MudItem sm="12" md="12" class="d-flex justify-center">
 						<div class="zoom-container"

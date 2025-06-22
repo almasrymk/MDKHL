@@ -2,6 +2,7 @@
 using SmartParking.Cameras.Watchers.Dispensers;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Organizations;
+using SmartParking.Services.Dispenser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,13 +24,14 @@ public class DispenserAppService : CrudAppService<Dispenser, DispenserDto, int, 
     private readonly IRepository<Organization, int> _orgRepository;
     private readonly IRepository<Garage, int> _garageRepository;
     private readonly IDataFilter _dataFilter;
-
-    public DispenserAppService(IRepository<Dispenser, int> repository, IDataFilter dataFilter, IRepository<Organization, int> orgRepository, IRepository<Garage, int> garageRepository) : base(repository)
+    private readonly DispenserService _dispenserService;
+    public DispenserAppService(IRepository<Dispenser, int> repository, IDataFilter dataFilter, IRepository<Organization, int> orgRepository, IRepository<Garage, int> garageRepository, DispenserService dispenserService) : base(repository)
     {
         _repository = repository;
         _dataFilter = dataFilter;
         _orgRepository = orgRepository;
         _garageRepository = garageRepository;
+        _dispenserService = dispenserService;
     }
 
     [Route("GetAllDispensers")]
@@ -87,11 +89,12 @@ public class DispenserAppService : CrudAppService<Dispenser, DispenserDto, int, 
         }
     }
 
-    public override Task<DispenserDto> UpdateAsync(int id, CreateUpdateDispenserDto input)
+    public async override Task<DispenserDto> UpdateAsync(int id, CreateUpdateDispenserDto input)
     {
+        await _dispenserService.DispenserDeviceIDExistsOnUpdate(input.DeviceId, id);
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            return base.UpdateAsync(id, input);
+            return await base.UpdateAsync(id, input);
         }
     }
 
@@ -151,5 +154,11 @@ public class DispenserAppService : CrudAppService<Dispenser, DispenserDto, int, 
         if (tenantId.HasValue)
             queryable = queryable.Where(_ => _.TenantId == tenantId);
         return queryable;
+    }
+
+    public async override Task<DispenserDto> CreateAsync(CreateUpdateDispenserDto input)
+    {
+        await _dispenserService.DispenserDeviceIDExistsOnCreate(input.DeviceId);
+        return await base.CreateAsync(input);
     }
 }
