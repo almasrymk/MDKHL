@@ -124,7 +124,7 @@ public partial class Customer
     {
         var itemsOrganizations = new List<MenuItem>();
         var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
+        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["NoOrganization"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
             foreach (var org in organizations.Items)
@@ -384,7 +384,7 @@ public partial class Customer
             SearchingTerm = termSearch
         };
 
-        PagedResultDto<CustomerDto> customers = await GetCustomersAsync(request, selectedValue);
+        PagedResultDto<CustomerDto> customers = await GetCustomersAsync(request, selectedValue , null);
         TotalItem = (int)customers.TotalCount;
         await CreateTable(customers);
     }
@@ -439,7 +439,7 @@ public partial class Customer
     private async Task<PagedResultDto<CustomerDto>> GetCustomersAsync(
         PagedAndSortedAndSearchResultRequestDto request,
         string selectedValue,
-        Guid? tenantId = null)
+        Guid? tenantId)
     {
         if (currrentTenant.Id == null)
         {
