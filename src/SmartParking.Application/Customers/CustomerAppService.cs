@@ -135,6 +135,27 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             };
         }
     }
+    public async Task<PagedResultDto<CustomerDto>> GetListAsyncNoOrganization(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query = query.Include(c => c.IdentityUser);
+            query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
+            query = query.Where(c => c.CustomerPackages.Count == 0);
+            query = CreateSearchQuery(input, query);
+            query = AddSortQuery(input, query);
+            var paged = await AddPaged(input, query);
+            query = paged.query;
+            List<CustomerDto> cutomersDtos = await AddMapForNotOrganziation(query, null);
+
+            return new PagedResultDto<CustomerDto>
+            {
+                TotalCount = paged.totalCount,
+                Items = cutomersDtos
+            };
+        }
+    }
     /// <inheritdoc/>
     public async Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
@@ -166,14 +187,14 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         {
             var query = await _repository.GetQueryableAsync();
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
-            query = query.Where(x => !x.CustomerPackages.Any());
+            query = query.Where(x => x.CustomerPackages.Count == 0  || x.CustomerPackages.Any(x => x.ExpiryDate < DateTime.Now));
             query = CheckTenant(tenantId, query);
             query = IsOrganization(organizationId, query);
             query = CreateSearchQuery(input, query);
             query = AddSortQuery(input, query);
             var paged = await AddPaged(input, query);
             query = paged.query;
-            List<CustomerDto> cutomersDtos = await AddMap(query, null);
+            List<CustomerDto> cutomersDtos = await AddMapNoPackage(query, null);
             return new PagedResultDto<CustomerDto>
             {
                 TotalCount = paged.totalCount,
@@ -545,6 +566,28 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
         return query;
     }
+    private async Task<List<CustomerDto>> AddMapForNotOrganziation(IQueryable<Customer> query, CustomerCategoryStatus? customerCategory)
+    {
+
+        List<CustomerDto> customersDtos = await query
+            .Select(c => new CustomerDto
+            {
+                Id = c.Id,
+                ArabicName = c.ArabicName,
+                FullName = c.IdentityUser.Name,
+                Email = c.IdentityUser.Email,
+                MobileNumber = c.IdentityUser.PhoneNumber,
+                NationalId = c.NationalId,
+                _packageEnglishNames = string.Empty , 
+                _packageArabicNames =  string.Empty , 
+                OrganizationArabicName = string.Empty,
+                OrganizationEnglishName = string.Empty,
+            })
+            .ToListAsync();
+
+        return customersDtos;
+    }
+
     /// <summary>
     /// Maps the filtered customer query to a list of <see cref="CustomerDto"/>, applying optional category and tenant filters.
     /// </summary>
@@ -565,7 +608,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 NationalId = c.NationalId,
                 _packageEnglishNames = string.Join(", ", c.CustomerPackages
                            .Where(_ =>
-                               (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable? _.TenantId == CurrentTenant.Id.Value : true))
+                               (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))
                            .Select(cp => cp.PackageEnglishName)
                            .Where(name => !string.IsNullOrWhiteSpace(name))),
                 _packageArabicNames = string.Join(", ", c.CustomerPackages
@@ -573,9 +616,42 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                                (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))
                            .Select(cp => cp.PackageArabicName)
                            .Where(name => !string.IsNullOrWhiteSpace(name))),
-                OrganizationArabicName = string.Join(", ", c.CustomerPackages.Where(_ => _.TenantId != null)
+                OrganizationArabicName = string.Join(", ", c.CustomerPackages
                                                     .Select(cp => cp.Organization.ArabicName).Distinct()),
-                OrganizationEnglishName = string.Join(", ", c.CustomerPackages.Where(_ => _.TenantId != null)
+                OrganizationEnglishName = string.Join(", ", c.CustomerPackages
+                                                    .Select(cp => cp.Organization.EnglishName).Distinct()),
+            })
+            .ToListAsync();
+
+        return customersDtos;
+    }
+
+
+
+    private async Task<List<CustomerDto>> AddMapNoPackage(IQueryable<Customer> query, CustomerCategoryStatus? customerCategory)
+    {
+
+        List<CustomerDto> customersDtos = await query
+            .Select(c => new CustomerDto
+            {
+                Id = c.Id,
+                ArabicName = c.ArabicName,
+                FullName = c.IdentityUser.Name,
+                Email = c.IdentityUser.Email,
+                MobileNumber = c.IdentityUser.PhoneNumber,
+                NationalId = c.NationalId,
+                _packageEnglishNames = string.Join(", ", c.CustomerPackages
+                           .Where(_ => _.ExpiryDate < DateTime.Now && (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))
+                           .Select(cp => cp.PackageEnglishName)
+                           .Where(name => !string.IsNullOrWhiteSpace(name))),
+                _packageArabicNames = string.Join(", ", c.CustomerPackages
+                           .Where(_ =>
+                               _.ExpiryDate < DateTime.Now &&(!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))
+                           .Select(cp => cp.PackageArabicName)
+                           .Where(name => !string.IsNullOrWhiteSpace(name))),
+                OrganizationArabicName = string.Join(", ", c.CustomerPackages
+                                                    .Select(cp => cp.Organization.ArabicName).Distinct()),
+                OrganizationEnglishName = string.Join(", ", c.CustomerPackages
                                                     .Select(cp => cp.Organization.EnglishName).Distinct()),
             })
             .ToListAsync();
