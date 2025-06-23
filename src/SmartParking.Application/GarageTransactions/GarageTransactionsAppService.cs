@@ -421,7 +421,9 @@ public class GarageTransactionsAppService :
                 or.AccurateTime.Value.ToString().ToLower().Contains(input.SearchingTerm) ||
                 or.SnapTime.Value.ToString().ToLower().Contains(input.SearchingTerm) ||
                 or.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+                or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) || 
+                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
             );
         }
 
