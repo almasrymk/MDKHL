@@ -124,7 +124,7 @@ public partial class Customer
     {
         var itemsOrganizations = new List<MenuItem>();
         var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["NoOrganization"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
+        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["NoOrganization"], OnClick = EventCallback.Factory.Create<string>(this, async () => await HandleSelectNoOrganizationAsync() )});
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
             foreach (var org in organizations.Items)
@@ -389,6 +389,20 @@ public partial class Customer
         await CreateTable(customers);
     }
 
+    private async Task HandleSelectNoOrganizationAsync()
+    {
+        var request = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = RowPerPage,
+            SkipCount = (CurrentPage - 1) * RowPerPage,
+            Sorting = sortColumn,
+            SearchingTerm = termSearch
+        };
+
+        PagedResultDto<CustomerDto> customers = await CustomerAppService.GetListAsyncNoOrganization(request);
+        TotalItem = (int)customers.TotalCount;
+        await CreateTable(customers);
+    }
     /// <summary>
     /// Downloads an Excel report for customer transaction data.
     /// </summary>
