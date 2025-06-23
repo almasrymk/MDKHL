@@ -143,7 +143,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var query = await _repository.GetQueryableAsync();
             query = query.Include(c => c.IdentityUser);
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
-            query = CheckTenant(tenantId, query);
+            if (tenantId.HasValue)
+                query = query.Where(x => x.CustomerPackages.Any(org => org.TenantId == tenantId.Value));
             query = CreateSearchQuery(input, query);
             query = AddSortQuery(input, query);
             var paged = await AddPaged(input, query);
@@ -572,9 +573,9 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                                (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))
                            .Select(cp => cp.PackageArabicName)
                            .Where(name => !string.IsNullOrWhiteSpace(name))),
-                OrganizationArabicName = string.Join(", ", c.CustomerPackages.Where(_ => _.PackageId != null)
+                OrganizationArabicName = string.Join(", ", c.CustomerPackages.Where(_ => _.TenantId != null)
                                                     .Select(cp => cp.Organization.ArabicName).Distinct()),
-                OrganizationEnglishName = string.Join(", ", c.CustomerPackages.Where(_ => _.PackageId != null)
+                OrganizationEnglishName = string.Join(", ", c.CustomerPackages.Where(_ => _.TenantId != null)
                                                     .Select(cp => cp.Organization.EnglishName).Distinct()),
             })
             .ToListAsync();
