@@ -17,6 +17,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 using static QRCoder.PayloadGenerator;
 
 namespace SmartParking.Utilities;
@@ -56,10 +57,12 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
 
     public async Task<QRCodeDto> GetQrCodeAsync(decimal amount, int organizationId)
     {
+        using (DataFilter.Disable<IMultiTenant>()) {
 
-        var oragnization = await _organizationsRepository.FirstOrDefaultAsync(_ => _.Id==organizationId);
-        //"12-25-2024"
-        return await GetQrCodeAsync(amount, oragnization);
+            var oragnization = await _organizationsRepository.FirstOrDefaultAsync(_ => _.Id==organizationId);
+            //"12-25-2024"
+            return await GetQrCodeAsync(amount, oragnization);
+        }
     }
 
     public async Task<QRCodeDto> GetQrCodeAsync(decimal amount, Organization organization)
