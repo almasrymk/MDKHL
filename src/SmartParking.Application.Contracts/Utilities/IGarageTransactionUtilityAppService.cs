@@ -1,4 +1,5 @@
 ﻿using SmartParking.Cameras;
+using SmartParking.Cutomers;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
@@ -35,10 +36,10 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task CloseCheckoutMobileTransaction(string? plateNumber);
     Task UpdateEntryTransactionCheckouFromMobile(int entryGarageTransactionId);
     Task<Guid> GetCurrentCustomerId();
-    Task<Customer> GetCustomer(Guid customerId);
+    Task<CustomerDto> GetCustomer(Guid customerId);
     Task<Organization> GetOrganization(int OrganizationID);
     Task<CreateUpdateGarageTransactionDto> InitiateExitGarageTransactionForMobileCheckout(string PlateNumber, string EntryPicture, int OrganizationId, int GarageId, int CameraId, Guid TenantId);
-    Task<CreateUpdateInvoiceDto> InitiateInvoice(DateTime entranceTime, CreateUpdateGarageTransactionDto exitTransaction, int totalHours, decimal price, bool isPackage, Customer customer = null);
+    Task<CreateUpdateInvoiceDto> InitiateInvoice(DateTime entranceTime, CreateUpdateGarageTransactionDto exitTransaction, int totalHours, decimal price, bool isPackage, CustomerDto customer = null);
 
 
 }

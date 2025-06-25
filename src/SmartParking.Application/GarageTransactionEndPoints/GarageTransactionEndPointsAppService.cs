@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Asn1.Ocsp;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.CustomerPackages;
+using SmartParking.Cutomers;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
@@ -181,7 +182,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             await ChangeCategoryForEntryTransaction(_entryTransaction);
         }
 
-        Customer _customer = _customerId is not null ? await _garageTransactionUtilityAppService.GetCustomer(Guid.Parse(_customerId)) : null;
+        var _customer = _customerId is not null ? await _garageTransactionUtilityAppService.GetCustomer(Guid.Parse(_customerId)) : null;
         //Check if that transaction has been checked out before.
         var CheckIfLoggedOutFromMobile = await IfLoggedOutFromMobile(exitTransaction.PlateNumber);
         if (CheckIfLoggedOutFromMobile)
@@ -282,7 +283,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     /// <param name="categoryHasChanged">flag to detect if category has been changed</param>
     /// <param name="customer">Customer</param>
     /// <returns>false if passed grace period as new invoice must paid otherwise true</returns>
-    private async Task<bool> CheckoutFromMobileSequence(CreateUpdateGarageTransactionDto exitTransaction, Organization organization, GarageTransactionDto? entryTransaction, bool categoryHasChanged, Customer customer)
+    private async Task<bool> CheckoutFromMobileSequence(CreateUpdateGarageTransactionDto exitTransaction, Organization organization, GarageTransactionDto? entryTransaction, bool categoryHasChanged, CustomerDto customer)
     {
         if (entryTransaction.CustomerCategory != exitTransaction.CustomerCategory)
         {
@@ -326,7 +327,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     /// <param name="lastCreatedInvoice">Last Invoice created for Customer</param>
     /// <param name="organization">Organization</param>
     /// <returns>false</returns>
-    private async Task<bool> PassedGracePeriod(CreateUpdateGarageTransactionDto exitTransaction, DateTime? entranceTime, Customer customer, Result<InvoiceDto> lastCreatedInvoice,Organization organization)
+    private async Task<bool> PassedGracePeriod(CreateUpdateGarageTransactionDto exitTransaction, DateTime? entranceTime, CustomerDto customer, Result<InvoiceDto> lastCreatedInvoice,Organization organization)
     {
         int _hours = (int)Math.Ceiling((decimal)(exitTransaction.AccurateTime.Value - lastCreatedInvoice.Value.InvoiceTime.Value).TotalHours);
         _logger.LogInformation($"{DateTime.Now} ====> Get Response false | Exceeded Grace Period must pay invoice");

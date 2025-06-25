@@ -72,7 +72,7 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
 
         }
         createdExitGarageTransaction.CustomerCategory = customerPackageDto.CustomerCategory;
-        Customer exsitCustomer = await _garageTransactionUtilityAppService.GetCustomer(customerPackageDto.CustomerId);
+        var exsitCustomer = await _garageTransactionUtilityAppService.GetCustomer(customerPackageDto.CustomerId);
         var _customerInvoicePrice = _calculationsEndPointAppService.CalculationForRegisteredCustomer(createdExitGarageTransaction.AccurateTime.Value, entryGarageTransaction.AccurateTime.Value, organization, customerPackageDto, totalHours);
         CreateUpdateInvoiceDto invoice = await _garageTransactionUtilityAppService.InitiateInvoice(entryGarageTransaction.AccurateTime.Value, createdExitGarageTransaction, totalHours, _customerInvoicePrice, true, exsitCustomer);
         return Result.Success(invoice);
