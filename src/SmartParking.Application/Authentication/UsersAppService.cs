@@ -869,6 +869,11 @@ public class UsersAppService : ApplicationService, IUsersAppService
             x => x.Email,
             () => input.Email
         );
+        ObjectHelper.TrySetProperty(
+    user,
+    x => x.UserName,
+    () => input.UserName
+);
         user.SetIsActive(input.IsActive);
         user.SetProperty("IdentificationTypes", input.IdentificationTypes);
         user.SetProperty("NationalId", input.NationalId);
