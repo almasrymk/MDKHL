@@ -15,5 +15,11 @@ public class CreateUpdateDispenserDtoValidator : AbstractValidator<CreateUpdateD
     {
         RuleFor(dis=>dis.Name)
             .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+
+        RuleFor(dis => dis.GarageId)
+          .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+
+        RuleFor(dis => dis.DeviceId)
+          .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
     }
 }

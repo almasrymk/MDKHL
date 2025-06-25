@@ -45,16 +45,18 @@
                     <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="DispenserDto.DeviceId"
                                       Immediate="true"
-                                      Placeholder="@L["Enter DeviceId"]"
-                                      Label="@L["Code"]" />
+                                      Placeholder="@L["Code"]"
+                                      Label="@L["Code"]"
+                                      Required
+                                      RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     @if(CurrentTenant.Id == null )
                     {
                         <MudItem sm="6" md="6">
                         <MudSelect
                                    T= "int"
-                                    Label="@L["Organization"]"
-                                   Placeholder="Choose"
+                                    Label="@L["OrganizationName"]"
+                                   Placeholder="@L["Choose"]"
                                      ValueChanged="OnChangeOrganization"
                                    Required="true"
                                     RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
@@ -75,12 +77,11 @@
                         </MudSelect>
                         </MudItem>
                         }
-                    @if (CultureInfo.CurrentCulture.Name == "en"  )
-                    {
+          
                         <MudItem sm="6">
                             <MudSelect @bind-Value="@DispenserDto.GarageId"
                                        Variant="Variant.Text"
-                                       Label="@L["EnGarageName"]"
+                                       Label="@L["GarageName"]"
                                        Disabled="CurrentTenant.Id == null && DispenserDto.OrganizationId == 0 "
                                        Placeholder="Choose"
                                        Required
@@ -90,33 +91,20 @@
                                 {
                                     if (garage.Status != Enums.Status.Active)
                                         continue;
-                                    <MudSelectItem Value="garage.Id">@garage.NameEn</MudSelectItem>
+                                        if(CultureInfo.CurrentCulture.Name == "en")
+                                        {
+                                                 <MudSelectItem Value="garage.Id">@garage.NameEn</MudSelectItem>
+                                        }
+                                        else
+                                        {
+                                               <MudSelectItem Value="garage.Id">@garage.NameAr</MudSelectItem>
+                                        }
                                 }
                             </MudSelect>
                         </MudItem>
-                    }
-                    else
-                    {
-                        <MudItem sm="6">
-                            <MudSelect @bind-Value="@DispenserDto.GarageId"
-                                       Variant="Variant.Text"
-                                       Label="@L["ArGarageName"]"
-                                       Placeholder=@L["Choose"]
-                                       Disabled="CurrentTenant.Id == null && DispenserDto.OrganizationId == 0 "
-                                       Required
-                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
-                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
-                                @foreach (var garage in Garages)
-                                {
-                                    if (garage.Status != Enums.Status.Active)
-                                        continue;
-                                    <MudSelectItem Value="garage.Id">@garage.NameAr</MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudItem>
-
-                    }
-
+                    
+                  
+                
                     <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="DispenserDto.GarageId"
                                       For="@(() => DispenserDto.GarageId)"

@@ -85,7 +85,7 @@ public partial class EditDispenser
     {
         try
         {
-            if (Dispenser.GarageId != GarageId)
+            if (Dispenser.GarageId != GarageId && Dispenser.GarageId!=0)
             {
                 var newGarage = Garages.Find(x => x.Id == Dispenser.GarageId);
                 Dispenser.OrganizationId = newGarage.OrganizationId;

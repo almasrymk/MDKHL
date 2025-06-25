@@ -730,6 +730,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     private async Task UpdateUser(CreateUpdateCustomerDto input, Guid userId)
     {
         var user = ObjectMapper.Map<CreateUpdateCustomerDto, UpdateUserDto>(input);
+        user.UserName = input.PhoneNumber;
         await _usersAppService.UpdateUserWithoutRoleChangeAsync(userId, user);
     }
     #endregion
