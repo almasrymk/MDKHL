@@ -423,7 +423,8 @@ public class GarageTransactionsAppService :
                 or.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) || 
                 or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
+                or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.TicketId.ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
 
