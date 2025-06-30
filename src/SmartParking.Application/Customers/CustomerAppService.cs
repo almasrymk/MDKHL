@@ -28,6 +28,7 @@ using IdentityUser = Volo.Abp.Identity.IdentityUser;
 using Microsoft.AspNetCore.Identity;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using SmartParking.Filters;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 namespace SmartParking.Customers;
 /// <summary>
 /// Customer application service class.
@@ -41,7 +42,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     private IDataFilter _dataFilter;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IBaseCustomerAppService _baseCustomer;
-    private readonly ICustomerPackagesAppService _packagesAppService;
+    private readonly ICustomerPackagesAppService _customerPackagesAppService;
     private readonly IUsersAppService _usersAppService;
     private readonly IAuthenticationUtility _authenticationUtility;
 
@@ -56,7 +57,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         _organizationAppService = organizationAppService;
         _userManager = userManager;
         _baseCustomer = baseCustomer;
-        _packagesAppService = packagesAppService;
+        _customerPackagesAppService = packagesAppService;
         _usersAppService = usersAppService;
         _authenticationUtility = authenticationUtility;
     }
@@ -72,9 +73,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var user = await _userManager.FindByNameAsync(input.UserName);
             if (user != null)
             {
-                throw new BusinessException(LocalizationHelper.GetLocalizedString("User") + " " +
-                    LocalizationHelper.GetLocalizedString("DuplicateValidation"));
-
+                    throw new BusinessException(LocalizationHelper.GetLocalizedString("User") + " " +
+                   LocalizationHelper.GetLocalizedString("DuplicateValidation"));
             }
             await _baseCustomer.CheckCustomer(input);
             var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
@@ -111,6 +111,22 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         }
 
 
+    }
+
+    public async Task<CustomerDto> CheckIfCustomerAlreadyExistInOrganization(CreateUpdateCustomerDto createUpdateCustomerDto)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var user = await _userManager.FindByNameAsync(createUpdateCustomerDto.UserName);
+            if (user != null)
+            {
+                var customerDto = await _baseCustomer.GetCustomerIdForUser(user.Id);
+                await _customerPackagesAppService.AddDefaultPackageToCustomerAsync(customerDto.Id);
+                return customerDto;
+            }
+            return null;
+        }
     }
     /// <inheritdoc/>
     [RemoteService(false)]
@@ -746,6 +762,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         await _repository.HardDeleteAsync(customer);
 
     }
+
+
     #endregion
 
 }

@@ -196,10 +196,7 @@ public class CustomerPackagesAppService:
             }
             
         }
-    }
-    ///<inheritdoc/>
-
-    
+    }    
 
     ///<inheritdoc/>
 
@@ -219,8 +216,6 @@ public class CustomerPackagesAppService:
 
 
    }
-    ///<inheritdoc/>
-
 
     ///<inheritdoc/>
 
@@ -259,6 +254,16 @@ public class CustomerPackagesAppService:
             };
 
         }
+    }
+    public async Task AddDefaultPackageToCustomerAsync(Guid CustomerId)
+    {
+        var org = await _organizationsApp.GetOrganizationForCurrentTenatAsync();
+        await InsertCustomerPackageAsync(new CustomerPackage{
+            CustomerId= CustomerId,
+            OrganizationId= org.Id,
+            TenantId= org.TenantId,
+        });
+
     }
 
     public override async Task<CustomerPackageDto> GetAsync(int id)
