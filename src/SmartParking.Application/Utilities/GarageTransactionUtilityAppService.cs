@@ -19,6 +19,7 @@ using SmartParking.Entities.Customers;
 using Volo.Abp;
 using SmartParking.Invoices;
 using SmartParking.Entities.Cameras.Watchers;
+using SmartParking.Cutomers;
 
 
 namespace SmartParking.Utilities;
@@ -310,14 +311,14 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             return customerId;
         }
     }
-    public async Task<Customer> GetCustomer(Guid customerId)
+    public async Task<CustomerDto> GetCustomer(Guid customerId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _customerRepoistory.GetQueryableAsync();
             query = query.Include(x => x.IdentityUser);
             var customer = await query.FirstOrDefaultAsync(x => x.Id == customerId);
-            return customer;
+            return ObjectMapper.Map<Customer,CustomerDto>(customer);
         }
     }
     public async Task<Organization> GetOrganization(int OrganizationID)
@@ -349,7 +350,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         };
     }
     [RemoteService(false)]
-    public async Task<CreateUpdateInvoiceDto> InitiateInvoice(DateTime entranceTime, CreateUpdateGarageTransactionDto exitTransaction, int totalHours, decimal price, bool isPackage , Customer customer = null)
+    public async Task<CreateUpdateInvoiceDto> InitiateInvoice(DateTime entranceTime, CreateUpdateGarageTransactionDto exitTransaction, int totalHours, decimal price, bool isPackage , CustomerDto customer = null)
     {
         var entryTransactionImage =await FindEntranceImage(exitTransaction.PlateNumber , exitTransaction.TicketId);
         var invoice =  new CreateUpdateInvoiceDto
@@ -363,7 +364,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             PlateNumber = exitTransaction.PlateNumber,
             InvoiceTime = exitTransaction.AccurateTime,
             EntranceTime = entranceTime,
-            CustomerEnName = customer is null ? customerEnName : customer!.IdentityUser?.Name,
+            CustomerEnName = customer is null ? customerEnName : customer!.FullName,
             CustomerArName = customer is null ? customerArName : customer!.ArabicName,
             CustomerId = customer is null ? null : customer!.Id,
             IsPackage = isPackage,

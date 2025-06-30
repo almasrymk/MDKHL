@@ -91,9 +91,9 @@ public class DispenserAppService : CrudAppService<Dispenser, DispenserDto, int, 
 
     public async override Task<DispenserDto> UpdateAsync(int id, CreateUpdateDispenserDto input)
     {
-        await _dispenserService.DispenserDeviceIDExistsOnUpdate(input.DeviceId, id);
         using (_dataFilter.Disable<IMultiTenant>())
         {
+            await _dispenserService.DispenserDeviceIDExistsOnUpdate(input.DeviceId, id);
             return await base.UpdateAsync(id, input);
         }
     }
@@ -158,7 +158,10 @@ public class DispenserAppService : CrudAppService<Dispenser, DispenserDto, int, 
 
     public async override Task<DispenserDto> CreateAsync(CreateUpdateDispenserDto input)
     {
-        await _dispenserService.DispenserDeviceIDExistsOnCreate(input.DeviceId);
-        return await base.CreateAsync(input);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            await _dispenserService.DispenserDeviceIDExistsOnCreate(input.DeviceId);
+            return await base.CreateAsync(input);
+        }
     }
 }

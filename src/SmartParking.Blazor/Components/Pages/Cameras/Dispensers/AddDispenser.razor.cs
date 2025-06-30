@@ -54,6 +54,7 @@ public partial class AddDispenser
     private  async Task OnChangeOrganization(int organizationId)
     {
         DispenserDto.OrganizationId = organizationId;
+        DispenserDto.GarageId = 0;
         Garages =  Garages.Where(x => x.OrganizationId ==organizationId).ToList();
     }
 

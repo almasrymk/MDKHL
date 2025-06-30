@@ -84,5 +84,7 @@ public interface IBaseCustomerAppService
     /// <c>true</c> if the email address is valid; otherwise, <c>false</c>.
     /// </returns>
     bool IsEmailValid(string email);
-  
+    Task<CustomerDto> GetCustomerIdForUser(Guid IdentityUserId);
+
+
 }

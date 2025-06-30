@@ -28,6 +28,7 @@ using IdentityUser = Volo.Abp.Identity.IdentityUser;
 using Microsoft.AspNetCore.Identity;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using SmartParking.Filters;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 namespace SmartParking.Customers;
 /// <summary>
 /// Customer application service class.
@@ -41,7 +42,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     private IDataFilter _dataFilter;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IBaseCustomerAppService _baseCustomer;
-    private readonly ICustomerPackagesAppService _packagesAppService;
+    private readonly ICustomerPackagesAppService _customerPackagesAppService;
     private readonly IUsersAppService _usersAppService;
     private readonly IAuthenticationUtility _authenticationUtility;
 
@@ -56,7 +57,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         _organizationAppService = organizationAppService;
         _userManager = userManager;
         _baseCustomer = baseCustomer;
-        _packagesAppService = packagesAppService;
+        _customerPackagesAppService = packagesAppService;
         _usersAppService = usersAppService;
         _authenticationUtility = authenticationUtility;
     }
@@ -72,9 +73,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var user = await _userManager.FindByNameAsync(input.UserName);
             if (user != null)
             {
-                throw new BusinessException(LocalizationHelper.GetLocalizedString("User") + " " +
-                    LocalizationHelper.GetLocalizedString("DuplicateValidation"));
-
+                    throw new BusinessException(LocalizationHelper.GetLocalizedString("User") + " " +
+                   LocalizationHelper.GetLocalizedString("DuplicateValidation"));
             }
             await _baseCustomer.CheckCustomer(input);
             var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
@@ -112,6 +112,22 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
 
     }
+
+    public async Task<CustomerDto> CheckIfCustomerAlreadyExistInOrganization(CreateUpdateCustomerDto createUpdateCustomerDto)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var user = await _userManager.FindByNameAsync(createUpdateCustomerDto.UserName);
+            if (user != null)
+            {
+                var customerDto = await _baseCustomer.GetCustomerIdForUser(user.Id);
+                await _customerPackagesAppService.AddDefaultPackageToCustomerAsync(customerDto.Id);
+                return customerDto;
+            }
+            return null;
+        }
+    }
     /// <inheritdoc/>
     [RemoteService(false)]
     public async Task<PagedResultDto<CustomerDto>> GetListAsync(PagedAndSortedAndSearchResultRequestDto input)
@@ -128,6 +144,27 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var paged = await AddPaged(input, query);
             query = paged.query;
             List<CustomerDto> cutomersDtos = await AddMap(query, null);
+            return new PagedResultDto<CustomerDto>
+            {
+                TotalCount = paged.totalCount,
+                Items = cutomersDtos
+            };
+        }
+    }
+    public async Task<PagedResultDto<CustomerDto>> GetListAsyncNoOrganization(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query = query.Include(c => c.IdentityUser);
+            query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
+            query = query.Where(c => c.CustomerPackages.Count == 0);
+            query = CreateSearchQuery(input, query);
+            query = AddSortQuery(input, query);
+            var paged = await AddPaged(input, query);
+            query = paged.query;
+            List<CustomerDto> cutomersDtos = await AddMapForNotOrganziation(query, null);
+
             return new PagedResultDto<CustomerDto>
             {
                 TotalCount = paged.totalCount,
@@ -166,14 +203,14 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         {
             var query = await _repository.GetQueryableAsync();
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
-            query = query.Where(x => !x.CustomerPackages.Any());
+            query = query.Where(x => x.CustomerPackages.Count == 0  || x.CustomerPackages.Any(x => x.ExpiryDate < DateTime.Now));
             query = CheckTenant(tenantId, query);
             query = IsOrganization(organizationId, query);
             query = CreateSearchQuery(input, query);
             query = AddSortQuery(input, query);
             var paged = await AddPaged(input, query);
             query = paged.query;
-            List<CustomerDto> cutomersDtos = await AddMap(query, null);
+            List<CustomerDto> cutomersDtos = await AddMapNoPackage(query, null);
             return new PagedResultDto<CustomerDto>
             {
                 TotalCount = paged.totalCount,
@@ -545,6 +582,28 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
 
         return query;
     }
+    private async Task<List<CustomerDto>> AddMapForNotOrganziation(IQueryable<Customer> query, CustomerCategoryStatus? customerCategory)
+    {
+
+        List<CustomerDto> customersDtos = await query
+            .Select(c => new CustomerDto
+            {
+                Id = c.Id,
+                ArabicName = c.ArabicName,
+                FullName = c.IdentityUser.Name,
+                Email = c.IdentityUser.Email,
+                MobileNumber = c.IdentityUser.PhoneNumber,
+                NationalId = c.NationalId,
+                _packageEnglishNames = string.Empty , 
+                _packageArabicNames =  string.Empty , 
+                OrganizationArabicName = string.Empty,
+                OrganizationEnglishName = string.Empty,
+            })
+            .ToListAsync();
+
+        return customersDtos;
+    }
+
     /// <summary>
     /// Maps the filtered customer query to a list of <see cref="CustomerDto"/>, applying optional category and tenant filters.
     /// </summary>
@@ -565,7 +624,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 NationalId = c.NationalId,
                 _packageEnglishNames = string.Join(", ", c.CustomerPackages
                            .Where(_ =>
-                               (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable? _.TenantId == CurrentTenant.Id.Value : true))
+                               (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))
                            .Select(cp => cp.PackageEnglishName)
                            .Where(name => !string.IsNullOrWhiteSpace(name))),
                 _packageArabicNames = string.Join(", ", c.CustomerPackages
@@ -573,9 +632,42 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                                (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))
                            .Select(cp => cp.PackageArabicName)
                            .Where(name => !string.IsNullOrWhiteSpace(name))),
-                OrganizationArabicName = string.Join(", ", c.CustomerPackages.Where(_ => _.TenantId != null)
+                OrganizationArabicName = string.Join(", ", c.CustomerPackages
                                                     .Select(cp => cp.Organization.ArabicName).Distinct()),
-                OrganizationEnglishName = string.Join(", ", c.CustomerPackages.Where(_ => _.TenantId != null)
+                OrganizationEnglishName = string.Join(", ", c.CustomerPackages
+                                                    .Select(cp => cp.Organization.EnglishName).Distinct()),
+            })
+            .ToListAsync();
+
+        return customersDtos;
+    }
+
+
+
+    private async Task<List<CustomerDto>> AddMapNoPackage(IQueryable<Customer> query, CustomerCategoryStatus? customerCategory)
+    {
+
+        List<CustomerDto> customersDtos = await query
+            .Select(c => new CustomerDto
+            {
+                Id = c.Id,
+                ArabicName = c.ArabicName,
+                FullName = c.IdentityUser.Name,
+                Email = c.IdentityUser.Email,
+                MobileNumber = c.IdentityUser.PhoneNumber,
+                NationalId = c.NationalId,
+                _packageEnglishNames = string.Join(", ", c.CustomerPackages
+                           .Where(_ => _.ExpiryDate < DateTime.Now && (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))
+                           .Select(cp => cp.PackageEnglishName)
+                           .Where(name => !string.IsNullOrWhiteSpace(name))),
+                _packageArabicNames = string.Join(", ", c.CustomerPackages
+                           .Where(_ =>
+                               _.ExpiryDate < DateTime.Now &&(!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))
+                           .Select(cp => cp.PackageArabicName)
+                           .Where(name => !string.IsNullOrWhiteSpace(name))),
+                OrganizationArabicName = string.Join(", ", c.CustomerPackages
+                                                    .Select(cp => cp.Organization.ArabicName).Distinct()),
+                OrganizationEnglishName = string.Join(", ", c.CustomerPackages
                                                     .Select(cp => cp.Organization.EnglishName).Distinct()),
             })
             .ToListAsync();
@@ -654,6 +746,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     private async Task UpdateUser(CreateUpdateCustomerDto input, Guid userId)
     {
         var user = ObjectMapper.Map<CreateUpdateCustomerDto, UpdateUserDto>(input);
+        user.UserName = input.PhoneNumber;
         await _usersAppService.UpdateUserWithoutRoleChangeAsync(userId, user);
     }
     #endregion
@@ -669,6 +762,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         await _repository.HardDeleteAsync(customer);
 
     }
+
+
     #endregion
 
 }

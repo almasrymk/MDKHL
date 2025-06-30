@@ -124,13 +124,22 @@ public partial class CustomerRegister
             createUpdateCustomerDto.Password = "P@ssw0rd";
             createUpdateCustomerDto.RepeatPassword = "P@ssw0rd";
             createUpdateCustomerDto.UserName = createUpdateCustomerDto.PhoneNumber;
-            Customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
-            if (Customer != null)
+            var ExistedCustomer = await CustomerAppService.CheckIfCustomerAlreadyExistInOrganization(createUpdateCustomerDto);
+            if(CurrentTenant.Id!=null && ExistedCustomer != null)
             {
-                CustomerId = Customer.Id;
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}  {createUpdateCustomerDto.FullName}", Severity.Success);
-                showVehicle = true;
+                Navigation.NavigateTo($"/customers/edit/{ExistedCustomer.Id}", true);
             }
+            else
+            {
+                Customer = await CustomerAppService.CreateMdkhlAsync(createUpdateCustomerDto);
+                if (Customer != null)
+                {
+                    CustomerId = Customer.Id;
+                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}  {createUpdateCustomerDto.FullName}", Severity.Success);
+                    showVehicle = true;
+                }
+            }
+           
         }
         catch (AbpValidationException abpValidationException)
         {

@@ -197,5 +197,14 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
         return false;
 
     }
+    public async Task<CustomerDto> GetCustomerIdForUser(Guid IdentityUserId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var customerQuery = await _repository.GetQueryableAsync();
+            var customer = customerQuery.Where(s => s.IdentityUserId == IdentityUserId).FirstOrDefault();
+            return ObjectMapper.Map<Customer,CustomerDto>(customer);
+        }
+    }
     #endregion
 }

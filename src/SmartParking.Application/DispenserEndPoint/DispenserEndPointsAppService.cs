@@ -96,7 +96,6 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             {
                 return false;
             }
-            _logger.LogError($"{DateTime.Now} from pre - exit , Garage Transaction object  ====>  {JsonSerializer.Serialize(new { _garageTransactionDto})}");
             var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization.Id);
             await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = _garageTransactionDto.PlateNumber, laneNO = _garageTransactionDto.LaneNO, operatorType = result == false ? 2 : 5 });
             return result;
