@@ -116,7 +116,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (organization.DispenserTransaction && organization.CameraTransaction && GarageTransaction.TicketId == null)
         {
             var last =await  _garageTransactionUtilityAppService.FindEntranceTransaction(GarageTransaction.PlateNumber, null, false, organization.CameraTransaction);
-            if (last!= null && last.AccurateTime >= GarageTransaction.AccurateTime.Value.AddSeconds(-60) && last.AccurateTime <= GarageTransaction.AccurateTime)
+            if (last!= null && last.AccurateTime >= GarageTransaction.AccurateTime.Value.AddSeconds(-30) && last.AccurateTime <= GarageTransaction.AccurateTime && !last.IsMapped)
             {
                 return false;
             }
