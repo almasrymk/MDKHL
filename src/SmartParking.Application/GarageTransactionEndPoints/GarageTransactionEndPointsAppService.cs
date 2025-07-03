@@ -63,10 +63,12 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var camera = await _garageTransactionUtilityAppService.GetCameraByDeviceIdAsync(input.DeviceID);
         if (camera == null || camera.Status==Status.Inactive)
         {
+            _logger.LogError($"{DateTime.Now} ====>  {input.DeviceID} is not found ");
             return await NotFoundEntityAndExceptionHandling(input, Message:input.DeviceID);
         }
         if (camera.GarageId ==0 || camera.OrganizationId == 0)
         {
+            _logger.LogError($"{DateTime.Now} ====>  Camera Organization is not found ");
             return await NotFoundEntityAndExceptionHandling(input, Message:"Organization");
         }
         //Remove white spaces from plate number.
@@ -75,7 +77,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var organization = await _garageTransactionUtilityAppService.GetOrganization(camera.OrganizationId);
         if (organization.CameraTransaction == false)
         {
-            _logger.LogInformation($"No Organization for : {input.DeviceID}");
+            _logger.LogInformation($"No Active Camera Configuration Organization  for : {input.DeviceID}");
             return false;
         }
         var (_hasFreeSlots, _hasPackageOnly)=(organization.HasFreeSlots, organization.HasPackageOnly) ;
@@ -112,17 +114,21 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var customerPackageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(GarageTransaction.OrganizationID, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value);
         var organization = await _garageTransactionUtilityAppService.GetOrganization(GarageTransaction.OrganizationID);
         if (organization.DispenserTransaction && organization.CameraTransaction && customerPackageDto == null && GarageTransaction.TicketId == null)
+        {
+            _logger.LogInformation($"No Active Customer Package with mix mode  for : {GarageTransaction.PlateNumber}");
             return false;
+        }
         if (organization.DispenserTransaction && organization.CameraTransaction && GarageTransaction.TicketId == null)
         {
             var last =await  _garageTransactionUtilityAppService.FindEntranceTransaction(GarageTransaction.PlateNumber, null, false, organization.CameraTransaction);
             if (last!= null && last.AccurateTime >= GarageTransaction.AccurateTime.Value.AddSeconds(-30) && last.AccurateTime <= GarageTransaction.AccurateTime && !last.IsMapped)
             {
+                _logger.LogInformation($"Cannot enter twice w: {GarageTransaction.PlateNumber}");
                 return false;
             }
         }
         
-         GarageTransaction.CustomerCategory = customerPackageDto is not null ? customerPackageDto.CustomerCategory : CustomerCategoryStatus.Customer;
+        GarageTransaction.CustomerCategory = customerPackageDto is not null ? customerPackageDto.CustomerCategory : CustomerCategoryStatus.Customer;
         bool _hasActivePackage = customerPackageDto is not null;
         bool canEnter = await _garageTransactionUtilityAppService.ReserverSlotsOfGarageDependsOnCategoryAsync(GarageTransaction.GarageId, GarageTransaction.CustomerCategory);
         bool finalResult = (_hasPackageOnly, _hasFreeSlots, canEnter, _hasActivePackage) switch
