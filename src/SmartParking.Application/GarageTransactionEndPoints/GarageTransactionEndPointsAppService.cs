@@ -14,6 +14,7 @@ using SmartParking.Invoices;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
+using System.Diagnostics.Metrics;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp.MultiTenancy;
@@ -109,7 +110,19 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, CreateUpdateGarageTransactionDto GarageTransaction)
     {
         var customerPackageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(GarageTransaction.OrganizationID, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value);
-        GarageTransaction.CustomerCategory = customerPackageDto is not null ? customerPackageDto.CustomerCategory : CustomerCategoryStatus.Customer;
+        var organization = await _garageTransactionUtilityAppService.GetOrganization(GarageTransaction.OrganizationID);
+        if (organization.DispenserTransaction && organization.CameraTransaction && customerPackageDto == null && GarageTransaction.TicketId == null)
+            return false;
+        if (organization.DispenserTransaction && organization.CameraTransaction && GarageTransaction.TicketId == null)
+        {
+            var last =await  _garageTransactionUtilityAppService.FindEntranceTransaction(GarageTransaction.PlateNumber, null, false, organization.CameraTransaction);
+            if (last!= null && last.AccurateTime >= GarageTransaction.AccurateTime.Value.AddSeconds(-60) && last.AccurateTime <= GarageTransaction.AccurateTime)
+            {
+                return false;
+            }
+        }
+        
+         GarageTransaction.CustomerCategory = customerPackageDto is not null ? customerPackageDto.CustomerCategory : CustomerCategoryStatus.Customer;
         bool _hasActivePackage = customerPackageDto is not null;
         bool canEnter = await _garageTransactionUtilityAppService.ReserverSlotsOfGarageDependsOnCategoryAsync(GarageTransaction.GarageId, GarageTransaction.CustomerCategory);
         bool finalResult = (_hasPackageOnly, _hasFreeSlots, canEnter, _hasActivePackage) switch
@@ -164,6 +177,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var _customerId = await _garageTransactionUtilityAppService.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(exitTransaction.PlateNumber);
         //getting package on vehicle if found
         var _packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(exitTransaction.OrganizationID, exitTransaction.PlateNumber, exitTransaction.AccurateTime.Value);
+        if (organization.DispenserTransaction && organization.CameraTransaction && _packageDto == null &&exitTransaction.TicketId == null)
+            return false;
+
         exitTransaction.CustomerCategory = _packageDto is null ? CustomerCategoryStatus.Customer : _packageDto.CustomerCategory;
         //Check On Entrance Time Validation
         if (_entryTransaction.AccurateTime > exitTransaction.AccurateTime)
