@@ -78,7 +78,11 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             var _unlinkedDto = InitiateUnlinkedTransactionDto(request);
             var _garageTransactionDto = InitiateCreateGarageTransactionDtoForPreEntry(request, _dispenser);
             var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _garageTransactionDto);
-            await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = request.CarNum, laneNO = request.LaneNO, operatorType = result == false ? 2 : 5 });
+            if(result)
+            {
+                 _logger.LogError($"Open Barrier From Pre Entry : {request.CarNum} : {request.LaneNO}");
+                   await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = request.CarNum, laneNO = request.LaneNO, operatorType = result == false ? 2 : 5 });
+            }
             return result;
         }
     }
