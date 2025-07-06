@@ -133,7 +133,7 @@ public partial class UnLinkedTransaction
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn , 
+            Sorting = sort, 
             SearchingTerm = termSearch
             
         };
