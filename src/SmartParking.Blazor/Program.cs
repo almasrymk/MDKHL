@@ -29,13 +29,14 @@ public class Program
 #else
             .MinimumLevel.Information()
 #endif
-           
+
             .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
             .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
             .Enrich.FromLogContext()
             .WriteTo.Async(c => c.File($"Logs/logs_{DateTime.Now.ToString("dd-MM-yyyy")}.txt"))
             .WriteTo.Async(c => c.Console())
             .CreateLogger();
+
 
         try
         {
@@ -44,16 +45,18 @@ public class Program
             builder.Host.AddAppSettingsSecretsJson()
                 .UseAutofac()
                 .UseSerilog();
-            builder.Services.AddHttpLogging(logging =>
+            var configuration = builder.Configuration;
+            var httpLoggingEnabled = configuration.GetValue<bool>("HttpLogging:Enabled");
+            if (httpLoggingEnabled)
             {
-                logging.LoggingFields = HttpLoggingFields.All;
-                    logging.RequestBodyLogLimit = 4096;
-                    logging.ResponseBodyLogLimit = 4096;
+                builder.Services.AddHttpLogging(logging =>
+                {
+                    logging.LoggingFields = HttpLoggingFields.All;
+                    logging.RequestBodyLogLimit = configuration.GetValue<int>("HttpLogging:RequestLimit");
+                    logging.ResponseBodyLogLimit = configuration.GetValue<int>("HttpLogging:ResponseLimit");
                     logging.CombineLogs = true;
-
-
-            });
-
+                });
+            }
 
             builder.Services.AddMudServices();
             builder.Services.AddBlazoredLocalStorage();
@@ -65,25 +68,27 @@ public class Program
             //                .AddFontAwesomeIcons();
             //builder.Services.AddBlazoriseRichTextEdit();
 
-
             var app = builder.Build();
-            app.UseSerilogRequestLogging();
-            app.UseHttpLogging();
-            app.Use(async (context, next) =>
+            if (httpLoggingEnabled)
             {
-                context.Request.EnableBuffering();
+                app.UseSerilogRequestLogging();
+                app.UseHttpLogging();
+                app.Use(async (context, next) =>
+                {
+                    context.Request.EnableBuffering();
 
-                var request = context.Request;
-                var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true);
-                var body = await reader.ReadToEndAsync();
-                request.Body.Position = 0;
+                    var request = context.Request;
+                    var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true);
+                    var body = await reader.ReadToEndAsync();
+                    request.Body.Position = 0;
 
-                Log.Information("HTTP Request: {Method} {Path} - Body: {Body}", request.Method, request.Path, body);
+                    Log.Information("HTTP Request: {Method} {Path} - Body: {Body}", request.Method, request.Path, body);
 
-                await next();
+                    await next();
 
-                Log.Information("HTTP Response: {StatusCode}", context.Response.StatusCode);
-            });
+                    Log.Information("HTTP Response: {StatusCode}", context.Response.StatusCode);
+                });
+            }
 
             await app.InitializeApplicationAsync();
             app.MapHub<NotificationHub>("/notification");
