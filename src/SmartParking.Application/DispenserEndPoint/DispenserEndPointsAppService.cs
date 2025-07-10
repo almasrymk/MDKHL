@@ -15,6 +15,8 @@ using Volo.Abp.MultiTenancy;
 using static QRCoder.PayloadGenerator;
 using Newtonsoft.Json.Linq;
 using System.Text.Json;
+using SmartParking.CustomerPackages;
+using System.Linq.Expressions;
 
 namespace SmartParking.DispenserEndPoint;
 
@@ -25,14 +27,16 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     private readonly IRepository<Dispenser, int> _dispenserRepository;
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly ILogger<DispenserEndPointsAppService> _logger;
+    private readonly ICustomerPackagesAppService _customerPackagesAppService;
 
-    public DispenserEndPointsAppService(IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IBarrierAppService barrierAppService, IRepository<Dispenser, int> dispenserRepository, ILogger<DispenserEndPointsAppService> logger, IRepository<Organization, int> organizationRepository)
+    public DispenserEndPointsAppService(IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IBarrierAppService barrierAppService, IRepository<Dispenser, int> dispenserRepository, ILogger<DispenserEndPointsAppService> logger, IRepository<Organization, int> organizationRepository, ICustomerPackagesAppService customerPackagesAppService)
     {
         _garageTransactionEndPointsAppService = garageTransactionEndPointsAppService;
         _barrierAppService = barrierAppService;
         _dispenserRepository = dispenserRepository;
         _logger = logger;
         _organizationRepository = organizationRepository;
+        _customerPackagesAppService = customerPackagesAppService;
     }
     #region public methods
     public async Task<bool> Entry(EntryDto request)
@@ -53,12 +57,15 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             }
             var _unlinkedDto = InitiateUnlinkedTransactionDto(request);
             var _garageTransactionDto = InitiateCreateGarageTransactionDtoForPreEntry(request, _dispenser);
+            CustomerPackageDto _customerPackage = null;
+            _customerPackage = await GetPackageForCustomer(_organization, _garageTransactionDto);
 
-            var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _garageTransactionDto);
+            var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _garageTransactionDto , _customerPackage);
             await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = request.CarNum, laneNO = request.LaneNO, operatorType = result == false ? 2 : 5 });
             return result;
         }
     }
+
     public async Task<bool> PreEntry(PreEntryDto request)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -77,8 +84,11 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             }
             var _unlinkedDto = InitiateUnlinkedTransactionDto(request);
             var _garageTransactionDto = InitiateCreateGarageTransactionDtoForPreEntry(request, _dispenser);
-            var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _garageTransactionDto);
-            if(result)
+            CustomerPackageDto _customerPackage = null;
+            _customerPackage = await GetPackageForCustomer(_organization, _garageTransactionDto);
+
+            var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _garageTransactionDto, _customerPackage);
+            if (result)
             {
                  _logger.LogError($"Open Barrier From Pre Entry : {request.CarNum} : {request.LaneNO}");
                    await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = request.CarNum, laneNO = request.LaneNO, operatorType = result == false ? 2 : 5 });
@@ -115,7 +125,9 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             {
                 return false;
             }
-            var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization.Id);
+            CustomerPackageDto _customerPackage = null;
+            _customerPackage = await GetPackageForCustomer(_organization, _garageTransactionDto);
+            var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization.Id, _customerPackage);
             await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = _garageTransactionDto.PlateNumber, laneNO = _garageTransactionDto.LaneNO, operatorType = result == false ? 2 : 5 });
             return result;
         }
@@ -149,7 +161,9 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             {
                 return false;
             }
-            var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization.Id);
+            CustomerPackageDto _customerPackage = null;
+            _customerPackage = await GetPackageForCustomer(_organization, _garageTransactionDto);
+            var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization.Id, _customerPackage);
             await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = _garageTransactionDto.PlateNumber, laneNO = _garageTransactionDto.LaneNO, operatorType = result == false ? 2 : 5 });
             return result;
         }
@@ -226,7 +240,8 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             CameraType = WatcherType.Exit,
             IsIn = false,
             IsMapped = true,
-            TicketId = GetString(input, "ticketID")
+            TicketId = GetString(input, "ticketID"),
+            PackageCode= GetString(input,"PackageCode")
         };
     }
 
@@ -303,6 +318,19 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             return dt;
         }
         return DateTime.Now;
+    }
+
+    private async Task<CustomerPackageDto> GetPackageForCustomer(Organization? _organization, CreateUpdateGarageTransactionDto _garageTransactionDto)
+    {
+        Expression<Func<CustomerPackage, bool>> expression = x => x.EnPlateNumber == _garageTransactionDto.PlateNumber || x.ArPlateNumber == _garageTransactionDto.PlateNumber;
+        var customerPackage = await _customerPackagesAppService.GetActivePackageForCustomerInOrganization(_organization.Id, expression, DateTime.Now);
+        if (customerPackage == null)
+        {
+            expression = x => x.PackageCode == _garageTransactionDto.PackageCode;
+            customerPackage = await _customerPackagesAppService.GetActivePackageForCustomerInOrganization(_organization.Id, expression, DateTime.Now);
+        }
+
+        return customerPackage;
     }
     #endregion
 

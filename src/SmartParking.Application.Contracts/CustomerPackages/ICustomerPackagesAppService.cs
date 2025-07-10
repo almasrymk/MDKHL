@@ -1,9 +1,11 @@
 ﻿using SmartParking.Cameras;
+using SmartParking.Entities.Organizations;
 using SmartParking.Packages;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -24,13 +26,14 @@ namespace SmartParking.CustomerPackages
         /// based on the provided exit transaction date.
         /// </summary>
         /// <param name="orgID">The ID of the organization.</param>
-        /// <param name="PlateNumber">The plate number of the vehicle.</param>
+        /// <param name="expression">expression for plate or package code.</param>
         /// <param name="ExitTransaction">The exit time of the garage transaction.</param>
         /// <returns>
         /// A task that represents the asynchronous operation. 
         /// The task result contains the active <see cref="CustomerPackageDto"/> if one is found.
         /// </returns>
-        Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int orgID, string PlateNumber, DateTime ExitTransaction);
+        Task<CustomerPackageDto> GetActivePackageForCustomerInOrganization(int OrganizationID, Expression<Func<CustomerPackage, bool>> expression, DateTime ExitTransaction);
+
         /// <summary>
         /// Retrieves a list of all packages currently assigned to the authenticated customer.
         /// </summary>

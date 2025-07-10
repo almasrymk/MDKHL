@@ -1536,6 +1536,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("PackageArabicName")
                         .HasColumnType("text");
 
+                    b.Property<string>("PackageCode")
+                        .HasColumnType("text");
+
                     b.Property<string>("PackageEnglishName")
                         .HasColumnType("text");
 
