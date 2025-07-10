@@ -119,29 +119,5 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
         return token;
     }
 
-    public async Task<bool> OpenGate(OpenGateRequestDto camera, string GarageUrl) {
-  
-        var content = new StringContent(camera.ToJsonString(), Encoding.UTF8, "application/json");
-        _logger.LogInformation($"Open Gate Request body => {camera.ToJsonString()}");
-        _logger.LogInformation($"Open Gate Request Header => {content.Headers.ToJsonString()}");
-        var response = await _httpClient.PostAsync(GarageUrl, content);
-        _logger.LogInformation($"Open Gate Response body => {response.Headers.ToJsonString()}");
-        return response.IsSuccessStatusCode;
-
-    }
-
-    public async Task<bool> SendRequestToOpenGate(int ExitGarageTransactionId)
-    {
-
-        var garageTransactionDto = await GarageTransactionAppService.GetAsync(ExitGarageTransactionId);
-        var camera = await CameraAppService.GetAsync(garageTransactionDto.CameraId.Value);
-        var openGateBody = new OpenGateRequestDto
-        {
-            ip = camera.CameraIP,
-            port = 80,
-            username = camera.UserName ?? "",
-            password = camera.Password ?? ""
-        };
-        return await OpenGate(openGateBody,camera.Garage.OpenGateURL);
-    }
+ 
 }

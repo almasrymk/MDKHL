@@ -1,4 +1,6 @@
 ﻿using Castle.MicroKernel;
+using SmartParking.GarageTransactions;
+using SmartParking.OpeningGate;
 using SmartParking.WebSockets;
 using System;
 using System.Collections.Generic;
@@ -11,9 +13,10 @@ using System.Threading.Tasks;
 
 namespace SmartParking.BarrierAppService;
 
-public class BarrierAppService : SmartParkingAppService, IBarrierAppService
+public class BarrierAppService : SmartParkingAppService, IBarrierAppService , IOpeningGateService
 {
     private readonly IWebSocketConnectionManager _websocketConnectionManager;
+    public string Name => "Barrier";
 
     public BarrierAppService(IWebSocketConnectionManager websocketConnectionManager)
     {
@@ -31,14 +34,20 @@ public class BarrierAppService : SmartParkingAppService, IBarrierAppService
                 string json = JsonSerializer.Serialize(request);
                 byte[] buffer = Encoding.UTF8.GetBytes(json);
                 await socket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                return true;
             }
+            return false;
 
-            return true;
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.ToString());
             return false;
         }
+    }
+
+    public async Task<bool> OpenGateAsync(GarageTransactionDto garageTransactionDto)
+    {
+        return await CallingBarrier(garageTransactionDto.OrganizationID, new BarrierRequest { carNum = garageTransactionDto.PlateNumber, laneNO = garageTransactionDto.LaneNO, operatorType = 5 });
     }
 }

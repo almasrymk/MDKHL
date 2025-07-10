@@ -6,6 +6,8 @@ using SmartParking.Entities.GarageTransactions;
 using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
+using SmartParking.OpeningGate;
+using SmartParking.Organizations;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
@@ -24,14 +26,18 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
     private readonly IGarageTransactionUtilityAppService _garageTransactionUtilityAppService;
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
     private readonly ICustomerPackagesAppService _customerPackagesAppService;
+    private readonly IOrganizationsAppService _organizationAppService;
+    private readonly IOpenGateFactoryService _openGateFactoryAppService;
 
-    public KeeperTransactionsAppService(IInvoiceAppService invoiceAppService, ICalculationsEndPointsAppService calculationsEndPointAppService, IGarageTransactionUtilityAppService garageTransactionUtilityAppService, IGarageTransactionsAppService garageTransactionsAppService, ICustomerPackagesAppService customerPackagesAppService)
+    public KeeperTransactionsAppService(IInvoiceAppService invoiceAppService, ICalculationsEndPointsAppService calculationsEndPointAppService, IGarageTransactionUtilityAppService garageTransactionUtilityAppService, IGarageTransactionsAppService garageTransactionsAppService, ICustomerPackagesAppService customerPackagesAppService, IOrganizationsAppService organizationAppService, IOpenGateFactoryService openGateAppService)
     {
         _invoiceAppService = invoiceAppService;
         _calculationsEndPointAppService = calculationsEndPointAppService;
         _garageTransactionUtilityAppService = garageTransactionUtilityAppService;
         _garageTransactionsAppService = garageTransactionsAppService;
         _customerPackagesAppService = customerPackagesAppService;
+        _organizationAppService = organizationAppService;
+        _openGateFactoryAppService = openGateAppService;
     }
 
 
@@ -54,6 +60,14 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
         invoice.Value.GarageTransactionExitId = garageTransaction.Id;
         return await _invoiceAppService.CreateAsync(invoice.Value);
 
+    }
+
+    public async Task<bool> OpenGate(int transactionId)
+    {
+        var _garageTransaction = await _garageTransactionsAppService.GetAsync(transactionId);
+        var _organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
+        var _openGateService = _openGateFactoryAppService.GetOpeningGateService(_organization);
+        return await _openGateService.OpenGateAsync(_garageTransaction);
     }
 
     ///<inheritdoc/>

@@ -10,6 +10,7 @@
 @using SmartParking.Invoices
 @using SmartParking.Localization
 @using System.Globalization
+@using SmartParking.OpeningGate
 @using SmartParking.Organizations
 @using SmartParking.Payments
 @using SmartParking.Permissions.CheckoutPermissions
@@ -19,13 +20,13 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IPaymentAppService PaymentAppService
 @inject ISnackbar Snackbar
-@inject IInvoiceUtilityAppService InvoiceUtility
 @inject IGarageTransactionsAppService GarageTransactionAppService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 @inject IDiscountAppService DiscountAppService
 @inject IAuthorizationService AuthorizationService
-@inject IBarrierAppService BarrierAppService
+@inject IOrganizationsAppService OrganizationAppService
+@inject IOpenGateFactoryService OpenGateFactoryService
 
 
 

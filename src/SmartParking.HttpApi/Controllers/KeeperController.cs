@@ -162,7 +162,7 @@ public class KeeperController : AbpController
     public async Task<Result<InvoiceMobileDto>> PayInvoice(int InvoiceId, decimal DiscountValue)
     {
         var invoice = await _keeperAppService.CheckoutAsync(InvoiceId, DiscountValue);
-        var openGate=invoice.IsSuccess&& await _invoiceUtilityAppService.SendRequestToOpenGate(invoice.Value.GarageTransactionExitId);
+        await _keeperTransactionsAppService.OpenGate(invoice.Value.GarageTransactionExitId);
         return invoice;
     }
     [HttpPut("cancelinvoiceandmapping")]

@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using MudBlazor;
 using MudBlazor.Services;
 using OpenIddict.Validation.AspNetCore;
+using SmartParking.BarrierAppService;
 using SmartParking.Blazor.Components;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Filters;
@@ -17,6 +18,9 @@ using SmartParking.Blazor.MultiTenants;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Localization;
 using SmartParking.MultiTenancy;
+using SmartParking.OpenGate;
+using SmartParking.OpeningGate;
+using SmartParking.Organizations;
 using SmartParking.Results;
 using StackExchange.Profiling;
 using System.Globalization;
@@ -141,6 +145,12 @@ public class SmartParkingBlazorModule : AbpModule
             }
         });
         context.Services.AddSingleton<NotificationService>();
+        context.Services.AddScoped<IOpeningGateService,BarrierAppService.BarrierAppService>();
+        context.Services.AddScoped<IOpeningGateService,OpenCameraGateService>();
+        context.Services.AddScoped<IOpenGateFactoryService, OpenGateFactoryService>();
+
+
+
         // Define the supported cultures
         var supportedCultures = new[]
         {
@@ -174,6 +184,7 @@ public class SmartParkingBlazorModule : AbpModule
         ConfigureBlazorise(context);
         ConfigureRouter(context);
         ConfigureMenu(context);
+
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context, IConfiguration configuration)
