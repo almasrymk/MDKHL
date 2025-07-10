@@ -25,4 +25,6 @@ public interface IKeeperTransactionsAppService : IApplicationService
     /// <param name="entryTransactionId">Entry transaction Id</param>
     /// <returns>Pre invoice dto</returns>
     Task<Result<CreateUpdateInvoiceDto>> PreCheckout(int entryTransactionId);
+
+    Task<bool> OpenGate(int transactionId);
 }

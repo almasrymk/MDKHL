@@ -4,6 +4,7 @@ using SmartParking.BarrierAppService;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Enums;
 using SmartParking.Invoices;
+using SmartParking.Organizations;
 using SmartParking.Payments;
 using SmartParking.Utilities;
 
@@ -12,6 +13,7 @@ namespace SmartParking.Blazor.Components.Pages.LastInvoiceAtCamera;
 public partial class LastInvoiceAtCamera
 {
     private InvoiceDto Invoice = new InvoiceDto();
+    private OrganizationDto _organization = new OrganizationDto();
     private bool NoInvoice { get; set; } = false;
     public PaymentMethod PaymentMethod { get; set; }
     public decimal Discount { get; set; } = default;
@@ -24,6 +26,7 @@ public partial class LastInvoiceAtCamera
     {
         try
         {
+            _organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
 
             Invoice = await InvoiceAppService.GetLatestInvoiceForOrganization();
         }
@@ -63,16 +66,8 @@ public partial class LastInvoiceAtCamera
         try
         {
             var garageTransactionDto=await GarageTransactionAppService.GetAsync(Invoice.GarageTransactionExitId);
-            bool result;
-            if (garageTransactionDto.CameraId.HasValue)
-            {
-                result=await InvoiceUtility.SendRequestToOpenGate(Invoice.GarageTransactionExitId);
-            }
-            else
-            {
-                result = await BarrierAppService.CallingBarrier(garageTransactionDto.OrganizationID, new BarrierRequest { carNum = garageTransactionDto.PlateNumber, laneNO = garageTransactionDto.LaneNO, operatorType =  5 });
-            }
-            
+            var OpenGateService =  OpenGateFactoryService.GetOpeningGateService(_organization);  
+            var result =await OpenGateService.OpenGateAsync(garageTransactionDto);
             if (result == true)
             {
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L["OpenGate"]}", MudBlazor.Severity.Success);

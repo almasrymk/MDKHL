@@ -1,0 +1,15 @@
+﻿using SmartParking.GarageTransactions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SmartParking.OpeningGate;
+
+public interface IOpeningGateService
+{
+    string Name { get; }
+
+    Task<bool> OpenGateAsync(GarageTransactionDto garageTransactionDto);
+}
