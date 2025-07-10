@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Volo.Abp;
 
 namespace SmartParking.BarrierAppService;
 
@@ -45,6 +46,7 @@ public class BarrierAppService : SmartParkingAppService, IBarrierAppService , IO
             return false;
         }
     }
+    [RemoteService(IsEnabled = false)]
 
     public async Task<bool> OpenGateAsync(GarageTransactionDto garageTransactionDto)
     {

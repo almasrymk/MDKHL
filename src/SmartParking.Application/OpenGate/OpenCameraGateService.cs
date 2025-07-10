@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 
 namespace SmartParking.OpenGate;
 
@@ -41,6 +42,7 @@ public class OpenCameraGateService : SmartParkingAppService, IOpeningGateService
         return response.IsSuccessStatusCode;
 
     }
+    [RemoteService(IsEnabled = false)]
 
     public async Task<bool> OpenGateAsync(GarageTransactionDto garageTransactionDto)
     {
