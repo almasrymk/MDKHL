@@ -17,6 +17,7 @@ public class CustomerAnalysis
     public DateOnly? CreationDate { get; set; }
     public TimeOnly? CreationTime { get; set; }
     public string ModifiedBy { get; set; }
+    public string PhoneNumber { get; set; }
     public DateOnly? ModifiedDate { get; set; }
     public TimeOnly? ModifiedTime { get; set; }
 }
