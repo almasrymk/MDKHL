@@ -14,6 +14,7 @@ public class VehicleCustomerReportDto
     public string CustomerArabicName { get; set; }
     public string UserName { get; set; }
     public string ModelYear { get; set; }
+    public string PhoneNumber { get; set; }
     public string BrandArabicName { get; set; }
     public string ModelArabicName { get; set; }
     public string BrandEnglishName { get; set; }
