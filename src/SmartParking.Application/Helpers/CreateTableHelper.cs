@@ -3,6 +3,7 @@ using SmartParking.Currency;
 using SmartParking.CustomerPackages;
 using SmartParking.DataTable;
 using SmartParking.Entities.Analysis;
+using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Localization;
@@ -780,6 +781,7 @@ public static class CreateTableHelper
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ModifiedBy"), Name = "ModifiedBy", IsFilterable = true, PropertyName = "CreatedBy", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ModifiedDate"), Name = "ModifiedDate", IsFilterable = true, PropertyName = "CreationDate", IsSortable = true, TypeFilter = TypeFilter.DateOnly, TypeOfColumn = typeof(DateOnly) });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ModifiedTime"), Name = "ModifiedTime", IsFilterable = true, PropertyName = "CreationTime", IsSortable = true, TypeFilter = TypeFilter.Time, TypeOfColumn = typeof(TimeOnly) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PhoneNumber"), Name = "PhoneNumber", IsFilterable = true, PropertyName = "PhoneNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         // Define the rows for the table
         foreach (var vehicleCustomer in vehicleCustomers)
@@ -812,7 +814,7 @@ public static class CreateTableHelper
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ModifiedBy"), vehicleCustomer.ModifiedBy));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ModifiedDate"), vehicleCustomer.ModifiedDate.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ModifiedTime"), vehicleCustomer.ModifiedTime.ToString()));
-
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PhoneNumber"), vehicleCustomer.PhoneNumber.ToString()));
             tableData.Rows.Add(rowDef);
         }
         await Task.Yield();
@@ -847,6 +849,7 @@ public static class CreateTableHelper
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ModifiedBy"), Name = "ModifiedBy", IsFilterable = true, PropertyName = "ModifiedBy", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ModifiedDate"), Name = "ModifiedDate", IsFilterable = true, PropertyName = "ModifiedDate", IsSortable = true, TypeFilter = TypeFilter.DateOnly, TypeOfColumn = typeof(DateOnly) });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ModifiedTime"), Name = "ModifiedTime", IsFilterable = true, PropertyName = "ModifiedTime", IsSortable = true, TypeFilter = TypeFilter.Time, TypeOfColumn = typeof(TimeOnly) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PhoneNumber"), Name = "PhoneNumber", IsFilterable = true, PropertyName = "PhoneNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         // Define the rows for the table
         foreach (var customer in customers)
@@ -868,6 +871,7 @@ public static class CreateTableHelper
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ModifiedBy"), customer.ModifiedBy));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ModifiedDate"), customer.ModifiedDate.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ModifiedTime"), customer.ModifiedTime.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PhoneNumber"), customer.PhoneNumber.ToString()));
             tableData.Rows.Add(rowDef);
         }
         await Task.Yield();
