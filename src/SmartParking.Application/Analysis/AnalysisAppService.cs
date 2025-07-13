@@ -871,6 +871,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  ArPlateNumber = vehicle.ArPlateNumber,
                                  EnPlateNumber = vehicle.EnPlateNumber,
                                  CustomerEnglishName = vehicle.Customer.IdentityUser.Name,
+                                 PhoneNumber = vehicle.Customer.IdentityUser.PhoneNumber,
                                  CustomerArabicName = vehicle.Customer.ArabicName,
                                  BrandArabicName = vehicle.VehicleBrand.ArabicName,
                                  BrandEnglishName = vehicle.VehicleBrand.EnglishName,
@@ -968,6 +969,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                          {
                              BeneficiaryNameAr = customer.ArabicName,
                              BeneficiaryNameEn = customer.IdentityUser.Name,
+                             PhoneNumber = customer.IdentityUser.PhoneNumber,
                              PackageCategory = customer.CustomerPackages.Select(_ => _.CustomerCategory).FirstOrDefault(),
                              CreatedBy = userQuery.Where(_ => _.Id == customer.CreatorId).FirstOrDefault().Name,
                              CreationTime = TimeOnly.FromDateTime(customer.CreationTime),
