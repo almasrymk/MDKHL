@@ -1,25 +1,25 @@
-﻿using Microsoft.Extensions.Localization;
-using MudBlazor;
+﻿using Blazorise;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Cameras;
+using SmartParking.Currency;
+using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Organizations;
+using SmartParking.Payments;
+using SmartParking.Permissions.PaymentsPermissions;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Authentication;
 using System.Threading.Tasks;
-using System;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
-using SmartParking.Payments;
-using Blazorise;
-
-using SmartParking.Permissions.PaymentsPermissions;
-using Microsoft.AspNetCore.Components;
-using SmartParking.Cameras;
 using Volo.Abp.MultiTenancy;
-using SmartParking.Currency;
 
 namespace SmartParking.Blazor.Components.Pages.Payments;
 
@@ -186,6 +186,13 @@ public partial class Payment
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "PaymentNumber", IsFilterable = true, PropertyName = "PaymentNumber", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceId"], Name = "InvoiceId", IsFilterable = false, PropertyName = "Invoice.Id", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerName"], Name = "CustomerName", IsFilterable = false, PropertyName = "Customers.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentMethod"], Name = "PaymentMethod", IsFilterable = true, PropertyName = "PaymentMethod", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["Amount"]}", Name = "Amount", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["Discount"]}", Name = "Discount", IsFilterable = true, PropertyName = "Invoice.Discount", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentCategory"], Name = "PaymentCategory", IsFilterable = true, PropertyName = "PaymentCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "customer category", IsFilterable = true, PropertyName = "Customers.CustomerCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
         if (CurrentTenant.Id == null)
         {
             if (CultureInfo.CurrentCulture.Name == "en")
@@ -199,24 +206,47 @@ public partial class Payment
 
             }
         }
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = false, PropertyName = "Invoice.PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentCategory"], Name = "PaymentCategory", IsFilterable = true, PropertyName = "PaymentCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceId"], Name = "InvoiceId", IsFilterable = false, PropertyName = "Invoice.Id", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentMethod"], Name = "PaymentMethod", IsFilterable = true, PropertyName = "PaymentMethod", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "customer category", IsFilterable = true, PropertyName = "Customers.CustomerCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["Discount"]}", Name = "Discount", IsFilterable = true, PropertyName = "Invoice.Discount", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["Amount"]}", Name = "Amount", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerName"], Name = "CustomerName", IsFilterable = false, PropertyName = "Customers.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CreationTime"], Name = "CreationTime", IsFilterable = false, PropertyName = "CreationTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentStatus"], Name = "PaymentStatus", IsFilterable = true, PropertyName = "PaymentStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
-       
         foreach (var item in organizations.Items)
         {
-            
+
             var rowDef = new RowDef();
+
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Code"], item.PaymentNumber?.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["InvoiceId"], item.InvoiceId.ToString()));
+
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers?.ArabicName ?? _localizer["NotCustomer"]));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers?.IdentityUser?.Name ?? _localizer["NotCustomer"]));
+            }
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentMethod"], _localizer[$"{item.PaymentMethod}"]));
+
+            var IconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
+            var amount = item.Amount == 0 ? "0.0" : item.Amount.ToString();
+            rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Amount"]}", $"{amount} {IconHtml}"));
+
+            var discountValue = item.Invoice?.Discount == 0 || item.Invoice?.Discount is null ? "0.0" : item.Invoice?.Discount.ToString();
+            rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Discount"]}", $"{discountValue} {IconHtml}"));
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentCategory"], _localizer[$"{item.PaymentCategory.ToString()}"]));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+                _localizer["customer category"],
+                item.PaymentCategory == PaymentCategory.Package
+                    ? (item.Customers != null
+                        ? _localizer[$"{item.Customers.CustomerCategory.ToString()}"]
+                        : _localizer["NotCustomer"])
+                    : (string.IsNullOrWhiteSpace(item.Customers?.IdentityUser?.Name)
+                        ? _localizer["NotCustomer"]
+                        : _localizer["Customer"])
+            ));
             if (CurrentTenant.Id == null)
             {
                 if (CultureInfo.CurrentCulture.Name == "ar")
@@ -228,41 +258,8 @@ public partial class Payment
                     rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("OrganizationName"), item.OrganizationEnglishName));
                 }
             }
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.InvoiceId.HasValue ? item.Invoice?.PlateNumber : @L["Pacakge"]));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentCategory"], _localizer[$"{item.PaymentCategory.ToString()}"]));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(
-                _localizer["InvoiceId"],
-                  item.InvoiceId.ToString()
-            ));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentMethod"], _localizer[$"{item.PaymentMethod}"]));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"], item.Customers?.CustomerCategory.ToString() is null ? _localizer["NotCustomer"]: _localizer[$"{item.Customers?.CustomerCategory.ToString()}"]));
-            var IconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
-            var discountValue = item.Invoice?.Discount == 0 || item.Invoice?.Discount is null ?  "0.0" : item.Invoice?.Discount.ToString();
-            var amount = item.Amount == 0  ?  "0.0" : item.Amount.ToString();
-            rowDef.Cells.Add(new KeyValuePair<string, string>(
-           $"{_localizer["Discount"]}",
-           $"{discountValue} {IconHtml}"));
-
-            rowDef.Cells.Add(new KeyValuePair<string, string>(
-                $"{_localizer["Amount"]}",
-                $"{amount} {IconHtml}"));
-
-       
-
-            if (CultureInfo.CurrentCulture.Name == "ar")
-            {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers?.ArabicName ?? _localizer["NotCustomer"]));
-            }
-            else
-            {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers?.IdentityUser?.Name ?? _localizer["NotCustomer"]));
-            }
-        
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CreationTime"], item.CreationTime.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentStatus"], _localizer[$"{item.PaymentStatus.ToString()}"]));
-
-
-
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;
