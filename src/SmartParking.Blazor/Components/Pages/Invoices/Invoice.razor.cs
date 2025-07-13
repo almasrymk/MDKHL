@@ -162,6 +162,7 @@ public partial class Invoice
 
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = true, PropertyName = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["TicketId"], Name = "TicketId", IsFilterable = true, PropertyName = "TicketId", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["TotalHours"]} ({_localizer["Hours"]})", Name="TotalHours", IsFilterable = false, PropertyName = "TotalHours", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["InvoicePrice"]}", Name = "InvoicePrice", IsFilterable = false, PropertyName = "InvoicePrice", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceType"], Name = "InvoiceType", IsFilterable = true, PropertyName = "InvoiceType", IsSortable = true, TypeFilter = TypeFilter.Enum });
@@ -192,6 +193,7 @@ public partial class Invoice
             }
 
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNumber));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["TicketId"], item.TicketId));
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["TotalHours"]} ({_localizer["Hours"]})", item.TotalHours.ToString()));
             var IconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
             rowDef.Cells.Add(new KeyValuePair<string, string>(

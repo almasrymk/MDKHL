@@ -323,7 +323,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
                 or.InvoiceTime.ToString()!.Contains(input.SearchingTerm.ToLower()) ||
                 or.TotalHours.ToString().Contains(input.SearchingTerm.ToLower()) ||
                 or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())  ||
+                or.TicketId.ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
         var totalCount = await AsyncExecuter.CountAsync(queryable);
