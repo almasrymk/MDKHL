@@ -1,6 +1,7 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Cameras
+@using SmartParking.Cameras.Watchers.Dispensers
 @using SmartParking.GarageTransactionEndPoints
 @using SmartParking.GarageTransactions
 @using SmartParking.Garages
@@ -14,6 +15,7 @@
 @inject IGarageAppService GaragesAppService
 @inject IOrganizationsAppService OrganizationsAppService
 @inject ICamerasAppService CamerasAppService
+@inject IDispenserAppService DispenserAppService
 @inject IGarageTransactionEndPointsAppService GarageTransactionAppService
 @inject IAuthorizationService AuthorizationService
 @inject NavigationManager Navigation
@@ -72,21 +74,30 @@
 						Disabled=true
 						Label="@L["Garage Name"]" />
 					</MudItem>
+				
 					<MudItem sm="6" md="6">
 						<MudTextField
 						Value="@L[$"{CustomerCategory}"]"
 						Immediate="true"
 						Disabled=true
 						Label="@L["customer category"]" />
-					</MudItem> 
-
+					</MudItem>
+					@if (GarageTransaction.TicketId != null){
+						<MudItem sm="6" md="6">
+							<MudTextField Value="GarageTransaction.TicketId"
+										  Immediate="true"
+										  Disabled=true
+										  Label="@L["TicketId"]" />
+						</MudItem>
+					}
 					<MudItem sm="6" md="6">
 						<MudTextField @bind-Value="cameraCode"
-						For="@(() => cameraCode)"
-						Immediate="true"
-						Disabled=true
-						Label="@L["CameraId"]" />
+									  For="@(() => cameraCode)"
+									  Immediate="true"
+									  Disabled="true"
+									  Label="@((GarageTransaction.TicketId == null ? L["CameraId"] : L["Dispenser"]))" />
 					</MudItem>
+
 
 					<MudItem sm="12" md="12" class="d-flex justify-center">
 						<div class="zoom-container"

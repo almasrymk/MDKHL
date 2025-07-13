@@ -26,7 +26,7 @@ public class BarrierAppService : SmartParkingAppService, IBarrierAppService
         {
             var socket = await _websocketConnectionManager.GetConnection(organizationId.ToString());
 
-            if (socket.State == WebSocketState.Open)
+            if (socket != null && socket.State == WebSocketState.Open)
             {
                 string json = JsonSerializer.Serialize(request);
                 byte[] buffer = Encoding.UTF8.GetBytes(json);

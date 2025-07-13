@@ -1,8 +1,10 @@
 ﻿using Castle.Core.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Asn1.Ocsp;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.CustomerPackages;
+using SmartParking.Cutomers;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
@@ -12,6 +14,7 @@ using SmartParking.Invoices;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
+using System.Diagnostics.Metrics;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp.MultiTenancy;
@@ -60,16 +63,23 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var camera = await _garageTransactionUtilityAppService.GetCameraByDeviceIdAsync(input.DeviceID);
         if (camera == null || camera.Status==Status.Inactive)
         {
+            _logger.LogError($"{DateTime.Now} ====>  {input.DeviceID} is not found ");
             return await NotFoundEntityAndExceptionHandling(input, Message:input.DeviceID);
         }
         if (camera.GarageId ==0 || camera.OrganizationId == 0)
         {
+            _logger.LogError($"{DateTime.Now} ====>  Camera Organization is not found ");
             return await NotFoundEntityAndExceptionHandling(input, Message:"Organization");
         }
         //Remove white spaces from plate number.
         input.PlateNumber = input.PlateNumber.Replace(" ", "");
         //Load Organization Configurations.
         var organization = await _garageTransactionUtilityAppService.GetOrganization(camera.OrganizationId);
+        if (organization.CameraTransaction == false)
+        {
+            _logger.LogInformation($"No Active Camera Configuration Organization  for : {input.DeviceID}");
+            return false;
+        }
         var (_hasFreeSlots, _hasPackageOnly)=(organization.HasFreeSlots, organization.HasPackageOnly) ;
         //Initiate a CreateUpdateGarageTransaction .
         CreateUpdateGarageTransactionDto GarageTransaction = InitiateCreateGarageTransactionDto(input, camera);
@@ -102,6 +112,22 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, CreateUpdateGarageTransactionDto GarageTransaction)
     {
         var customerPackageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(GarageTransaction.OrganizationID, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value);
+        var organization = await _garageTransactionUtilityAppService.GetOrganization(GarageTransaction.OrganizationID);
+        if (organization.DispenserTransaction && organization.CameraTransaction && customerPackageDto == null && GarageTransaction.TicketId == null)
+        {
+            _logger.LogInformation($"No Active Customer Package with mix mode  for : {GarageTransaction.PlateNumber}");
+            return false;
+        }
+        if (organization.DispenserTransaction && organization.CameraTransaction && GarageTransaction.TicketId == null)
+        {
+            var last =await  _garageTransactionUtilityAppService.FindEntranceTransaction(GarageTransaction.PlateNumber, null, false, organization.CameraTransaction);
+            if (last!= null && last.AccurateTime >= GarageTransaction.AccurateTime.Value.AddSeconds(-30) && last.AccurateTime <= GarageTransaction.AccurateTime && !last.IsMapped)
+            {
+                _logger.LogInformation($"Cannot enter twice w: {GarageTransaction.PlateNumber}");
+                return false;
+            }
+        }
+        
         GarageTransaction.CustomerCategory = customerPackageDto is not null ? customerPackageDto.CustomerCategory : CustomerCategoryStatus.Customer;
         bool _hasActivePackage = customerPackageDto is not null;
         bool canEnter = await _garageTransactionUtilityAppService.ReserverSlotsOfGarageDependsOnCategoryAsync(GarageTransaction.GarageId, GarageTransaction.CustomerCategory);
@@ -140,7 +166,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var organization = await _garageTransactionUtilityAppService.GetOrganization(organizationId);
         bool _requestToGate;
         //getting entrance transaction
-        var _entryTransaction = await _garageTransactionUtilityAppService.FindEntranceTime(exitTransaction.PlateNumber);
+        var _entryTransaction = await _garageTransactionUtilityAppService.FindEntranceTransaction(exitTransaction.PlateNumber , exitTransaction.TicketId , organization.DispenserTransaction , organization.CameraTransaction);
         //geeting garage
         var _garage = await _garageTransactionUtilityAppService.GetGarageByIdAsync(exitTransaction.GarageId);
         if (_entryTransaction == null)
@@ -157,6 +183,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var _customerId = await _garageTransactionUtilityAppService.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(exitTransaction.PlateNumber);
         //getting package on vehicle if found
         var _packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(exitTransaction.OrganizationID, exitTransaction.PlateNumber, exitTransaction.AccurateTime.Value);
+        if (organization.DispenserTransaction && organization.CameraTransaction && _packageDto == null &&exitTransaction.TicketId == null)
+            return false;
+
         exitTransaction.CustomerCategory = _packageDto is null ? CustomerCategoryStatus.Customer : _packageDto.CustomerCategory;
         //Check On Entrance Time Validation
         if (_entryTransaction.AccurateTime > exitTransaction.AccurateTime)
@@ -175,7 +204,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             await ChangeCategoryForEntryTransaction(_entryTransaction);
         }
 
-        Customer _customer = _customerId is not null ? await _garageTransactionUtilityAppService.GetCustomer(Guid.Parse(_customerId)) : null;
+        var _customer = _customerId is not null ? await _garageTransactionUtilityAppService.GetCustomer(Guid.Parse(_customerId)) : null;
         //Check if that transaction has been checked out before.
         var CheckIfLoggedOutFromMobile = await IfLoggedOutFromMobile(exitTransaction.PlateNumber);
         if (CheckIfLoggedOutFromMobile)
@@ -276,7 +305,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     /// <param name="categoryHasChanged">flag to detect if category has been changed</param>
     /// <param name="customer">Customer</param>
     /// <returns>false if passed grace period as new invoice must paid otherwise true</returns>
-    private async Task<bool> CheckoutFromMobileSequence(CreateUpdateGarageTransactionDto exitTransaction, Organization organization, GarageTransactionDto? entryTransaction, bool categoryHasChanged, Customer customer)
+    private async Task<bool> CheckoutFromMobileSequence(CreateUpdateGarageTransactionDto exitTransaction, Organization organization, GarageTransactionDto? entryTransaction, bool categoryHasChanged, CustomerDto customer)
     {
         if (entryTransaction.CustomerCategory != exitTransaction.CustomerCategory)
         {
@@ -320,7 +349,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     /// <param name="lastCreatedInvoice">Last Invoice created for Customer</param>
     /// <param name="organization">Organization</param>
     /// <returns>false</returns>
-    private async Task<bool> PassedGracePeriod(CreateUpdateGarageTransactionDto exitTransaction, DateTime? entranceTime, Customer customer, Result<InvoiceDto> lastCreatedInvoice,Organization organization)
+    private async Task<bool> PassedGracePeriod(CreateUpdateGarageTransactionDto exitTransaction, DateTime? entranceTime, CustomerDto customer, Result<InvoiceDto> lastCreatedInvoice,Organization organization)
     {
         int _hours = (int)Math.Ceiling((decimal)(exitTransaction.AccurateTime.Value - lastCreatedInvoice.Value.InvoiceTime.Value).TotalHours);
         _logger.LogInformation($"{DateTime.Now} ====> Get Response false | Exceeded Grace Period must pay invoice");

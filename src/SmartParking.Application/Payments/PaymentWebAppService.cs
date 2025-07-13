@@ -378,7 +378,9 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 or.Customers.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) || 
-                or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) 
+                or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.OrganizationArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.OrganizationEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
             // full date-time or includes hour
             );
         }

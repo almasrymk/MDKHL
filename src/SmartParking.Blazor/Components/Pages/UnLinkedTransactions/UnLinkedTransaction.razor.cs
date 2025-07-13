@@ -133,7 +133,7 @@ public partial class UnLinkedTransaction
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn , 
+            Sorting = sort, 
             SearchingTerm = termSearch
             
         };
@@ -158,7 +158,6 @@ public partial class UnLinkedTransaction
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = true, PropertyName = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["AccurateTime"], Name = "AccurateTime", IsFilterable = true, PropertyName = "AccurateTime", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["SnapTime"], Name = "SnapTime", IsFilterable = true, PropertyName = "SnapTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["DeviceId"], Name = "DeviceId", IsFilterable = true, PropertyName = "DeviceId", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         foreach (var item in unLinkedTransaction.Items)
@@ -167,7 +166,6 @@ public partial class UnLinkedTransaction
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNumber));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["AccurateTime"], item.AccurateTime.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["SnapTime"], item.SnapTime.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["DeviceId"], item.DeviceId));
 
             tableData.Rows.Add(rowDef);
@@ -205,7 +203,7 @@ public partial class UnLinkedTransaction
         var validationErrorMessage = L["PleaseFixTheValidationErrors"];
 
         var id = int.Parse(row.Cells[0].Value);
-        var Name = row.Cells[2].Value;
+        var Name = row.Cells[1].Value;
 
         var parameters = new DialogParameters
         {

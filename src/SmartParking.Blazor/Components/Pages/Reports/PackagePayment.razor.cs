@@ -5,10 +5,13 @@ using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Entities.Analysis;
 using SmartParking.Entities.Organizations;
 using SmartParking.Helpers;
 using SmartParking.Localization;
 using SmartParking.Permissions.Reports;
+using SmartParking.StringLocalizer;
+using System.Globalization;
 
 namespace SmartParking.Blazor.Components.Pages.Reports;
 
@@ -70,9 +73,17 @@ public partial class PackagePayment
         var itemsInMenue = new List<MenuItem>
         {
 
-            new MenuItem { MenueName = "Reports",
-                Label = LocalizationHelper.GetLocalizedString("PackagePaymentsData"), ISColumnVisibility = false,
-                OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await PackageReportsAsync())
+            new MenuItem { MenueName = "Customers",
+                Label = LocalizationHelper.GetLocalizedString("CustomerPackageReport"), ISColumnVisibility = false,
+                OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await PackageReportsAsync("Customer"))
+            } ,
+                new MenuItem { MenueName = "Employees",
+                Label = LocalizationHelper.GetLocalizedString("EmployeePackageReport"), ISColumnVisibility = false,
+                OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await PackageReportsAsync("Employee"))
+            } ,
+                new MenuItem { MenueName = "Visitors",
+                Label = LocalizationHelper.GetLocalizedString("VisitorPackageReport"), ISColumnVisibility = false,
+                OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await PackageReportsAsync("Visitor"))
             }
         };
 
@@ -90,7 +101,7 @@ public partial class PackagePayment
         };
     }
 
-    private async Task PackageReportsAsync()
+    private async Task PackageReportsAsync(string selectedValue )
     {
         try
         {
@@ -100,10 +111,29 @@ public partial class PackagePayment
                 SkipCount = 0,
                 Sorting = "Package.CustomerCategory",
                 SearchingTerm = "",
-                filters = new List<FilterRequestDto>()
+                filters = new List<FilterRequestDto>
+                {
+                    new FilterRequestDto
+                    {
+                        FilterProperty ="Package.CustomerCategory",
+                         FilterValue = selectedValue,
+                         IsNot = false,
+                         TypeFilter = TypeFilter.Enum
+                    }
+                }
             };
             var packagePayment = await AnalysisAppService.ReportPackagePaymentAsync(request, CurrentTenant.Id);
             var items =await CreateTableHelper.CreateDataTablePackagePayments(packagePayment.Items.ToList());
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                items.Name = LocalizationHelper.GetLocalizedString("PackagePaymentReports") + " " + CustomStringLocalizer.ForArabic + LocalizationHelper.GetLocalizedString(selectedValue);
+
+            }
+            else
+            {
+                items.Name = LocalizationHelper.GetLocalizedString(selectedValue) + " " + LocalizationHelper.GetLocalizedString("PackagePaymentReports");
+
+            }
             await JSRuntime.ExportToExcelAsync(items, GenerateFilesAppService, Snackbar);
         }
         catch

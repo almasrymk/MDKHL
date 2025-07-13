@@ -150,7 +150,7 @@ public partial class Invoice
 
             }
         }
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceId"], Name = "InvoiceId", IsFilterable = true, PropertyName = "InvoiceId", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceId"], Name = "InvoiceId", IsFilterable = true, PropertyName = "InvoiceNumber", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceTime"], Name = "InvoiceTime", IsFilterable = false, PropertyName = "InvoiceTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
         {

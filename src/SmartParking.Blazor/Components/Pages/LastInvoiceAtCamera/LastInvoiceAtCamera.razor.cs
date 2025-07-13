@@ -1,4 +1,6 @@
 ﻿using Microsoft.JSInterop;
+using Org.BouncyCastle.Asn1.Ocsp;
+using SmartParking.BarrierAppService;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Enums;
 using SmartParking.Invoices;
@@ -60,7 +62,17 @@ public partial class LastInvoiceAtCamera
     {
         try
         {
-            var result = await InvoiceUtility.SendRequestToOpenGate(Invoice.GarageTransactionExitId);
+            var garageTransactionDto=await GarageTransactionAppService.GetAsync(Invoice.GarageTransactionExitId);
+            bool result;
+            if (garageTransactionDto.CameraId.HasValue)
+            {
+                result=await InvoiceUtility.SendRequestToOpenGate(Invoice.GarageTransactionExitId);
+            }
+            else
+            {
+                result = await BarrierAppService.CallingBarrier(garageTransactionDto.OrganizationID, new BarrierRequest { carNum = garageTransactionDto.PlateNumber, laneNO = garageTransactionDto.LaneNO, operatorType =  5 });
+            }
+            
             if (result == true)
             {
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L["OpenGate"]}", MudBlazor.Severity.Success);

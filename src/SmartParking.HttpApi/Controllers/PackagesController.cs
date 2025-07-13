@@ -47,5 +47,12 @@ public class PackagesController : ControllerBase
     {
         await _customerPackagesApp.DeleteAsync(packageId);
         return Result.Success();
+    }    
+    
+    [HttpGet("getpackagebyid/{packageId}")]
+    [Authorize]
+    public async Task<Result<CustomerPackageDto>> GetPackageById(int packageId)
+    {
+       return await _customerPackagesApp.GetAsync(packageId);
     }
 }

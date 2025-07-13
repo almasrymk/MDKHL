@@ -54,8 +54,17 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
                 OrgName = _organizationDto.ArabicName;
                 GarageName = Garage.NameAr;
             }
-            var Camera = await CamerasAppService.GetAsync(GarageTransaction.CameraId);
-            cameraCode = Camera.DeviceId;
+            if(GarageTransaction.CameraId != null)
+            {
+                var Camera = await CamerasAppService.GetAsync(GarageTransaction.CameraId.Value);
+                cameraCode = Camera.DeviceId;
+            }
+            else
+            {
+                var Dispenser = await DispenserAppService.GetAsync(GarageTransaction.DispenserId.Value);
+                cameraCode = Dispenser.DeviceId;
+
+            }
             CustomerCategory = GarageTransaction.CustomerCategory.ToString();
             await base.OnInitializedAsync();
         }

@@ -755,6 +755,7 @@ public static class CreateTableHelper
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("BeneficiaryName"), Name = "BeneficiaryName", IsFilterable = true, PropertyName = "CustomerArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("UserName"), Name = "UserName", IsFilterable = true, PropertyName = "UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", IsFilterable = true, PropertyName = "ArPlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("BrandName"), Name = "BrandName", IsFilterable = true, PropertyName = "BrandArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ModelName"), Name = "ModelName", IsFilterable = true, PropertyName = "ModelArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -766,6 +767,8 @@ public static class CreateTableHelper
         else
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("BeneficiaryName"), Name = "BeneficiaryName", IsFilterable = true, PropertyName = "CustomerEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("UserName"), Name = "UserName", IsFilterable = true, PropertyName = "UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
+
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", IsFilterable = true, PropertyName = "EnPlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("BrandName"), Name = "BrandName", IsFilterable = true, PropertyName = "BrandEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("ModelName"), Name = "ModelName", IsFilterable = true, PropertyName = "ModelEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -791,6 +794,7 @@ public static class CreateTableHelper
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("BeneficiaryName"), vehicleCustomer.CustomerArabicName ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("UserName"), vehicleCustomer.UserName));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), vehicleCustomer.ArPlateNumber));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("BrandName"), vehicleCustomer.BrandArabicName));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ModelName"), vehicleCustomer.ModelArabicName));
@@ -800,6 +804,7 @@ public static class CreateTableHelper
             else
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("BeneficiaryName"), vehicleCustomer.CustomerEnglishName ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("UserName"), vehicleCustomer.UserName));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), vehicleCustomer.EnPlateNumber));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("BrandName"), vehicleCustomer.BrandEnglishName));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ModelName"), vehicleCustomer.ModelEnglishName));

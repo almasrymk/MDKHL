@@ -12,6 +12,7 @@ public class VehicleCustomerReportDto
     public int Id { get; set; }
     public string CustomerEnglishName { get; set; }
     public string CustomerArabicName { get; set; }
+    public string UserName { get; set; }
     public string ModelYear { get; set; }
     public string PhoneNumber { get; set; }
     public string BrandArabicName { get; set; }
@@ -28,6 +29,6 @@ public class VehicleCustomerReportDto
     public TimeOnly? ModifiedTime { get; set; }
     public DateOnly? ModifiedDate { get; set; }
     public CustomerCategoryStatus CustomerCategory { get; set; }
-    public string? PackageNameArabicName { get; set; }
-    public string? PackageNameEnglishName { get; set; }
+    public string PackageNameArabicName { get; set; }
+    public string PackageNameEnglishName { get; set; }
 }

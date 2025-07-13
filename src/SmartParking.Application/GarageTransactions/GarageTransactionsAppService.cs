@@ -76,7 +76,12 @@ public class GarageTransactionsAppService :
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            return await base.GetAsync(id);
+            var garagetransaction = await base.GetAsync(id);
+            if (garagetransaction == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("Transaction") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            }
+            return garagetransaction;
 
         }
 
@@ -370,15 +375,6 @@ public class GarageTransactionsAppService :
         }
     }
 
-    public async Task<int> GetCameraIdByGarageTransactionId(int garageTransactionId)
-    {
-        var garagetransaction = await _repository.FindAsync(garageTransactionId);
-        if (garagetransaction == null)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Transaction") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-        }
-        return garagetransaction.CameraId;
-    }
     #endregion
     #region Private Methods
     private static IQueryable<GarageTransaction> ApplyFilterTenant(Guid? tenantId, IQueryable<GarageTransaction> queryable)
@@ -425,7 +421,10 @@ public class GarageTransactionsAppService :
                 or.AccurateTime.Value.ToString().ToLower().Contains(input.SearchingTerm) ||
                 or.SnapTime.Value.ToString().ToLower().Contains(input.SearchingTerm) ||
                 or.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower())
+                or.CameraType.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) || 
+                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.TicketId.ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
 

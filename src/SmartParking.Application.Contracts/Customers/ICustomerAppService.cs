@@ -162,4 +162,9 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     /// A task representing the asynchronous operation, with a result of the number of customers in the organization.
     /// </returns>
     Task<int> GetNumberOfCustomerAtOrganizationAsync(int organizationId);
+
+
+    Task<PagedResultDto<CustomerDto>> GetListAsyncNoOrganization(PagedAndSortedAndSearchResultRequestDto input);
+
+    Task<CustomerDto> CheckIfCustomerAlreadyExistInOrganization(CreateUpdateCustomerDto createUpdateCustomerDto);
 }

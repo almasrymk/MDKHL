@@ -20,7 +20,8 @@ public class SmartParkingDbContextFactory : IDesignTimeDbContextFactory<SmartPar
         var configuration = BuildConfiguration();
 
         var builder = new DbContextOptionsBuilder<SmartParkingDbContext>()
-            .UseNpgsql(configuration.GetConnectionString("Default"));
+            .UseNpgsql(configuration.GetConnectionString("Default"),
+                x => x.CommandTimeout(300));
 
         return new SmartParkingDbContext(builder.Options);
     }

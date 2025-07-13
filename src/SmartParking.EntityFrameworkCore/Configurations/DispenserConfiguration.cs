@@ -14,5 +14,8 @@ internal class DispenserConfiguration : IEntityTypeConfiguration<Dispenser>
     public void Configure(EntityTypeBuilder<Dispenser> builder)
     {
         builder.ToTable("Dispensers");
+        builder.Property(x => x.Id)
+                 .HasDefaultValueSql("nextval('dispenser_seq')")
+                 .ValueGeneratedOnAdd();
     }
 }

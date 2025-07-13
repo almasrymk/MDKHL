@@ -208,7 +208,8 @@ public partial class OrganizationEdit
         CitySelectValue = organization.CityId.ToString();
         CountrySelectValue = organization.CountryId.ToString();
         RegionSelectValue = organization.RegionId.ToString();
-        Code= organization.Code;
+        NumberOfHours = organization.NumberOfHours;
+        Code = organization.Code;
         SubscriptionSelectValue = organization.SubscriptionId.ToString();
         ViewSubscriptionArabicName = organization.SubscriptionArabicName;
         NumbersOfGarages = SelectedSubscription.NumbersOfGarages;

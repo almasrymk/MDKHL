@@ -12,7 +12,7 @@ namespace SmartParking.GarageTransactions
 {
 	public class GarageTransactionDto: FullAuditedEntityDto<int>
 	{
-		public int CameraId { get; set; }
+		public int? CameraId { get; set; }
 		public string PlateNumber { get; set; }
 		public DateTime SnapTime { get; set; }
 		public DateTime AccurateTime { get; set; }
@@ -33,6 +33,12 @@ namespace SmartParking.GarageTransactions
         public string OrganizationEnglishName { get; set; }
         public string GarageArabicName { get; set; }
         public string GarageEnglishName { get; set; }
+        public int? DispenserId { get; set; }
+        public string? LaneNO { get; set; }
+        public string? TicketId { get; set; }
+
+
+
 
 
     }

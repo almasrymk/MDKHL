@@ -7,6 +7,7 @@ using SmartParking.Garages;
 using SmartParking.Lookups.CameraBrands;
 using SmartParking.Lookups.CameraMainType;
 using SmartParking.Lookups.CameraModel;
+using SmartParking.Organizations;
 using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -20,6 +21,8 @@ public partial class AddDispenser
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; }
 
+    private PagedResultDto<OrganizationDto> organizations = new PagedResultDto<OrganizationDto>();
+
     private MudForm form;
     private bool _clearable;
     public List<GarageDto> Garages { get; set; } = new List<GarageDto>();
@@ -27,16 +30,32 @@ public partial class AddDispenser
    
     protected override async Task OnInitializedAsync()
     {
-      
-
         var result = await GaragesAppService.GetListAsync(new PagedAndSortedResultRequestDto
         {
             MaxResultCount = 100,
-            SkipCount = (1 - 1) * 100
+            SkipCount = 0
         });
         Garages = result.Items.ToList();
-
+        if (CurrentTenant.Id == null)
+        {
+            organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto
+            {
+                SkipCount = 0,
+                MaxResultCount = 100
+            });
+        }
+        else
+        {
+            Garages = Garages.Where(x => x.TenantId == CurrentTenant.Id).ToList();
+        }
+                
         await base.OnInitializedAsync();
+    }
+    private  async Task OnChangeOrganization(int organizationId)
+    {
+        DispenserDto.OrganizationId = organizationId;
+        DispenserDto.GarageId = 0;
+        Garages =  Garages.Where(x => x.OrganizationId ==organizationId).ToList();
     }
 
     /// <summary>

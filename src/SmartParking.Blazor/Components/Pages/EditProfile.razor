@@ -16,6 +16,7 @@
 @inject ICurrentUser CurrentUser
 @inject IAuthorizationService AuthorizationService
 @inject NavigationManager Navigation
+@inject UserNameState UserNameState
 @attribute [Authorize]
 
 <PageTitle>@L["Edit Profile"]</PageTitle>
@@ -47,7 +48,7 @@
 
             <div class="d-flex align-items-center gap-3 mt-4">
                 @if (AuthorizationService.IsGrantedAnyAsync(UserProfilePermissions.ChangePassword).Result){
-                      <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" Href=@($"/change-password/{OldProfile.UserName}")>@L["CHANGE PASSWORD"]</MudButton>
+                      <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="@(() =>  Submit())">@L["CHANGE PASSWORD"]</MudButton>
                 }
                 @if (AuthorizationService.IsGrantedAnyAsync(UserProfilePermissions.Edit).Result){
                 <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="@(() =>  SaveChanges())">@L["Save"]</MudButton>
@@ -102,24 +103,24 @@
 
        
     }
+    private async Task Submit()
+    {
+        UserNameState.UserName = OldProfile.UserName;
+        Navigation.NavigateTo("/change-password");
+    }
 
     private async Task SaveChanges()
     {
         try
         {
-
-
-           
                 bool updated = false;
                 if(IfChanged(OldProfile,Profile)){
                     await UsersAppService.UpdateProfileDataAsync(CurrentUser.Id, OldProfile);
                     updated = true;
-
                 }
                 if (NewProfilePictureUrl != ProfilePictureUrl){
                     await UsersAppService.UpdateImageAsync(CurrentUser.Id, ProfilePictureUrl);
                     updated = true;
-      
                 }
                 if(updated){
 

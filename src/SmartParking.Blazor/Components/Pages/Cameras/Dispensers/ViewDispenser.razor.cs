@@ -2,6 +2,8 @@
 using MudBlazor;
 using SmartParking.Cameras;
 using SmartParking.Cameras.Watchers.Dispensers;
+using SmartParking.Garages;
+using SmartParking.Organizations;
 
 namespace SmartParking.Blazor.Components.Pages.Cameras.Dispensers;
 
@@ -16,7 +18,15 @@ public partial class ViewDispenser
 
     private bool _clearable;
     private MudForm form;
+    OrganizationDto organization = new OrganizationDto();
+    GarageDto garage = new GarageDto();
 
+    protected override async Task OnInitializedAsync()
+    {
+        garage = await GaragesAppService.GetAsync(Dispenser.GarageId);
+         organization = await OrganizationAppService.GetAsync(Dispenser.OrganizationId);
+        await base.OnInitializedAsync();
+    }
     /// <summary>
     /// Closes the view-only dialog.
     /// </summary>

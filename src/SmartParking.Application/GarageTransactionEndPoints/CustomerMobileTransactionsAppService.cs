@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.CustomerPackages;
+using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.GarageTransactions;
@@ -41,7 +42,7 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
         var customerId = await _garageTransactionUtilityAppService.GetCurrentCustomerId();
         var Customer = await _garageTransactionUtilityAppService.GetCustomer(customerId);
         var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
-        var createdExitGarageTransaction =await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction.PlateNumber,entryGarageTransaction.VehiclePicture,entryGarageTransaction.OrganizationID,entryGarageTransaction.GarageId,entryGarageTransaction.CameraId,entryGarageTransaction.TenantId!.Value);
+        var createdExitGarageTransaction =await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction.PlateNumber,entryGarageTransaction.VehiclePicture,entryGarageTransaction.OrganizationID,entryGarageTransaction.GarageId,entryGarageTransaction.CameraId.Value,entryGarageTransaction.TenantId!.Value);
         var invoice = await PreCheckoutFlow(entryGarageTransaction.AccurateTime.Value, createdExitGarageTransaction, Customer);
         return invoice;
 
@@ -51,7 +52,7 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
     {
 
         var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
-        var createdExitGarageTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction.PlateNumber, entryGarageTransaction.VehiclePicture, entryGarageTransaction.OrganizationID, entryGarageTransaction.GarageId, entryGarageTransaction.CameraId, entryGarageTransaction.TenantId!.Value);
+        var createdExitGarageTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction.PlateNumber, entryGarageTransaction.VehiclePicture, entryGarageTransaction.OrganizationID, entryGarageTransaction.GarageId, entryGarageTransaction.CameraId.Value, entryGarageTransaction.TenantId!.Value);
         var lstCheckout = entryGarageTransaction.CheckoutMobile.HasValue ? entryGarageTransaction.CheckoutMobile.Value : DateTime.MinValue;
         var _garageTransactionDto = ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(entryGarageTransaction);
         if (!(_garageTransactionDto.IsIn && _garageTransactionDto.IsPending == false && _garageTransactionDto.CanCheckout == true))
@@ -73,7 +74,7 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
     /// <param name="exitTransaction">Exit Time</param>
     /// <param name="customer">Customer</param>
     /// <returns>Pre Invoice</returns>
-    private async Task<CreateUpdateInvoiceDto> PreCheckoutFlow(DateTime entranceTime, CreateUpdateGarageTransactionDto exitTransaction, Customer customer)
+    private async Task<CreateUpdateInvoiceDto> PreCheckoutFlow(DateTime entranceTime, CreateUpdateGarageTransactionDto exitTransaction, CustomerDto customer)
     {
         var organization = await _garageTransactionUtilityAppService.GetOrganization(exitTransaction.OrganizationID);
         int totalHours = _calculationsEndPointAppService.CalculateTime(entranceTime, exitTransaction.AccurateTime.Value, organization.FreeMinutes);

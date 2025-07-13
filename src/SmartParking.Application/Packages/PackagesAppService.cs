@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
@@ -228,17 +229,32 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
 
 
     /// <inheritdoc/>
-    public override Task<PackageDto> GetAsync(int id)
+    public async override Task<PackageDto> GetAsync(int id)
     {
-        if (CurrentTenant.Id == null)
+
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            using (_dataFilter.Disable<IMultiTenant>())
+            return await base.GetAsync(id);
+        }
+
+    }
+
+    [RemoteService(false)]
+    public async Task<Result<PackageDto>> GetForMobileAsync(int id)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            try
             {
-                return base.GetAsync(id);
+                var result = await GetAsync(id);
+                return Result<PackageDto>.Success(result);
+            }
+            catch
+            {
+                return Result<PackageDto>.NotFound("Package not found");
+
             }
         }
-        return base.GetAsync(id);
-
     }
     #endregion
 

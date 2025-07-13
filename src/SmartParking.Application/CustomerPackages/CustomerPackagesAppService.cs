@@ -87,10 +87,6 @@ public class CustomerPackagesAppService:
 
             var result = await AsyncExecuter.ToListAsync(query);
 
-            if (result.Count == 0)
-            {
-                return Result<List<CustomerPackageDto>>.NotFound();
-            }
             var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
             return Result<List<CustomerPackageDto>>.Success(packageMap);
         }
@@ -200,10 +196,7 @@ public class CustomerPackagesAppService:
             }
             
         }
-    }
-    ///<inheritdoc/>
-
-    
+    }    
 
     ///<inheritdoc/>
 
@@ -223,8 +216,6 @@ public class CustomerPackagesAppService:
 
 
    }
-    ///<inheritdoc/>
-
 
     ///<inheritdoc/>
 
@@ -261,6 +252,25 @@ public class CustomerPackagesAppService:
                 Items = packageMap,
                 TotalCount = resultPaged.totalCount
             };
+
+        }
+    }
+    public async Task AddDefaultPackageToCustomerAsync(Guid CustomerId)
+    {
+        var org = await _organizationsApp.GetOrganizationForCurrentTenatAsync();
+        await InsertCustomerPackageAsync(new CustomerPackage{
+            CustomerId= CustomerId,
+            OrganizationId= org.Id,
+            TenantId= org.TenantId,
+        });
+
+    }
+
+    public override async Task<CustomerPackageDto> GetAsync(int id)
+    {
+        using(_dataFilter.Disable<IMultiTenant>())
+        {
+            return await base.GetAsync(id);
 
         }
     }

@@ -242,7 +242,7 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         using (DataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-            query = query.Where(org => CurrentTenant.IsAvailable ? org.TenantId == CurrentTenant.Id : true);
+            query = query.Where(org => org.TenantId == CurrentTenant.Id);
             var org = await AsyncExecuter.FirstOrDefaultAsync(query);
             return ObjectMapper.Map<Organization,OrganizationDto>(org);
         }

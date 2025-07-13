@@ -223,6 +223,12 @@ public class OtpAppService : ApplicationService, IOtpAppService
                 // OTP is valid, clear OTP fields
                 user?.SetProperty("OtpCode", null);
                 user?.SetProperty("OtpExpirationDate", DateTime.Now);
+      
+                ObjectHelper.TrySetProperty(
+                        user,
+                        x => x.PhoneNumberConfirmed,
+                        () => true
+                    );
                 await _userRepository.UpdateAsync(user);
                 
                 return Result.Success(

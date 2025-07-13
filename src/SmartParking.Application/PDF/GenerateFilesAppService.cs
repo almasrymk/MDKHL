@@ -348,11 +348,11 @@ public class GenerateFilesAppService(IOrganizationsAppService organizationsAppSe
                                     .SetTextAlignment(TextAlignment.CENTER)
                                     .SetBorder(Border.NO_BORDER);
         headerTable.AddCell(centerCell);
-
-
-        string rightImagePath = organization != null && !string.IsNullOrEmpty(organization.OrganizationPicture) ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
-                                                     : System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
-
+        string rightImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
+        if (organization != null && !string.IsNullOrEmpty(organization.OrganizationPicture))
+        {
+            rightImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}");                                        
+        }
         Image rightImage = new Image(ImageDataFactory.Create(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png")))
             .SetHeight(75)
             .SetWidth(75)
