@@ -20,7 +20,7 @@
 <div class="modal-wrapper ">
     <MudDialog class="mud-modal w-100" Style="min-width:auto !important">
         <TitleContent>
-            <MudText Class="fw-bold">@L["CustomerPackages"]</MudText>
+            <MudText Class="fw-bold">@L["CustomerPackagesHead"]</MudText>
         </TitleContent>
         <DialogContent>
             <SPDataGrid PageName=@L["CustomerPackages"] TotalItemsInTable="@TotalItem" Data="@itemData" OnPageChanged="FetchTableData" OnClickRowDelete="HandleDelete"></SPDataGrid>
