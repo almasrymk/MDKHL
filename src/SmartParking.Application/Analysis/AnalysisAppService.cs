@@ -939,7 +939,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 _.PackageNameEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 _.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 _.ModelYear.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                _.UserName.ToLower().Contains(input.SearchingTerm.ToLower())
+                _.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower())
                 ).ToList() ;
             }
             var totalCount = result.Count();
