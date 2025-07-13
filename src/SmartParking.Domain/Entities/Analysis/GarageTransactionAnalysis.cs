@@ -34,4 +34,5 @@ public class GarageTransactionAnalysis
     public TimeOnly? CreationTime { get; set; }
     public DateOnly? TransactionDate { get; set; }
     public TimeOnly? TransactionTime { get; set; }
+    public string TicketId { get; set; }
 }
