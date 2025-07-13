@@ -99,7 +99,7 @@
 
                 @if (AuthorizationService.IsGrantedAnyAsync(DispenserPermissions.Default).Result || currenttenant.Id == null)
                  {
-                     <MudNavLink Href="/dispensers" Icon="@Icons.Material.Filled.EmojiTransportation">@L["Dispenser"]</MudNavLink>
+                     <MudNavLink Href="/dispensers" Icon="@Icons.Material.Filled.EmojiTransportation">@L["Dispensers"]</MudNavLink>
                  }
                  @if (AuthorizationService.IsGrantedAnyAsync(SubscriptionPermissions.Default).Result && currenttenant.Id is null)
                  {
