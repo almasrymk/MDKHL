@@ -379,7 +379,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             IsPackage = isPackage,
             ExitTransactionImage = exitTransaction.VehiclePicture,
             EntryTransactionImage = entryTransactionImage,
-
+            TicketId = exitTransaction.TicketId,
         };
 
         return invoice;

@@ -331,6 +331,7 @@ public class GarageTransactionAnalysisRepository
                         UserName = (v1 == null) ? (v2 == null) ? "Unknown" : v2.Customer.IdentityUser.Name : v1.Customer.IdentityUser.Name,
                         TransactionTime = TimeOnly.FromDateTime(garageTransaction.AccurateTime.Value),
                         TransactionDate = DateOnly.FromDateTime(garageTransaction.AccurateTime.Value),
+                        TicketId = garageTransaction.TicketId
 
                     };
         query = query.Where(filterRequests);

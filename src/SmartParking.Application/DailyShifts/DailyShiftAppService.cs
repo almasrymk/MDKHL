@@ -342,7 +342,8 @@ public class DailyShiftAppService :
     /// <returns>The assigned <see cref="KeeperShift"/> if found; otherwise, <c>null</c>.</returns>
     private async Task<KeeperShift?> GetAssignShift(CreateUpdateDailyShiftDto input)
     {
-        return await _keeperShiftRepository.FirstOrDefaultAsync(_ => _.KeeperId == input.KeeperId && _.ShiftId == input.ShiftId);
+        var query  = await _keeperShiftRepository.GetQueryableAsync();
+       return   await   query.Where(_ => _.KeeperId == input.KeeperId && _.ShiftId == input.ShiftId).OrderByDescending(_ => _.Id).FirstOrDefaultAsync();
     }
     /// <summary>
     /// Validates whether a shift that spans over midnight can be started based on the request time.
@@ -461,7 +462,7 @@ public class DailyShiftAppService :
         //nextDailyShift = await NextShiftInSameDay(input, dailyShift);
 
         //check if shift time is appropriate to end
-        await CheckIfAnotherKeeperInSameShift(assignShift,input);
+       // await CheckIfAnotherKeeperInSameShift(assignShift,input);
         return true;
     }
    

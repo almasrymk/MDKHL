@@ -30,11 +30,5 @@ public class InvoiceDto : FullAuditedEntityDto<int>
     public int GarageTransactionExitId { get; set; }
     public decimal TotalPriceWithVatAndDiscount { get; set; }
     public decimal Discount { get; set; }
-
-
-
-
-
-
-
+    public string TicketId  { get; set; }
 }
