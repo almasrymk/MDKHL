@@ -45,6 +45,11 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
                 _logger.LogInformation($"No Dispenser for : {request.LaneNO}");
                 return false;
             }
+            if(string.IsNullOrEmpty(request.TicketID))
+            {
+                _logger.LogInformation($"Should have ticket id ");
+                return false;
+            }
             var _organization = await _organizationRepository.FirstOrDefaultAsync(org => org.Id == _dispenser.OrganizationId);
             if (_organization == null || _organization.DispenserTransaction == false)
             {
