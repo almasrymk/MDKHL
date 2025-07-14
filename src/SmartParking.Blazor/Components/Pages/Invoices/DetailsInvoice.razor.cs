@@ -43,6 +43,7 @@ public partial class DetailsInvoice
     protected override async Task OnInitializedAsync()
     {
         await FetchData();  
+        StateHasChanged();
         await base.OnInitializedAsync();
     }
     private async Task FetchData()

@@ -200,12 +200,10 @@ public partial class Invoice
                 $"{_localizer["InvoicePrice"]}",
                 $"{item.InvoicePrice} {IconHtml}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(
-                _localizer["InvoiceType"],
-                item.InvoiceType.ToString() == "UnPaid"
-                    ? _localizer["UnPaid"]
-                    : (item.IsPackage
-                        ? _localizer["Package"]
-                        : _localizer["PaymentParking"])
+             _localizer["InvoiceType"],
+             item.InvoiceType.ToString() == "UnPaid"
+         ? _localizer["UnPaid"]
+         : _localizer["Paid"]
             ));
 
             tableData.Rows.Add(rowDef);

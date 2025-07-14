@@ -28,8 +28,12 @@
 <PageTitle>@L["InvoiceDetails"]</PageTitle>
 
 <MudItem>
+    @if (Invoice != null && !string.IsNullOrEmpty(Invoice.InvoiceType))
+    {
+        
+    
     <MudGrid>
-        <MudItem sm="7">
+        <MudItem sm="@(Invoice != null && Invoice?.InvoiceType.ToString() == "UnPaid" ? 7 : 12)">
             <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
                 <MudText Typo="Typo.h6" Class="fw-bold">@L["Details"]</MudText>
                 <MudForm Class="flex-grow-1 mt-4">
@@ -145,8 +149,16 @@
 
             </MudPaper>
         </MudItem>
+        @if(Invoice != null && Invoice?.InvoiceType=="UnPaid")
+        {
+            <PriceSummaryComponent OnValueSelected="HandleAddDiscount" ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice.InvoicePrice" IsPaid="IsPaid" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" ShowOpenGate="false" HasConfirmPermission="@(AuthorizationService.IsGrantedAsync(InvoicePermission.Confirm).Result)" />
+        }
+        </MudGrid>
+    }
+    else
+    {
+        <MudProgressCircular Indeterminate="true" Color="MudBlazor.Color.Primary" />
 
-        <PriceSummaryComponent OnValueSelected="HandleAddDiscount" ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice.InvoicePrice" IsPaid="IsPaid" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" ShowOpenGate="false" HasConfirmPermission="@(AuthorizationService.IsGrantedAsync(InvoicePermission.Confirm).Result)" />
-    </MudGrid>
+    }
 </MudItem>
 
