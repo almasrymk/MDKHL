@@ -25,14 +25,27 @@ namespace SmartParking.CustomerPackages
         /// Retrieves the active customer package for a specific organization and vehicle plate number, 
         /// based on the provided exit transaction date.
         /// </summary>
-        /// <param name="orgID">The ID of the organization.</param>
-        /// <param name="expression">expression for plate or package code.</param>
+        /// <param name="OrganizationID">The ID of the organization.</param>
+        /// <param name="PackageCode"> Package Code Of Package.</param>
         /// <param name="ExitTransaction">The exit time of the garage transaction.</param>
         /// <returns>
         /// A task that represents the asynchronous operation. 
         /// The task result contains the active <see cref="CustomerPackageDto"/> if one is found.
         /// </returns>
-        Task<CustomerPackageDto> GetActivePackageForCustomerInOrganization(int OrganizationID, Expression<Func<CustomerPackage, bool>> expression, DateTime ExitTransaction);
+        Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(int OrganizationID, string PackageCode, DateTime ExitTransaction);
+        
+        /// <summary>
+        /// Retrieves the active customer package for a specific organization and vehicle plate number, 
+        /// based on the provided exit transaction date.
+        /// </summary>
+        /// <param name="OrganizationID">The ID of the organization.</param>
+        /// <param name="PlateNumber"> Plate Number for car.</param>
+        /// <param name="ExitTransaction">The exit time of the garage transaction.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. 
+        /// The task result contains the active <see cref="CustomerPackageDto"/> if one is found.
+        /// </returns>
+        Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int OrganizationID, string PlateNumber, DateTime ExitTransaction);
 
         /// <summary>
         /// Retrieves a list of all packages currently assigned to the authenticated customer.

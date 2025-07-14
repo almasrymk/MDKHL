@@ -4,7 +4,6 @@ using SmartParking.CustomerPackages;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
-using SmartParking.Entities.Organizations;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Results;
@@ -12,7 +11,6 @@ using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -85,9 +83,8 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
             return await _garageTransactionUtilityAppService.InitiateInvoice(entranceTime, exitTransaction, totalHours, 0, false,customer);
 
         }
-        Expression<Func<CustomerPackage, bool>> expression = x => x.EnPlateNumber == exitTransaction.PlateNumber || x.ArPlateNumber == exitTransaction.PlateNumber;
-        var customerPackage = await _customerPackagesAppService.GetActivePackageForCustomerInOrganization(exitTransaction.OrganizationID, expression, DateTime.Now);
-        var _price = _calculationsEndPointAppService.CalculationForRegisteredCustomer(entranceTime, exitTransaction.AccurateTime.Value, organization, customerPackage, totalHours);
+        var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(exitTransaction.OrganizationID, exitTransaction.PlateNumber, exitTransaction.AccurateTime.Value);
+        var _price = _calculationsEndPointAppService.CalculationForRegisteredCustomer(entranceTime, exitTransaction.AccurateTime.Value, organization, packageDto, totalHours);
         CreateUpdateInvoiceDto newInvoice = await _garageTransactionUtilityAppService.InitiateInvoice(entranceTime, exitTransaction, totalHours, _price, true,customer);
         newInvoice.EntranceTime = entranceTime;
         return newInvoice;
