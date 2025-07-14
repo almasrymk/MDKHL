@@ -28,7 +28,7 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task<bool> ReserverSlotsOfGarageDependsOnCategoryAsync(int garageId , CustomerCategoryStatus customer);
     Task<string> CheckPlateNumberBelongsToCustomerToGetHisIdAsync(string plateNumber);
 
-    Task<GarageTransactionDto?> FindEntranceTransaction(string? PlateNumber, string? TicketId, bool DispenserTransaction, bool CameraTransaction);
+    Task<GarageTransactionDto?> FindEntranceTransaction(string? PlateNumber, string? TicketId, bool DispenserTransaction, bool CameraTransaction, int organizationId);
     Task<string> FindEntranceImage(string? plateNumber, string ticketId);
     Task<GarageTransaction> CheckIfCheckoutFromMobile(string plateNumber);
     Task<GarageTransaction> GetTransactionById(int garagetransactionId);

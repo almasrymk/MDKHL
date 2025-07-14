@@ -120,7 +120,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         if (organization.DispenserTransaction && organization.CameraTransaction && GarageTransaction.TicketId == null)
         {
-            var last =await  _garageTransactionUtilityAppService.FindEntranceTransaction(GarageTransaction.PlateNumber, null, false, organization.CameraTransaction);
+            var last =await  _garageTransactionUtilityAppService.FindEntranceTransaction(GarageTransaction.PlateNumber, null, false, organization.CameraTransaction , GarageTransaction.OrganizationID);
             if (last!= null && last.AccurateTime >= GarageTransaction.AccurateTime.Value.AddSeconds(-30) && last.AccurateTime <= GarageTransaction.AccurateTime && !last.IsMapped)
             {
                 _logger.LogInformation($"Cannot enter twice w: {GarageTransaction.PlateNumber}");
@@ -166,7 +166,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var organization = await _garageTransactionUtilityAppService.GetOrganization(organizationId);
         bool _requestToGate;
         //getting entrance transaction
-        var _entryTransaction = await _garageTransactionUtilityAppService.FindEntranceTransaction(exitTransaction.PlateNumber , exitTransaction.TicketId , organization.DispenserTransaction , organization.CameraTransaction);
+        var _entryTransaction = await _garageTransactionUtilityAppService.FindEntranceTransaction(exitTransaction.PlateNumber , exitTransaction.TicketId , organization.DispenserTransaction , organization.CameraTransaction , organizationId);
         //geeting garage
         var _garage = await _garageTransactionUtilityAppService.GetGarageByIdAsync(exitTransaction.GarageId);
         if (_entryTransaction == null)
