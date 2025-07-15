@@ -2,6 +2,8 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Plugins;
+using SmartParking.CustomerPackages.QRGenerator;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Lookups.VehiclesLookups;
@@ -46,8 +48,9 @@ public class CustomerPackagesAppService:
     private readonly IOrganizationsAppService _organizationsApp;
     private readonly IRepository<Subscription, int> _subscriptionRepository;
     private readonly IRepository<Organization, int> _organizationsRepository;
+    private readonly ICustomerPackageQRGenerator _customerPackageQRGenerator;
 
-    public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository, IRepository<Package> packageRepository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IOrganizationsAppService organizationsApp, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationsRepository) : base(repository)
+    public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository, IRepository<Package> packageRepository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IOrganizationsAppService organizationsApp, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationsRepository, ICustomerPackageQRGenerator customerPackageQRGenerator) : base(repository)
     {
         _repository = repository;
         _packageRepository = packageRepository;
@@ -56,6 +59,7 @@ public class CustomerPackagesAppService:
         _organizationsApp = organizationsApp;
         _subscriptionRepository = subscriptionRepository;
         _organizationsRepository = organizationsRepository;
+        _customerPackageQRGenerator = customerPackageQRGenerator;
     }
     #region public methods
     ///<inheritdoc/>
@@ -179,6 +183,7 @@ public class CustomerPackagesAppService:
                 if (result.Item2)
                 {
                     customerPackage.PackageCode = await CreatePackageCode(customerPackageDto);
+                    (string base64Image , string relativePath)=  await _customerPackageQRGenerator.CreateAsync(new CreateUpdateQrCodeDto { CustomerId  = customerPackage.CustomerId, OrganizationId = (int)customerPackage.OrganizationId!, PackageCode = customerPackage.PackageCode });
                     await CurrentUnitOfWork.SaveChangesAsync();
                     return true;
                 }
