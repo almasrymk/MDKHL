@@ -22,7 +22,9 @@ public class FileProviderAppService : SmartParkingAppService, IFileProviderAppSe
 
         await File.WriteAllBytesAsync(imagePath, file);
 
-        return imagePath.Replace("wwwroot", "").Replace("\\", "/").TrimStart('/');
+        imagePath = imagePath.Substring(imagePath.IndexOf("wwwroot"));
+
+        return imagePath.Replace("wwwroot", "").Replace("\\", "/");
     }
     #endregion
 }
