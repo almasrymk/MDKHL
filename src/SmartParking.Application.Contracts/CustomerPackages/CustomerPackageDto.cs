@@ -46,7 +46,7 @@ public class CustomerPackageDto
     public TimeOnly? ActivationTime { get; set; }
     public bool IsCustomPackage { get; set; }
     public string? PackageCode { get; set; }
-
+    public string? QRCodePath { get; set; }
 
 
 

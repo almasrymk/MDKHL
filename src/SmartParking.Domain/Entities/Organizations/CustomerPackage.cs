@@ -33,4 +33,5 @@ public class CustomerPackage : FullAuditedEntity<int>, IBaseEntity
 
     public  bool IsCustomPackage { get; set; }
     public string? PackageCode { get; set; }
+    public string? QRCodePath { get; set; }
 }
