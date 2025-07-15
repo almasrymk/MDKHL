@@ -14,6 +14,7 @@ using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
@@ -109,11 +110,11 @@ public class KeeperController : AbpController
         }
     }
 
-    [HttpGet("invoice")]
+    [HttpPost("invoice")]
     [Authorize]
-    public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationId([FromQuery] int organizationId)
+    public async Task<Result<PagedResultDto<InvoiceDto>>> GetAllInvoicesByOrganizationId([FromQuery] int organizationId , PagedAndSortedAndSearchResultRequestDto paged)
     {
-        return await _keeperAppService.GetAllInvoicesByOrganizationIdAsync(organizationId);
+        return await _keeperAppService.GetAllInvoicesByOrganizationIdAsync(organizationId, paged);
     }    
     
     [HttpGet("paid/invoice")]
@@ -150,11 +151,11 @@ public class KeeperController : AbpController
         return await _keeperAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId, plateNumber);
     }
 
-    [HttpGet("existingTransaction")]
+    [HttpPost("existingTransaction")]
     [Authorize]
-    public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactions([FromQuery] int organizationId, Guid userId)
+    public async Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllExistingTransactions([FromQuery] int organizationId, Guid userId , PagedAndSortedAndSearchResultRequestDto paged)
     {
-        return await _keeperAppService.GetAllExistingTransactionsAsync(organizationId, userId);
+        return await _keeperAppService.GetAllExistingTransactionsAsync(organizationId, userId , paged);
     }
 
     [HttpGet("PayAtExitCamera")]

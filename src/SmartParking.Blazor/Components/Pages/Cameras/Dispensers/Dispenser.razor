@@ -19,4 +19,4 @@
 <PageTitle>@L["Dispensers"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Dispensers"]</MudText>
 
-<SPDataGrid PageName=@L["Dispensers"] Data="@itemData" Menus="@MenuDatas" ShowAdd="HasCreatePermission" ShowMenue="!CurrentTenant.Id.HasValue" ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete" ></SPDataGrid>
+<SPDataGrid PageName=@L["Dispensers"] Data="@itemData" Menus="@MenuDatas" ShowAdd="HasCreatePermission" ShowMenue="!CurrentTenant.Id.HasValue" ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>

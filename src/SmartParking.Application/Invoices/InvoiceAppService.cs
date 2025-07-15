@@ -132,7 +132,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
                 or.InvoiceTime.ToString()!.Contains(input.SearchingTerm.ToLower()) ||
                 or.TotalHours.ToString().Contains(input.SearchingTerm.ToLower()) ||
                 or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.TicketId.Contains(input.SearchingTerm)
             // full date-time or includes hour
             );
         }
@@ -323,7 +324,8 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
                 or.InvoiceTime.ToString()!.Contains(input.SearchingTerm.ToLower()) ||
                 or.TotalHours.ToString().Contains(input.SearchingTerm.ToLower()) ||
                 or.Organization.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+                or.Organization.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())  ||
+                or.TicketId.Contains(input.SearchingTerm)
             );
         }
         var totalCount = await AsyncExecuter.CountAsync(queryable);

@@ -11,6 +11,7 @@ using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
+using SmartParking.Garages;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Invoices;
@@ -23,9 +24,11 @@ using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
@@ -188,10 +191,24 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         return Result<List<GarageTransactionDto>>.Success(mappedTransaction);
     }
     /// <inheritdoc/>
-    public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId)
+    public async Task<Result<PagedResultDto<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId , PagedAndSortedAndSearchResultRequestDto paged)
     {
-        var listInvoice=await AsyncExecuter.ToListAsync(_invoiceRepository.GetQueryableAsync().Result.Where(inv => inv.OrganizationId == organizationId).OrderByDescending(inv=>inv.InvoiceTime).Take(100));
-        return ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(listInvoice);
+        var query = await _invoiceRepository.GetQueryableAsync();
+        query = query.Where(inv => inv.OrganizationId == organizationId)
+                              .OrderByDescending(inv => inv.InvoiceTime);
+        var totalCount = await AsyncExecuter.CountAsync(query);
+
+        query = query.Skip(paged.SkipCount).Take(paged.MaxResultCount);
+
+        var invoices = await AsyncExecuter.ToListAsync(query);
+
+        var items = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices);
+
+        var finalPaged = new PagedResultDto<InvoiceDto>(
+                  totalCount,
+                  items
+              );
+        return  Result<PagedResultDto<InvoiceDto>>.Success(finalPaged);
     }
     /// <inheritdoc/>
 
@@ -269,21 +286,32 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     }
     /// <inheritdoc/>
 
-    public async Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId,Guid userId)
+    public async Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId, Guid userId, PagedAndSortedAndSearchResultRequestDto paged)
     {
         var result = await CheckUserIsFound(organizationId, userId);
-        if(result is not null)
+        if (result is not null)
         {
             return result;
         }
-        var entranceTransactionsQuery = await _garageTransactionRepository.GetQueryableAsync();
-        entranceTransactionsQuery = entranceTransactionsQuery.Where(t => t.IsIn).OrderByDescending(t => t.AccurateTime);
-        var sortedTransaction = entranceTransactionsQuery.ToList();
-        var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(sortedTransaction);
-        return mappedTransaction.Count == 0? Result<List<GarageTransactionDto>>.NotFound("Transaction not found") : Result<List<GarageTransactionDto>>.Success(mappedTransaction);
+        var existingTransactionsQuery = await _garageTransactionRepository.GetQueryableAsync();
+
+        existingTransactionsQuery = existingTransactionsQuery.Where(t => t.IsIn).
+                                                                                        OrderByDescending(t => t.AccurateTime);
+
+        var totalCount = await AsyncExecuter.CountAsync(existingTransactionsQuery);
+
+        existingTransactionsQuery = existingTransactionsQuery.Skip(paged.SkipCount).Take(paged.MaxResultCount);
+
+        var exitingTransactions = await AsyncExecuter.ToListAsync(existingTransactionsQuery);
+
+        var items = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(exitingTransactions);
+
+        var finalPaged = new PagedResultDto<GarageTransactionDto>(totalCount , items);
+
+        return Result<PagedResultDto<GarageTransactionDto>>.Success(finalPaged);
     }
 
-   
+
     /// <inheritdoc/>
 
     public async Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum)

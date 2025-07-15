@@ -143,44 +143,44 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         }
     }
 
-    public async Task<GarageTransactionDto?> FindEntranceTransaction(string? PlateNumber , string? TicketId, bool DispenserTransaction, bool CameraTransaction)
+    public async Task<GarageTransactionDto?> FindEntranceTransaction(string? PlateNumber , string? TicketId, bool DispenserTransaction, bool CameraTransaction , int organizationId)
     {
             GarageTransactionDto result = null!;
             if (DispenserTransaction)
            {
                     if(PlateNumber != null )
                     {
-                        result = await GetTransactionByCamera(PlateNumber);
+                        result = await GetTransactionByCamera(PlateNumber , organizationId);
                     }
                     if ( result== null || result.TicketId != null )
                     {
-                        result = await GetTransactionByDispenser(TicketId);
+                        result = await GetTransactionByDispenser(TicketId  , organizationId);
                     }
            }
             if (CameraTransaction && result==null)
-                result = await GetTransactionByCamera(PlateNumber);
+                result = await GetTransactionByCamera(PlateNumber , organizationId);
             return result;   
     }
 
-    private async Task<GarageTransactionDto?> GetTransactionByCamera(string? plateNumber)
+    private async Task<GarageTransactionDto?> GetTransactionByCamera(string plateNumber , int organizationId)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
             var query = await _garageTransactionRepoistory.GetQueryableAsync();
             var latestTransaction = query
-                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == true)
+                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == true && gt.OrganizationID == organizationId)
                     .OrderByDescending(gt => gt.AccurateTime)
                     .FirstOrDefault();
             return ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(latestTransaction);
         }
     }
-    private async Task<GarageTransactionDto?> GetTransactionByDispenser(string? TicketId)
+    private async Task<GarageTransactionDto?> GetTransactionByDispenser(string? TicketId , int organizationId)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
             var query = await _garageTransactionRepoistory.GetQueryableAsync();
             var latestTransaction = query
-                    .Where(gt => gt.TicketId == TicketId && gt.CameraType == WatcherType.Entry && gt.IsIn == true)
+                    .Where(gt => gt.TicketId == TicketId && gt.CameraType == WatcherType.Entry && gt.IsIn == true && gt .OrganizationID == organizationId)
                     .OrderByDescending(gt => gt.AccurateTime)
                     .FirstOrDefault();
             return ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(latestTransaction);
@@ -379,7 +379,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             IsPackage = isPackage,
             ExitTransactionImage = exitTransaction.VehiclePicture,
             EntryTransactionImage = entryTransactionImage,
-
+            TicketId = exitTransaction.TicketId,
         };
 
         return invoice;

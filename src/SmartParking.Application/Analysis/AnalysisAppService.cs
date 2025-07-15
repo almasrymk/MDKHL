@@ -867,7 +867,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  ArPlateNumber = vehicle.ArPlateNumber,
                                  EnPlateNumber = vehicle.EnPlateNumber,
                                  CustomerEnglishName = vehicle.Customer.IdentityUser.Name,
-                                 UserName = vehicle.Customer.IdentityUser.PhoneNumber , 
+                                 PhoneNumber = vehicle.Customer.IdentityUser.PhoneNumber,
                                  CustomerArabicName = vehicle.Customer.ArabicName,
                                  BrandArabicName = vehicle.VehicleBrand.ArabicName,
                                  BrandEnglishName = vehicle.VehicleBrand.EnglishName,
@@ -939,7 +939,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                 _.PackageNameEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 _.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 _.ModelYear.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                _.UserName.ToLower().Contains(input.SearchingTerm.ToLower())
+                _.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower())
                 ).ToList() ;
             }
             var totalCount = result.Count();
@@ -967,6 +967,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                          {
                              BeneficiaryNameAr = customer.ArabicName,
                              BeneficiaryNameEn = customer.IdentityUser.Name,
+                             PhoneNumber = customer.IdentityUser.PhoneNumber,
                              PackageCategory = customer.CustomerPackages.Select(_ => _.CustomerCategory).FirstOrDefault(),
                              CreatedBy = userQuery.Where(_ => _.Id == customer.CreatorId).FirstOrDefault().Name,
                              CreationTime = TimeOnly.FromDateTime(customer.CreationTime),

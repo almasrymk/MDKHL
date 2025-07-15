@@ -7,6 +7,7 @@ using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.TenantManagement;
 
 namespace SmartParking.Mobile.Keepers;
@@ -25,8 +26,7 @@ public interface IKeeperAppService
     /// </summary>
     /// <param name="organizationId">id of specific organization</param>
     /// <returns>list of InvoiceDto</returns>
-    Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId);
-
+    Task<Result<PagedResultDto<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId, PagedAndSortedAndSearchResultRequestDto paged);
     /// <summary>
     /// Retrieves Last invoice by organization id asynchronously.
     /// </summary>
@@ -56,7 +56,7 @@ public interface IKeeperAppService
 	/// Retrieves a list of all existing transaction  asynchronously.
 	/// </summary>
 	/// <returns>list of GarageTransactionDto</returns>
-	Task<Result<List<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId, Guid userId);
+	Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId, Guid userId ,PagedAndSortedAndSearchResultRequestDto paged);
 
     /// <summary>
     /// Retrieves the tenant associated with the given phone number.

@@ -48,8 +48,8 @@ public partial class PriceSummaryComponent
         }
         else
         {
-            CanPayInvoice = false;
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L["InvalidValidation"]}", Severity.Error);
+            InvoicePriceAfterDiscount = 0;
+            OnChooseDiscount = false;
         }
     }
 

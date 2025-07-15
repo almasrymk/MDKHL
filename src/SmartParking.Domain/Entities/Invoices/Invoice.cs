@@ -30,8 +30,5 @@ public class Invoice : FullAuditedEntity<int> , IMultiTenant
     public string EntryTransactionImage { get; set; }
     public string ExitTransactionImage { get; set; }
     public decimal Discount { get; set; }
-
-
-
-
+    public string TicketId { get; set; }
 }
