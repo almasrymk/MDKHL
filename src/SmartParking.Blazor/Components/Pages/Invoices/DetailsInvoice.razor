@@ -122,6 +122,16 @@
                             Label="@L["PlateNumber"]"
                             Disabled />
                         </MudItem>
+
+
+                            <MudItem sm="4">
+                                <MudTextField @bind-Value="Invoice.TicketId"
+                                              Immediate="true"
+                                              Variant="Variant.Text"
+                                              Label="@L["TicketId"]"
+                                              Disabled />
+                            </MudItem>
+
                         <MudItem sm="4">
                             <MudTextField Value="Invoice.EntranceTime.ToString()"
                             Immediate="true"
