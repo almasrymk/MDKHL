@@ -29,10 +29,10 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task<string> CheckPlateNumberBelongsToCustomerToGetHisIdAsync(string plateNumber);
 
     Task<GarageTransactionDto?> FindEntranceTransaction(string? PlateNumber, string? TicketId, bool DispenserTransaction, bool CameraTransaction, int organizationId);
-    Task<string> FindEntranceImage(string? plateNumber, string ticketId);
+    Task<string> FindEntranceImage(string? plateNumber, string ticketId,int OrganiztionId);
     Task<GarageTransaction> CheckIfCheckoutFromMobile(string plateNumber);
     Task<GarageTransaction> GetTransactionById(int garagetransactionId);
-    Task CloseEntryTransaction(string? plateNumber);
+    Task CloseEntryTransaction(string? plateNumber , string ticketId);
     Task CloseCheckoutMobileTransaction(string? plateNumber);
     Task UpdateEntryTransactionCheckouFromMobile(int entryGarageTransactionId);
     Task<Guid> GetCurrentCustomerId();
