@@ -183,7 +183,11 @@ public class CustomerPackagesAppService:
                 if (result.Item2)
                 {
                     customerPackage.PackageCode = await CreatePackageCode(customerPackageDto);
-                    (string base64Image , string relativePath)=  await _customerPackageQRGenerator.CreateAsync(new CreateUpdateQrCodeDto { CustomerId  = customerPackage.CustomerId, OrganizationId = (int)customerPackage.OrganizationId!, PackageCode = customerPackage.PackageCode });
+                    if(customerPackage.PackageCode != null)
+                    {
+                        (string base64Image, string relativePath) = await _customerPackageQRGenerator.CreateAsync(new CreateUpdateQrCodeDto { CustomerId = customerPackage.CustomerId, OrganizationId = (int)customerPackage.OrganizationId!, PackageCode = customerPackage.PackageCode });
+                        customerPackage.QRCodePath = relativePath;
+                    }
                     await CurrentUnitOfWork.SaveChangesAsync();
                     return true;
                 }
