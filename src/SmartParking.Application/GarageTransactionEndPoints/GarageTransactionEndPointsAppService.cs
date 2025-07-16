@@ -241,7 +241,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         //Opens Gate Depends On Invoice Price
         _requestToGate = _initialInvoice.InvoicePrice <= 0;
         //Close and Map Entry Transactions
-        await _garageTransactionUtilityAppService.CloseEntryTransaction(exitTransaction.PlateNumber);
+        await _garageTransactionUtilityAppService.CloseEntryTransaction(exitTransaction.PlateNumber , exitTransaction.TicketId);
         await CurrentUnitOfWork.SaveChangesAsync();
         _logger.LogInformation($"{DateTime.Now} ====> Get Response {_requestToGate}");
         return _requestToGate;
@@ -275,7 +275,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         await _garageTransactionsAppService.CreateAsync(exitTransaction);
         _logger.LogInformation($"{DateTime.Now} ====> Close Entry : {exitTransaction.PlateNumber}");
-        await _garageTransactionUtilityAppService.CloseEntryTransaction(exitTransaction.PlateNumber);
+        await _garageTransactionUtilityAppService.CloseEntryTransaction(exitTransaction.PlateNumber, exitTransaction.TicketId);
         _logger.LogInformation($"{DateTime.Now} ====> PlateNumber  : {exitTransaction.PlateNumber}");
         _logger.LogInformation($"{DateTime.Now} ====> Get Response true | In Free minutes period");
         return await Task.FromResult(true);
