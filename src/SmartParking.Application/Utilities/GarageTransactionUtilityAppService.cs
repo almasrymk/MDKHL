@@ -170,7 +170,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
                     {
                         result = await GetTransactionByCamera(PlateNumber , organizationId);
                     }
-                    if ( result== null || result.TicketId != null )
+                    if (TicketId != null &&(result== null || result.TicketId != null ))
                     {
                         result = await GetTransactionByDispenser(TicketId  , organizationId);
                     }
