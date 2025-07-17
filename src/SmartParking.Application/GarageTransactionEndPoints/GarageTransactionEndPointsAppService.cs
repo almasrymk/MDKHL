@@ -95,7 +95,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     return await HandleExit(GarageTransaction, organization.Id);
 
                 case WatcherType.Entry:
-                    return await HandleEntrance(input, _hasFreeSlots, _hasPackageOnly, GarageTransaction);
+                    return await HandleEntrance(input, _hasFreeSlots, _hasPackageOnly , organization.DispenserTransaction , organization.CameraTransaction, GarageTransaction);
             }
 
         }
@@ -109,34 +109,40 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     #endregion
     #region public methods to handle entrance and exit 
 
-    public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, CreateUpdateGarageTransactionDto GarageTransaction)
+    public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, bool dispenserTransaction, bool cameraTransaction, CreateUpdateGarageTransactionDto GarageTransaction)
     {
         var customerPackageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(GarageTransaction.OrganizationID, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value);
-        var organization = await _garageTransactionUtilityAppService.GetOrganization(GarageTransaction.OrganizationID);
-        if (organization.DispenserTransaction && organization.CameraTransaction && customerPackageDto == null && GarageTransaction.TicketId == null)
+
+        if (dispenserTransaction && cameraTransaction && customerPackageDto == null && GarageTransaction.TicketId == null)
         {
             _logger.LogInformation($"No Active Customer Package with mix mode  for : {GarageTransaction.PlateNumber}");
             return false;
         }
-        if (organization.DispenserTransaction && organization.CameraTransaction && GarageTransaction.TicketId == null)
+        if (dispenserTransaction && cameraTransaction && GarageTransaction.TicketId == null)
         {
-            var last =await  _garageTransactionUtilityAppService.FindEntranceTransaction(GarageTransaction.PlateNumber, null, false, organization.CameraTransaction , GarageTransaction.OrganizationID);
-            if (last!= null && last.AccurateTime >= GarageTransaction.AccurateTime.Value.AddSeconds(-30) && last.AccurateTime <= GarageTransaction.AccurateTime && !last.IsMapped)
+            var last =await  _garageTransactionUtilityAppService.FindEntranceTransaction(GarageTransaction.PlateNumber, null, false, cameraTransaction , GarageTransaction.OrganizationID);
+            if (last!= null && last.AccurateTime >= GarageTransaction.AccurateTime.Value.AddSeconds(-10) && last.AccurateTime <= GarageTransaction.AccurateTime && !last.IsMapped)
             {
-                _logger.LogInformation($"Cannot enter twice w: {GarageTransaction.PlateNumber}");
+                _logger.LogInformation($"Cannot enter twice : {GarageTransaction.PlateNumber}");
                 return false;
             }
         }
         
         GarageTransaction.CustomerCategory = customerPackageDto is not null ? customerPackageDto.CustomerCategory : CustomerCategoryStatus.Customer;
         bool _hasActivePackage = customerPackageDto is not null;
-        bool canEnter = await _garageTransactionUtilityAppService.ReserverSlotsOfGarageDependsOnCategoryAsync(GarageTransaction.GarageId, GarageTransaction.CustomerCategory);
+
+        if(cameraTransaction && GarageTransaction.TicketId == null && string.IsNullOrEmpty(input.PlateNumber))
+           _hasFreeSlots = true;
+
+        bool canEnter = await _garageTransactionUtilityAppService.ReserverSlotsOfGarageDependsOnCategoryAsync(GarageTransaction.GarageId , _hasFreeSlots,  GarageTransaction.CustomerCategory);
+     
         bool finalResult = (_hasPackageOnly, _hasFreeSlots, canEnter, _hasActivePackage) switch
         {
             (true, _, _, false) => false,
             (true, true, _, true) => true,
             (true, false, true, true) => true,
-            (true, false, false, true) => false,
+            (true, false, false, true) => false, 
+
             (false, true, _, _) => true,
             (false, false, true, _) => true,
             (false, false, false, _) => false,
@@ -148,8 +154,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         else
         {
             await _unlinkedGarageTransactionsAppService.CreateAsync(input);
-            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(GarageTransaction.GarageId, GarageTransaction.CustomerCategory);
-
+            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(GarageTransaction.GarageId,_hasFreeSlots ,  GarageTransaction.CustomerCategory);
         }
         await CurrentUnitOfWork.SaveChangesAsync();
         _logger.LogInformation($"{DateTime.Now} ====> Get Response {finalResult}");
@@ -165,18 +170,22 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         var organization = await _garageTransactionUtilityAppService.GetOrganization(organizationId);
         bool _requestToGate;
+        bool hasFreeSlots = organization.HasFreeSlots ; 
         //getting entrance transaction
         var _entryTransaction = await _garageTransactionUtilityAppService.FindEntranceTransaction(exitTransaction.PlateNumber , exitTransaction.TicketId , organization.DispenserTransaction , organization.CameraTransaction , organizationId);
+        if (organization.CameraTransaction && exitTransaction.TicketId == null && string.IsNullOrEmpty(exitTransaction.PlateNumber))
+            hasFreeSlots = true;
+        
         //geeting garage
         var _garage = await _garageTransactionUtilityAppService.GetGarageByIdAsync(exitTransaction.GarageId);
+            
         if (_entryTransaction == null)
         {
             _logger.LogError($"{DateTime.Now} ====>  Entrance Time is null  ");
             _logger.LogError($"{DateTime.Now} ====> Get Response false");
             var input = ObjectMapper.Map<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>(exitTransaction);
+            input.DeviceID = input.DeviceID == null ? exitTransaction.LaneNO : input.DeviceID;
             await _unlinkedGarageTransactionsAppService.CreateAsync(input);
-            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_garage.Id, CustomerCategoryStatus.Customer);
-
             return await Task.FromResult(false);
         }
         //getting customer id if found
@@ -190,7 +199,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         //Check On Entrance Time Validation
         if (_entryTransaction.AccurateTime > exitTransaction.AccurateTime)
         {
-            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_garage.Id, CustomerCategoryStatus.Customer);
             await ExitBeforeEntry(exitTransaction, _entryTransaction.AccurateTime);
             return await Task.FromResult(false);
         }
@@ -221,13 +229,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         {
             _customerInvoicePrice = _calculationsEndPointAppService.CalculationForRegisteredCustomer(exitTransaction.AccurateTime.Value, _entryTransaction.AccurateTime, organization, _packageDto, _totalHours);
             //update slots depends on category
-            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_entryTransaction.GarageId, _entryTransaction.CustomerCategory);
+            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_entryTransaction.GarageId, hasFreeSlots,  _entryTransaction.CustomerCategory);
         }
         else
         {
             _customerInvoicePrice = _calculationsEndPointAppService.CalculateInvoiceCases(_entryTransaction.AccurateTime, _totalHours, exitTransaction.AccurateTime.Value, organization);
             //update slots depends on category
-            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_garage.Id, CustomerCategoryStatus.Customer);
+            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_garage.Id, hasFreeSlots,  CustomerCategoryStatus.Customer);
         }
         //creating invoice
         CreateUpdateInvoiceDto _initialInvoice = await _garageTransactionUtilityAppService.InitiateInvoice(_entryTransaction.AccurateTime, exitTransaction, _totalHours, _customerInvoicePrice, true, _customer);

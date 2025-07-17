@@ -205,10 +205,12 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         }
     }
 
-    public async Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId, CustomerCategoryStatus category)
+    public async Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId,  bool  hasFreeSlots , CustomerCategoryStatus category)
     {
         var garage = await GetGarageByIdAsync(garageId);
         bool flag = false;
+        if(hasFreeSlots)
+            return await Task.FromResult(true);
         if (category == CustomerCategoryStatus.Customer )
         {
             garage.CurrnetCapacityForCustomers = Math.Max(0, --garage.CurrnetCapacityForCustomers);
@@ -284,10 +286,14 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         }
     }
 
-    public async Task<bool> ReserverSlotsOfGarageDependsOnCategoryAsync(int garageId, CustomerCategoryStatus customer)
+    public async Task<bool> ReserverSlotsOfGarageDependsOnCategoryAsync(int garageId, bool hasFreeSlots ,  CustomerCategoryStatus customer)
     {
         var garage = await GetGarageByIdAsync(garageId);
         bool flag = false;
+        if (hasFreeSlots)
+        {
+            return await Task.FromResult(true);
+        }
         switch (customer)
         {
             case CustomerCategoryStatus.Customer:
