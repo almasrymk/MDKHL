@@ -174,9 +174,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             _logger.LogError($"{DateTime.Now} ====>  Entrance Time is null  ");
             _logger.LogError($"{DateTime.Now} ====> Get Response false");
             var input = ObjectMapper.Map<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>(exitTransaction);
+            input.DeviceID = input.DeviceID == null ? exitTransaction.LaneNO : input.DeviceID;
             await _unlinkedGarageTransactionsAppService.CreateAsync(input);
-            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_garage.Id, CustomerCategoryStatus.Customer);
-
             return await Task.FromResult(false);
         }
         //getting customer id if found
@@ -190,7 +189,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         //Check On Entrance Time Validation
         if (_entryTransaction.AccurateTime > exitTransaction.AccurateTime)
         {
-            await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_garage.Id, CustomerCategoryStatus.Customer);
             await ExitBeforeEntry(exitTransaction, _entryTransaction.AccurateTime);
             return await Task.FromResult(false);
         }

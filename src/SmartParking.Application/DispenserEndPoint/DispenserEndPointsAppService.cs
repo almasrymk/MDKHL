@@ -25,20 +25,23 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     private readonly IRepository<Dispenser, int> _dispenserRepository;
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly ILogger<DispenserEndPointsAppService> _logger;
+    private readonly IUnLinkedTransactionAppService _unlinkedGarageTransactionsAppService;
 
-    public DispenserEndPointsAppService(IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IBarrierAppService barrierAppService, IRepository<Dispenser, int> dispenserRepository, ILogger<DispenserEndPointsAppService> logger, IRepository<Organization, int> organizationRepository)
+    public DispenserEndPointsAppService(IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IBarrierAppService barrierAppService, IRepository<Dispenser, int> dispenserRepository, ILogger<DispenserEndPointsAppService> logger, IRepository<Organization, int> organizationRepository, IUnLinkedTransactionAppService unlinkedGarageTransactionsAppService)
     {
         _garageTransactionEndPointsAppService = garageTransactionEndPointsAppService;
         _barrierAppService = barrierAppService;
         _dispenserRepository = dispenserRepository;
         _logger = logger;
         _organizationRepository = organizationRepository;
+        _unlinkedGarageTransactionsAppService = unlinkedGarageTransactionsAppService;
     }
     #region public methods
     public async Task<bool> Entry(EntryDto request)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
+            var _unlinkedDto = InitiateUnlinkedTransactionDto(request);
             var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis => dis.DeviceId == request.LaneNO);
             if (_dispenser == null)
             {
@@ -47,6 +50,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             }
             if(string.IsNullOrEmpty(request.TicketID))
             {
+                await _unlinkedGarageTransactionsAppService.CreateAsync(_unlinkedDto);
                 _logger.LogInformation($"Should have ticket id ");
                 return false;
             }
@@ -56,10 +60,10 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
                 _logger.LogInformation($"No Organization for : {request.LaneNO}");
                 return false;
             }
-            var _unlinkedDto = InitiateUnlinkedTransactionDto(request);
+         
             var _garageTransactionDto = InitiateCreateGarageTransactionDtoForPreEntry(request, _dispenser);
 
-            var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _garageTransactionDto);
+            var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _organization.DispenserTransaction , _organization.CameraTransaction ,  _garageTransactionDto);
             await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = request.CarNum, laneNO = request.LaneNO, operatorType = result == false ? 2 : 5 });
             return result;
         }
@@ -82,7 +86,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             }
             var _unlinkedDto = InitiateUnlinkedTransactionDto(request);
             var _garageTransactionDto = InitiateCreateGarageTransactionDtoForPreEntry(request, _dispenser);
-            var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _garageTransactionDto);
+            var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots,true , _organization.DispenserTransaction , _organization.CameraTransaction, _garageTransactionDto);
             if(result)
             {
                  _logger.LogError($"Open Barrier From Pre Entry : {request.CarNum} : {request.LaneNO}");
@@ -148,10 +152,14 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             }
             _logger.LogInformation($"Organization is found");
 
+            var unlinkedDto = InitiateUnlinkedTransactionDto(request); 
+
             var _garageTransactionDto = InitiateCreateGarageTransactionDtoForExit(request, _dispenser);
 
-            if (_garageTransactionDto.PlateNumber == null &&  _garageTransactionDto.TicketId == null)
+            if  (string.IsNullOrEmpty(_garageTransactionDto.TicketId) )
             {
+                // Unlinked Transaction 
+                await _unlinkedGarageTransactionsAppService.CreateAsync(unlinkedDto);
                 return false;
             }
             var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization.Id);
@@ -232,6 +240,17 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             IsIn = false,
             IsMapped = true,
             TicketId = GetString(input, "ticketID")
+        };
+    }
+    private CreateUpdateGarageTransactionEndPointDto InitiateUnlinkedTransactionDto (JsonElement request)
+    {
+        return new CreateUpdateGarageTransactionEndPointDto
+        {
+            AccurateTime = ParseDateTime(request, "actTime"),
+            VehiclePicture = GetString(request, "carImgData"),
+            PlateNumber = GetString(request, "carNum"),
+            DeviceID = GetString(request, "laneNO"),
+
         };
     }
 
