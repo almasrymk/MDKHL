@@ -100,11 +100,12 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         }
     }
 
-    public async Task CloseEntryTransaction(string? plateNumber,string TicketId)
+    public async Task CloseEntryTransaction(string? plateNumber,string TicketId , int entryTransactionId)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
             var query = await _garageTransactionRepoistory.GetQueryableAsync();
+            query.Where(gt => gt.Id == entryTransactionId);
             await SaveClosedEntryTransaction(plateNumber, query);
             await SaveClosedEntryTicketTransaction(TicketId, query);
         }
@@ -161,20 +162,22 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         }
     }
 
-    public async Task<GarageTransactionDto?> FindEntranceTransaction(string? PlateNumber , string? TicketId, bool DispenserTransaction, bool CameraTransaction , int organizationId)
+    public async Task<GarageTransactionDto?> FindEntranceTransaction(string? PlateNumber , string? TicketId, bool DispenserTransaction, bool CameraTransaction , int organizationId , bool hasActivePackage)
     {
             GarageTransactionDto result = null!;
-            if (DispenserTransaction)
+           if (DispenserTransaction)
            {
-                    if(PlateNumber != null )
-                    {
-                        result = await GetTransactionByCamera(PlateNumber , organizationId);
-                    }
-                    if (TicketId != null &&(result== null || result.TicketId != null ))
-                    {
-                        result = await GetTransactionByDispenser(TicketId  , organizationId);
-                    }
-           }
+                if (TicketId != null)
+                {
+                    result = await GetTransactionByDispenser(TicketId, organizationId);
+                }
+                else if ( hasActivePackage && PlateNumber != null)
+                {
+                    result = await GetTransactionByCamera(PlateNumber, organizationId);
+                }
+                else
+                     return result;
+            }
             if (CameraTransaction && result==null)
                 result = await GetTransactionByCamera(PlateNumber , organizationId);
             return result;   
