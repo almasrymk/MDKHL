@@ -90,13 +90,13 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         }
     }
 
-    public async Task CloseCheckoutMobileTransaction(string? plateNumber)
+    public async Task CloseCheckoutMobileTransaction(string? plateNumber, int entryTransactionId)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
             var query = await _garageTransactionRepoistory.GetQueryableAsync();
             query.Where(gt => gt.CameraType == WatcherType.Exit);
-            await SaveClosedEntryTransaction(plateNumber, query);
+            await SaveClosedEntryTransaction(plateNumber, query, entryTransactionId);
         }
     }
 
@@ -105,17 +105,16 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         using (DataFilter.Disable<IMultiTenant>())
         {
             var query = await _garageTransactionRepoistory.GetQueryableAsync();
-            query.Where(gt => gt.Id == entryTransactionId);
-            await SaveClosedEntryTransaction(plateNumber, query);
-            await SaveClosedEntryTicketTransaction(TicketId, query);
+            await SaveClosedEntryTransaction(plateNumber, query , entryTransactionId);
+            await SaveClosedEntryTicketTransaction(TicketId, query , entryTransactionId);
         }
     }
-    private async Task SaveClosedEntryTicketTransaction(string? TicketNumber, IQueryable<GarageTransaction> query)
+    private async Task SaveClosedEntryTicketTransaction(string? TicketNumber, IQueryable<GarageTransaction> query, int entryTransactionId)
     {
         if (TicketNumber == null)
             return;
         var latestTransactions = query
-                .Where(gt => gt.TicketId == TicketNumber && gt.IsIn == true)
+                .Where(gt => gt.TicketId == TicketNumber && gt.Id == entryTransactionId  && gt.IsIn == true)
                 .OrderByDescending(gt => gt.AccurateTime)
                 .ToList();
         latestTransactions.ForEach(gt => {
@@ -124,12 +123,12 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         });
         await CurrentUnitOfWork.SaveChangesAsync();
     }
-    private async Task SaveClosedEntryTransaction(string? plateNumber, IQueryable<GarageTransaction> query)
+    private async Task SaveClosedEntryTransaction(string? plateNumber, IQueryable<GarageTransaction> query , int entryTransactionId)
     {
         if (plateNumber == null)
             return;
         var latestTransactions = query
-                .Where(gt => gt.PlateNumber == plateNumber && gt.IsIn == true)
+                .Where(gt => gt.PlateNumber == plateNumber && gt.Id == entryTransactionId && gt.IsIn == true)
                 .OrderByDescending(gt => gt.AccurateTime)
                 .ToList();
         latestTransactions.ForEach(gt => {

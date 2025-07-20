@@ -33,7 +33,7 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task<GarageTransaction> CheckIfCheckoutFromMobile(string plateNumber);
     Task<GarageTransaction> GetTransactionById(int garagetransactionId);
     Task CloseEntryTransaction(string? plateNumber , string ticketId , int entryTransactionId);
-    Task CloseCheckoutMobileTransaction(string? plateNumber);
+    Task CloseCheckoutMobileTransaction(string? plateNumber , int entryTransactionId);
     Task UpdateEntryTransactionCheckouFromMobile(int entryGarageTransactionId);
     Task<Guid> GetCurrentCustomerId();
     Task<CustomerDto> GetCustomer(Guid customerId);
