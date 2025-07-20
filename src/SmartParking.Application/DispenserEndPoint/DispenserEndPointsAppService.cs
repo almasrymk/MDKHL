@@ -120,11 +120,12 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
 
             var _garageTransactionDto = InitiateCreateGarageTransactionDtoForExit(request, _dispenser);
 
+            var input = ObjectMapper.Map<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>(_garageTransactionDto);
             if (_garageTransactionDto.PlateNumber == null && _garageTransactionDto.TicketId == null)
             {
                 return false;
             }
-            var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization.Id);
+            var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization.Id , input);
             await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = _garageTransactionDto.PlateNumber, laneNO = _garageTransactionDto.LaneNO, operatorType = result == false ? 2 : 5 });
             return result;
         }
@@ -156,13 +157,15 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
 
             var _garageTransactionDto = InitiateCreateGarageTransactionDtoForExit(request, _dispenser);
 
+            var input = ObjectMapper.Map<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>(_garageTransactionDto);
             if  (string.IsNullOrEmpty(_garageTransactionDto.TicketId) )
             {
                 // Unlinked Transaction 
                 await _unlinkedGarageTransactionsAppService.CreateAsync(unlinkedDto);
                 return false;
             }
-            var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization.Id);
+            var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization.Id, input);
+
             await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = _garageTransactionDto.PlateNumber, laneNO = _garageTransactionDto.LaneNO, operatorType = result == false ? 2 : 5 });
             return result;
         }
