@@ -28,11 +28,11 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task<bool> ReserverSlotsOfGarageDependsOnCategoryAsync(int garageId , bool hasFreeSlots , CustomerCategoryStatus customer);
     Task<string> CheckPlateNumberBelongsToCustomerToGetHisIdAsync(string plateNumber);
 
-    Task<GarageTransactionDto?> FindEntranceTransaction(string? PlateNumber, string? TicketId, bool DispenserTransaction, bool CameraTransaction, int organizationId);
+    Task<GarageTransactionDto?> FindEntranceTransaction(string? PlateNumber, string? TicketId, bool DispenserTransaction, bool CameraTransaction, int organizationId , bool hasActivePackage);
     Task<string> FindEntranceImage(string? plateNumber, string ticketId,int OrganiztionId);
     Task<GarageTransaction> CheckIfCheckoutFromMobile(string plateNumber);
     Task<GarageTransaction> GetTransactionById(int garagetransactionId);
-    Task CloseEntryTransaction(string? plateNumber , string ticketId);
+    Task CloseEntryTransaction(string? plateNumber , string ticketId , int entryTransactionId);
     Task CloseCheckoutMobileTransaction(string? plateNumber);
     Task UpdateEntryTransactionCheckouFromMobile(int entryGarageTransactionId);
     Task<Guid> GetCurrentCustomerId();
