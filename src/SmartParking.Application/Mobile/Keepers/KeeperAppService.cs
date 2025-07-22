@@ -159,15 +159,11 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 	}
 
     /// <inheritdoc/>
-    public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsAsync(int organizationId,Guid userId)
+    public async Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllGarageTransactionsAsync(int organizationId,Guid userId , PagedAndSortedAndSearchResultRequestDto paged)
     {
-        Volo.Abp.Identity.IdentityUser? user;
-        List<GarageTransaction> garageTransaction = new List<GarageTransaction>();
-
         using (DataFilter.Disable<IMultiTenant>())
         {
-            user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
-
+           var  user = await _myUserRepository.FindUserByOrganizationAsync(organizationId, userId);
             if (user is null)
             {
                 return Result.Invalid(new Results.ValidationError
@@ -175,20 +171,28 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                     ErrorMessage = "User not found"
                 });
             }
+            var query = await _garageTransactionRepository.GetQueryableAsync();
 
-            garageTransaction = await _garageTransactionRepository.GetListAsync();
+            query = query.OrderByDescending(t => t.AccurateTime);
+
+            var totalCount = await AsyncExecuter.CountAsync(query);
+            
+            query = query.Skip(paged.SkipCount).Take(paged.MaxResultCount);
+
+            var garageTransactions = await AsyncExecuter.ToListAsync(query);
+
+            var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(garageTransactions);
+         
+            if (totalCount == 0)
+            {
+                return Result<PagedResultDto<GarageTransactionDto>>.NotFound("Transaction not found");
+            }
+            var result = new PagedResultDto<GarageTransactionDto>(
+                        totalCount,
+                        mappedTransaction
+                    );
+            return Result<PagedResultDto<GarageTransactionDto>>.Success(result);
         }
-
-        var sortedTransaction = garageTransaction.OrderByDescending(t => t.AccurateTime).ToList();
-
-        var mappedTransaction = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(sortedTransaction);
-        
-        if (mappedTransaction.Count < 0)
-        {
-            return Result<List<GarageTransactionDto>>.NotFound("Transaction not found");
-        }
-
-        return Result<List<GarageTransactionDto>>.Success(mappedTransaction);
     }
     /// <inheritdoc/>
     public async Task<Result<PagedResultDto<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId , PagedAndSortedAndSearchResultRequestDto paged)
