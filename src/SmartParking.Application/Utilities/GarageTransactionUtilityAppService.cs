@@ -20,6 +20,10 @@ using Volo.Abp;
 using SmartParking.Invoices;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Cutomers;
+using SmartParking.Services.GarageTransactions;
+using SmartParking.Services.Garages;
+using SmartParking.Services.Cameras;
+using SmartParking.Services.Vehicles;
 
 
 namespace SmartParking.Utilities;
@@ -27,143 +31,68 @@ namespace SmartParking.Utilities;
 public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarageTransactionUtilityAppService
 {
     private readonly ILogger<GarageTransactionUtilityAppService> _logger;
-    private readonly IRepository<Camera, int> _cameraRepository;
-    private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Vehicle, int> _vehicleRepository;
-    private readonly IRepository<GarageTransaction, int> _garageTransactionRepoistory;
     private readonly IRepository<Customer, Guid> _customerRepoistory;
     private readonly IRepository<Organization, int> _organizationRepoistory;
     private readonly IDataFilter _dataFilter;
+    private readonly GarageTransactionManager _garageTransactionManager;
+    private readonly GarageManager _garageManager;
+    private readonly CameraManager _cameraManager;
+    private readonly VehicleManager _vehicleManager;
     private string customerEnName { get; set; } = "unknown";
     private string customerArName { get; set; } = "غير معرف";
 
     public GarageTransactionUtilityAppService(
         ILogger<GarageTransactionUtilityAppService> logger,
-        IRepository<Camera, int> cameraRepository,
-        IRepository<Garage, int> garageRepository,
         IRepository<Vehicle, int> vehicleRepository,
-        IRepository<GarageTransaction, int> garageTransactionRepoistory,
         IDataFilter dataFilter,
         IRepository<Customer, Guid> customerRepoistory,
-        IRepository<Organization, int> organizationRepoistory)
+        IRepository<Organization, int> organizationRepoistory,
+        GarageTransactionManager garageTransactionManager,
+        GarageManager garageManager,
+        CameraManager cameraManager,
+        VehicleManager vehicleManager)
     {
-        _cameraRepository = cameraRepository;
-        _garageRepository = garageRepository;
+
         _vehicleRepository = vehicleRepository;
         _logger = logger;
-        _garageTransactionRepoistory = garageTransactionRepoistory;
         _dataFilter = dataFilter;
         _customerRepoistory = customerRepoistory;
         _organizationRepoistory = organizationRepoistory;
+        _garageTransactionManager = garageTransactionManager;
+        _garageManager = garageManager;
+        _cameraManager = cameraManager;
+        _vehicleManager = vehicleManager;
     }
 
     public async Task<GarageTransaction> CheckIfCheckoutFromMobile(string plateNumber)
     {
-         using (DataFilter.Disable<IMultiTenant>())
-         {
-
-            var query = await _garageTransactionRepoistory.GetQueryableAsync();
-
-
-            var latestTransaction = query
-                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Exit && gt.IsIn == true)
-                    .OrderByDescending(gt => gt.AccurateTime)
-                    .FirstOrDefault();
-
-            return latestTransaction;
-         }
+         return await _garageTransactionManager.CheckIfCheckoutFromMobile(plateNumber);
     }
 
     public async Task<string> CheckPlateNumberBelongsToCustomerToGetHisIdAsync(string plateNumber)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-
-            var Vehicle = await _vehicleRepository.FirstOrDefaultAsync(x => x.ArPlateNumber == plateNumber || x.EnPlateNumber == plateNumber);
-            if (Vehicle == null)
-            {
-                _logger.LogError($"{DateTime.Now} ====>  Vehicle Not Found ");
-                return null;
-            }
-            var CustomerId = Vehicle.CustomerId;
-            return CustomerId.ToString();
-        }
+        return await _vehicleManager.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(plateNumber);
     }
 
     public async Task CloseCheckoutMobileTransaction(string? plateNumber, int entryTransactionId)
     {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            var query = await _garageTransactionRepoistory.GetQueryableAsync();
-            query.Where(gt => gt.CameraType == WatcherType.Exit);
-            await SaveClosedEntryTransaction(plateNumber, query, entryTransactionId);
-        }
+        await _garageTransactionManager.CloseCheckoutMobileTransaction(plateNumber, entryTransactionId);
     }
 
     public async Task CloseEntryTransaction(string? plateNumber,string TicketId , int entryTransactionId)
     {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            var query = await _garageTransactionRepoistory.GetQueryableAsync();
-            await SaveClosedEntryTransaction(plateNumber, query , entryTransactionId);
-            await SaveClosedEntryTicketTransaction(TicketId, query , entryTransactionId);
-        }
+         await _garageTransactionManager.CloseEntryTransaction(plateNumber, TicketId, entryTransactionId);  
     }
-    private async Task SaveClosedEntryTicketTransaction(string? TicketNumber, IQueryable<GarageTransaction> query, int entryTransactionId)
-    {
-        if (TicketNumber == null)
-            return;
-        var latestTransactions = query
-                .Where(gt => gt.TicketId == TicketNumber && gt.Id == entryTransactionId  && gt.IsIn == true)
-                .OrderByDescending(gt => gt.AccurateTime)
-                .ToList();
-        latestTransactions.ForEach(gt => {
-            gt.IsIn = false;
-            gt.IsMapped = true;
-        });
-        await CurrentUnitOfWork.SaveChangesAsync();
-    }
-    private async Task SaveClosedEntryTransaction(string? plateNumber, IQueryable<GarageTransaction> query , int entryTransactionId)
-    {
-        if (plateNumber == null)
-            return;
-        var latestTransactions = query
-                .Where(gt => gt.PlateNumber == plateNumber && gt.Id == entryTransactionId && gt.IsIn == true)
-                .OrderByDescending(gt => gt.AccurateTime)
-                .ToList();
-        latestTransactions.ForEach(gt => {
-            gt.IsIn = false;
-            gt.IsMapped = true;
-        });
-        await CurrentUnitOfWork.SaveChangesAsync();
-    }
+
     public async Task<string> FindEntranceImage(string? plateNumber , string ticketId,int OrganiztionId)
     {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            var query = await _garageTransactionRepoistory.GetQueryableAsync();
-            var latestTransaction = query
-                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == true)
-                    .OrderByDescending(gt => gt.AccurateTime)
-                    .FirstOrDefault();
-            var img= latestTransaction?.VehiclePicture??null;
-            
-            if (img == null)
-            {
-                var query2 = await _garageTransactionRepoistory.GetQueryableAsync();
-                var latestTransaction2 = query
-                        .Where(gt => gt.TicketId == ticketId && gt.CameraType == WatcherType.Entry && gt.IsIn == true)
-                        .OrderByDescending(gt => gt.AccurateTime)
-                        .FirstOrDefault();
-                img = latestTransaction2?.VehiclePicture??null;
-            }
-            return img;
-        }
+         return await _garageTransactionManager.FindEntranceImage(plateNumber, ticketId, OrganiztionId);
     }
 
     public async Task<GarageTransactionDto?> FindEntranceTransaction(string? PlateNumber , string? TicketId, bool DispenserTransaction, bool CameraTransaction , int organizationId , bool hasActivePackage)
     {
-            GarageTransactionDto result = null!;
+            GarageTransactionDto? result = null!;
            if (DispenserTransaction)
            {
                 if (TicketId != null)
@@ -184,159 +113,48 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
 
     private async Task<GarageTransactionDto?> GetTransactionByCamera(string plateNumber , int organizationId)
     {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            var query = await _garageTransactionRepoistory.GetQueryableAsync();
-            var latestTransaction = query
-                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == true && gt.OrganizationID == organizationId)
-                    .OrderByDescending(gt => gt.AccurateTime)
-                    .FirstOrDefault();
-            return ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(latestTransaction);
-        }
+        var latestTransaction = await _garageTransactionManager.GetTransactionByCamera(plateNumber, organizationId);
+        return ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(latestTransaction);
     }
     private async Task<GarageTransactionDto?> GetTransactionByDispenser(string? TicketId , int organizationId)
     {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            var query = await _garageTransactionRepoistory.GetQueryableAsync();
-            var latestTransaction = query
-                    .Where(gt => gt.TicketId == TicketId && gt.CameraType == WatcherType.Entry && gt.IsIn == true && gt .OrganizationID == organizationId)
-                    .OrderByDescending(gt => gt.AccurateTime)
-                    .FirstOrDefault();
-            return ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(latestTransaction);
-        }
-    }
 
+        var latestTransaction = await _garageTransactionManager.GetTransactionByDispenser(TicketId, organizationId);
+        return ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(latestTransaction);
+    }
+    //
     public async Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId,  bool  hasFreeSlots , CustomerCategoryStatus category)
     {
-        var garage = await GetGarageByIdAsync(garageId);
-        bool flag = false;
-        if(hasFreeSlots)
-            return await Task.FromResult(true);
-        if (category == CustomerCategoryStatus.Customer )
-        {
-            garage.CurrnetCapacityForCustomers = Math.Max(0, --garage.CurrnetCapacityForCustomers);
-            flag = true;
-
-        }
-        else if (category == CustomerCategoryStatus.Employee)
-        {
-            garage.CurrnetCapacityEmployees = Math.Max(0, --garage.CurrnetCapacityEmployees);
-            flag = true;
-        }
-        else
-        {
-            garage.CurrnetCapacityForFree = Math.Max(0, --garage.CurrnetCapacityForFree);
-            flag = true;
-        }
-        garage.CurrnetCapicity = Math.Max(0, --garage.CurrnetCapicity);
-        await CurrentUnitOfWork.SaveChangesAsync();
-        return flag;
+       return await _garageManager.FreeSlotsOfGarageDependsOnCategoryAsync(garageId, hasFreeSlots, category);
     }
-
+    //
     public async Task<Camera> GetCameraByDeviceIdAsync(string deviceId)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var cameraquery = await _cameraRepository.GetQueryableAsync();
-            var camera=await cameraquery.AsNoTracking().FirstOrDefaultAsync(cam => cam.DeviceId == deviceId);
-            if (camera == null)
-            {
-                throw new Exception(LocalizationHelper.GetLocalizedString("Camera") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-            }
-            return camera;
-        }
+        return await _cameraManager.GetCameraByDeviceIdAsync(deviceId);
     }
-
-
     public async Task<Camera> GetCameraByTypeBelongsToGarageAsync(int garageId, WatcherType cameraType)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var camera = await _cameraRepository.FirstOrDefaultAsync(cam => cam.GarageId == garageId && cam.CameraType == cameraType);
-            if (camera == null)
-            {
-                throw new Exception(LocalizationHelper.GetLocalizedString("Camera") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-            }
-            return camera;
-        }
+          return await _cameraManager.GetCameraByTypeBelongsToGarageAsync(garageId, cameraType);
     }
-
     public async Task<Garage> GetGarageByIdAsync(int garageId)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId && x.Status == Status.Active);
-            if (garage == null)
-            {
-                throw new Exception(LocalizationHelper.GetLocalizedString("Garage") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-            }
-            return garage;
-        }
-
+        return await _garageManager.GetGarageByIdAsync(garageId);
     }
-
+   
     public async Task<GarageTransaction> GetTransactionById(int garagetransactionId)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-
-            var query = await _garageTransactionRepoistory.GetQueryableAsync();
-            query = query.Where(transaction => transaction.Id == garagetransactionId);
-            var transaction = await AsyncExecuter.FirstOrDefaultAsync(query);
-            return transaction;
-        }
+         return await _garageTransactionManager.GetTransactionById(garagetransactionId);
     }
-
     public async Task<bool> ReserverSlotsOfGarageDependsOnCategoryAsync(int garageId, bool hasFreeSlots ,  CustomerCategoryStatus customer)
     {
-        var garage = await GetGarageByIdAsync(garageId);
-        bool flag = false;
-        if (hasFreeSlots)
-        {
-            return await Task.FromResult(true);
-        }
-        switch (customer)
-        {
-            case CustomerCategoryStatus.Customer:
-                if (garage.CurrnetCapacityForCustomers + 1 <= garage.MaxSlotsForCustomers)
-                    garage.CurrnetCapacityForCustomers++;
-                break;
-
-            case CustomerCategoryStatus.Employee:
-                if (garage.CurrnetCapacityEmployees + 1 <= garage.MaxSlotsForEmployess)
-                    garage.CurrnetCapacityEmployees++;
-                break;
-
-            case CustomerCategoryStatus.Visitor:
-                if (garage.CurrnetCapacityForFree + 1 <= garage.MaxSlotsForFree)
-                    garage.CurrnetCapacityForFree++;
-                break;
-
-            default:
-                if (garage.CurrnetCapacityForCustomers + 1 <= garage.MaxSlotsForCustomers)
-                    garage.CurrnetCapacityForCustomers++;
-                break;
-
-        }
-        if (garage.CurrnetCapicity + 1 <= garage.MaxCapacity)
-        {
-            garage.CurrnetCapicity++;
-            flag = true;
-        }
-        return await Task.FromResult(flag);
+       return await _garageManager.ReserverSlotsOfGarageDependsOnCategoryAsync(garageId, hasFreeSlots, customer);
     }
 
+    //
     public async Task UpdateEntryTransactionCheckouFromMobile(int entryGarageTransactionId)
     {
-        var entryGarageTransaction =await GetTransactionById(entryGarageTransactionId);
-        entryGarageTransaction.CheckoutMobile = DateTime.Now;
-        entryGarageTransaction.IsPending = true;
-        entryGarageTransaction.CanCheckout = false;
-        await _garageTransactionRepoistory.UpdateAsync(entryGarageTransaction, true);
-
+        await _garageTransactionManager.UpdateEntryTransactionCheckouFromMobile(entryGarageTransactionId);
     }
-
     public async Task<Guid> GetCurrentCustomerId()
     {
         using (_dataFilter.Disable<IMultiTenant>())
