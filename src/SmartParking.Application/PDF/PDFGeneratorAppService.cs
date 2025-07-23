@@ -419,6 +419,10 @@ img[style*='width:120px;'] {
     [RemoteServiceAttribute(isEnabled: true)]
     public async Task<Stream> SaveInvoicePdf(int invoiceId)
     {
+        var arabicCulture = new CultureInfo("ar");
+        CultureInfo.CurrentCulture = arabicCulture;
+        CultureInfo.CurrentUICulture = arabicCulture;
+
         var invoice = await _invoicePdfAppService.GetAsync(invoiceId);
         var image = await _invoicePdfAppService.GetInvoiceQRCodeForOrganization(invoiceId);
         string imageDirectoryPdf = "wwwroot/images/logo/MDHKL_01.png";
@@ -430,6 +434,7 @@ img[style*='width:120px;'] {
         string currentPath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}");
         string QRCodePath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/{image.Value}");
         string InvoiceNumber = LocalizationHelper.GetLocalizedString("Invoice");
+        string TicketId = LocalizationHelper.GetLocalizedString("TicketId");
         string SimplifiedTaxInvoice = LocalizationHelper.GetLocalizedString("SimplifiedTaxInvoice");
         string HeaderVatReceiptPayment = LocalizationHelper.GetLocalizedString("HeaderVatReceiptPayment");
         string Vats = LocalizationHelper.GetLocalizedString("VAT");
@@ -544,6 +549,17 @@ img[style*='width:120px;'] {
             : $"{InvoiceNumberView}: {organization.TaxNumber}")
             .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
             .SetFontSize(13);
+
+        Paragraph Ticket = new Paragraph();
+        if (invoice?.TicketId != null)
+        {
+          Ticket = new Paragraph(CultureInfo.CurrentCulture.Name == "ar"
+                                ? $"{invoice?.TicketId.ArabicWithFontGlyphsToPDF()}:{TicketId.ArabicWithFontGlyphsToPDF()}"
+                                : $"{TicketId}: {invoice?.TicketId}")
+                                .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
+                                .SetFontSize(13);
+        }
+        
 
         Paragraph RecieptPayemntDetails = new Paragraph().SetFont(font).SetFontSize(13).SimulateBold().SetTextAlignment(TextAlignment.CENTER);
         if (CultureInfo.CurrentCulture.Name == "ar")
@@ -938,6 +954,10 @@ img[style*='width:120px;'] {
         document.Add(tableimages);
         document.Add(subheader);
         document.Add(Vat);
+        if(invoice.TicketId != null)
+        {
+            document.Add(Ticket);
+        }
         document.Add(RecieptPayemntDetails);
         document.Add(table);
         document.Add(table1);
