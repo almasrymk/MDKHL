@@ -561,6 +561,7 @@
     "UserDeletedSuccessfully": "تم حذف المستخدم بنجاح",
     "Reqiured": "مطلوب",
     "Permission:AddRoleToCustomer": "إضافة دور للعميل",
+    "Permission:AddUser": "إضافة مستخدم",
     "Hour": "ساعة",
     "From": "من",
     "To": "إلى",
