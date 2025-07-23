@@ -1,16 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SmartParking.CalculationsEndpoint;
+﻿using SmartParking.CalculationsEndpoint;
 using SmartParking.CustomerPackages;
-using SmartParking.Entities.Organizations;
-using SmartParking.GarageTransactions;
+using SmartParking.Organizations;
 using System;
-using SmartParking.Enums;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Volo.Abp;
-using Volo.Abp.Application.Services;
 using Volo.Abp.DependencyInjection;
 
 namespace SmartParking.CalculationsEndPoints;
@@ -151,7 +143,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
             (int)Math.Ceiling(timeDifference.TotalHours / 24) : 0;
     }
     ///<inheritdoc/>
-    public decimal CalculateInvoiceCases(DateTime entranceTime, int totalHours, DateTime exitTime, Organization organization)
+    public decimal CalculateInvoiceCases(DateTime entranceTime, int totalHours, DateTime exitTime, TransactionOrganizationDto organization)
     {
         //4 Cases
         return (organization.IsNumberOfHoursExceeded, organization.IsClose) switch
@@ -164,7 +156,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     
     }
     ///<inheritdoc/>
-    public decimal CalculationForRegisteredCustomer(DateTime? exitTime, DateTime? entranceTime, Organization organization, CustomerPackageDto? packageDto, int totalHours)
+    public decimal CalculationForRegisteredCustomer(DateTime? exitTime, DateTime? entranceTime, TransactionOrganizationDto organization, CustomerPackageDto? packageDto, int totalHours)
     {
         return (packageDto, packageDto?.Package, packageDto?.IsCustomPackage) switch
         {
@@ -183,7 +175,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     /// <param name="packageDto">package</param>
     /// <param name="exitTime">exit time</param>
     /// <returns>price of invoice</returns>
-    public decimal CalculateInvoiceForCustomerPackageType(DateTime entranceTime, Organization organization, CustomerPackageDto packageDto, DateTime exitTime)
+    public decimal CalculateInvoiceForCustomerPackageType(DateTime entranceTime, TransactionOrganizationDto organization, CustomerPackageDto packageDto, DateTime exitTime)
     {
         decimal price;
         if (packageDto.IsCustomPackage)
@@ -204,7 +196,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     /// <param name="totalHours">The total number of hours.</param>
     /// <param name="organization">The organization.</param>
     /// <returns>The calculated price.</returns>
-    private decimal CalculatePriceForExceededHours(int totalHours, Organization organization)
+    private decimal CalculatePriceForExceededHours(int totalHours, TransactionOrganizationDto organization)
     {
         decimal price = 0;
         if (totalHours > organization.NumberOfHours)
@@ -233,7 +225,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     /// <param name="exitTime">The exit time.</param>
     /// <param name="entranceTime">The entrance time.</param>
     /// <returns>The calculated price.</returns>
-    private decimal CalculatePriceForOrganizationIsClosedAndExceededHours(Organization organization, DateTime exitTime, DateTime entranceTime)
+    private decimal CalculatePriceForOrganizationIsClosedAndExceededHours(TransactionOrganizationDto organization, DateTime exitTime, DateTime entranceTime)
     {
         (double specialHours, double normalHours) = CalculateHours(exitTime, entranceTime, organization.ClosingHoursStart, organization.ClosingHoursEnd);
         var closingHour = Math.Ceiling((organization.ClosingHoursEnd - organization.ClosingHoursStart).TotalHours);
@@ -259,7 +251,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     /// <param name="exitTime">The exit time.</param>
     /// <param name="entranceTime">The entrance time.</param>
     /// <returns>The calculated price.</returns>
-    private decimal CalculatePriceForOrganizationIsClosed(int totalHours, Organization organization, DateTime exitTime, DateTime entranceTime)
+    private decimal CalculatePriceForOrganizationIsClosed(int totalHours, TransactionOrganizationDto organization, DateTime exitTime, DateTime entranceTime)
     {
 
         (double specialHours, double normalHours) = CalculateHours(exitTime, entranceTime, organization.ClosingHoursStart, organization.ClosingHoursEnd);
@@ -288,7 +280,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     /// <param name="organization">The organization.</param>
     /// <param name="hours">The number of hours.</param>
     /// <returns>The calculated price.</returns>
-    private decimal CalculatePriceHours(Organization organization, int hours)
+    private decimal CalculatePriceHours(TransactionOrganizationDto organization, int hours)
     {
         decimal price = 0;
         price += hours > 0 ? organization.FirstHourPrice : 0;
@@ -306,7 +298,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     /// <param name="organization">The organization.</param>
     /// <param name="hours">The number of hours.</param>
     /// <returns>The calculated price.</returns>
-    private decimal CalculatePriceHoursExceededDay(Organization organization, int hours)
+    private decimal CalculatePriceHoursExceededDay(TransactionOrganizationDto organization, int hours)
     {
         decimal price = 0;
         while (hours > 0)

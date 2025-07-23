@@ -24,6 +24,7 @@ using SmartParking.Services.GarageTransactions;
 using SmartParking.Services.Garages;
 using SmartParking.Services.Cameras;
 using SmartParking.Services.Vehicles;
+using SmartParking.Organizations;
 
 
 namespace SmartParking.Utilities;
@@ -134,7 +135,8 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     }
     public async Task<Camera> GetCameraByTypeBelongsToGarageAsync(int garageId, WatcherType cameraType)
     {
-          return await _cameraManager.GetCameraByTypeBelongsToGarageAsync(garageId, cameraType);
+         return await _cameraManager.GetCameraByTypeBelongsToGarageAsync(garageId, cameraType);
+      
     }
     public async Task<Garage> GetGarageByIdAsync(int garageId)
     {
@@ -174,13 +176,12 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             return ObjectMapper.Map<Customer,CustomerDto>(customer);
         }
     }
-    public async Task<Organization> GetOrganization(int OrganizationID)
+    public async Task<TransactionOrganizationDto> GetOrganization(int OrganizationID)
     {
-
         using (DataFilter.Disable<IMultiTenant>())
         {
             var organization = await _organizationRepoistory.FirstOrDefaultAsync(x => x.Id == OrganizationID);
-            return organization;
+            return ObjectMapper.Map<Organization, TransactionOrganizationDto>(organization);
         }
 
     }

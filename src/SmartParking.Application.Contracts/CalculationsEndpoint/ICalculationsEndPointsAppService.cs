@@ -1,12 +1,6 @@
 ﻿using SmartParking.CustomerPackages;
-using SmartParking.Entities.Organizations;
-using SmartParking.GarageTransactions;
+using SmartParking.Organizations;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Volo.Abp.Application.Services;
 using Volo.Abp.DependencyInjection;
 
 namespace SmartParking.CalculationsEndpoint;
@@ -61,9 +55,9 @@ public interface ICalculationsEndPointsAppService : ITransientDependency
     /// <param name="exitTime">exit time</param>
     /// <param name="organization">organization</param>
     /// <returns>price of invoice</returns>
-    decimal CalculateInvoiceCases(DateTime entranceTime, int totalHours, DateTime exitTime, Organization organization);
+    decimal CalculateInvoiceCases(DateTime entranceTime, int totalHours, DateTime exitTime, TransactionOrganizationDto organization);
     
-    decimal CalculationForRegisteredCustomer(DateTime? exitTime, DateTime? entranceTime, Organization organization, CustomerPackageDto? packageDto, int totalHours);
+    decimal CalculationForRegisteredCustomer(DateTime? exitTime, DateTime? entranceTime, TransactionOrganizationDto organization, CustomerPackageDto? packageDto, int totalHours);
 
 
 }
