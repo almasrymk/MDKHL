@@ -16,6 +16,7 @@
 @using SmartParking.Organizations
 @using System.Globalization
 @using SmartParking.Packages
+@using SmartParking.Permissions.CustomerPermissions
 @using SmartParking.Validations
 @using SmartParking.Vehicles
 @using SmartParking.Vehicles.LookUps
@@ -113,10 +114,13 @@
 
 
                         }
-                       
+
+                        @if (ShowAddUser)
+                        {
                         <MudItem sm="6" md="6" Style="margin-left: -13px">
-                            <MudCheckBox  T="bool" @bind-Value="createUpdateCustomerDto.IsUser"  Color="MudBlazor.Color.Primary">@L["ISUser"]</MudCheckBox>
+                            <MudCheckBox T="bool" @bind-Value="createUpdateCustomerDto.IsUser" Color="MudBlazor.Color.Primary">@L["ISUser"]</MudCheckBox>
                         </MudItem>
+                        } 
                         @if (createUpdateCustomerDto.IsUser && createUpdateCustomerDto.OrganizationId > 0)
                         {
                          

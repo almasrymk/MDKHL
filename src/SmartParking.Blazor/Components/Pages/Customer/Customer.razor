@@ -16,12 +16,10 @@
 @inject NavigationManager Navigation
 @inject ICurrentTenant currrentTenant
 @inherits AbpCrudPageBase<ICustomerAppService, CustomerDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCustomerDto>
-@inject IAuthorizationService AuthorizationService
 @inject IOrganizationsAppService OrganizationAppService
 @inject IAnalysisAppService AnalysisAppService
 @inject IGenerateFilesAppService GenerateFilesAppService
 @inject IJSRuntime JSRuntime
-@inject IAuthorizationService AuthorizationService
 
 <PageTitle>@L["Customers"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Customers"]</MudText>
