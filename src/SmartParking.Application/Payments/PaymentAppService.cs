@@ -41,6 +41,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     private readonly IRepository<Package, int> _packageRepo;
     private readonly HttpClient _httpClient;
     private readonly IInvoiceUtilityAppService _invoiceUtility;
+    private readonly IZatcaTaxInvoiceAppService _zatcaTaxInvoiceAppService;
     private const string EntityId = "8ac7a4ca9244f53c01924741733e0327";
     private const string Currency = "SAR";
     private const string PaymentType = "DB";
@@ -61,7 +62,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         ICustomerPackagesAppService customerPackagesAppService,
         IOrganizationsAppService _organizationsAppService,
         HttpClient httpClient,
-        IInvoiceUtilityAppService invoiceUtility)
+        IInvoiceUtilityAppService invoiceUtility,
+         IZatcaTaxInvoiceAppService zatcaTaxInvoiceAppService)
     : base(repository)
     {
 
@@ -74,6 +76,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         _packageRepo = packageRepo;
         _httpClient = httpClient;
         _invoiceUtility = invoiceUtility;
+        _zatcaTaxInvoiceAppService = zatcaTaxInvoiceAppService;
     }
 
 
@@ -117,6 +120,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
         }
     }
+
     public async Task<PaymentDto> GetPaymentStatus(string input, string entityId, string ArabicPlateNumber, string EnglishPlateNumber)
     {
         var url = $"{PaymentUrl}/{input}/payment?entityId={entityId}";
@@ -192,8 +196,9 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                     // add QrCode
                     payment.PaymentStatus = status;
                     //var token = await _invoiceUtility.GetTokenAsync();
-                    var qrCode = await _invoiceUtility.GetQrCodeAsync(payment.Amount, payment.OrganizationId);
-                    payment.QrCodeInvoice = qrCode.QRCode;
+                    //var qrCode = await _invoiceUtility.GetQrCodeAsync(payment.Amount, payment.OrganizationId);
+                    var qrCode = await _zatcaTaxInvoiceAppService.SendRequestForZACTA(payment.Id);
+                    payment.QrCodeInvoice = qrCode;
                     await _repository.UpdateAsync(payment);
                 }
 
@@ -317,7 +322,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         // add QrCode
         // var token = await _invoiceUtility.GetTokenAsync();
         paymentCheckoutRequest.PaymentNumber = await GeneratePaymentNumberAsync(paymentCheckoutRequest.OrganizationId);
-        var qrCode = await _invoiceUtility.GetQrCodeAsync(paymentCheckoutRequest.Amount, paymentCheckoutRequest.OrganizationId);
+        //var qrCode = await _invoiceUtility.GetQrCodeAsync(paymentCheckoutRequest.Amount, paymentCheckoutRequest.OrganizationId);
         Payment payment = new Payment
         {
             Amount = paymentCheckoutRequest.Amount,
@@ -331,15 +336,18 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             EntityId = entityId,
             CustomerId = customerId,
             PaymentStatus = paymentStatus,
-            QrCodeInvoice = qrCode.QRCode,
+            //QrCodeInvoice = qrCode,
             PaymentNumber = paymentCheckoutRequest.PaymentNumber,
             ArPlateNumber = paymentCheckoutRequest.ArPlateNumber,
             EnPlateNumber = paymentCheckoutRequest.EnPlateNumber,
         };
 
         payment = await _repository.InsertAsync(payment);
-
-
+      
+        await CurrentUnitOfWork!.SaveChangesAsync();
+        var qrCode = await _zatcaTaxInvoiceAppService.SendRequestForZACTA(payment.Id);
+        payment.QrCodeInvoice = qrCode;
+        await CurrentUnitOfWork!.SaveChangesAsync();
         return new PaymentCheckoutDto
         {
             CheckoutId = payment.CheckoutId,
@@ -348,7 +356,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             PaymentMethod = payment.PaymentMethod,
             EntityId = payment.EntityId,
             TokenId = token,
-            QrCodeInvoice = qrCode.QRCode,
+            QrCodeInvoice = qrCode,
             PaymentNumber = payment.PaymentNumber,
             
 
