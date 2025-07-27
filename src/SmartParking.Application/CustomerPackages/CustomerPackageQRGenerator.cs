@@ -78,7 +78,7 @@ public class CustomerPackageQRGenerator : SmartParkingAppService, ICustomerPacka
 
         string relativePath = await _fileProvider.SaveFileAsync(
             qrCodeImage,
-            Path.Combine(Directory.GetCurrentDirectory(), PathHelper.WwwRoot, PathHelper.CustomerPackageQRCodeFolder, input.CustomerId.ToString(), input.OrganizationId.ToString()),
+            Path.Combine(Directory.GetCurrentDirectory(), PathHelper.WwwRoot, PathHelper.CustomerPackageQRCodeFolder, input.PhoneNumber, input.OrganizationId.ToString()),
              input.PackageCode + ".png"
         );
         return (base64Image, relativePath);
