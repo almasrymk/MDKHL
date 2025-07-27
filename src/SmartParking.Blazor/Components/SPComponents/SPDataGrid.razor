@@ -398,10 +398,10 @@
                                     }
                                     @if (OnDownloadCustomerPackage.HasDelegate && ShowDownloadCustomerPackage)
                                     {
-                                        <MudTooltip Text=@L["Permissions"] Color=MudBlazor.Color.Primary>
+                                        <MudTooltip Text=@L["Download"] Color=MudBlazor.Color.Primary>
 
                                             <MudIconButton OnClick="@(e => OnDownloadCustomerPackage.InvokeAsync(context.Item))"
-                                                           Icon="@Icons.Material.Filled.Download"
+                                                           Icon="@Icons.Material.Filled.QrCode2"
                                                            Variant="Variant.Filled"
                                                            Color="MudBlazor.Color.Primary"
                                                            Size="MudBlazor.Size.Small"
