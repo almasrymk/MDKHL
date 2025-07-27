@@ -13,6 +13,7 @@ using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.Packages;
+using SmartParking.PDF;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -49,8 +50,9 @@ public class CustomerPackagesAppService:
     private readonly IRepository<Subscription, int> _subscriptionRepository;
     private readonly IRepository<Organization, int> _organizationsRepository;
     private readonly ICustomerPackageQRGenerator _customerPackageQRGenerator;
+    private readonly IPDFGeneratorAppService _pDFGeneratorAppService;
 
-    public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository, IRepository<Package> packageRepository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IOrganizationsAppService organizationsApp, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationsRepository, ICustomerPackageQRGenerator customerPackageQRGenerator) : base(repository)
+    public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository, IRepository<Package> packageRepository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IOrganizationsAppService organizationsApp, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationsRepository, ICustomerPackageQRGenerator customerPackageQRGenerator, IPDFGeneratorAppService pDFGeneratorAppService) : base(repository)
     {
         _repository = repository;
         _packageRepository = packageRepository;
@@ -60,6 +62,7 @@ public class CustomerPackagesAppService:
         _subscriptionRepository = subscriptionRepository;
         _organizationsRepository = organizationsRepository;
         _customerPackageQRGenerator = customerPackageQRGenerator;
+        _pDFGeneratorAppService = pDFGeneratorAppService;
     }
     #region public methods
     ///<inheritdoc/>
@@ -118,40 +121,41 @@ public class CustomerPackagesAppService:
     [RemoteService(IsEnabled =false)]
     public  async Task<Result> AssignPackageToCustomerAsync(int packageId, string ArabicPlateNumber, string EnglishPlateNumber)
     {
-            using (_dataFilter.Disable<IMultiTenant>())
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var customer = await GetCustomerAsync();
+            if (customer == null)
+                return Result.NotFound("Customer not found");
+
+            var package = await GetPackageAsync(packageId);
+            if (package == null)
+                return Result.NotFound("Package not found");
+
+            if (await CustomerPackageExistsAsync(packageId, package.OrganizationId, customer.Id, ArabicPlateNumber, EnglishPlateNumber))
             {
-                var customer = await GetCustomerAsync();
-                if (customer == null)
-                    return Result.NotFound("Customer not found");
-
-                var package = await GetPackageAsync(packageId);
-                if (package == null)
-                    return Result.NotFound("Package not found");
-
-                if (await CustomerPackageExistsAsync(packageId, package.OrganizationId, customer.Id, ArabicPlateNumber, EnglishPlateNumber))
+                return Result.Invalid(new ValidationError
                 {
-                    return Result.Invalid(new ValidationError
-                    {
-                        ErrorCode = StatusCodes.Status400BadRequest.ToString(),
-                        ErrorMessage = "This customer has the same package"
-                    });
-                }
-
-                var customerPackage = CreateCustomerPackage(packageId, customer.Id, package,ArabicPlateNumber,EnglishPlateNumber);
-                var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
-
-                if (existingPackage != null)
-                {
-                    ObjectHelper.TrySetProperty(
-                        customerPackage,
-                        x => x.Id,
-                        () => existingPackage.Id
-                    );
-                    return await UpdateCustomerPackageAsync(customerPackage);
-                }
-                
-                return await InsertCustomerPackageAsync(customerPackage);
+                    ErrorCode = StatusCodes.Status400BadRequest.ToString(),
+                    ErrorMessage = "This customer has the same package"
+                });
             }
+
+            var customerPackage = CreateCustomerPackage(packageId, customer.Id, package, ArabicPlateNumber, EnglishPlateNumber);
+            var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
+            await HandleQRCode(new CustomerPackageDto { OrganizationId = package.OrganizationId, PackageId = packageId, ArPlateNumber = ArabicPlateNumber, EnPlateNumber = EnglishPlateNumber }, customer, customerPackage);
+
+            if (existingPackage != null)
+            {
+                ObjectHelper.TrySetProperty(
+                    customerPackage,
+                    x => x.Id,
+                    () => existingPackage.Id
+                );
+                return await UpdateCustomerPackageAsync(customerPackage);
+            }
+            return await InsertCustomerPackageAsync(customerPackage);
+        }
+    
     }
 
 
@@ -182,12 +186,7 @@ public class CustomerPackagesAppService:
                 customerPackage = result.Item1;
                 if (result.Item2)
                 {
-                    customerPackage.PackageCode = await CreatePackageCode(customerPackageDto);
-                    if(customerPackage.PackageCode != null)
-                    {
-                        (string base64Image, string relativePath) = await _customerPackageQRGenerator.CreateAsync(new CreateUpdateQrCodeDto { CustomerId = customerPackage.CustomerId, OrganizationId = (int)customerPackage.OrganizationId!, PackageCode = customerPackage.PackageCode });
-                        customerPackage.QRCodePath = relativePath;
-                    }
+                    await HandleQRCode(customerPackageDto, customer, customerPackage);
                     await CurrentUnitOfWork.SaveChangesAsync();
                     return true;
                 }
@@ -197,12 +196,25 @@ public class CustomerPackagesAppService:
                 customerPackage = ObjectMapper.Map<CustomerPackageDto, CustomerPackage>(customerPackageDto);
                 customerPackage.PackageId = null;
             }
-            customerPackage.PackageCode = await CreatePackageCode(customerPackageDto);
+            await HandleQRCode(customerPackageDto, customer, customerPackage);
             // Check Subscription Limit for number Of Customers
             var insertPackage = await InsertCustomerPackageAsync(customerPackage);
             return insertPackage.IsSuccess;
         }
     }
+
+    private async Task HandleQRCode(CustomerPackageDto customerPackageDto, Customer customer, CustomerPackage customerPackage)
+    {
+        customerPackage.PackageCode = await CreatePackageCode(customerPackageDto);
+        if (customerPackage.PackageCode != null)
+        {
+            var qrCodeDto = new CreateUpdateQrCodeDto { PhoneNumber = customer.IdentityUser.PhoneNumber, OrganizationId = (int)customerPackage.OrganizationId!, PackageCode = customerPackage.PackageCode };
+            (string base64Image, string relativePath) = await _customerPackageQRGenerator.CreateAsync(qrCodeDto);
+            string pdfPath = await _pDFGeneratorAppService.GeneratePdfForCustomerPackage(qrCodeDto, relativePath);
+            customerPackage.QRCodePath = pdfPath;
+        }
+    }
+
     private async Task<string> CreatePackageCode(CustomerPackageDto customerPackageDto)
     {
         using (_dataFilter.Disable<IMultiTenant>())
