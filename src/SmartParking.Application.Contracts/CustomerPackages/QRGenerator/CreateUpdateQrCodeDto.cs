@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SmartParking.CustomerPackages.QRGenerator;
 public class CreateUpdateQrCodeDto
 {
-    public Guid CustomerId { get; set; }
+    public string PhoneNumber { get; set; }
     public int OrganizationId { get; set; }
     public string PackageCode { get; set; }
 }
