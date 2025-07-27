@@ -36,6 +36,8 @@ public partial class SPDataGrid
     [Parameter] public EventCallback<PageChangeEventArgs> OnPageChanged { get; set; }
     [Parameter] public EventCallback OnAdd { get; set; }
     [Parameter] public bool ShowAdd { get; set; } = true;
+    [Parameter] public EventCallback<RowDef> OnDownloadCustomerPackage { get; set; }
+    [Parameter] public bool ShowDownloadCustomerPackage { get; set; } = false;
     [Parameter] public EventCallback<PageChangeEventArgs> OnSearching { get; set; }
     [Parameter] public bool ShowSearching { get; set; } = true;
     [Parameter] public EventCallback<PageChangeEventArgs> OnFiltering { get; set; }

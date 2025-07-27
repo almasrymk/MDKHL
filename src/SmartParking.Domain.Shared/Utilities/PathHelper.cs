@@ -13,4 +13,7 @@ public static class PathHelper
     public const string ModelFolder = "images/models";
     public const string LicenceTypeFolder = "images/licenceType";
     public const string ReportsFolder = "Reports";
+    public const string CustomerPackageQRCodeFolder = "images/CustomerPackageQRCode";
+    public const string WwwRoot = "wwwroot";
+
 }

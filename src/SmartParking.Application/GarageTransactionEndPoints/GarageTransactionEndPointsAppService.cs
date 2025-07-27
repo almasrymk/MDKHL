@@ -72,16 +72,19 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         var (_hasFreeSlots, _hasPackageOnly) = (organization.HasFreeSlots, organization.HasPackageOnly);
         //Initiate a CreateUpdateGarageTransaction .
         CreateUpdateGarageTransactionDto GarageTransaction = InitiateCreateGarageTransactionDto(input, camera);
+        //Get Package for that plate number
+        var packageDto =await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(organization.Id, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value);
         //Detect Camera Type Sends Request.
+        
         try
         {
             switch (GarageTransaction.CameraType)
             {
                 case WatcherType.Exit:
-                    return await HandleExit(GarageTransaction, organization, input);
+                    return await HandleExit(GarageTransaction, organization, input  , packageDto);
 
                 case WatcherType.Entry:
-                    return await HandleEntrance(input, _hasFreeSlots, _hasPackageOnly, organization.DispenserTransaction, organization.CameraTransaction, GarageTransaction);
+                    return await HandleEntrance(input, _hasFreeSlots, _hasPackageOnly,organization.DispenserTransaction , organization.CameraTransaction  , GarageTransaction  , packageDto);
             }
         }
         catch (Exception ex)
@@ -109,9 +112,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     #endregion
     #region public methods to handle entrance and exit 
 
-    public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, bool dispenserTransaction, bool cameraTransaction, CreateUpdateGarageTransactionDto GarageTransaction)
+    public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, bool dispenserTransaction, bool cameraTransaction, CreateUpdateGarageTransactionDto GarageTransaction , CustomerPackageDto? customerPackageDto)
     {
-        var customerPackageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(GarageTransaction.OrganizationID, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value);
         bool _hasActivePackage = customerPackageDto is not null;
         if (dispenserTransaction && cameraTransaction && customerPackageDto == null && GarageTransaction.TicketId == null)
         {
@@ -167,7 +169,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     /// <param name="exitTransaction">Exit transaction dto</param>
     /// <param name="organization">Organization</param>
     /// <returns>true to open gate otherwise false</returns>
-    public async Task<bool> HandleExit(CreateUpdateGarageTransactionDto exitTransaction, TransactionOrganizationDto organization  , CreateUpdateGarageTransactionEndPointDto input)
+    public async Task<bool> HandleExit(CreateUpdateGarageTransactionDto exitTransaction, TransactionOrganizationDto organization  , CreateUpdateGarageTransactionEndPointDto input , CustomerPackageDto? customerPackageDto)
     {
         //getting customer id if found
         var _customerId = await _garageTransactionUtilityAppService.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(exitTransaction.PlateNumber);

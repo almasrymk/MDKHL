@@ -1539,6 +1539,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("PackageArabicName")
                         .HasColumnType("text");
 
+                    b.Property<string>("PackageCode")
+                        .HasColumnType("text");
+
                     b.Property<string>("PackageEnglishName")
                         .HasColumnType("text");
 
@@ -1553,6 +1556,9 @@ namespace SmartParking.Migrations
 
                     b.Property<TimeOnly?>("PublishToOfPackage")
                         .HasColumnType("time without time zone");
+
+                    b.Property<string>("QRCodePath")
+                        .HasColumnType("text");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

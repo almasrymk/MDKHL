@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.JSInterop;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
@@ -11,6 +12,7 @@ using System.Globalization;
 using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using static QRCoder.PayloadGenerator;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
 {
@@ -98,6 +100,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageDuration"], Name = "DurationOfPackage", IsFilterable = false, PropertyName = "DurationOfPackage", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ActivationDate"], Name = "ActivationDate", IsFilterable = false, PropertyName = "ActivationDate", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ExpiryDate"], Name = "ExpiryDate", IsFilterable = false, PropertyName = "ExpiryDate", IsSortable = false, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageCode"], Name = "PackageCode", IsFilterable = false, PropertyName = "PackageCode", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Published"], Name = "published", IsFilterable = false, PropertyName = "published", IsSortable = false, TypeFilter = TypeFilter.Text });
 
             if (CultureInfo.CurrentCulture.Name == "en")
@@ -131,12 +134,21 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ActivationDate"], item.ActivationDateOfPackage.ToString()));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ExpiryDate"], item.ExpiryDate.ToString()));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], (bool)item.publishedOfPackage ? 24 + _localizer[$"Hour"] : $" {item.PublishFromOfPackage} " + " - " + $" {item.PublishToOfPackage}"));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageCode"], $"{item.PackageCode}"));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], $"{RLM}{item.ArPlateNumber} , {LRM}{item.EnPlateNumber}"));
                 
                 
                 tableData.Rows.Add(rowDef);
             }
             itemData = tableData;
+        }
+
+        private async Task HandleDownload(RowDef row)
+        {
+            var customerPackage = await CustomerPackagesAppService.GetAsync(int.Parse(row.Cells[0].Value));
+            if (string.IsNullOrEmpty(customerPackage.QRCodePath))
+                return;
+            await JSRuntime.InvokeVoidAsync("openNewTab", customerPackage.QRCodePath);
         }
 
         /// <summary>
