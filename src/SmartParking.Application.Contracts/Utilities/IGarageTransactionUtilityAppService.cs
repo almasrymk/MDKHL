@@ -1,4 +1,5 @@
-﻿using SmartParking.Cutomers;
+﻿using SmartParking.Cameras;
+using SmartParking.Cutomers;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Organizations;
@@ -14,8 +15,8 @@ namespace SmartParking.Utilities;
 
 public interface IGarageTransactionUtilityAppService : IApplicationService
 {
-    Task<Camera> GetCameraByDeviceIdAsync(string deviceId);
-    Task<Camera> GetCameraByTypeBelongsToGarageAsync(int garageId, WatcherType cameraType);
+    Task<CameraForGarageTransactionDto> GetCameraByDeviceIdAsync(string deviceId);
+    Task<CameraForGarageTransactionDto> GetCameraByTypeBelongsToGarageAsync(int garageId, WatcherType cameraType);
     Task<Garage> GetGarageByIdAsync(int garageId);
     Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId, bool haseFreeSlots ,  CustomerCategoryStatus category);
     Task<bool> ReserverSlotsOfGarageDependsOnCategoryAsync(int garageId , bool hasFreeSlots , CustomerCategoryStatus customer);

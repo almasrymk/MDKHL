@@ -46,6 +46,7 @@ namespace SmartParking.CustomerPackages
         /// The task result contains the active <see cref="CustomerPackageDto"/> if one is found.
         /// </returns>
         Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int OrganizationID, string PlateNumber, DateTime ExitTransaction);
+        Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(int OrganizationID, string PlateNumber, DateTime ExitTransaction);
 
         /// <summary>
         /// Retrieves a list of all packages currently assigned to the authenticated customer.

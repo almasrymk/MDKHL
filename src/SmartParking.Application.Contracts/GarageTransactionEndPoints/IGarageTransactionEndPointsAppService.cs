@@ -15,6 +15,6 @@ public interface IGarageTransactionEndPointsAppService : IApplicationService
     /// <param name="input">Transaction dto</param>
     /// <returns>flag if true opens gate </returns>
     Task<Boolean> CreateAsync(CreateUpdateGarageTransactionEndPointDto input);
-    Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, bool DispenserTransaction , bool CameraTransaction, CreateUpdateGarageTransactionDto GarageTransaction ,   CustomerPackageDto? customerPackageDto);
-    Task<bool> HandleExit(CreateUpdateGarageTransactionDto exitTransaction, TransactionOrganizationDto organization , CreateUpdateGarageTransactionEndPointDto input  , CustomerPackageDto? customerPackageDto);
+    Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, bool DispenserTransaction , bool CameraTransaction, CreateUpdateGarageTransactionDto GarageTransaction ,   CustomerPackageTransactionDto? customerPackageDto);
+    Task<bool> HandleExit(CreateUpdateGarageTransactionDto exitTransaction, TransactionOrganizationDto organization , CreateUpdateGarageTransactionEndPointDto input  , CustomerPackageTransactionDto? customerPackageDto);
 }

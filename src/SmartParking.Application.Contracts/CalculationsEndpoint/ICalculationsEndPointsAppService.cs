@@ -37,7 +37,7 @@ public interface ICalculationsEndPointsAppService : ITransientDependency
     /// <param name="exitTime">The exit time.</param>
     /// <param name="packageDto">The package DTO.</param>
     /// <returns>The calculated time.</returns>
-    int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto);
+    int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageTransactionDto packageDto);
 
     /// <summary>
     /// Calculates the time for a custom package.
@@ -45,7 +45,7 @@ public interface ICalculationsEndPointsAppService : ITransientDependency
     /// <param name="exitTime">The exit time.</param>
     /// <param name="packageDto">The package DTO.</param>
     /// <returns>The calculated time.</returns>
-    int CalculateTimeForCustomPackage(DateTime? exitTime, CustomerPackageDto packageDto);
+    int CalculateTimeForCustomPackage(DateTime? exitTime, CustomerPackageTransactionDto packageDto);
 
     /// <summary>
     /// Method used to calculate invoice depends on Organization Configurations
@@ -57,7 +57,7 @@ public interface ICalculationsEndPointsAppService : ITransientDependency
     /// <returns>price of invoice</returns>
     decimal CalculateInvoiceCases(DateTime entranceTime, int totalHours, DateTime exitTime, TransactionOrganizationDto organization);
     
-    decimal CalculationForRegisteredCustomer(DateTime? exitTime, DateTime? entranceTime, TransactionOrganizationDto organization, CustomerPackageDto? packageDto, int totalHours);
+    decimal CalculationForRegisteredCustomer(DateTime? exitTime, DateTime? entranceTime, TransactionOrganizationDto organization, CustomerPackageTransactionDto? packageDto, int totalHours);
 
 
 }
