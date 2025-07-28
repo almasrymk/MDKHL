@@ -89,15 +89,36 @@ public class CustomerPackagesAppService:
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-            query = query.Where(x => x.OrganizationId == OrganizationID && (x.EnPlateNumber == PlateNumber || x.ArPlateNumber == PlateNumber) && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= ExitTransaction && ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null)));
-            var result = await query.FirstOrDefaultAsync();
+            var result  = await query.Where(x => x.OrganizationId == OrganizationID && (x.EnPlateNumber == PlateNumber || x.ArPlateNumber == PlateNumber) && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= ExitTransaction && ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null)))
+                .Select ( x => new CustomerPackageTransactionDto
+                {
+                    Id = x.Id,
+                    CustomerId = x.CustomerId,
+                    PackageId = (int)x.PackageId,
+                    OrganizationId = (int)x.OrganizationId,
+                    Package = ObjectMapper.Map<Package, PackageDto>(x.Package),
+                    CustomerPackageStatus = x.CustomerPackageStatus,
+                    TenantId = x.TenantId,
+                    DurationOfPackage = x.DurationOfPackage,
+                    PriceOfPackage = x.PriceOfPackage,
+                    DescriptionOfPackage = x.DescriptionOfPackage,
+                    publishedOfPackage = x.publishedOfPackage,
+                    PublishFromOfPackage = x.PublishFromOfPackage,
+                    PublishToOfPackage = x.PublishToOfPackage,
+                    ActivationDateOfPackage = x.ActivationDateOfPackage,
+                    DectivationDateOfPackage = x.DectivationDateOfPackage,
+                    ExpiryDate = x.ExpiryDate,
+                    PackageArabicName = x.PackageArabicName,
+                    PackageEnglishName = x.PackageEnglishName,
+                    CustomerCategory = x.CustomerCategory,
+                    EnPlateNumber = x.EnPlateNumber,
+                    ArPlateNumber = x.ArPlateNumber,
+                    IsCustomPackage = x.IsCustomPackage,
+                    PackageCode = x.PackageCode,
+                    QRCodePath = x.QRCodePath
+                }).FirstOrDefaultAsync();
 
-            if (result == null)
-            {
-                return null;
-            }
-
-            return ObjectMapper.Map<CustomerPackage, CustomerPackageTransactionDto>(result);
+            return result;
         }
 
     }
