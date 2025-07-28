@@ -100,7 +100,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
         return (specialHours, normalHours);
     }
     ///<inheritdoc/>
-    public int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto)
+    public int CalculateTimeDependsOnPackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageTransactionDto packageDto)
     {
         TimeValidation(entranceTime, exitTime);
         entranceTime = RemoveSecondsFromTime(entranceTime.Value);
@@ -131,7 +131,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     ///<inheritdoc/>
     public static DateTime MinDate(DateTime T1, DateTime T2) => (T1.Date.Date <= T2.Date.Date && T1.Date.TimeOfDay <= T2.Date.TimeOfDay) ? T1 : T2;
     ///<inheritdoc/>
-    public int CalculateTimeForCustomPackage(DateTime? exitTime, CustomerPackageDto packageDto)
+    public int CalculateTimeForCustomPackage(DateTime? exitTime, CustomerPackageTransactionDto packageDto)
     {
         if (exitTime.Value.Date < packageDto.ExpiryDate.Date)
         {
@@ -156,7 +156,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     
     }
     ///<inheritdoc/>
-    public decimal CalculationForRegisteredCustomer(DateTime? exitTime, DateTime? entranceTime, TransactionOrganizationDto organization, CustomerPackageDto? packageDto, int totalHours)
+    public decimal CalculationForRegisteredCustomer(DateTime? exitTime, DateTime? entranceTime, TransactionOrganizationDto organization, CustomerPackageTransactionDto? packageDto, int totalHours)
     {
         return (packageDto, packageDto?.Package, packageDto?.IsCustomPackage) switch
         {
@@ -175,7 +175,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     /// <param name="packageDto">package</param>
     /// <param name="exitTime">exit time</param>
     /// <returns>price of invoice</returns>
-    public decimal CalculateInvoiceForCustomerPackageType(DateTime entranceTime, TransactionOrganizationDto organization, CustomerPackageDto packageDto, DateTime exitTime)
+    public decimal CalculateInvoiceForCustomerPackageType(DateTime entranceTime, TransactionOrganizationDto organization, CustomerPackageTransactionDto packageDto, DateTime exitTime)
     {
         decimal price;
         if (packageDto.IsCustomPackage)
@@ -391,7 +391,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     /// <param name="_daysOfStaying">The total days the vehicle stayed.</param>
     /// <param name="_hoursOfPackage">The hours of the package.</param>
     /// <returns>The hours the vehicle stayed outside the package time.</returns>
-    private int CalculateHoursOutsidePackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageDto packageDto, DateTime packageStart, DateTime packageEnd, DateTime minimumDate, int _totalHoursOfStaying, int _daysOfStaying, int _hoursOfPackage)
+    private int CalculateHoursOutsidePackage(DateTime? entranceTime, DateTime? exitTime, CustomerPackageTransactionDto packageDto, DateTime packageStart, DateTime packageEnd, DateTime minimumDate, int _totalHoursOfStaying, int _daysOfStaying, int _hoursOfPackage)
     {
         int _hoursOutOfPackage = (24 - _hoursOfPackage) * _daysOfStaying;
         if (entranceTime.Value < packageStart)

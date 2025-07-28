@@ -135,6 +135,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Camera, CameraDto>()
         .ForMember(dest => dest.GarageNameAr, opt => opt.MapFrom(src => src.Garage.NameAr))
         .ForMember(dest => dest.GarageNameEn, opt => opt.MapFrom(src => src.Garage.NameEn));
+
+        CreateMap<Camera, CameraForGarageTransactionDto>();
+
         CreateMap<CreateUpdateCameraDto, Camera>();
         CreateMap<CameraDto, CreateUpdateCameraDto>();
 
@@ -300,6 +303,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
 
         CreateMap<CustomerPackage, CustomerPackageDto>();
+        CreateMap<CustomerPackage, CustomerPackageTransactionDto>();
+
         CreateMap<CreateUpdateCustomerPackageDto, CustomerPackage>();
 
         CreateMap<DailyShift, DailyShiftDto>();

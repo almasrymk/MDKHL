@@ -129,14 +129,15 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
        return await _garageManager.FreeSlotsOfGarageDependsOnCategoryAsync(garageId, hasFreeSlots, category);
     }
     //
-    public async Task<Camera> GetCameraByDeviceIdAsync(string deviceId)
+    public async Task<CameraForGarageTransactionDto> GetCameraByDeviceIdAsync(string deviceId)
     {
-        return await _cameraManager.GetCameraByDeviceIdAsync(deviceId);
+        var camera = await _cameraManager.GetCameraByDeviceIdAsync(deviceId);
+        return ObjectMapper.Map<Camera, CameraForGarageTransactionDto>(camera);
     }
-    public async Task<Camera> GetCameraByTypeBelongsToGarageAsync(int garageId, WatcherType cameraType)
+    public async Task<CameraForGarageTransactionDto> GetCameraByTypeBelongsToGarageAsync(int garageId, WatcherType cameraType)
     {
-         return await _cameraManager.GetCameraByTypeBelongsToGarageAsync(garageId, cameraType);
-      
+        var camera =  await _cameraManager.GetCameraByTypeBelongsToGarageAsync(garageId, cameraType);
+        return ObjectMapper.Map<Camera, CameraForGarageTransactionDto>(camera);
     }
     public async Task<Garage> GetGarageByIdAsync(int garageId)
     {
@@ -180,8 +181,39 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            var organization = await _organizationRepoistory.FirstOrDefaultAsync(x => x.Id == OrganizationID);
-            return ObjectMapper.Map<Organization, TransactionOrganizationDto>(organization);
+            var query  = await _organizationRepoistory.GetQueryableAsync();
+            var result = await (from x in query
+                                where x.Id == OrganizationID
+                                select
+                                new TransactionOrganizationDto
+                                {
+                                    Id = x.Id,
+                                    ArabicName = x.ArabicName,
+                                    EnglishName = x.EnglishName,
+                                    Status = x.Status,
+                                    Code = x.Code,
+                                    FirstHourPrice = x.FirstHourPrice,
+                                    SecondHourPrice = x.SecondHourPrice,
+                                    ThirdHourPrice = x.ThirdHourPrice,
+                                    AdditionalHourPrice = x.AdditionalHourPrice,
+                                    FullDayPrice = x.FullDayPrice,
+                                    IsNumberOfHoursExceeded = x.IsNumberOfHoursExceeded,
+                                    NumberOfHours = x.NumberOfHours,
+                                    IsClose = x.IsClose,
+                                    ClosingHoursStart = x.ClosingHoursStart,
+                                    ClosingHoursEnd = x.ClosingHoursEnd,
+                                    District = x.District,
+                                    ActiveCameras = x.ActiveCameras,
+                                    FreeMinutes = x.FreeMinutes,
+                                    Graceperiod = x.Graceperiod,
+                                    HasFreeSlots = x.HasFreeSlots,
+                                    HasPackageOnly = x.HasPackageOnly,
+                                    PaymentCode = x.PaymentCode,
+                                    DispenserTransaction = x.DispenserTransaction,
+                                    CameraTransaction = x.CameraTransaction
+                                }).FirstOrDefaultAsync();
+
+            return result; 
         }
 
     }
