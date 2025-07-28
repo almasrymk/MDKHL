@@ -83,7 +83,7 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
             return await _garageTransactionUtilityAppService.InitiateInvoice(entranceTime, exitTransaction, totalHours, 0, false,customer);
 
         }
-        var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(exitTransaction.OrganizationID, exitTransaction.PlateNumber, exitTransaction.AccurateTime.Value);
+        var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(exitTransaction.OrganizationID, exitTransaction.PlateNumber, exitTransaction.AccurateTime.Value);
         var _price = _calculationsEndPointAppService.CalculationForRegisteredCustomer(entranceTime, exitTransaction.AccurateTime.Value, organization, packageDto, totalHours);
         CreateUpdateInvoiceDto newInvoice = await _garageTransactionUtilityAppService.InitiateInvoice(entranceTime, exitTransaction, totalHours, _price, true,customer);
         newInvoice.EntranceTime = entranceTime;

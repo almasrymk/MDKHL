@@ -73,7 +73,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         //Initiate a CreateUpdateGarageTransaction .
         CreateUpdateGarageTransactionDto GarageTransaction = InitiateCreateGarageTransactionDto(input, camera);
         //Get Package for that plate number
-        var packageDto =await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(organization.Id, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value);
+        var packageDto =await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(organization.Id, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value);
         //Detect Camera Type Sends Request.
         
         try
@@ -94,7 +94,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         await _unlinkedGarageTransactionsAppService.CreateAsync(input);
         return await Task.FromResult(false);
     }
-    private async Task<(bool flowControl, bool value)> CheckCamera(CreateUpdateGarageTransactionEndPointDto input, Camera camera)
+    private async Task<(bool flowControl, bool value)> CheckCamera(CreateUpdateGarageTransactionEndPointDto input, CameraForGarageTransactionDto camera)
     {
         if (camera == null || camera.Status == Status.Inactive)
         {
@@ -112,7 +112,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     #endregion
     #region public methods to handle entrance and exit 
 
-    public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, bool dispenserTransaction, bool cameraTransaction, CreateUpdateGarageTransactionDto GarageTransaction , CustomerPackageDto? customerPackageDto)
+    public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, bool dispenserTransaction, bool cameraTransaction, CreateUpdateGarageTransactionDto GarageTransaction , CustomerPackageTransactionDto? customerPackageDto)
     {
         bool _hasActivePackage = customerPackageDto is not null;
         if (dispenserTransaction && cameraTransaction && customerPackageDto == null && GarageTransaction.TicketId == null)
@@ -169,12 +169,11 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     /// <param name="exitTransaction">Exit transaction dto</param>
     /// <param name="organization">Organization</param>
     /// <returns>true to open gate otherwise false</returns>
-    public async Task<bool> HandleExit(CreateUpdateGarageTransactionDto exitTransaction, TransactionOrganizationDto organization  , CreateUpdateGarageTransactionEndPointDto input , CustomerPackageDto? customerPackageDto)
+    public async Task<bool> HandleExit(CreateUpdateGarageTransactionDto exitTransaction, TransactionOrganizationDto organization  , CreateUpdateGarageTransactionEndPointDto input , CustomerPackageTransactionDto? _packageDto)
     {
         //getting customer id if found
         var _customerId = await _garageTransactionUtilityAppService.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(exitTransaction.PlateNumber);
         //getting package on vehicle if found
-        var _packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(exitTransaction.OrganizationID, exitTransaction.PlateNumber, exitTransaction.AccurateTime.Value);
         var _hasActivePackage = _packageDto is not null;
         bool _requestToGate;
         bool hasFreeSlots = organization.HasFreeSlots;
@@ -252,7 +251,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         return _categoryHasChanged;
     }
 
-    private async Task<decimal> CalcCutomerInvoiceNumber(CreateUpdateGarageTransactionDto exitTransaction, TransactionOrganizationDto organization, string? _customerId, CustomerPackageDto? _packageDto, bool hasFreeSlots, GarageTransactionDto _entryTransaction, int _totalHours)
+    private async Task<decimal> CalcCutomerInvoiceNumber(CreateUpdateGarageTransactionDto exitTransaction, TransactionOrganizationDto organization, string? _customerId, CustomerPackageTransactionDto? _packageDto, bool hasFreeSlots, GarageTransactionDto _entryTransaction, int _totalHours)
     {
         decimal _customerInvoicePrice;
         if (_customerId is not null)
@@ -445,7 +444,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     /// <param name="input">CreateUpdateGarageTransaction EndPoint Dto</param>
     /// <param name="camera">Camera which sends transaction</param>
     /// <returns>create update garage transaction dto</returns>
-    private CreateUpdateGarageTransactionDto InitiateCreateGarageTransactionDto(CreateUpdateGarageTransactionEndPointDto input, Camera camera)
+    private CreateUpdateGarageTransactionDto InitiateCreateGarageTransactionDto(CreateUpdateGarageTransactionEndPointDto input, CameraForGarageTransactionDto camera)
     {
         return new CreateUpdateGarageTransactionDto
         {
