@@ -25,7 +25,25 @@ public  class GarageManager : DomainService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var garage = await _garageRepository.FirstOrDefaultAsync(x => x.Id == garageId && x.Status == Status.Active);
+            var query  =  await _garageRepository.GetQueryableAsync();
+            query = from q in query
+                    where q.Id == garageId
+                    select new Garage
+                    {
+                        NameAr = q.NameAr,
+                        NameEn = q.NameEn,
+                        Status = q.Status,
+                        MaxCapacity = q.MaxCapacity,
+                        MaxSlotsForCustomers = q.MaxSlotsForCustomers,
+                        MaxSlotsForEmployess = q.MaxSlotsForEmployess,
+                        MaxSlotsForFree = q.MaxSlotsForFree,
+                        CurrnetCapacityEmployees = q.CurrnetCapacityEmployees,
+                        CurrnetCapacityForCustomers = q.CurrnetCapacityForCustomers,
+                        CurrnetCapacityForFree = q.CurrnetCapacityForFree,
+                        CurrnetCapicity = q.CurrnetCapicity
+
+                    };
+            var garage = await AsyncExecuter.FirstOrDefaultAsync(query);
             if (garage == null)
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("Garage") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));

@@ -26,14 +26,16 @@ public  class VehicleManager : DomainService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var Vehicle = await _vehicleRepository.FirstOrDefaultAsync(x => x.ArPlateNumber == plateNumber || x.EnPlateNumber == plateNumber);
-            if (Vehicle == null)
+            var query = await _vehicleRepository.GetQueryableAsync();
+            query = query.Where(x => x.ArPlateNumber == plateNumber || x.EnPlateNumber == plateNumber);
+            var result = from q in query select q.CustomerId.ToString();
+            var customerId = await AsyncExecuter.FirstOrDefaultAsync(result);
+            if (customerId == null)
             {
                 _logger.LogError($"{DateTime.Now} ====>  Vehicle Not Found ");
                 return null;
             }
-            var CustomerId = Vehicle.CustomerId;
-            return CustomerId.ToString();
+            return customerId;
         }
     }
 }
