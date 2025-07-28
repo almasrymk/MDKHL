@@ -6,10 +6,12 @@ using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using SmartParking.Discounts;
+using SmartParking.Entities.Customers;
 using SmartParking.Entities.Discounts;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Payments;
 using SmartParking.Enums;
 using SmartParking.Garages;
 using SmartParking.GarageTransactions;
@@ -23,6 +25,7 @@ using SmartParking.Utilities;
 using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Security.Claims;
@@ -42,6 +45,7 @@ namespace SmartParking.Mobile.Keepers;
 public class KeeperAppService : ApplicationService, IKeeperAppService
 {
     private readonly IRepository<Invoice,int> _invoiceRepository;
+    private readonly IRepository<Payment,Guid> _paymentRepository;
     private readonly SignInManager<Volo.Abp.Identity.IdentityUser> _signInManager;
     private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
     private readonly IOptionsMonitor<OpenIddictServerOptions> _openIddictOptions;
@@ -73,7 +77,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IInvoiceAppService invoiceAppService,
          IAuthenticationUtility authenticationUtility,
          IVehicleAppService vehicleAppService,
-         IDiscountAppService discountAppService)
+         IDiscountAppService discountAppService,
+         IRepository<Payment, Guid> paymentRepository)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -90,6 +95,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         this._authenticationUtility = authenticationUtility;
         _vehicleAppService = vehicleAppService;
         _discountAppService = discountAppService;
+        _paymentRepository = paymentRepository;
     }
 
     #region Public Methods
@@ -200,13 +206,49 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         var query = await _invoiceRepository.GetQueryableAsync();
         query = query.Where(inv => inv.OrganizationId == organizationId)
                               .OrderByDescending(inv => inv.InvoiceTime);
-        var totalCount = await AsyncExecuter.CountAsync(query);
+        var paymentQuery = await _paymentRepository.GetQueryableAsync();
+
+        var finalquery = from inv in query
+                         join payment in paymentQuery
+                         on inv.Id equals payment.InvoiceId into paymentGroup
+                         from payment in paymentGroup.DefaultIfEmpty() 
+                         select new InvoiceDto
+                         {
+                             Id = inv.Id,
+                             InvoiceNumber = inv.InvoiceNumber,
+                             TotalHours = inv.TotalHours,
+                             InvoicePrice = inv.InvoicePrice,
+                             InvoiceType = inv.InvoiceType.ToString(),
+                             OrganizationArabicName = inv.Organization.ArabicName,
+                             OrganizationEnglishName = inv.Organization.EnglishName,
+                             GarageArabicName = inv.Garage.NameAr,
+                             GarageEnglishName = inv.Garage.NameEn,
+                             PlateNumber = inv.PlateNumber,
+                             InvoiceTime = inv.InvoiceTime,
+                             EntranceTime = inv.EntranceTime,
+                             CustomerArName = inv.Customer!.ArabicName,
+                             CustomerEnName = inv.Customer.IdentityUser.Name,
+                             IsPackage = inv.IsPackage,
+                             CustomerId = inv.CustomerId,
+                             EntryTransactionImage = inv.EntryTransactionImage,
+                             ExitTransactionImage = inv.ExitTransactionImage,
+                             QrCodeInvoice = payment.QrCodeInvoice,
+                             InvoiceId = payment != null ? (int)payment.InvoiceId! :0 ,
+                             OrganizationId = inv.OrganizationId,
+                             OrganizationAddress = inv.Organization.Address,
+                             OrganizationTIN = inv.Organization.TaxIdentificationNumber,
+                             GarageTransactionExitId = inv.GarageTransactionExitId,
+                             Discount = inv.Discount,
+                             TicketId = inv.TicketId
+                         };
+
+        var totalCount = await AsyncExecuter.CountAsync(finalquery);
 
         query = query.Skip(paged.SkipCount).Take(paged.MaxResultCount);
 
-        var invoices = await AsyncExecuter.ToListAsync(query);
+        var invoices = await AsyncExecuter.ToListAsync(finalquery);
 
-        var items = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices);
+        var items = invoices;
 
         var finalPaged = new PagedResultDto<InvoiceDto>(
                   totalCount,

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Invoices;
+using SmartParking.Entities.Payments;
 using SmartParking.Enums;
 using SmartParking.Invoices;
 using SmartParking.MobileInvoices;
@@ -22,12 +23,14 @@ namespace SmartParking.Mobile.Invoices;
 public class InvoicesAppService : ApplicationService, IInvoicesAppService
 {
     private readonly IRepository<Invoice, int> _invoiceRepoistory;
+    private readonly IRepository<Payment, Guid> _paymentRepoistory;
     private readonly IDataFilter _dataFilter;
 
-    public InvoicesAppService(IRepository<Invoice, int> invoiceRepoistory,IDataFilter dataFilter)
+    public InvoicesAppService(IRepository<Invoice, int> invoiceRepoistory, IDataFilter dataFilter, IRepository<Payment, Guid> paymentRepoistory)
     {
         _invoiceRepoistory = invoiceRepoistory;
         _dataFilter = dataFilter;
+        _paymentRepoistory = paymentRepoistory;
     }
     /// <inheritdoc/>
 
@@ -57,12 +60,14 @@ public class InvoicesAppService : ApplicationService, IInvoicesAppService
 
     public async Task<Result<InvoiceDto>> GetAsync(int id)
     {
-        using(_dataFilter.Disable<IMultiTenant>()) 
+        using(_dataFilter.Disable<IMultiTenant>())
         {
             var invoice = await _invoiceRepoistory.FindAsync(id);
+            var payment = await _paymentRepoistory.FirstOrDefaultAsync( x => x.InvoiceId == id);
             if (invoice == null)
                 return Result<InvoiceDto>.NotFound("There is no such an Invoice , id: 5");
             var invoiceMap = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+            invoiceMap.QrCodeInvoice =  payment is null  ? "" : payment.QrCodeInvoice;
             return Result<InvoiceDto>.Success(invoiceMap);
         }
        
