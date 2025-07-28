@@ -89,36 +89,58 @@ public class CustomerPackagesAppService:
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-            var result  = await query.Where(x => x.OrganizationId == OrganizationID && (x.EnPlateNumber == PlateNumber || x.ArPlateNumber == PlateNumber) && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= ExitTransaction && ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null)))
-                .Select ( x => new CustomerPackageTransactionDto
-                {
-                    Id = x.Id,
-                    CustomerId = x.CustomerId,
-                    PackageId = (int)x.PackageId,
-                    OrganizationId = (int)x.OrganizationId,
-                    Package = ObjectMapper.Map<Package, PackageDto>(x.Package),
-                    CustomerPackageStatus = x.CustomerPackageStatus,
-                    TenantId = x.TenantId,
-                    DurationOfPackage = x.DurationOfPackage,
-                    PriceOfPackage = x.PriceOfPackage,
-                    DescriptionOfPackage = x.DescriptionOfPackage,
-                    publishedOfPackage = x.publishedOfPackage,
-                    PublishFromOfPackage = x.PublishFromOfPackage,
-                    PublishToOfPackage = x.PublishToOfPackage,
-                    ActivationDateOfPackage = x.ActivationDateOfPackage,
-                    DectivationDateOfPackage = x.DectivationDateOfPackage,
-                    ExpiryDate = x.ExpiryDate,
-                    PackageArabicName = x.PackageArabicName,
-                    PackageEnglishName = x.PackageEnglishName,
-                    CustomerCategory = x.CustomerCategory,
-                    EnPlateNumber = x.EnPlateNumber,
-                    ArPlateNumber = x.ArPlateNumber,
-                    IsCustomPackage = x.IsCustomPackage,
-                    PackageCode = x.PackageCode,
-                    QRCodePath = x.QRCodePath
-                }).FirstOrDefaultAsync();
-
-            return result;
+            query = query.Where(x => x.OrganizationId == OrganizationID && (x.EnPlateNumber == PlateNumber || x.ArPlateNumber == PlateNumber) && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= ExitTransaction && ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null)));
+            var reult = from x in query
+                        select new CustomerPackageTransactionDto
+                        {
+                            Id = x.Id,
+                            CustomerId = x.CustomerId,
+                            PackageId = (int)x.PackageId,
+                            OrganizationId = (int)x.OrganizationId,
+                            Package = new PackageDto
+                            {
+                                ArabicName = x.Package!.ArabicName,
+                                EnglishName = x.Package.EnglishName,
+                                PackageTypeId = x.Package.PackageTypeId,
+                                Price = x.Package.Price,
+                                Description = x.Package.Description,
+                                Published = x.Package.published,
+                                PublishFrom = x.Package.PublishFrom,
+                                PublishTo = x.Package.PublishTo,
+                                CreatedDate = x.Package.CreatedDate,
+                                CreatedBy = x.Package.CreatedBy,
+                                ActivationDate = x.Package.ActivationDate,
+                                ActivedBy = x.Package.ActivedBy,
+                                DectivationDate = x.Package.DectivationDate,
+                                DeactivatedBy = x.Package.DeactivatedBy,
+                                OrganizationId = x.Package.OrganizationId,
+                                PackageStatus = x.Package.PackageStatus,
+                                CustomerCategory = x.Package.CustomerCategory.ToString(),
+                                DurationOfPackage = x.Package.DurationOfPackage,
+                                Status = x.Package.Status
+                            } , 
+                            CustomerPackageStatus = x.CustomerPackageStatus,
+                            TenantId = x.TenantId,
+                            DurationOfPackage = x.DurationOfPackage,
+                            PriceOfPackage = x.PriceOfPackage,
+                            DescriptionOfPackage = x.DescriptionOfPackage,
+                            publishedOfPackage = x.publishedOfPackage,
+                            PublishFromOfPackage = x.PublishFromOfPackage,
+                            PublishToOfPackage = x.PublishToOfPackage,
+                            ActivationDateOfPackage = x.ActivationDateOfPackage,
+                            DectivationDateOfPackage = x.DectivationDateOfPackage,
+                            ExpiryDate = x.ExpiryDate,
+                            PackageArabicName = x.PackageArabicName,
+                            PackageEnglishName = x.PackageEnglishName,
+                            CustomerCategory = x.CustomerCategory,
+                            EnPlateNumber = x.EnPlateNumber,
+                            ArPlateNumber = x.ArPlateNumber,
+                            IsCustomPackage = x.IsCustomPackage,
+                            PackageCode = x.PackageCode,
+                            QRCodePath = x.QRCodePath
+                        };
+            var customerPackageDto = await AsyncExecuter.FirstOrDefaultAsync(reult);
+            return customerPackageDto;
         }
 
     }
