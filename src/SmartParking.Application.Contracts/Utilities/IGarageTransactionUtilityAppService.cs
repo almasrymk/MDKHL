@@ -16,7 +16,6 @@ namespace SmartParking.Utilities;
 public interface IGarageTransactionUtilityAppService : IApplicationService
 {
     Task<CameraForGarageTransactionDto> GetCameraByDeviceIdAsync(string deviceId);
-    Task<CameraForGarageTransactionDto> GetCameraByTypeBelongsToGarageAsync(int garageId, WatcherType cameraType);
     Task<Garage> GetGarageByIdAsync(int garageId);
     Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId, bool haseFreeSlots ,  CustomerCategoryStatus category);
     Task<bool> ReserverSlotsOfGarageDependsOnCategoryAsync(int garageId , bool hasFreeSlots , CustomerCategoryStatus customer);

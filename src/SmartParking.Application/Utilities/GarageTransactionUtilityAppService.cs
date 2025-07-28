@@ -33,6 +33,8 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
 {
     private readonly ILogger<GarageTransactionUtilityAppService> _logger;
     private readonly IRepository<Vehicle, int> _vehicleRepository;
+    private readonly IRepository<GarageTransaction, int> _repository;
+    private readonly IRepository<Camera, int> _cameraRepository;
     private readonly IRepository<Customer, Guid> _customerRepoistory;
     private readonly IRepository<Organization, int> _organizationRepoistory;
     private readonly IDataFilter _dataFilter;
@@ -52,7 +54,9 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         GarageTransactionManager garageTransactionManager,
         GarageManager garageManager,
         CameraManager cameraManager,
-        VehicleManager vehicleManager)
+        VehicleManager vehicleManager,
+        IRepository<Camera, int> cameraRepository,
+        IRepository<GarageTransaction, int> repository)
     {
 
         _vehicleRepository = vehicleRepository;
@@ -64,6 +68,8 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         _garageManager = garageManager;
         _cameraManager = cameraManager;
         _vehicleManager = vehicleManager;
+        _cameraRepository = cameraRepository;
+        _repository = repository;
     }
 
     public async Task<GarageTransaction> CheckIfCheckoutFromMobile(string plateNumber)
@@ -114,8 +120,38 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
 
     private async Task<GarageTransactionDto?> GetTransactionByCamera(string plateNumber , int organizationId)
     {
-        var latestTransaction = await _garageTransactionManager.GetTransactionByCamera(plateNumber, organizationId);
-        return ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(latestTransaction);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            var latestTransaction = await query
+                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == true && gt.OrganizationID == organizationId)
+                    .OrderByDescending(gt => gt.AccurateTime)
+                    .Select(x => new GarageTransactionDto
+                    {
+                        Id  = x.Id,
+                        CameraId = x.CameraId,
+                        PlateNumber = x.PlateNumber,
+                        SnapTime = (DateTime)x.SnapTime,
+                        AccurateTime = (DateTime)x.AccurateTime,
+                        OrganizationID = x.OrganizationID,
+                        GarageId = x.GarageId,
+                        VehiclePicture = x.VehiclePicture,
+                        CameraType = x.CameraType,
+                        TenantId = x.TenantId,
+                        IsIn = x.IsIn,
+                        CheckoutMobile = x.CheckoutMobile,
+                        IsMapped = x.IsMapped,
+                        RemainingTime = x.RemainingTime,
+                        IsPending = x.IsPending,
+                        CustomerCategory = x.CustomerCategory,
+                        CanCheckout = x.CanCheckout,
+                        DispenserId = x.DispenserId,
+                        LaneNO = x.LaneNO,
+                        TicketId = x.TicketId
+                    })
+                    .FirstOrDefaultAsync();
+            return latestTransaction;
+        }
     }
     private async Task<GarageTransactionDto?> GetTransactionByDispenser(string? TicketId , int organizationId)
     {
@@ -131,13 +167,27 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     //
     public async Task<CameraForGarageTransactionDto> GetCameraByDeviceIdAsync(string deviceId)
     {
-        var camera = await _cameraManager.GetCameraByDeviceIdAsync(deviceId);
-        return ObjectMapper.Map<Camera, CameraForGarageTransactionDto>(camera);
-    }
-    public async Task<CameraForGarageTransactionDto> GetCameraByTypeBelongsToGarageAsync(int garageId, WatcherType cameraType)
-    {
-        var camera =  await _cameraManager.GetCameraByTypeBelongsToGarageAsync(garageId, cameraType);
-        return ObjectMapper.Map<Camera, CameraForGarageTransactionDto>(camera);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _cameraRepository.GetQueryableAsync();
+            var camera = await (from c in query
+                                where c.DeviceId == deviceId
+                                select  new CameraForGarageTransactionDto
+                                {
+                                    Id = c.Id,
+                                    DeviceId = c.DeviceId,
+                                    CameraType = c.CameraType,
+                                    GarageId = c.GarageId,
+                                    Status = c.Status,
+                                    OrganizationId = c.OrganizationId,
+                                    TenantId = c.TenantId
+                                }).FirstOrDefaultAsync();
+            if (camera == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("Camera") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            }
+            return camera;
+        }
     }
     public async Task<Garage> GetGarageByIdAsync(int garageId)
     {
@@ -173,8 +223,16 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         {
             var query = await _customerRepoistory.GetQueryableAsync();
             query = query.Include(x => x.IdentityUser);
-            var customer = await query.FirstOrDefaultAsync(x => x.Id == customerId);
-            return ObjectMapper.Map<Customer,CustomerDto>(customer);
+            var result = await (from x in query
+                                where x.Id == customerId
+                                select new CustomerDto
+                                {
+                                    Id = x.Id,
+                                    ArabicName = x.ArabicName,
+                                    UserName = x.IdentityUser.UserName,
+                                    FullName = x.IdentityUser.Name
+                                }).FirstOrDefaultAsync();
+            return result;
         }
     }
     public async Task<TransactionOrganizationDto> GetOrganization(int OrganizationID)
