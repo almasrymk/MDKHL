@@ -90,6 +90,14 @@
                          <MudItem sm="4">
                              <MudTextField Required="true"  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"  T="string" InputType="InputType.Text" @bind-Value="CreateUpdateOrganiztion.Email" Placeholder="@L["Type Here"]" Label="@L["Contact Email"]" />
                          </MudItem>
+                         
+                        <MudItem sm="4">
+                            <MudTextField  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Text" @bind-Value="CreateUpdateOrganiztion.UserNameZatca" Placeholder=@L["User Name Zatca"] Label=@L["User Name Zatca"] />
+                        </MudItem>
+                          <MudItem sm="4">
+                            <MudTextField  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Password" @bind-Value="CreateUpdateOrganiztion.PasswordZatca" Placeholder=@L["Password Zatca"] Label=@L["Password Zatca"] />
+                        </MudItem>
+
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
 

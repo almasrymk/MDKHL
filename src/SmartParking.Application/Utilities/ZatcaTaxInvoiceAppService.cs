@@ -46,9 +46,9 @@ namespace SmartParking.Utilities
         /// Get Token 
         /// </summary>
         /// <returns></returns>
-        private async Task<string> GetTokenAsync()
+        private async Task<string> GetTokenAsync(string userName , string password)
         {
-            JObject json = await SendPostRequest("https://zatca.mazeedit.com/api/Auth/Login", new { userName = "maden.tyba", password = "maden.tyba@P@ssw0rd123" });
+            JObject json = await SendPostRequest("https://zatca.mazeedit.com/api/Auth/Login", new { userName = userName /*"maden.tyba"*/, password = password/* "maden.tyba@P@ssw0rd123"*/ });
             var token = json["data"]?["token"]?.ToString();
             return "" + token;
         }
@@ -139,7 +139,7 @@ namespace SmartParking.Utilities
             if (customer == null)
                 customer = new Customer { ArabicName = "غير معرف" };
 
-         var token = await GetTokenAsync();
+         var token = await GetTokenAsync(oragnization.UserNameZatca , oragnization.PasswordZatca);
             if (token == "400")
                 throw new Exception("Username or password for Zatca not found.");
 

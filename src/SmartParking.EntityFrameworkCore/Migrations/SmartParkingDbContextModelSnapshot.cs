@@ -1818,6 +1818,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("OrganizationPicture")
                         .HasColumnType("text");
 
+                    b.Property<string>("PasswordZatca")
+                        .HasColumnType("text");
+
                     b.Property<string>("PaymentCode")
                         .HasColumnType("text");
 
@@ -1860,6 +1863,9 @@ namespace SmartParking.Migrations
 
                     b.Property<int>("UsedSlots")
                         .HasColumnType("integer");
+
+                    b.Property<string>("UserNameZatca")
+                        .HasColumnType("text");
 
                     b.Property<string>("WhatsAppNum")
                         .HasColumnType("text");
