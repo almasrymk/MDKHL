@@ -1,30 +1,26 @@
-﻿using SmartParking.Cameras;
-using SmartParking.Entities.Organizations;
-using SmartParking.Enums;
-using SmartParking.Localization;
-using System;
-using Volo.Abp.Domain.Repositories;
-using System.Threading.Tasks;
-using System.Diagnostics.Metrics;
-using SmartParking.Entities.Vehicles;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SmartParking.GarageTransactionEndPoints;
-using SmartParking.Entities.GarageTransactions;
-using SmartParking.GarageTransactions;
-using Volo.Abp.MultiTenancy;
-using System.Linq;
-using Volo.Abp.Data;
-using Microsoft.EntityFrameworkCore;
-using SmartParking.Entities.Customers;
-using Volo.Abp;
-using SmartParking.Invoices;
-using SmartParking.Entities.Cameras.Watchers;
+using SmartParking.Cameras;
 using SmartParking.Cutomers;
-using SmartParking.Services.GarageTransactions;
-using SmartParking.Services.Garages;
-using SmartParking.Services.Cameras;
-using SmartParking.Services.Vehicles;
+using SmartParking.Entities.Cameras.Watchers;
+using SmartParking.Entities.Customers;
+using SmartParking.Entities.GarageTransactions;
+using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Vehicles;
+using SmartParking.Enums;
+using SmartParking.GarageTransactions;
+using SmartParking.Invoices;
+using SmartParking.Localization;
 using SmartParking.Organizations;
+using SmartParking.Services.GarageTransactions;
+using SmartParking.Services.Vehicles;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Volo.Abp;
+using Volo.Abp.Data;
+using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 
 namespace SmartParking.Utilities;
@@ -34,13 +30,13 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     private readonly ILogger<GarageTransactionUtilityAppService> _logger;
     private readonly IRepository<Vehicle, int> _vehicleRepository;
     private readonly IRepository<GarageTransaction, int> _repository;
+    private readonly IRepository<Garage, int> _garageRepository;
     private readonly IRepository<Camera, int> _cameraRepository;
     private readonly IRepository<Customer, Guid> _customerRepoistory;
     private readonly IRepository<Organization, int> _organizationRepoistory;
     private readonly IDataFilter _dataFilter;
+    private readonly IGarageUtilityAppService _garageUtilityAppService;
     private readonly GarageTransactionManager _garageTransactionManager;
-    private readonly GarageManager _garageManager;
-    private readonly CameraManager _cameraManager;
     private readonly VehicleManager _vehicleManager;
     private string customerEnName { get; set; } = "unknown";
     private string customerArName { get; set; } = "غير معرف";
@@ -52,11 +48,11 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         IRepository<Customer, Guid> customerRepoistory,
         IRepository<Organization, int> organizationRepoistory,
         GarageTransactionManager garageTransactionManager,
-        GarageManager garageManager,
-        CameraManager cameraManager,
         VehicleManager vehicleManager,
         IRepository<Camera, int> cameraRepository,
-        IRepository<GarageTransaction, int> repository)
+        IRepository<GarageTransaction, int> repository,
+        IRepository<Garage, int> garageRepository,
+        IGarageUtilityAppService garageUtilityAppService)
     {
 
         _vehicleRepository = vehicleRepository;
@@ -65,11 +61,11 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         _customerRepoistory = customerRepoistory;
         _organizationRepoistory = organizationRepoistory;
         _garageTransactionManager = garageTransactionManager;
-        _garageManager = garageManager;
-        _cameraManager = cameraManager;
-        _vehicleManager = vehicleManager;
+       _vehicleManager = vehicleManager;
         _cameraRepository = cameraRepository;
         _repository = repository;
+        _garageRepository = garageRepository;
+        _garageUtilityAppService = garageUtilityAppService;
     }
 
     public async Task<GarageTransaction> CheckIfCheckoutFromMobile(string plateNumber)
@@ -162,7 +158,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     //
     public async Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId,  bool  hasFreeSlots , CustomerCategoryStatus category)
     {
-       return await _garageManager.FreeSlotsOfGarageDependsOnCategoryAsync(garageId, hasFreeSlots, category);
+       return await _garageUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(garageId, hasFreeSlots, category);
     }
     //
     public async Task<CameraForGarageTransactionDto> GetCameraByDeviceIdAsync(string deviceId)
@@ -191,7 +187,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     }
     public async Task<Garage> GetGarageByIdAsync(int garageId)
     {
-        return await _garageManager.GetGarageByIdAsync(garageId);
+        return await _garageUtilityAppService.GetGarageByIdAsync(garageId);
     }
    
     public async Task<GarageTransaction> GetTransactionById(int garagetransactionId)
@@ -200,7 +196,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     }
     public async Task<bool> ReserverSlotsOfGarageDependsOnCategoryAsync(int garageId, bool hasFreeSlots ,  CustomerCategoryStatus customer)
     {
-       return await _garageManager.ReserverSlotsOfGarageDependsOnCategoryAsync(garageId, hasFreeSlots, customer);
+       return await _garageUtilityAppService.ReserverSlotsOfGarageDependsOnCategoryAsync(garageId, hasFreeSlots, customer);
     }
 
     //
@@ -285,6 +281,25 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             GarageId = GarageId,
             OrganizationID = OrganizationId,
             CameraId = CameraId,
+            SnapTime = DateTime.Now,
+            TenantId = TenantId,
+            IsIn = true,
+            CheckoutMobile = DateTime.Now,
+            VehiclePicture = EntryPicture,
+            CameraType = WatcherType.Exit
+        };
+    }
+    [RemoteService(false)]
+    public async Task<CreateUpdateGarageTransactionDto> InitiateExitGarageTransactionForMobileCheckout(string PlateNumber, string EntryPicture, int OrganizationId, int GarageId, string  LaneNO,string TicketId,  Guid TenantId)
+    {
+        return new CreateUpdateGarageTransactionDto
+        {
+            AccurateTime = DateTime.Now,
+            PlateNumber = PlateNumber,
+            GarageId = GarageId,
+            OrganizationID = OrganizationId,
+            LaneNO = LaneNO,
+            TicketId = TicketId , 
             SnapTime = DateTime.Now,
             TenantId = TenantId,
             IsIn = true,
