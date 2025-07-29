@@ -112,7 +112,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     #endregion
     #region public methods to handle entrance and exit 
 
-    public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, bool dispenserTransaction, bool cameraTransaction, CreateUpdateGarageTransactionDto GarageTransaction , CustomerPackageTransactionDto? customerPackageDto)
+    public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, bool dispenserTransaction, bool cameraTransaction, CreateUpdateGarageTransactionDto GarageTransaction, CustomerPackageTransactionDto? customerPackageDto = null)
     {
         bool _hasActivePackage = customerPackageDto is not null;
         if (dispenserTransaction && cameraTransaction && customerPackageDto == null && GarageTransaction.TicketId == null)
