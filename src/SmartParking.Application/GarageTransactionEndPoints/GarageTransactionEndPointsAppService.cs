@@ -169,7 +169,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     /// <param name="exitTransaction">Exit transaction dto</param>
     /// <param name="organization">Organization</param>
     /// <returns>true to open gate otherwise false</returns>
-    public async Task<bool> HandleExit(CreateUpdateGarageTransactionDto exitTransaction, TransactionOrganizationDto organization  , CreateUpdateGarageTransactionEndPointDto input , CustomerPackageTransactionDto? _packageDto)
+    public async Task<bool> HandleExit(CreateUpdateGarageTransactionDto exitTransaction, TransactionOrganizationDto organization  , CreateUpdateGarageTransactionEndPointDto input , CustomerPackageTransactionDto? _packageDto = null )
     {
         //getting customer id if found
         var _customerId = await _garageTransactionUtilityAppService.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(exitTransaction.PlateNumber);
