@@ -16,10 +16,11 @@ public  class VehicleManager : DomainService
     private readonly IRepository<Vehicle, int> _vehicleRepository;
     private readonly ILogger<VehicleManager> _logger;
     private readonly IDataFilter _dataFilter;
-    public VehicleManager(IRepository<Vehicle, int> vehicleRepository, IDataFilter dataFilter)
+    public VehicleManager(IRepository<Vehicle, int> vehicleRepository, IDataFilter dataFilter, ILogger<VehicleManager> logger)
     {
         _vehicleRepository = vehicleRepository;
         _dataFilter = dataFilter;
+        _logger = logger;
     }
 
     public async Task<string> CheckPlateNumberBelongsToCustomerToGetHisIdAsync(string plateNumber)
