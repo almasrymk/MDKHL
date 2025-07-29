@@ -43,7 +43,14 @@
         </MudItem>
 
         <div class="mx-3">
-            <LastInvoiceOnGateDetails Key="@L["PlateNumber"]" Value="@Invoice?.PlateNumber" />
+            @if(!string.IsNullOrEmpty(Invoice?.TicketId))
+            {
+                <LastInvoiceOnGateDetails Key="@L["TicketId"]" Value="@Invoice?.TicketId" />
+            }
+            else
+            {
+                <LastInvoiceOnGateDetails Key="@L["PlateNumber"]" Value="@Invoice?.PlateNumber" />      
+            }
             <LastInvoiceOnGateDetails Key="@L["OrganizationName"]"
             Value="@(CultureInfo.CurrentCulture.Name == "en"
                                               ? GarageTransactionDto?.OrganizationEnglishName
