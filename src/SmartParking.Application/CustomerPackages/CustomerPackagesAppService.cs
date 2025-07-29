@@ -246,7 +246,7 @@ public class CustomerPackagesAppService:
                 customerPackage = result.Item1;
                 if (result.Item2)
                 {
-                    await HandleQRCode(customerPackageDto, customer, customerPackage);
+                    customerPackage.QRCodePath = await HandleQRCode(customerPackageDto, customer, customerPackage);
                     await CurrentUnitOfWork.SaveChangesAsync();
                     return true;
                 }
@@ -256,14 +256,14 @@ public class CustomerPackagesAppService:
                 customerPackage = ObjectMapper.Map<CustomerPackageDto, CustomerPackage>(customerPackageDto);
                 customerPackage.PackageId = null;
             }
-            await HandleQRCode(customerPackageDto, customer, customerPackage);
+            customerPackage.QRCodePath = await HandleQRCode(customerPackageDto, customer, customerPackage);
             // Check Subscription Limit for number Of Customers
             var insertPackage = await InsertCustomerPackageAsync(customerPackage);
             return insertPackage.IsSuccess;
         }
     }
 
-    private async Task HandleQRCode(CustomerPackageDto customerPackageDto, Customer customer, CustomerPackage customerPackage)
+    private async Task<string> HandleQRCode(CustomerPackageDto customerPackageDto, Customer customer, CustomerPackage customerPackage)
     {
         customerPackage.PackageCode = await CreatePackageCode(customerPackageDto);
         if (customerPackage.PackageCode != null)
@@ -271,8 +271,9 @@ public class CustomerPackagesAppService:
             var qrCodeDto = new CreateUpdateQrCodeDto { PhoneNumber = customer.IdentityUser.PhoneNumber, OrganizationId = (int)customerPackage.OrganizationId!, PackageCode = customerPackage.PackageCode };
             (string base64Image, string relativePath) = await _customerPackageQRGenerator.CreateAsync(qrCodeDto);
             string pdfPath = await _pDFGeneratorAppService.GeneratePdfForCustomerPackage(qrCodeDto, relativePath);
-            customerPackage.QRCodePath = pdfPath;
+            return pdfPath;
         }
+        return "";
     }
 
     private async Task<string> CreatePackageCode(CustomerPackageDto customerPackageDto)
