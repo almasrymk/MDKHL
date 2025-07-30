@@ -44,7 +44,7 @@ public interface IKeeperAppService
 	/// Retrieves a list of all garage transaction  asynchronously.
 	/// </summary>
 	/// <returns>list of GarageTransactionDto</returns>
-	Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsAsync(int organizationId, Guid userId);
+	Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllGarageTransactionsAsync(int organizationId, Guid userId, PagedAndSortedAndSearchResultRequestDto paged);
     /// <summary>
     /// Update plate number of specific transaction.
     /// </summary>

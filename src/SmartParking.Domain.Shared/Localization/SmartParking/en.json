@@ -537,6 +537,7 @@
     "UserDeletedSuccessfully": "User Deleted Successfully",
     "Reqiured": "Reqiured",
     "Permission:AddRoleToCustomer": "Add Role To Customer",
+    "Permission:AddUser": "Add User",
     "Hour": "Hour",
     "From": "From",
     "To": "To",
@@ -829,8 +830,10 @@
     "DispenserTransaction": "Dispenser Transactions",
     "RangeNumberValildation": " The value must be between 0 and 9999",
     "Dispensers": "Dispensers",
-    "OrganizationHoursHeader": "How to Calculate Hours", 
-    "TicketId" :  "Ticket Number"
+    "OrganizationHoursHeader": "How to Calculate Hours",
+    "TicketId": "Ticket Number",
+    "PackageCode": "Package Code",
+    "Download": "Download"
 
 
 

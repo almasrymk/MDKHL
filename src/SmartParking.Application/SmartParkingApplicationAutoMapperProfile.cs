@@ -100,6 +100,12 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ReverseMap();
 
 
+        CreateMap<Organization, TransactionOrganizationDto>()
+                    .ForMember(dest => dest.ParkingSlots, opt => opt.MapFrom(src => src.Subscription.ParkingSlot))
+                    .ForMember(dest => dest.FreeMinutes, opt => opt.MapFrom(src => src.FreeMinutes))
+                    .ForMember(dest => dest.PaymentCode, opt => opt.MapFrom(src => src.PaymentCode))
+                    .ReverseMap();
+
         CreateMap<CreateUpdateOrganiztionDto, Organization>()
             .ForMember(dest => dest.TaxIdentificationNumber, opt => opt.MapFrom(src => src.TaxNumber))
             .ForMember(dest => dest.PhoneNum, opt => opt.MapFrom(src => src.PhoneNumber))
@@ -129,6 +135,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Camera, CameraDto>()
         .ForMember(dest => dest.GarageNameAr, opt => opt.MapFrom(src => src.Garage.NameAr))
         .ForMember(dest => dest.GarageNameEn, opt => opt.MapFrom(src => src.Garage.NameEn));
+
+        CreateMap<Camera, CameraForGarageTransactionDto>();
+
         CreateMap<CreateUpdateCameraDto, Camera>();
         CreateMap<CameraDto, CreateUpdateCameraDto>();
 
@@ -294,6 +303,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
 
         CreateMap<CustomerPackage, CustomerPackageDto>();
+        CreateMap<CustomerPackage, CustomerPackageTransactionDto>();
+
         CreateMap<CreateUpdateCustomerPackageDto, CustomerPackage>();
 
         CreateMap<DailyShift, DailyShiftDto>();

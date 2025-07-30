@@ -1,10 +1,5 @@
 ﻿using SmartParking.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Garages;
@@ -29,6 +24,4 @@ public class GarageDto:AuditedEntityDto<int>
     public int CurrnetCapacityEmployees { get; set; }
     public int CurrnetCapacityForFree { get; set; }
     public string OpenGateURL { get; set; }
-
-
 }
