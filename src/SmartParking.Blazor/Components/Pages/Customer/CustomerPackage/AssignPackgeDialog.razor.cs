@@ -137,7 +137,8 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 MudDialogAdd.Close(DialogResult.Ok(true));
 
                 await Task.Delay(1000);
-                Navigation.NavigateTo("/customers", forceLoad: true);
+
+                Navigation.Refresh(true);
             }
             catch (Exception ex)
             {
