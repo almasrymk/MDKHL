@@ -150,8 +150,7 @@ public class CustomerPackagesAppService:
 
             var customerPackage = CreateCustomerPackage(packageId, customer.Id, package, ArabicPlateNumber, EnglishPlateNumber);
             var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
-            await HandleQRCode(new CustomerPackageDto { OrganizationId = package.OrganizationId, PackageId = packageId, ArPlateNumber = ArabicPlateNumber, EnPlateNumber = EnglishPlateNumber }, customer, customerPackage);
-
+            customerPackage.QRCodePath = await HandleQRCode(new CustomerPackageDto { OrganizationId = package.OrganizationId, PackageId = packageId, ArPlateNumber = ArabicPlateNumber, EnPlateNumber = EnglishPlateNumber }, customer, customerPackage);
             if (existingPackage != null)
             {
                 ObjectHelper.TrySetProperty(
