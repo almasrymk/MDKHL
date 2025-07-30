@@ -217,8 +217,8 @@ public class CustomerPackagesAppService:
         if (customerPackage.PackageCode != null)
         {
             var qrCodeDto = new CreateUpdateQrCodeDto { PhoneNumber = customer.IdentityUser.PhoneNumber, OrganizationId = (int)customerPackage.OrganizationId!, PackageCode = customerPackage.PackageCode };
-            (string base64Image, string relativePath) = await _customerPackageQRGenerator.CreateAsync(qrCodeDto);
-            string pdfPath = await _pDFGeneratorAppService.GeneratePdfForCustomerPackage(qrCodeDto, relativePath);
+            var qrCodeImage = await _customerPackageQRGenerator.CreateAsync(qrCodeDto);
+            string pdfPath = await _pDFGeneratorAppService.GeneratePdfForCustomerPackage(qrCodeDto, qrCodeImage);
             return pdfPath;
         }
         return "";

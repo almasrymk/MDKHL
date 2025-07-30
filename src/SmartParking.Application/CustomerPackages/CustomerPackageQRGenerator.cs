@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.Internal.Mappers;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.FileProviders;
 using QRCoder;
 using SmartParking.CustomerPackages.QRGenerator;
@@ -27,12 +28,9 @@ public class CustomerPackageQRGenerator : SmartParkingAppService, ICustomerPacka
     #region Public methods
 
     ///<inheritdoc/>
-    public async Task<(string base64Image, string relativePath)> CreateAsync(CreateUpdateQrCodeDto input)
+    public async Task<byte[]> CreateAsync(CreateUpdateQrCodeDto input)
     {
-        (string base64Image, string relativePath) = await CreateImageQrCode(input);
-
-        return (base64Image, relativePath);
-
+        return await CreateImageQrCode(input);
     }
     #endregion
 
@@ -71,17 +69,17 @@ public class CustomerPackageQRGenerator : SmartParkingAppService, ICustomerPacka
     /// <returns>
     /// A tuple containing the generated QR code string and the relative file path where the image is saved.
     /// </returns>
-    private async Task<(string imageBase, string relativePath)> CreateImageQrCode(CreateUpdateQrCodeDto input)
+    private async Task<byte[]> CreateImageQrCode(CreateUpdateQrCodeDto input)
     {
         byte[] qrCodeImage = GenerateQrCodeImage(input);
-        string base64Image = Convert.ToBase64String(qrCodeImage);
+        //string base64Image = Convert.ToBase64String(qrCodeImage);
 
-        string relativePath = await _fileProvider.SaveFileAsync(
-            qrCodeImage,
-            Path.Combine(Directory.GetCurrentDirectory(), PathHelper.WwwRoot, PathHelper.CustomerPackageQRCodeFolder, input.PhoneNumber, input.OrganizationId.ToString()),
-             input.PackageCode + ".png"
-        );
-        return (base64Image, relativePath);
+        //string relativePath = await _fileProvider.SaveFileAsync(
+        //    qrCodeImage,
+        //    Path.Combine(Directory.GetCurrentDirectory(), PathHelper.WwwRoot, PathHelper.CustomerPackageQRCodeFolder, input.PhoneNumber, input.OrganizationId.ToString()),
+        //     input.PackageCode + ".png"
+        //);
+        return qrCodeImage;
     }
 
     public async Task<string> ConvertToBase64(string filePath)

@@ -9,5 +9,5 @@ using System.Threading.Tasks;
 namespace SmartParking.CustomerPackages.QRGenerator;
 public interface ICustomerPackageQRGenerator  : IApplicationService
 {
-    Task<(string base64Image, string relativePath)> CreateAsync(CreateUpdateQrCodeDto input);
+    Task<byte[]> CreateAsync(CreateUpdateQrCodeDto input);
 }

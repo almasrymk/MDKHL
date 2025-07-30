@@ -955,10 +955,9 @@ img[style*='width:120px;'] {
     }
 
 
-    public async Task<string> GeneratePdfForCustomerPackage(CreateUpdateQrCodeDto input ,  string qrCodePath) 
+    public async Task<string> GeneratePdfForCustomerPackage(CreateUpdateQrCodeDto input ,  byte[] qrCodeImage)
     {
    
-        string QRCodePath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/{qrCodePath}");
         await Task.Yield();
         var fileName  = Path.Combine(Directory.GetCurrentDirectory(), PathHelper.WwwRoot, PathHelper.CustomerPackageQRCodeFolder, input.PhoneNumber, input.OrganizationId.ToString(),input.PackageCode + ".pdf");
         //string fileName = $"{customerPackage.PackageCode}.{"pdf"}";
@@ -977,13 +976,10 @@ img[style*='width:120px;'] {
                 Style styleBold = new Style();
                 Style Center = new Style();
                 Table tableimages = new Table(3).UseAllAvailableWidth();
-                Image QrCodeImage = new Image(ImageDataFactory.Create(QRCodePath));
+                Image QrCodeImage = new Image(ImageDataFactory.Create(qrCodeImage));
                 // 4. Make the image fit the page (minus margins)
-
-
                 QrCodeImage.ScaleToFit(250, 250)
                        .SetHorizontalAlignment(HorizontalAlignment.CENTER);
-
                 // 5. Add the image directly (no table)
                 document.Add(QrCodeImage);
                 document.Close();
