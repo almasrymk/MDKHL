@@ -26,6 +26,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
@@ -67,20 +68,20 @@ public class CustomerPackagesAppService:
     #region public methods
     ///<inheritdoc/>
 
-    public async Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int OrganizationID,string PlateNumber,DateTime ExitTransaction)
+    public async Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int OrganizationID,string PlateNumber,DateTime ExitTransaction)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
             query = query.Where(x => x.OrganizationId == OrganizationID && (x.EnPlateNumber == PlateNumber || x.ArPlateNumber == PlateNumber) && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= ExitTransaction && ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null)));
-            var result = await query.FirstOrDefaultAsync();
+            CustomerPackageTransactionDto? customerPackageDto = await GetOneActivePackageUsingProjection(query);
 
-            if (result == null)
+            if (customerPackageDto == null)
             {
                 return null; 
             }
 
-            return ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(result);
+            return customerPackageDto;
         }
         
     }
@@ -90,76 +91,23 @@ public class CustomerPackagesAppService:
         {
             var query = await _repository.GetQueryableAsync();
             query = query.Where(x => x.OrganizationId == OrganizationID && (x.EnPlateNumber == PlateNumber || x.ArPlateNumber == PlateNumber) && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= ExitTransaction && ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null)));
-            var reult = from x in query
-                        select new CustomerPackageTransactionDto
-                        {
-                            Id = x.Id,
-                            CustomerId = x.CustomerId,
-                            PackageId = (int)x.PackageId,
-                            OrganizationId = (int)x.OrganizationId,
-                            Package = new PackageDto
-                            {
-                                ArabicName = x.Package!.ArabicName,
-                                EnglishName = x.Package.EnglishName,
-                                PackageTypeId = x.Package.PackageTypeId,
-                                Price = x.Package.Price,
-                                Description = x.Package.Description,
-                                Published = x.Package.published,
-                                PublishFrom = x.Package.PublishFrom,
-                                PublishTo = x.Package.PublishTo,
-                                CreatedDate = x.Package.CreatedDate,
-                                CreatedBy = x.Package.CreatedBy,
-                                ActivationDate = x.Package.ActivationDate,
-                                ActivedBy = x.Package.ActivedBy,
-                                DectivationDate = x.Package.DectivationDate,
-                                DeactivatedBy = x.Package.DeactivatedBy,
-                                OrganizationId = x.Package.OrganizationId,
-                                PackageStatus = x.Package.PackageStatus,
-                                CustomerCategory = x.Package.CustomerCategory.ToString(),
-                                DurationOfPackage = x.Package.DurationOfPackage,
-                                Status = x.Package.Status
-                            } , 
-                            CustomerPackageStatus = x.CustomerPackageStatus,
-                            TenantId = x.TenantId,
-                            DurationOfPackage = x.DurationOfPackage,
-                            PriceOfPackage = x.PriceOfPackage,
-                            DescriptionOfPackage = x.DescriptionOfPackage,
-                            publishedOfPackage = x.publishedOfPackage,
-                            PublishFromOfPackage = x.PublishFromOfPackage,
-                            PublishToOfPackage = x.PublishToOfPackage,
-                            ActivationDateOfPackage = x.ActivationDateOfPackage,
-                            DectivationDateOfPackage = x.DectivationDateOfPackage,
-                            ExpiryDate = x.ExpiryDate,
-                            PackageArabicName = x.PackageArabicName,
-                            PackageEnglishName = x.PackageEnglishName,
-                            CustomerCategory = x.CustomerCategory,
-                            EnPlateNumber = x.EnPlateNumber,
-                            ArPlateNumber = x.ArPlateNumber,
-                            IsCustomPackage = x.IsCustomPackage,
-                            PackageCode = x.PackageCode,
-                            QRCodePath = x.QRCodePath
-                        };
-            var customerPackageDto = await AsyncExecuter.FirstOrDefaultAsync(reult);
+            CustomerPackageTransactionDto? customerPackageDto = await GetOneActivePackageUsingProjection(query);
             return customerPackageDto;
         }
 
     }
+
+
     ///<inheritdoc/>
 
-    public async Task<CustomerPackageDto> GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(int OrganizationID, string PackageCode, DateTime ExitTransaction)
+    public async Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(int OrganizationID, string PackageCode, DateTime ExitTransaction)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
             query = query.Where(x => x.OrganizationId == OrganizationID && (x.PackageCode == PackageCode) && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= ExitTransaction && ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null)));
-            var result = await query.FirstOrDefaultAsync();
-
-            if (result == null)
-            {
-                return null;
-            }
-
-            return ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(result);
+            CustomerPackageTransactionDto? customerPackageDto = await GetOneActivePackageUsingProjection(query);
+            return customerPackageDto;
         }
     }
     ///<inheritdoc/>
@@ -500,6 +448,61 @@ public class CustomerPackagesAppService:
         customerPackage.IsCustomPackage = false;
         customerPackage.CustomerPackageStatus = CustomerPackageStatus.InActive;
     }
+    private async Task<CustomerPackageTransactionDto?> GetOneActivePackageUsingProjection(IQueryable<CustomerPackage> query)
+    {
+        var reult = from x in query
+                    select new CustomerPackageTransactionDto
+                    {
+                        Id = x.Id,
+                        CustomerId = x.CustomerId,
+                        PackageId = (int)x.PackageId,
+                        OrganizationId = (int)x.OrganizationId,
+                        Package = new PackageDto
+                        {
+                            ArabicName = x.Package!.ArabicName,
+                            EnglishName = x.Package.EnglishName,
+                            PackageTypeId = x.Package.PackageTypeId,
+                            Price = x.Package.Price,
+                            Description = x.Package.Description,
+                            Published = x.Package.published,
+                            PublishFrom = x.Package.PublishFrom,
+                            PublishTo = x.Package.PublishTo,
+                            CreatedDate = x.Package.CreatedDate,
+                            CreatedBy = x.Package.CreatedBy,
+                            ActivationDate = x.Package.ActivationDate,
+                            ActivedBy = x.Package.ActivedBy,
+                            DectivationDate = x.Package.DectivationDate,
+                            DeactivatedBy = x.Package.DeactivatedBy,
+                            OrganizationId = x.Package.OrganizationId,
+                            PackageStatus = x.Package.PackageStatus,
+                            CustomerCategory = x.Package.CustomerCategory.ToString(),
+                            DurationOfPackage = x.Package.DurationOfPackage,
+                            Status = x.Package.Status
+                        },
+                        CustomerPackageStatus = x.CustomerPackageStatus,
+                        TenantId = x.TenantId,
+                        DurationOfPackage = x.DurationOfPackage,
+                        PriceOfPackage = x.PriceOfPackage,
+                        DescriptionOfPackage = x.DescriptionOfPackage,
+                        publishedOfPackage = x.publishedOfPackage,
+                        PublishFromOfPackage = x.PublishFromOfPackage,
+                        PublishToOfPackage = x.PublishToOfPackage,
+                        ActivationDateOfPackage = x.ActivationDateOfPackage,
+                        DectivationDateOfPackage = x.DectivationDateOfPackage,
+                        ExpiryDate = x.ExpiryDate,
+                        PackageArabicName = x.PackageArabicName,
+                        PackageEnglishName = x.PackageEnglishName,
+                        CustomerCategory = x.CustomerCategory,
+                        EnPlateNumber = x.EnPlateNumber,
+                        ArPlateNumber = x.ArPlateNumber,
+                        IsCustomPackage = x.IsCustomPackage,
+                        PackageCode = x.PackageCode,
+                        QRCodePath = x.QRCodePath
+                    };
+        var customerPackageDto = await AsyncExecuter.FirstOrDefaultAsync(reult);
+        return customerPackageDto;
+    }
+
     /// <summary>
     /// Retrieves the subscription entity associated with a given organization.
     /// </summary>
