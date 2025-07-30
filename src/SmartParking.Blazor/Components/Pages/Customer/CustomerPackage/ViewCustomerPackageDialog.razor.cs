@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using static Microsoft.AspNetCore.Razor.Language.TagHelperMetadata;
 using static QRCoder.PayloadGenerator;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
@@ -146,7 +147,8 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
             var customerPackage = await CustomerPackagesAppService.GetAsync(int.Parse(row.Cells[0].Value));
             if (string.IsNullOrEmpty(customerPackage.QRCodePath))
                 return;
-            await JSRuntime.InvokeVoidAsync("openNewTab", customerPackage.QRCodePath);
+            await JSRuntime.InvokeVoidAsync("window.open", $"{customerPackage.QRCodePath}", "_blank");
+
         }
 
         /// <summary>
