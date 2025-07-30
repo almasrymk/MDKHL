@@ -70,7 +70,7 @@ public class PackageCodeEndPointAppService : SmartParkingAppService, IPackageCod
             var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _organization.DispenserTransaction, _organization.CameraTransaction, _garageTransactionDto, packageDto);
             if(result)
             {
-              await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = packageCodeEntry.CarNum, laneNO = packageCodeEntry.LaneNO, operatorType = result == false ? 2 : 5 });
+              await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = packageCodeEntry.CarNum, laneNO = packageCodeEntry.LaneNO, operatorType = 5 });
             }
             return result;
         }
@@ -108,7 +108,7 @@ public class PackageCodeEndPointAppService : SmartParkingAppService, IPackageCod
             var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization, input, packageDto);
             if(result)
             {
-               await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = _garageTransactionDto.PlateNumber, laneNO = _garageTransactionDto.LaneNO, operatorType = result == false ? 2 : 5 });
+               await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = _garageTransactionDto.PlateNumber, laneNO = _garageTransactionDto.LaneNO, operatorType = 5 });
             }
             return result;
         }
@@ -128,9 +128,9 @@ public class PackageCodeEndPointAppService : SmartParkingAppService, IPackageCod
             GarageId = dispenser.GarageId,
             OrganizationID = dispenser.OrganizationId,
             TenantId = dispenser.TenantId,
-            CameraType = WatcherType.Exit,
-            IsIn = false,
-            IsMapped = true , 
+            CameraType = WatcherType.Entry,
+            IsIn = true,
+            IsMapped = false , 
             PackageCode = packageCodeEntryDto.PackageCode , 
             TicketId = packageCodeEntryDto.TicketID
         };
