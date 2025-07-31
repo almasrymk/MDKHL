@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using SmartParking.PackageCodeEndPoint;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace SmartParking.DispenserEndPoint;
 public interface IDispenserEndPointsAppService : IApplicationService
 {
     Task<bool> Entry(EntryDto request);
-    Task<bool> PreEntry(PreEntryDto request);
+    Task<bool> PreEntry(PackageCodeEntryDto request);
     Task<bool> Exit(ExitDto request);
-    Task<bool> PreExit(JsonElement request);
+    Task<bool> PreExit(PackageCodeExitDto request);
 }

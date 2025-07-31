@@ -1,22 +1,14 @@
-﻿using MudBlazor;
+﻿using Microsoft.Extensions.Localization;
+using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.Pages.LicenceTypes;
-using SmartParking.Lookups.LicenceType;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using SmartParking.Lookups.VehicleModel;
-using SmartParking.Vehicles.LookUps;
-using Volo.Abp.Application.Dtos;
-using SmartParking.Blazor.Components.Pages.VehicleBrands;
-using Microsoft.Extensions.Localization;
-using SmartParking.Localization;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Localization;
+using SmartParking.Lookups.VehicleModel;
 using System.Security.Authentication;
 using Volo.Abp;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Validation;
-using System.Linq;
-using SmartParking.Blazor.Components.Shared;
 
 namespace SmartParking.Blazor.Components.Pages.VehicleModels;
 
@@ -111,8 +103,8 @@ public partial class VehicleModel
 		RowPerPage = pageInfo.RowsPerPage;
 		Console.WriteLine(RowPerPage);
 		// Create a request object for paged and sorted data
-		var input = new PagedAndSortedResultRequestDto
-		{
+		var input = new PagedAndSortedAndSearchResultRequestDto
+        {
 			MaxResultCount = pageInfo.RowsPerPage,
 			SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
 			Sorting = pageInfo.SortColumn

@@ -48,8 +48,12 @@ public class GarageTransactionManager : DomainService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
+            if (!string.IsNullOrEmpty(TicketId))
+            {
+                await SaveClosedEntryTicketTransaction(TicketId, query, entryTransactionId);
+                return;
+            }
             await SaveClosedEntryTransaction(plateNumber, query, entryTransactionId);
-            await SaveClosedEntryTicketTransaction(TicketId, query, entryTransactionId);
         }
     }
 
@@ -60,14 +64,12 @@ public class GarageTransactionManager : DomainService
         var latestTransactions = query
                 .Where(gt => gt.TicketId == TicketNumber && gt.Id == entryTransactionId && gt.IsIn == true)
                 .OrderByDescending(gt => gt.AccurateTime)
-                .ToList();
-        latestTransactions.ForEach(gt =>
-        {
-            gt.IsIn = false;
-            gt.IsMapped = true;
-        });
-        await _repository.UpdateManyAsync(latestTransactions);
-      //  await CurrentUnitOfWork.SaveChangesAsync();
+                .FirstOrDefault();
+
+        latestTransactions.IsIn = false;
+        latestTransactions.IsMapped = true;
+
+        await _repository.UpdateAsync(latestTransactions, true);
     }
 
 
@@ -79,15 +81,12 @@ public class GarageTransactionManager : DomainService
         var latestTransactions = query
                 .Where(gt => gt.PlateNumber == plateNumber && gt.Id == entryTransactionId && gt.IsIn == true)
                 .OrderByDescending(gt => gt.AccurateTime)
-                .ToList();
-        latestTransactions.ForEach(gt => {
-            gt.IsIn = false;
-            gt.IsMapped = true;
-        });
+                .FirstOrDefault();
 
-        await _repository.UpdateManyAsync(latestTransactions);
+        latestTransactions.IsIn = false;
+        latestTransactions.IsMapped = true;
 
-        //await CurrentUnitOfWork.SaveChangesAsync();
+        await _repository.UpdateAsync(latestTransactions, true);
     }
 
 

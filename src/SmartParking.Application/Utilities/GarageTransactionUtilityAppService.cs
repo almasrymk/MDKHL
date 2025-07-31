@@ -68,9 +68,40 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         _garageUtilityAppService = garageUtilityAppService;
     }
 
-    public async Task<GarageTransaction> CheckIfCheckoutFromMobile(string plateNumber)
+    public async Task<GarageTransactionDto> CheckIfCheckoutFromMobile(string plateNumber)
     {
-         return await _garageTransactionManager.CheckIfCheckoutFromMobile(plateNumber);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            var latestTransaction = await query
+                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Exit && gt.IsIn == true)
+                    .OrderByDescending(gt => gt.AccurateTime)
+                    .Select(x => new GarageTransactionDto
+                    {
+                        Id = x.Id,
+                        CameraId = x.CameraId,
+                        PlateNumber = x.PlateNumber,
+                        SnapTime = (DateTime)x.SnapTime,
+                        AccurateTime = (DateTime)x.AccurateTime,
+                        OrganizationID = x.OrganizationID,
+                        GarageId = x.GarageId,
+                        VehiclePicture = x.VehiclePicture,
+                        CameraType = x.CameraType,
+                        TenantId = x.TenantId,
+                        IsIn = x.IsIn,
+                        CheckoutMobile = x.CheckoutMobile,
+                        IsMapped = x.IsMapped,
+                        RemainingTime = x.RemainingTime,
+                        IsPending = x.IsPending,
+                        CustomerCategory = x.CustomerCategory,
+                        CanCheckout = x.CanCheckout,
+                        DispenserId = x.DispenserId,
+                        LaneNO = x.LaneNO,
+                        TicketId = x.TicketId
+                    })
+                    .FirstOrDefaultAsync();
+            return latestTransaction;
+        }
     }
 
     public async Task<string> CheckPlateNumberBelongsToCustomerToGetHisIdAsync(string plateNumber)
@@ -143,7 +174,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
                         CanCheckout = x.CanCheckout,
                         DispenserId = x.DispenserId,
                         LaneNO = x.LaneNO,
-                        TicketId = x.TicketId
+                        TicketId = x.TicketId 
                     })
                     .FirstOrDefaultAsync();
             return latestTransaction;
@@ -151,9 +182,41 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     }
     private async Task<GarageTransactionDto?> GetTransactionByDispenser(string? TicketId , int organizationId)
     {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            var latestTransaction = query
+                    .Where(gt => gt.TicketId == TicketId && gt.CameraType == WatcherType.Entry && gt.IsIn == true && gt.OrganizationID == organizationId)
+                    .OrderByDescending(gt => gt.AccurateTime)
+                    .Select(x => new GarageTransactionDto
+                    { 
+                        Id = x.Id,
+                        CameraId = x.CameraId,
+                        PlateNumber = x.PlateNumber,
+                        SnapTime = (DateTime)x.SnapTime,
+                        AccurateTime = (DateTime)x.AccurateTime,
+                        OrganizationID = x.OrganizationID,
+                        GarageId = x.GarageId,
+                        VehiclePicture = x.VehiclePicture,
+                        CameraType = x.CameraType,
+                        TenantId = x.TenantId,
+                        IsIn = x.IsIn,
+                        CheckoutMobile = x.CheckoutMobile,
+                        IsMapped = x.IsMapped,
+                        RemainingTime = x.RemainingTime,
+                        IsPending = x.IsPending,
+                        CustomerCategory = x.CustomerCategory,
+                        CanCheckout = x.CanCheckout,
+                        DispenserId = x.DispenserId,
+                        LaneNO = x.LaneNO,
+                        TicketId = x.TicketId 
+                    })
+                    .FirstOrDefault();
+            return latestTransaction;
+        }
 
-        var latestTransaction = await _garageTransactionManager.GetTransactionByDispenser(TicketId, organizationId);
-        return ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(latestTransaction);
+        //var latestTransaction = await _garageTransactionManager.GetTransactionByDispenser(TicketId, organizationId);
+        //return ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(latestTransaction);
     }
     //
     public async Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId,  bool  hasFreeSlots , CustomerCategoryStatus category)
@@ -264,7 +327,8 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
                                     HasPackageOnly = x.HasPackageOnly,
                                     PaymentCode = x.PaymentCode,
                                     DispenserTransaction = x.DispenserTransaction,
-                                    CameraTransaction = x.CameraTransaction
+                                    CameraTransaction = x.CameraTransaction  ,
+                                    TenantId = x.TenantId!.Value
                                 }).FirstOrDefaultAsync();
 
             return result; 
