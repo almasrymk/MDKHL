@@ -45,29 +45,28 @@ public class PackageCodeEndPointAppService : SmartParkingAppService, IPackageCod
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
+            var unlinkedDto = InitiateUnlinkedTransactionDto(packageCodeEntry);
+            if(string.IsNullOrEmpty(packageCodeEntry.PackageCode))
+            {
+                await _unlinkedGarageTransactionsAppService.CreateAsync(unlinkedDto);
+                Logger.LogInformation($"Should enter Package Code to handle entrance with package code ");
+                return false;
+            }
             var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis => dis.DeviceId == packageCodeEntry.LaneNO);
             if (_dispenser == null)
             {
                 _logger.LogInformation($"No Dispenser for : {packageCodeEntry.LaneNO}");
                 return false;
             }
-            var _unlinkedDto = InitiateUnlinkedTransactionDto(packageCodeEntry);
-            if (string.IsNullOrEmpty(packageCodeEntry.PackageCode))
-            {
-                await _unlinkedGarageTransactionsAppService.CreateAsync(_unlinkedDto);
-                _logger.LogInformation($"Should have Package Code ");
-                return false;
-            }
-            var _organization = await _organizationRepository.FirstOrDefaultAsync(org => org.Id == _dispenser.OrganizationId);
+            var _organization = await _garageTransactionUtilityAppService.GetOrganization(_dispenser.OrganizationId);
             if (_organization == null || _organization.DispenserTransaction == false)
             {
                 _logger.LogInformation($"No Organization for : {packageCodeEntry.LaneNO}");
                 return false;
             }
-
             var _garageTransactionDto = InitalizeCreateUpdateGarageTransactionDto(packageCodeEntry, _dispenser);
             var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(_organization.Id, packageCodeEntry.PackageCode, _garageTransactionDto.AccurateTime.Value);
-            var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _organization.DispenserTransaction, _organization.CameraTransaction, _garageTransactionDto, packageDto);
+            var result = await _garageTransactionEndPointsAppService.HandleEntrance(unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _organization.DispenserTransaction, _organization.CameraTransaction, _garageTransactionDto, packageDto);
             if(result)
             {
               await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = packageCodeEntry.CarNum, laneNO = packageCodeEntry.LaneNO, operatorType = 5 });
@@ -82,6 +81,13 @@ public class PackageCodeEndPointAppService : SmartParkingAppService, IPackageCod
         {
             _logger.LogError($"{DateTime.Now} => start pre exit ");
             _logger.LogInformation($"Lane Number is found : {packageCodeExit.LaneNO}");
+            var unlinkedDto = InitiateUnlinkedTransactionDto(packageCodeExit);
+            if (string.IsNullOrEmpty(packageCodeExit.PackageCode))
+            {
+                await _unlinkedGarageTransactionsAppService.CreateAsync(unlinkedDto);
+                Logger.LogInformation($"Should enter Package Code to handle exit with package code ");
+                return false;
+            }
             var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis => dis.DeviceId == packageCodeExit.LaneNO);
             if (_dispenser == null)
             {
@@ -96,14 +102,8 @@ public class PackageCodeEndPointAppService : SmartParkingAppService, IPackageCod
                 return false;
             }
             _logger.LogInformation($"Organization is found");
-            var unlinkedDto = InitiateUnlinkedTransactionDto(packageCodeExit);
             var _garageTransactionDto = InitalizeCreateUpdateGarageTransactionDto(packageCodeExit, _dispenser);
             var input = ObjectMapper.Map<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>(_garageTransactionDto);
-            if (string.IsNullOrEmpty(_garageTransactionDto.PackageCode))
-            {
-                await _unlinkedGarageTransactionsAppService.CreateAsync(unlinkedDto);
-                return false;
-            }
             var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(_organization.Id, packageCodeExit.PackageCode, _garageTransactionDto.AccurateTime.Value);
             var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization, input, packageDto);
             if(result)
