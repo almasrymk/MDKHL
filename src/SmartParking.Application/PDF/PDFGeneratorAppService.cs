@@ -959,8 +959,13 @@ img[style*='width:120px;'] {
     {
    
         await Task.Yield();
-        var fileName  = Path.Combine(Directory.GetCurrentDirectory(), PathHelper.WwwRoot, PathHelper.CustomerPackageQRCodeFolder, input.PhoneNumber, input.OrganizationId.ToString(),input.PackageCode + ".pdf");
+        var directoryPath  = Path.Combine(Directory.GetCurrentDirectory(), PathHelper.WwwRoot, PathHelper.CustomerPackageQRCodeFolder, input.PhoneNumber, input.OrganizationId.ToString());
         //string fileName = $"{customerPackage.PackageCode}.{"pdf"}";
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath); 
+        }
+        var fileName = Path.Combine(directoryPath, $"{input.PackageCode}.{"pdf"}");
         FileInfo file = new FileInfo(fileName);
         using (PdfWriter writer = new PdfWriter(file.FullName))
         {
