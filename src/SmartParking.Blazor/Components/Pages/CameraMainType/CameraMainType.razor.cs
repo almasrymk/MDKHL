@@ -99,7 +99,7 @@ public partial class CameraMainType
         RowPerPage = pageInfo.RowsPerPage;
         Console.WriteLine(RowPerPage);
 
-        var input = new PagedAndSortedResultRequestDto
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
