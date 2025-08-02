@@ -38,6 +38,13 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly ILogger<DispenserEndPointsAppService> _logger;
     private readonly IUnLinkedTransactionAppService _unlinkedGarageTransactionsAppService;
+    private readonly string _packageCodeNotFound = "PackageCodeNotFound";
+    private readonly string _plateOrTicketeNotFound = "PlateOrTicketNotFound";
+    private readonly string _packageNotFound = "PackageNotFound";
+    private readonly string _laneNotFound = "LaneNotValid";
+    private readonly string _dispenserNotFound = "DispenserCodeNotValid";
+    private readonly string _organizationNotFound = "PackageCodeNotValid";
+    private readonly string _otherReasons = "Other";
 
     public DispenserEndPointsAppService(IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IBarrierAppService barrierAppService, IRepository<Dispenser, int> dispenserRepository, ILogger<DispenserEndPointsAppService> logger, IRepository<Organization, int> organizationRepository, ICustomerPackagesAppService customerPackagesAppService , IUnLinkedTransactionAppService unlinkedGarageTransactionsAppService, IGarageTransactionUtilityAppService garageTransactionUtilityAppService)
     {
@@ -51,7 +58,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
         _customerPackagesAppService = customerPackagesAppService;
     }
     #region public methods
-    public async Task<bool> Entry(EntryDto request)
+    public async Task<IBaseGateResponseDto> Entry(EntryDto request)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -59,29 +66,26 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis => dis.DeviceId == request.LaneNO);
             if (_dispenser == null)
             {
-                _logger.LogInformation($"No Dispenser for : {request.LaneNO}");
-                return false;
+                return NotFoundDispenserHandler();
             }
             if(string.IsNullOrEmpty(request.TicketID))
             {
                 await _unlinkedGarageTransactionsAppService.CreateAsync(_unlinkedDto);
-                _logger.LogInformation($"Should have ticket id ");
-                return false;
+                return NotFoundPackageCodeInRequestHandler();
             }
             var _organization = await _organizationRepository.FirstOrDefaultAsync(org => org.Id == _dispenser.OrganizationId);
             if (_organization == null || _organization.DispenserTransaction == false)
             {
-                _logger.LogInformation($"No Organization for : {request.LaneNO}");
-                return false;
+                return NotFoundOrganizationHandler();
             }
             var _garageTransactionDto = InitiateCreateGarageTransactionDtoForPreEntry(request, _dispenser);
             var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(_organization.Id, _garageTransactionDto.PlateNumber, _garageTransactionDto.AccurateTime.Value);
             var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _organization.DispenserTransaction , _organization.CameraTransaction ,  _garageTransactionDto  , packageDto);
             await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = request.CarNum, laneNO = request.LaneNO, operatorType = result == false ? 2 : 5 });
-            return result;
+            return GetGateResponse(true, result, _otherReasons);
         }
     }
-    public async Task<bool> PreEntry(PackageCodeEntryDto packageCodeEntry)
+    public async Task<IBaseGateResponseDto> PreEntry(PackageCodeEntryDto packageCodeEntry)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -89,50 +93,49 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             if (string.IsNullOrEmpty(packageCodeEntry.PackageCode))
             {
                 await _unlinkedGarageTransactionsAppService.CreateAsync(unlinkedDto);
-                Logger.LogInformation($"Should enter Package Code to handle entrance with package code ");
-                return false;
+                return NotFoundPackageCodeInRequestHandler();
             }
             var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis => dis.DeviceId == packageCodeEntry.LaneNO);
             if (_dispenser == null)
             {
-                _logger.LogInformation($"No Dispenser for : {packageCodeEntry.LaneNO}");
-                return false;
+                return NotFoundDispenserHandler();
             }
             var _organization = await _garageTransactionUtilityAppService.GetOrganization(_dispenser.OrganizationId);
             if (_organization == null || _organization.DispenserTransaction == false)
             {
-                _logger.LogInformation($"No Organization for : {packageCodeEntry.LaneNO}");
-                return false;
+                return NotFoundOrganizationHandler();
             }
             var _garageTransactionDto = InitalizePreEntryCreateUpdateGarageTransactionDto(packageCodeEntry, _dispenser);
             var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(_organization.Id, packageCodeEntry.PackageCode, _garageTransactionDto.AccurateTime.Value);
-            var result = await _garageTransactionEndPointsAppService.HandleEntrance(unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _organization.DispenserTransaction, _organization.CameraTransaction, _garageTransactionDto, packageDto);
-            if (result)
+            if (packageDto == null)
             {
-                await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = packageCodeEntry.CarNum, laneNO = packageCodeEntry.LaneNO, operatorType = 5 });
+                return NotFoundPackageHandler();
             }
-            return result;
+            var result = await _garageTransactionEndPointsAppService.HandleEntrance(unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _organization.DispenserTransaction, _organization.CameraTransaction, _garageTransactionDto, packageDto);
+            //if (result)
+            //{
+            //    await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = packageCodeEntry.CarNum, laneNO = packageCodeEntry.LaneNO, operatorType = 5 });
+            //}
+            return GetGateResponse(true, result, _otherReasons);
         }
     }
-    public async Task<bool> Exit(ExitDto request)
+    public async Task<IBaseGateResponseDto> Exit(ExitDto request)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
             _logger.LogError($"{DateTime.Now} => start pre exit ");
-            var laneNo = request.LaneNO;
-            _logger.LogInformation($"Lane Number is found : {laneNo}");
-            var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis => dis.DeviceId == laneNo);
+ 
+            var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis => dis.DeviceId == request.LaneNO);
             if (_dispenser == null)
             {
-                _logger.LogInformation($"No Dispenser for : {laneNo}");
-                return false;
+                return NotFoundDispenserHandler();
+
             }
             _logger.LogInformation($"Dispenser is found");
             var _organization = await _garageTransactionUtilityAppService.GetOrganization(_dispenser.OrganizationId);
             if (_organization == null || _organization.DispenserTransaction == false)
             {
-                _logger.LogInformation($"No Organization for : {laneNo}");
-                return false;
+                return NotFoundOrganizationHandler();
             }
             _logger.LogInformation($"Organization is found");
 
@@ -141,15 +144,15 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             var input = ObjectMapper.Map<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>(_garageTransactionDto);
             if (_garageTransactionDto.PlateNumber == null && _garageTransactionDto.TicketId == null)
             {
-                return false;
+                return NOtFoundPlateOrTicketHandler();
             }
             var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(_organization.Id, _garageTransactionDto.PlateNumber, _garageTransactionDto.AccurateTime.Value);
             var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization, input  , packageDto);
-            await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = _garageTransactionDto.PlateNumber, laneNO = _garageTransactionDto.LaneNO, operatorType = result == false ? 2 : 5 });
-            return result;
+            //await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = _garageTransactionDto.PlateNumber, laneNO = _garageTransactionDto.LaneNO, operatorType = result == false ? 2 : 5 });
+            return GetGateResponse(true, result, _otherReasons);
         }
     }
-    public async Task<bool> PreExit(PackageCodeExitDto packageCodeExit)
+    public async Task<IBaseGateResponseDto> PreExit(PackageCodeExitDto packageCodeExit)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -159,35 +162,61 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             if (string.IsNullOrEmpty(packageCodeExit.PackageCode))
             {
                 await _unlinkedGarageTransactionsAppService.CreateAsync(unlinkedDto);
-                Logger.LogInformation($"Should enter Package Code to handle exit with package code ");
-                return false;
+                return NotFoundPackageCodeInRequestHandler();
             }
             var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis => dis.DeviceId == packageCodeExit.LaneNO);
             if (_dispenser == null)
             {
-                _logger.LogInformation($"No Dispenser for : {packageCodeExit.LaneNO}");
-                return false;
+                return NotFoundDispenserHandler();
             }
             _logger.LogInformation($"Dispenser is found");
             var _organization = await _garageTransactionUtilityAppService.GetOrganization(_dispenser.OrganizationId);
             if (_organization == null || _organization.DispenserTransaction == false)
             {
-                _logger.LogInformation($"No Organization for : {packageCodeExit.LaneNO}");
-                return false;
+                return NotFoundOrganizationHandler();
             }
             _logger.LogInformation($"Organization is found");
             var _garageTransactionDto = InitalizePreExitCreateUpdateGarageTransactionDto(packageCodeExit, _dispenser);
             var input = ObjectMapper.Map<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>(_garageTransactionDto);
             var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(_organization.Id, packageCodeExit.PackageCode, _garageTransactionDto.AccurateTime.Value);
-            var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization, input, packageDto);
-            if (result)
+            if (packageDto == null)
             {
-                await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = _garageTransactionDto.PlateNumber, laneNO = _garageTransactionDto.LaneNO, operatorType = 5 });
+                return NotFoundPackageHandler();
             }
-            return result;
+            var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization, input, packageDto);
+            return GetGateResponse(true, result,_otherReasons );
         }
     }
- 
+
+    private IBaseGateResponseDto NotFoundPackageCodeInRequestHandler()
+    {
+        Logger.LogInformation(_packageCodeNotFound);
+        return GetGateResponse(true, false, _packageCodeNotFound);
+    }
+
+    private IBaseGateResponseDto NotFoundPackageHandler()
+    {
+        Logger.LogInformation(_packageNotFound);
+        return GetGateResponse(false, false, _packageNotFound);
+    }
+
+    private IBaseGateResponseDto NOtFoundPlateOrTicketHandler()
+    {
+        _logger.LogInformation($"{_organizationNotFound}");
+        return GetGateResponse(true, false, _plateOrTicketeNotFound);
+    }  
+    private IBaseGateResponseDto NotFoundOrganizationHandler()
+    {
+        _logger.LogInformation($"{_organizationNotFound}");
+        return GetGateResponse(true, false, _organizationNotFound);
+    }
+
+    private IBaseGateResponseDto NotFoundDispenserHandler()
+    {
+        _logger.LogInformation($"{_dispenserNotFound}");
+        return GetGateResponse(true, false, _dispenserNotFound);
+    }
+
     #endregion
 
     #region private methods to initiate dtos
@@ -217,6 +246,32 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
 
         };
     }
+
+    public  IBaseGateResponseDto GetGateResponse(
+    bool isPackageValid,
+    bool shouldOpenGate,
+    string reason = null)
+    {
+        if (!isPackageValid)
+        {
+            return new FailOpenGateResponseDto
+            {
+                ResCode = "others",
+                ResMsg = string.IsNullOrWhiteSpace(reason) ? "Invalid Package" : reason
+            };
+        }
+
+        if (shouldOpenGate)
+        {
+            return new OpenGateResponseDto();
+        }
+
+        return new NotToOpenGateResponseDto
+        {
+            ResMsg = string.IsNullOrWhiteSpace(reason) ? "Vehicle is not allowed to enter" : reason
+        };
+    }
+
     private CreateUpdateGarageTransactionDto InitalizePreEntryCreateUpdateGarageTransactionDto(PackageCodeEntryDto packageCodeEntryDto, Dispenser dispenser)
     {
         return new CreateUpdateGarageTransactionDto
