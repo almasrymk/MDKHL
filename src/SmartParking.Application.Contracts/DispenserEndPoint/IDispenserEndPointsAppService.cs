@@ -12,8 +12,8 @@ namespace SmartParking.DispenserEndPoint;
 
 public interface IDispenserEndPointsAppService : IApplicationService
 {
-    Task<bool> Entry(EntryDto request);
-    Task<bool> PreEntry(PackageCodeEntryDto request);
-    Task<bool> Exit(ExitDto request);
-    Task<bool> PreExit(PackageCodeExitDto request);
+    Task<IBaseGateResponseDto> Entry(EntryDto request);
+    Task<IBaseGateResponseDto> PreEntry(PackageCodeEntryDto request);
+    Task<IBaseGateResponseDto> Exit(ExitDto request);
+    Task<IBaseGateResponseDto> PreExit(PackageCodeExitDto request);
 }
