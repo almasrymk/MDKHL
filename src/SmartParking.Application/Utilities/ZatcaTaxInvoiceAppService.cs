@@ -14,15 +14,19 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Customers;
 using Castle.Core.Resource;
 using System.Text.RegularExpressions;
+using SmartParking.Results;
+using Microsoft.AspNetCore.Mvc;
+using SmartParking.Organizations;
+using SmartParking.Cutomers;
 
 namespace SmartParking.Utilities
 {
     public class ZatcaTaxInvoiceAppService : SmartParkingAppService, IZatcaTaxInvoiceAppService
     {
         private readonly IRepository<Payment, Guid> _repository;
-        private readonly IRepository<Customer, Guid> _customerRepository;
+        private readonly ICustomerAppService _customerRepository;
         private readonly ILogger<InvoiceUtilityAppService> _logger;
-        private readonly IRepository<Organization, int> _organizationsRepository;
+        private readonly IOrganizationsAppService _organizationsRepository;
 
         /// <summary>
         /// 
@@ -33,8 +37,8 @@ namespace SmartParking.Utilities
         public ZatcaTaxInvoiceAppService(
             IRepository<Payment, Guid> repository,
             ILogger<InvoiceUtilityAppService> logger,
-            IRepository<Customer, Guid> customerRepository,
-            IRepository<Organization, int> organizationsRepository)
+            ICustomerAppService customerRepository,
+            IOrganizationsAppService organizationsRepository)
         {
             _repository = repository;
             _logger = logger;
@@ -46,7 +50,7 @@ namespace SmartParking.Utilities
         /// Get Token 
         /// </summary>
         /// <returns></returns>
-        private async Task<string> GetTokenAsync(string userName , string password)
+        private async Task<string> GetTokenAsync(string userName, string password)
         {
             JObject json = await SendPostRequest("https://zatca.mazeedit.com/api/Auth/Login", new { userName = userName /*"maden.tyba"*/, password = password/* "maden.tyba@P@ssw0rd123"*/ });
             var token = json["data"]?["token"]?.ToString();
@@ -59,7 +63,7 @@ namespace SmartParking.Utilities
         /// <param name="payment"></param>
         /// <param name="oragnization"></param>
         /// <returns></returns>
-        private InvoiceRequestDto CreateInvoiceRequestDto(Payment payment , Customer customer, Organization oragnization)
+        private InvoiceRequestDto CreateInvoiceRequestDto(Payment payment, CustomerDto customer, OrganizationDto oragnization)
         {
             var AmountTax = decimal.Parse(string.Format("{0:0.00}", payment.Amount * 15 / 100));
             InvoiceRequestDto request = new InvoiceRequestDto();
@@ -67,29 +71,29 @@ namespace SmartParking.Utilities
                 new CompanyProfileDto
                 {
                     Country = "SA",//oragnization.Country.ArabicName,
-                    Region = oragnization.Region.ArabicName,
-                    Governorate = oragnization.Country.ArabicCapital,
+                    Region = oragnization.RegionNameAr,
+                    Governorate = oragnization.CityNameAr,
                     Address = oragnization.Address,
                     BuildingNumber = "" + oragnization.BuildingNumber,
                     PostalCode = oragnization.PostalCode,
                     CRN = oragnization.CommercialRegistrationNumber,
-                    TaxVat = oragnization.TaxIdentificationNumber,
-                    EnglishName = oragnization.ArabicName,                   
+                    TaxVat = oragnization.TaxNumber,
+                    EnglishName = oragnization.ArabicName,
                 };
 
             request.Invoice = // ObjectMapper.Map<Invoice, InvoiceDto>(invoice!);
                 new InvoiceDto
                 {
                     InvoiceTypeId = 1,
-                    Code = Regex.Replace(payment.PaymentNumber, "[^0-9]", "") ,
+                    Code = Regex.Replace(payment.PaymentNumber, "[^0-9]", ""),
                     Date = payment.CreationTime,
                     Currency = "SAR",
                     DealerName = customer.ArabicName,
                     ExchangeRate = 1,
                     VatPercentage = 0,
                     DiscountAmount = 0,
-                    Total = payment.Amount ,
-                    DealerTaxNumber = "",                   
+                    Total = payment.Amount,
+                    DealerTaxNumber = "",
                     InvoiceDetails = new List<InvoiceDetailDto>()
                 };
 
@@ -99,17 +103,17 @@ namespace SmartParking.Utilities
                 ItemName = "حجز موقف",
                 ItemPrice = payment.Amount,
                 Discount = 0,
-                Net =  payment.Amount ,
+                Net = payment.Amount,
                 Quantity = 1,
                 UnitName = "سيارة",
-                Vat = decimal.Parse(string.Format("{0:0.00}"  , payment.Amount * 15 / 100)),
+                Vat = decimal.Parse(string.Format("{0:0.00}", payment.Amount * 15 / 100)),
                 VatPercentage = 15
             });
-             
+
             request.Address = new AddressDto
             {
                 CountryName = "SA",
-                RegionName = oragnization.Region?.ArabicName,
+                RegionName = oragnization.RegionNameAr,
                 BuildingNumber = (ushort)oragnization.BuildingNumber,
                 PostalCode = oragnization.PostalCode,
                 NameArabic = oragnization.Address
@@ -125,57 +129,109 @@ namespace SmartParking.Utilities
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<string> SendRequestForZACTA(Guid paymentId)
+        public async Task<ResponseInvoice> SendRequestForZACTA(Guid paymentId)
         {
+            ResponseInvoice response = new ResponseInvoice();
             var payment = await _repository.FirstOrDefaultAsync(e => e.Id == paymentId);
             if (payment == null)
-                throw new Exception("The Payment not found.");
+            {
+                response.generalError += " The Payment not found.";
+                return response;
+            }
 
-            var oragnization = await _organizationsRepository.FirstOrDefaultAsync(e=>e.Id == payment.OrganizationId);
+            var oragnization = await _organizationsRepository.GetAsync(payment.OrganizationId);
             if (oragnization == null)
-                throw new Exception("The Oragnization not found.");
+            {
+                response.generalError += " The Oragnization not found.";
+                return response;
+            }
 
-            var customer = await _customerRepository.FirstOrDefaultAsync(e => e.Id == payment.CustomerId);
+            var customer = new CustomerDto { ArabicName = "غير معرف" };
+            if (payment.CustomerId != null)
+                customer = await _customerRepository.GetAsync(payment.CustomerId.Value);
             if (customer == null)
-                customer = new Customer { ArabicName = "غير معرف" };
+                customer = new CustomerDto { ArabicName = "غير معرف" };
 
-         var token = await GetTokenAsync(oragnization.UserNameZatca , oragnization.PasswordZatca);
+            var token = await GetTokenAsync(oragnization.UserNameZatca, oragnization.PasswordZatca);
             if (token == "400")
-                throw new Exception("Username or password for Zatca not found.");
+            {
+                response.generalError += " Username or password for Zatca not found.";
+                return response;
+            }
 
-            InvoiceRequestDto request = CreateInvoiceRequestDto(payment! , customer, oragnization);
-
-            var json = await SendPostRequest("https://zatca.mazeedit.com/Api/Invoices/Reporting", request, token);
-            var invoiceQRCode = json["invoiceQRCode"]?.ToString();
-            return "" + invoiceQRCode;
+            InvoiceRequestDto request = CreateInvoiceRequestDto(payment!, customer, oragnization);
+            response = await SendPostRequest("https://zatca.mazeedit.com/Api/Invoices/Reporting", request, token);
+            return response;
         }
 
         /// <summary>
-        /// Get Request
+        /// 
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="url"></param>
         /// <param name="content"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        private async Task<JObject> SendPostRequest(string url, object content, string token = "")
+        private async Task<ResponseInvoice> SendPostRequest(string url, object content, string token = "")
         {
             try
-            {           
-            Uri baseUri = new Uri(url);
-            HttpClient _httpClient = new HttpClient();   
+            {
+                ResponseInvoice response = new ResponseInvoice();
+                Uri baseUri = new Uri(url);
+                HttpClient _httpClient = new HttpClient();
                 _httpClient.BaseAddress = baseUri;
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.ConnectionClose = true;
-            if ("" + token != null)
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                if ("" + token != null)
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var c = JsonConvert.SerializeObject(content);
-            var _content = new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, "application/json");
-            HttpResponseMessage responseQR = await _httpClient.PostAsync(baseUri, _content);
+                var _content = new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, "application/json");
+                HttpResponseMessage responseQR = await _httpClient.PostAsync(baseUri, _content);
+                var resultResponseQR = await responseQR.Content.ReadAsStringAsync();
 
-            responseQR.EnsureSuccessStatusCode();
-            var resultResponseQR = await responseQR.Content.ReadAsStringAsync();
-            var jsonQR = JObject.Parse(resultResponseQR);
-            return jsonQR;
+                if (responseQR.IsSuccessStatusCode)
+                    response = JsonConvert.DeserializeObject<ResponseInvoice>(resultResponseQR)!;
+                else
+                {
+                    response = JsonConvert.DeserializeObject<ResponseInvoice>(resultResponseQR)!;
+                    response.status = false;
+                    var errorResult = JsonConvert.DeserializeObject<ValidationErrorResponseDto>(resultResponseQR);
+
+                    response.validationResults = new ValidationErrorResponseDto { Errors = new Dictionary<string, List<string>>() };
+                    foreach (var error in errorResult?.Errors!)
+                        response.validationResults.Errors.Add(error.Key, error.Value);
+                }
+                return response!;
+            }
+            catch (Exception ex)
+            {
+                var xx = ex.Message;
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        private async Task<JObject> SendPostRequest(string url, object content)
+        {
+            try
+            {
+                Uri baseUri = new Uri(url);
+                HttpClient _httpClient = new HttpClient();
+                _httpClient.BaseAddress = baseUri;
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.ConnectionClose = true;
+                var c = JsonConvert.SerializeObject(content);
+                var _content = new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, "application/json");
+                HttpResponseMessage responseQR = await _httpClient.PostAsync(baseUri, _content);
+
+                responseQR.EnsureSuccessStatusCode();
+                var resultResponseQR = await responseQR.Content.ReadAsStringAsync();
+                var jsonQR = JObject.Parse(resultResponseQR);
+                return jsonQR;
             }
             catch (Exception ex)
             {

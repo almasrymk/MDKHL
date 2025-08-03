@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.MultiTenancy;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace SmartParking.Blazor.Components.Pages.Payments;
 
@@ -209,6 +210,7 @@ public partial class Payment
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CreationTime"], Name = "CreationTime", IsFilterable = false, PropertyName = "CreationTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentStatus"], Name = "PaymentStatus", IsFilterable = true, PropertyName = "PaymentStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ZatcaStatus"], Name = _localizer["ZatcaStatus"], IsFilterable = true, PropertyName = "IsSentZatca", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         foreach (var item in organizations.Items)
         {
@@ -262,6 +264,15 @@ public partial class Payment
             }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CreationTime"], item.CreationTime.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentStatus"], _localizer[$"{item.PaymentStatus.ToString()}"]));
+            if(item.IsSentZatca)
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ZatcaStatus"], "<span class='text-success'>"+ _localizer["Sent"] + "</span>"));
+            }
+            else
+            {
+                //var buttonHtml = $"<div class=\"mud-grid-item d-flex justify-content-start align-items-center\"><!--!--><div class=\"mud-tooltip-root mud-tooltip-inline\"><!--!--><!--!--><button type=\"button\" class=\"mud-button-root mud-icon-button mud-button mud-button-filled mud-button-filled-primary mud-button-filled-size-small mud-ripple mud-icon-button-size-small mx-1\" _bl_d9afeaff-824e-4182-86d2-e435ae722d15=\"\"><span class=\"mud-icon-button-label\"><!--!--><svg class=\"mud-icon-root mud-svg-icon mud-icon-size-small\" focusable=\"false\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" role=\"img\"><!--!--><path d=\"M0 0h24v24H0z\" fill=\"none\"></path><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z\"></path></svg></span></button><!--!--><div id=\"popover-1af6513d-4c02-411c-9877-b3a27d8ec5da\" class=\"mud-popover-cascading-value\"></div></div></div>";
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ZatcaStatus"], "<span class='text-danger'>" + _localizer["NotSent"] + "</span>"));
+            }
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;

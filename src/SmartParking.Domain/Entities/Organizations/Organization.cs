@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace SmartParking.Entities.Organizations;
 
 public class Organization : BaseEntity
-{
+{    
     public string Code { get; set; }
     public string CommercialRegistrationNumber { get; set; }
     public DateOnly CRExpiryDate { get; set; }

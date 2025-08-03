@@ -34,4 +34,6 @@ public class PaymentDto
     public decimal AmountWithoutDiscount { get; set; }
     public Guid? TenantId { get; set; }
     public Invoice Invoice { get; set; }
+    public bool IsSentZatca { get; set; } = false;
+    public string ErrorMessagesZatca { get; set; }
 }

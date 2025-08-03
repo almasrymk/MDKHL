@@ -8,6 +8,6 @@ namespace SmartParking.Utilities
 {
     public interface IZatcaTaxInvoiceAppService : IApplicationService
     {
-         Task<string> SendRequestForZACTA(Guid paymentId);       
+         Task<ResponseInvoice> SendRequestForZACTA(Guid paymentId);       
     }
 }

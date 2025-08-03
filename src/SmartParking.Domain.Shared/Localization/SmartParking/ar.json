@@ -862,6 +862,10 @@
     "TicketId": "رقم التذكرة",
     "CustomerPackagesHead": "باقات-العميل",
     "User Name Zatca": "إسم المستخدم الزكاة والدخل",
-    "Password Zatca": "كلمة المرور الزكاة والدخل"
+    "Password Zatca": "كلمة المرور الزكاة والدخل",
+    "ZatcaStatus": "الزكاة و الدخل",
+    "Sent": "تم الارسال",
+    "NotSent": "لم ترسل"
+
   }
 }
