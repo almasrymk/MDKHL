@@ -859,12 +859,14 @@
     "DispenserTransaction": "حركات بالموزع",
     "RangeNumberValildation": ". يجب أن تكون القيمة بين 0 - 9999",
     "Dispensers": "الموزّعات",
-    "New Dispenser": "اضافة موزع",
-    "CustomerPackagesHead": "باقات-العميل" ,
+    "CustomerPackagesHead": "باقات-العميل",
     "OrganizationHoursHeader": "طريقة احتساب الساعات",
     "TicketId": "رقم التذكرة",
     "PackageCode": ":كود الباقة",
-    "Download": "تحميل"
+    "Download": "تحميل",
+    "CashierName": "اسم الكاشير",
+    "PaymentVat": "الضريبة",
+    "PaymentTotal": "الإجمالي"
 
 
 
