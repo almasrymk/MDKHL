@@ -189,13 +189,13 @@ public partial class Payment
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["InvoiceId"], Name = "InvoiceId", IsFilterable = false, PropertyName = "Invoice.Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["TicketId"], Name = "TicketId", IsFilterable = false, PropertyName = "Invoice.TicketId", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CustomerName"], Name = "CustomerName", IsFilterable = false, PropertyName = "Customers.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CashierName"], Name = "CashierName", IsFilterable = true, PropertyName = "CashierName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentMethod"], Name = "PaymentMethod", IsFilterable = true, PropertyName = "PaymentMethod", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["Amount"]}", Name = "Amount", IsFilterable = true, PropertyName = "Invoice.InvoicePrice", IsSortable = true, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["VAT"]}", Name = "VAT", IsFilterable = true, PropertyName = "Invoice.InvoicePrice", IsSortable = false, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["PaymentVat"]}", Name = "VAT", IsFilterable = true, PropertyName = "Invoice.InvoicePrice", IsSortable = false, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["Discount"]}", Name = "Discount", IsFilterable = true, PropertyName = "Invoice.Discount", IsSortable = true, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["Total"]}", Name = "Total", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["PaymentTotal"]}", Name = "Total", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentCategory"], Name = "PaymentCategory", IsFilterable = true, PropertyName = "PaymentCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "customer category", IsFilterable = true, PropertyName = "Customers.CustomerCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
         if (CurrentTenant.Id == null)
         {
             if (CultureInfo.CurrentCulture.Name == "en")
@@ -230,6 +230,7 @@ public partial class Payment
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CustomerName"], item.Customers?.IdentityUser?.Name ?? _localizer["NotCustomer"]));
             }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer[name: "CashierName"], item.CashierName));
 
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentMethod"], _localizer[$"{item.PaymentMethod}"]));
 
@@ -238,21 +239,12 @@ public partial class Payment
             var amount = item.Invoice?.InvoicePrice == 0 ? "0.0" : item.Invoice?.InvoicePrice.ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Amount"]}", $"{amount} {IconHtml}"));
             var vatValue =item.Invoice?.InvoicePrice == 0 ? "0.0" : Math.Round((item.Invoice?.InvoicePrice ?? 0) * 0.15m, 2).ToString();
-            rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["VAT"]}", $"{vatValue} {IconHtml}"));
+            rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["PaymentVat"]}", $"{vatValue} {IconHtml}"));
             var discountValue = item.Invoice?.Discount == 0 || item.Invoice?.Discount is null ? "0.0" : item.Invoice?.Discount.ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Discount"]}", $"{discountValue} {IconHtml}"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Total"]}", $"{total} {IconHtml}"));
+            rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["PaymentTotal"]}", $"{total} {IconHtml}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentCategory"], _localizer[$"{item.PaymentCategory.ToString()}"]));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(
-                _localizer["customer category"],
-                item.PaymentCategory == PaymentCategory.Package
-                    ? (item.Customers != null
-                        ? _localizer[$"{item.Customers.CustomerCategory.ToString()}"]
-                        : _localizer["NotCustomer"])
-                    : (string.IsNullOrWhiteSpace(item.Customers?.IdentityUser?.Name)
-                        ? _localizer["NotCustomer"]
-                        : _localizer["Customer"])
-            ));
+
             if (CurrentTenant.Id == null)
             {
                 if (CultureInfo.CurrentCulture.Name == "ar")
