@@ -1,30 +1,19 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using SmartParking.BarrierAppService;
 using SmartParking.CustomerPackages;
-using SmartParking.Entities.Cameras;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
 using SmartParking.PackageCodeEndPoint;
-using SmartParking.Packages;
 using SmartParking.Utilities;
-using SmartParking.WebSockets;
 using System;
 using System.Globalization;
-using System.Globalization;
-using System.Text.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Threading.Tasks;
-using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.MultiTenancy;
-using static QRCoder.PayloadGenerator;
 
 namespace SmartParking.DispenserEndPoint;
 
@@ -38,12 +27,12 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly ILogger<DispenserEndPointsAppService> _logger;
     private readonly IUnLinkedTransactionAppService _unlinkedGarageTransactionsAppService;
-    private readonly string _packageCodeNotFound = "PackageCodeNotFound";
+    private readonly string _packageCodeNotFound = "Package code not found";
     private readonly string _plateOrTicketeNotFound = "PlateOrTicketNotFound";
-    private readonly string _packageNotFound = "PackageNotFound";
+    private readonly string _packageNotFound = "Not have active package";
     private readonly string _laneNotFound = "LaneNotValid";
-    private readonly string _dispenserNotFound = "DispenserCodeNotValid";
-    private readonly string _organizationNotFound = "PackageCodeNotValid";
+    private readonly string _dispenserNotFound = "Dispenser code not valid";
+    private readonly string _organizationNotFound = "Not found organization for this dispenser";
     private readonly string _otherReasons = "Other";
 
     public DispenserEndPointsAppService(IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IBarrierAppService barrierAppService, IRepository<Dispenser, int> dispenserRepository, ILogger<DispenserEndPointsAppService> logger, IRepository<Organization, int> organizationRepository, ICustomerPackagesAppService customerPackagesAppService , IUnLinkedTransactionAppService unlinkedGarageTransactionsAppService, IGarageTransactionUtilityAppService garageTransactionUtilityAppService)
@@ -197,7 +186,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     private IBaseGateResponseDto NotFoundPackageHandler()
     {
         Logger.LogInformation(_packageNotFound);
-        return GetGateResponse(false, false, _packageNotFound);
+        return GetGateResponse(true, false, _packageNotFound);
     }
 
     private IBaseGateResponseDto NOtFoundPlateOrTicketHandler()
