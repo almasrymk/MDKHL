@@ -71,7 +71,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(_organization.Id, _garageTransactionDto.PlateNumber, _garageTransactionDto.AccurateTime.Value);
             var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _organization.DispenserTransaction , _organization.CameraTransaction ,  _garageTransactionDto  , packageDto);
             await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = request.CarNum, laneNO = request.LaneNO, operatorType = result == false ? 2 : 5 });
-            return GetGateResponse(true, result, _otherReasons);
+            return GetGateResponse( result, _otherReasons);
         }
     }
     public async Task<IBaseGateResponseDto> PreEntry(PackageCodeEntryDto packageCodeEntry)
@@ -105,7 +105,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             //{
             //    await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = packageCodeEntry.CarNum, laneNO = packageCodeEntry.LaneNO, operatorType = 5 });
             //}
-            return GetGateResponse(true, result, _otherReasons);
+            return GetGateResponse( result, _otherReasons);
         }
     }
     public async Task<IBaseGateResponseDto> Exit(ExitDto request)
@@ -138,7 +138,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(_organization.Id, _garageTransactionDto.PlateNumber, _garageTransactionDto.AccurateTime.Value);
             var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization, input  , packageDto);
             //await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = _garageTransactionDto.PlateNumber, laneNO = _garageTransactionDto.LaneNO, operatorType = result == false ? 2 : 5 });
-            return GetGateResponse(true, result, _otherReasons);
+            return GetGateResponse(result, _otherReasons);
         }
     }
     public async Task<IBaseGateResponseDto> PreExit(PackageCodeExitDto packageCodeExit)
@@ -173,37 +173,37 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
                 return NotFoundPackageHandler();
             }
             var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization, input, packageDto);
-            return GetGateResponse(true, result,_otherReasons );
+            return GetGateResponse( result,_otherReasons );
         }
     }
 
     private IBaseGateResponseDto NotFoundPackageCodeInRequestHandler()
     {
         Logger.LogInformation(_packageCodeNotFound);
-        return GetGateResponse(true, false, _packageCodeNotFound);
+        return GetGateResponse( false, _packageCodeNotFound);
     }
 
     private IBaseGateResponseDto NotFoundPackageHandler()
     {
         Logger.LogInformation(_packageNotFound);
-        return GetGateResponse(true, false, _packageNotFound);
+        return GetGateResponse( false, _packageNotFound);
     }
 
     private IBaseGateResponseDto NOtFoundPlateOrTicketHandler()
     {
         _logger.LogInformation($"{_organizationNotFound}");
-        return GetGateResponse(true, false, _plateOrTicketeNotFound);
+        return GetGateResponse( false, _plateOrTicketeNotFound);
     }  
     private IBaseGateResponseDto NotFoundOrganizationHandler()
     {
         _logger.LogInformation($"{_organizationNotFound}");
-        return GetGateResponse(true, false, _organizationNotFound);
+        return GetGateResponse( false, _organizationNotFound);
     }
 
     private IBaseGateResponseDto NotFoundDispenserHandler()
     {
         _logger.LogInformation($"{_dispenserNotFound}");
-        return GetGateResponse(true, false, _dispenserNotFound);
+        return GetGateResponse( false, _dispenserNotFound);
     }
 
     #endregion
@@ -237,19 +237,9 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     }
 
     public  IBaseGateResponseDto GetGateResponse(
-    bool isPackageValid,
     bool shouldOpenGate,
     string reason = null)
     {
-        if (!isPackageValid)
-        {
-            return new FailOpenGateResponseDto
-            {
-                ResCode = "others",
-                ResMsg = string.IsNullOrWhiteSpace(reason) ? "Invalid Package" : reason
-            };
-        }
-
         if (shouldOpenGate)
         {
             return new OpenGateResponseDto();
