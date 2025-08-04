@@ -29,18 +29,25 @@ namespace SmartParking.ZATCATaxInvoice
         public List<InfoMessage> infoMessages { get; set; }
         public string status { get; set; }
     }
+
     public class ValidationErrorResponseDto
     {
-        public List<object> errorMessages { get; set; }
-        public List<object> warningMessages { get; set; }
+        public List<Error> errorMessages { get; set; }
+        public List<Error> warningMessages { get; set; }
         public List<InfoMessage> infoMessages { get; set; }
         public string Type { get; set; }
         public string Title { get; set; }
         public string Status { get; set; }
         public string TraceId { get; set; }
-        public Dictionary<string, List<string>> Errors { get; set; }
+        public Dictionary<string, List<Error>> Errors { get; set; }
     }
 
-
-
+    public class Error
+    {
+        public string Type { get; set; }
+        public string Code { get; set; }
+        public string Category { get; set; }
+        public string Message { get; set; }
+        public string Status { get; set; }        
+    }
 }

@@ -64,8 +64,8 @@ namespace SmartParking.Utilities
         /// <param name="oragnization"></param>
         /// <returns></returns>
         private InvoiceRequestDto CreateInvoiceRequestDto(Payment payment, CustomerDto customer, OrganizationDto oragnization)
-        {
-            var AmountTax = decimal.Parse(string.Format("{0:0.00}", payment.Amount * 15 / 100));
+        {            
+            var NetAmount = payment.Amount / (decimal)1.15;           
             InvoiceRequestDto request = new InvoiceRequestDto();
             request.CompanyProfile = //ObjectMapper.Map<Organization, CompanyProfileDto>(oragnization!);
                 new CompanyProfileDto
@@ -84,15 +84,15 @@ namespace SmartParking.Utilities
             request.Invoice = // ObjectMapper.Map<Invoice, InvoiceDto>(invoice!);
                 new InvoiceDto
                 {
-                    InvoiceTypeId = 1,
+                    InvoiceTypeId = 2,
                     Code = Regex.Replace(payment.PaymentNumber, "[^0-9]", ""),
                     Date = payment.CreationTime,
                     Currency = "SAR",
                     DealerName = customer.ArabicName,
                     ExchangeRate = 1,
-                    VatPercentage = 0,
+                    VatPercentage = 15,
                     DiscountAmount = 0,
-                    Total = payment.Amount,
+                    Total = NetAmount,
                     DealerTaxNumber = "",
                     InvoiceDetails = new List<InvoiceDetailDto>()
                 };
@@ -101,12 +101,12 @@ namespace SmartParking.Utilities
             {
                 Id = 1,
                 ItemName = "حجز موقف",
-                ItemPrice = payment.Amount,
+                ItemPrice = NetAmount,
                 Discount = 0,
-                Net = payment.Amount,
+                Net = NetAmount,
                 Quantity = 1,
                 UnitName = "سيارة",
-                Vat = decimal.Parse(string.Format("{0:0.00}", payment.Amount * 15 / 100)),
+                Vat = NetAmount * 15 / 100,
                 VatPercentage = 15
             });
 
@@ -129,7 +129,7 @@ namespace SmartParking.Utilities
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<ResponseInvoice> SendRequestForZACTA(Guid paymentId)
+        public async Task<ResponseInvoice> SendToZACTA(Guid paymentId)
         {
             ResponseInvoice response = new ResponseInvoice();
             var payment = await _repository.FirstOrDefaultAsync(e => e.Id == paymentId);
@@ -188,18 +188,23 @@ namespace SmartParking.Utilities
                 HttpResponseMessage responseQR = await _httpClient.PostAsync(baseUri, _content);
                 var resultResponseQR = await responseQR.Content.ReadAsStringAsync();
 
-                if (responseQR.IsSuccessStatusCode)
-                    response = JsonConvert.DeserializeObject<ResponseInvoice>(resultResponseQR)!;
-                else
-                {
-                    response = JsonConvert.DeserializeObject<ResponseInvoice>(resultResponseQR)!;
-                    response.status = false;
-                    var errorResult = JsonConvert.DeserializeObject<ValidationErrorResponseDto>(resultResponseQR);
+                responseQR.EnsureSuccessStatusCode();
+                response = JsonConvert.DeserializeObject<ResponseInvoice>(resultResponseQR)!;
+                
 
-                    response.validationResults = new ValidationErrorResponseDto { Errors = new Dictionary<string, List<string>>() };
-                    foreach (var error in errorResult?.Errors!)
-                        response.validationResults.Errors.Add(error.Key, error.Value);
-                }
+
+                //if (responseQR.IsSuccessStatusCode)
+                //    response = JsonConvert.DeserializeObject<ResponseInvoice>(resultResponseQR)!;
+                //else
+                //{
+                //    response = JsonConvert.DeserializeObject<ResponseInvoice>(resultResponseQR)!;
+                //    response.status = false;
+                //    var errorResult = JsonConvert.DeserializeObject<ValidationErrorResponseDto>(resultResponseQR);
+
+                //    response.validationResults = new ValidationErrorResponseDto { Errors = new Dictionary<string, List<string>>() };
+                //    foreach (var error in errorResult?.Errors!)
+                //        response.validationResults.Errors.Add(error.Key, error.Value);
+                //}
                 return response!;
             }
             catch (Exception ex)

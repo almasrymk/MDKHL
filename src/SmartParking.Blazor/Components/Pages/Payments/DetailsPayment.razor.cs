@@ -5,6 +5,7 @@ using SmartParking.Blazor.Components.Pages.Invoices;
 using SmartParking.Enums;
 using SmartParking.Invoices;
 using SmartParking.Payments;
+using SmartParking.Utilities;
 using System;
 using System.Threading.Tasks;
 
@@ -27,7 +28,7 @@ public partial class DetailsPayment
 
     private async Task FetchPayment()
     {
-        Payment = await PaymentWebAppService.GetMdkhlAsync(Guid.Parse(Id));
+        Payment = await paymentWebAppService.GetMdkhlAsync(Guid.Parse(Id));
         CreationTime = Payment.CreationTime.ToString();
         Amount = Payment.Amount.ToString();
         LocalizedPaymentCategory= L[Payment.PaymentCategory];
@@ -65,5 +66,17 @@ public partial class DetailsPayment
     private void Back()
     {
         Navigation.NavigateTo("/payments");
+    }
+
+    private async Task ResendZatca()
+    {
+        var res = await paymentAppService.ResendZatca(Payment.Id);
+        if (res)
+            Navigation.NavigateTo("/payments");
+        else
+        {
+            var uri = Navigation.Uri;
+            Navigation.NavigateTo(uri, forceLoad: true);
+        }
     }
 }

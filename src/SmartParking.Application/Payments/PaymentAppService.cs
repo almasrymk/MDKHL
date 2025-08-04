@@ -198,10 +198,20 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                     payment.PaymentStatus = status;
                     //var token = await _invoiceUtility.GetTokenAsync();
                     //var qrCode = await _invoiceUtility.GetQrCodeAsync(payment.Amount, payment.OrganizationId);
-                    var res = await _zatcaTaxInvoiceAppService.SendRequestForZACTA(payment.Id);
+                    var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
                     payment.QrCodeInvoice = res.invoiceQRCode;
                     payment.IsSentZatca = res.status;
-                    payment.ErrorMessagesZatca = string.Join(",", res.validationResults.errorMessages);
+                    payment.ErrorMessagesZatca = null;
+                    if (res.validationResults != null && res.validationResults.errorMessages != null && res.validationResults.errorMessages.Count > 0)
+                    {
+                        var listErrors = res.validationResults.errorMessages.Select(e => e.Message).ToList();
+                        payment.ErrorMessagesZatca = string.Join(",", listErrors);
+                    }
+                    else if (res.validationResults != null && res.validationResults.warningMessages != null && res.validationResults.warningMessages.Count > 0)
+                    {
+                        var listErrors = res.validationResults.warningMessages.Select(e => e.Message).ToList();
+                        payment.ErrorMessagesZatca = string.Join(",", listErrors);
+                    }
                     await _repository.UpdateAsync(payment);
                 }
 
@@ -222,6 +232,38 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         else
         {
             throw new Exception($"Payment status request failed with status: {response.StatusCode}");
+        }
+    }
+
+    public async Task<bool> ResendZatca(Guid Id)
+    {
+        try
+        {             
+            var payment = await _repository.FirstOrDefaultAsync(p => p.Id == Id);
+            if (payment == null)
+                return false;
+            var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
+            payment.QrCodeInvoice = res.invoiceQRCode;
+            payment.IsSentZatca = res.status;
+            payment.ErrorMessagesZatca = null;
+            if (res.validationResults != null && res.validationResults.errorMessages != null && res.validationResults.errorMessages.Count > 0)
+            {
+                var listErrors = res.validationResults.errorMessages.Select(e => e.Message).ToList();
+                payment.ErrorMessagesZatca = string.Join(",", listErrors);
+            }
+            else if (res.validationResults != null && res.validationResults.warningMessages != null && res.validationResults.warningMessages.Count > 0)
+            {
+                var listErrors = res.validationResults.warningMessages.Select(e => e.Message).ToList();
+                payment.ErrorMessagesZatca = string.Join(",", listErrors);
+            }
+            await _repository.UpdateAsync(payment);
+
+            return res.status;
+        }
+        catch (Exception ex)
+        {
+            var x = ex.Message;
+            throw;
         }
     }
 
@@ -340,11 +382,21 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         payment = await _repository.InsertAsync(payment);
       
         await CurrentUnitOfWork!.SaveChangesAsync();
-        var qrCode = await _zatcaTaxInvoiceAppService.SendRequestForZACTA(payment.Id);
+        var qrCode = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
         payment.QrCodeInvoice = qrCode.invoiceQRCode;
         payment.IsSentZatca = qrCode.status;
+        payment.ErrorMessagesZatca = null;
         if (qrCode.validationResults != null && qrCode.validationResults.errorMessages != null && qrCode.validationResults.errorMessages.Count > 0)
-            payment.ErrorMessagesZatca = string.Join(",", qrCode.validationResults.errorMessages);
+        {
+            var listErrors = qrCode.validationResults.errorMessages.Select(e => e.Message).ToList();
+            payment.ErrorMessagesZatca = string.Join(",", listErrors);
+        }
+        else if (qrCode.validationResults != null && qrCode.validationResults.warningMessages != null && qrCode.validationResults.warningMessages.Count > 0)
+        {
+            var listErrors = qrCode.validationResults.warningMessages.Select(e => e.Message).ToList();
+            payment.ErrorMessagesZatca = string.Join(",", listErrors);
+        }
+        
         await CurrentUnitOfWork!.SaveChangesAsync();
         return new PaymentCheckoutDto
         {
