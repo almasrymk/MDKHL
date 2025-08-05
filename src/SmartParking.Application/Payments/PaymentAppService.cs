@@ -1,6 +1,5 @@
 ﻿using Castle.Core.Resource;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using SmartParking.CustomerPackages;
@@ -48,7 +47,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     private const string PaymentUrl = "https://eu-test.oppwa.com/v1/checkouts";
     private const string token = "OGFjN2E0Y2E5MjQ0ZjUzYzAxOTI0NzNkMjBlNDAzMTV8NXJDQjdzYUpQN2U3U1lrWiU6QjQ=";
     private const string tokenType = "Bearer";
-    private readonly IHttpContextAccessor _httpContextAccessor;
+
 
     private readonly Dictionary<string, string> PaymentEntityID = new Dictionary<string, string>
     {
@@ -62,8 +61,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         ICustomerPackagesAppService customerPackagesAppService,
         IOrganizationsAppService _organizationsAppService,
         HttpClient httpClient,
-        IInvoiceUtilityAppService invoiceUtility,
-        IHttpContextAccessor httpContextAccessor)
+        IInvoiceUtilityAppService invoiceUtility)
     : base(repository)
     {
 
@@ -76,7 +74,6 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         _packageRepo = packageRepo;
         _httpClient = httpClient;
         _invoiceUtility = invoiceUtility;
-        _httpContextAccessor = httpContextAccessor;
     }
 
 
@@ -362,26 +359,11 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     }
     private async Task<string> HyperPayPayment(PaymentCheckoutRequestDto paymentCheckoutRequest, string entityId)
     {
-        StringContent content;
-        var host = _httpContextAccessor.HttpContext?.Request?.Host.Host;
-
-        if (string.IsNullOrEmpty(host) && ( host!.Contains("test", StringComparison.CurrentCultureIgnoreCase) || host!.Contains("dev", StringComparison.CurrentCultureIgnoreCase)))
-        {
-            content = new StringContent(
-                         content: $"entityId={entityId}&amount={paymentCheckoutRequest.Amount}&currency={Currency}&paymentType={PaymentType}&customParameters[3DS2_enrolled]=true",
-                         Encoding.ASCII,
-                         "application/x-www-form-urlencoded"
-                        );
-        }
-        else
-        {
-            content = new StringContent(
-                      content: $"entityId={entityId}&amount={paymentCheckoutRequest.Amount}&currency={Currency}&paymentType={PaymentType}",
-                      Encoding.ASCII,
-                      "application/x-www-form-urlencoded"
-                     );
-        }
-
+        var content = new StringContent(
+          $"entityId={entityId}&amount={paymentCheckoutRequest.Amount}&currency={Currency}&paymentType={PaymentType}",
+          Encoding.ASCII,
+          "application/x-www-form-urlencoded"
+      );
 
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(tokenType, token);
 
