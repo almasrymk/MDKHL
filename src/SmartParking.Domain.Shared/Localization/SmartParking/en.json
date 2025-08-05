@@ -833,9 +833,9 @@
     "OrganizationHoursHeader": "How to Calculate Hours",
     "TicketId": "Ticket Number",
     "PackageCode": "Package Code",
-    "Download": "Download"
-
-
-
+    "Download": "Download",
+    "CashierName": "Cashier Name",
+    "PaymentVat": "VAT", 
+    "PaymentTotal": "Total"
   }
 }
