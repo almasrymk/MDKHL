@@ -1,9 +1,7 @@
-﻿using Castle.Core.Logging;
-using Castle.Core.Resource;
+﻿using Castle.Core.Resource;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Customers;
@@ -51,7 +49,6 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     private const string token = "OGFjN2E0Y2E5MjQ0ZjUzYzAxOTI0NzNkMjBlNDAzMTV8NXJDQjdzYUpQN2U3U1lrWiU6QjQ=";
     private const string tokenType = "Bearer";
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<PaymentAppService> _logger;
 
     private readonly Dictionary<string, string> PaymentEntityID = new Dictionary<string, string>
     {
@@ -66,7 +63,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         IOrganizationsAppService _organizationsAppService,
         HttpClient httpClient,
         IInvoiceUtilityAppService invoiceUtility,
-        IHttpContextAccessor httpContextAccessor, ILogger<PaymentAppService> logger)
+        IHttpContextAccessor httpContextAccessor)
     : base(repository)
     {
 
@@ -80,7 +77,6 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         _httpClient = httpClient;
         _invoiceUtility = invoiceUtility;
         _httpContextAccessor = httpContextAccessor;
-        _logger = logger;
     }
 
 
@@ -135,9 +131,10 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         {
             var responseContent = await response.Content.ReadAsStringAsync();
             var responseObject = JObject.Parse(responseContent);
-            _logger.LogInformation($"{DateTime.Now}  => hyper pay Status  : {responseObject}");
+
             var resultDescription = responseObject["result"]?["description"]?.ToString();
             var status = PaymentStatus.Cancelled;
+
             if (!string.IsNullOrEmpty(resultDescription))
             {
                 if (resultDescription.Contains("pending", StringComparison.OrdinalIgnoreCase))
@@ -368,7 +365,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         StringContent content;
         var host = _httpContextAccessor.HttpContext?.Request?.Host.Host;
 
-        if (!string.IsNullOrEmpty(host) && ( host!.Contains("test", StringComparison.CurrentCultureIgnoreCase) || host!.Contains("dev", StringComparison.CurrentCultureIgnoreCase)))
+        if (string.IsNullOrEmpty(host) && ( host!.Contains("test", StringComparison.CurrentCultureIgnoreCase) || host!.Contains("dev", StringComparison.CurrentCultureIgnoreCase)))
         {
             content = new StringContent(
                          content: $"entityId={entityId}&amount={paymentCheckoutRequest.Amount}&currency={Currency}&paymentType={PaymentType}&customParameters[3DS2_enrolled]=true",
@@ -390,13 +387,15 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
 
         var response = await _httpClient.PostAsync(PaymentUrl, content);
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var responseObject = JObject.Parse(responseContent);
-        _logger.LogInformation($"{DateTime.Now}  => hyper pay Reposnse : {responseObject}");
+
         if (!response.IsSuccessStatusCode)
         {
             throw new Exception($"Payment request failed with status: {response.StatusCode}");
         }
+
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        var responseObject = JObject.Parse(responseContent);
         var checkoutId = responseObject["id"]?.ToString();
         if (string.IsNullOrEmpty(checkoutId))
         {
