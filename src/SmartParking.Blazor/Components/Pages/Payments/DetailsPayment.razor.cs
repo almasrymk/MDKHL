@@ -64,6 +64,7 @@ public partial class DetailsPayment
             ["OrganizationAddress"] = Payment.Organization.Address,
             ["Code"] = Payment.PaymentNumber??"",
             ["PaymentPrice"] = Payment.Amount,
+            ["CashierName"] = Payment.CashierName
         };
         return DialogService.ShowAsync<InvoiceDetailsViewDialog>("", parameters);
 

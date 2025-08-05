@@ -13,6 +13,7 @@ public partial class InvoiceDetailsViewDialog
     [Parameter] public string OrganizationAddress { get; set; }
     [Parameter] public string Code { get; set; }
     [Parameter] public decimal PaymentPrice { get; set; }
+    [Parameter] public string CashierName { get; set; }
     public string imagepath { get; set; }
     public string OrganizationPicture { get; set; }
     public decimal price { get; set; }

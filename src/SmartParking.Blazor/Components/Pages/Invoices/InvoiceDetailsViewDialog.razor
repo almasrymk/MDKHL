@@ -62,7 +62,7 @@
 
             <div class="d-flex justify-content-center align-items-center col-md-10 flex-column m-auto ">
                 @if(Invoice is not null){
-                    <InvoiceDetailsPopupDialog Invoice="@Invoice" OrganizationAddress="@OrganizationAddress"/>
+                    <InvoiceDetailsPopupDialog Invoice="@Invoice" OrganizationAddress="@OrganizationAddress" CashierName ="@CashierName"/>
                 }else{
                     <PackageDetailsPopupDialog Package="@Package" OrganizationAddress="@OrganizationAddress"/>
                 }
