@@ -22,5 +22,6 @@ public class PaymentGetResponseDto : FullAuditedEntityDto<Guid>
     public string PaymentStatus { get; set; }
     public string Currency { get; set; }
     public string PaymentNumber { get; set; }
+    public string CashierName { get; set; }
     public CustomerDto Customers { get; set; } = new CustomerDto();
 }
