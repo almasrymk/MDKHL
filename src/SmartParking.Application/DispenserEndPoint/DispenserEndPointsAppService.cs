@@ -27,8 +27,8 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly ILogger<DispenserEndPointsAppService> _logger;
     private readonly IUnLinkedTransactionAppService _unlinkedGarageTransactionsAppService;
-    private readonly string _packageCodeNotFound = "Package code not found";
-    private readonly string _plateOrTicketeNotFound = "PlateOrTicketNotFound";
+    private readonly string _packageCodeNotFound = "Please confirm if the payment has been completed";
+    private readonly string _plateOrTicketeNotFound = "Ticket Id not found";
     private readonly string _packageNotFound = "Not have active package";
     private readonly string _laneNotFound = "LaneNotValid";
     private readonly string _dispenserNotFound = "Dispenser code not valid";
@@ -60,7 +60,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             if(string.IsNullOrEmpty(request.TicketID))
             {
                 await _unlinkedGarageTransactionsAppService.CreateAsync(_unlinkedDto);
-                return NotFoundPackageCodeInRequestHandler();
+                return NOtFoundPlateOrTicketHandler();
             }
             var _organization = await _organizationRepository.FirstOrDefaultAsync(org => org.Id == _dispenser.OrganizationId);
             if (_organization == null || _organization.DispenserTransaction == false)
@@ -182,7 +182,6 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
         Logger.LogInformation(_packageCodeNotFound);
         return GetGateResponse( false, _packageCodeNotFound);
     }
-
     private IBaseGateResponseDto NotFoundPackageHandler()
     {
         Logger.LogInformation(_packageNotFound);
@@ -191,7 +190,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
 
     private IBaseGateResponseDto NOtFoundPlateOrTicketHandler()
     {
-        _logger.LogInformation($"{_organizationNotFound}");
+        _logger.LogInformation($"{_plateOrTicketeNotFound}");
         return GetGateResponse( false, _plateOrTicketeNotFound);
     }  
     private IBaseGateResponseDto NotFoundOrganizationHandler()
