@@ -52,7 +52,7 @@ namespace SmartParking.Utilities
         /// <returns></returns>
         private async Task<string> GetTokenAsync(string userName, string password)
         {
-            JObject json = await SendPostRequest("https://zatca.mazeedit.com/api/Auth/Login", new { userName = userName /*"maden.tyba"*/, password = password/* "maden.tyba@P@ssw0rd123"*/ });
+            JObject json = await SendPostRequest("https://zatca.mazeedit.com/api/Auth/Login", new { userName = userName , password = password});
             var token = json["data"]?["token"]?.ToString();
             return "" + token;
         }

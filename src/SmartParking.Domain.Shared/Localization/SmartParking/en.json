@@ -829,10 +829,15 @@
     "DispenserTransaction": "Dispenser Transactions",
     "RangeNumberValildation": " The value must be between 0 and 9999",
     "Dispensers": "Dispensers",
-    "OrganizationHoursHeader": "How to Calculate Hours", 
-    "TicketId" :  "Ticket Number"
-
-
-
+    "OrganizationHoursHeader": "How to Calculate Hours",
+    "TicketId": "Ticket Number",
+    "User Name Zatca": "إسم المستخدم الزكاة والدخل",
+    "Password Zatca": "كلمة المرور الزكاة والدخل",
+    "ZatcaStatus": "الزكاة و الدخل",
+    "Sent": "Sent",
+    "NotSent": "Not Sent",
+    "Resend to Zatca": "Resend to Zatca",
+    "Not sent to Zatca": "Not sent to Zatca",
+    "Sent with notes to Zatca": "Sent with notes to Zatca"
   }
 }

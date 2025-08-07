@@ -34,6 +34,6 @@ public class Payment : FullAuditedEntity<Guid> , IMultiTenant
     public Guid? TenantId { get; set; }
     public string? EnPlateNumber { get; set; }
     public string? ArPlateNumber { get; set; }
-    public bool IsSentZatca { get; set; } = false;
+    public bool IsSentZatca { get; set; }
     public string ErrorMessagesZatca { get; set; }
 }
