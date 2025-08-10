@@ -1824,6 +1824,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("OrganizationPicture")
                         .HasColumnType("text");
 
+                    b.Property<string>("PasswordZatca")
+                        .HasColumnType("text");
+
                     b.Property<string>("PaymentCode")
                         .HasColumnType("text");
 
@@ -1866,6 +1869,9 @@ namespace SmartParking.Migrations
 
                     b.Property<int>("UsedSlots")
                         .HasColumnType("integer");
+
+                    b.Property<string>("UserNameZatca")
+                        .HasColumnType("text");
 
                     b.Property<string>("WhatsAppNum")
                         .HasColumnType("text");
@@ -2190,6 +2196,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("EntityId")
                         .HasColumnType("text");
 
+                    b.Property<string>("ErrorMessagesZatca")
+                        .HasColumnType("text");
+
                     b.Property<int?>("InvoiceId")
                         .HasColumnType("integer");
 
@@ -2198,6 +2207,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
+
+                    b.Property<bool>("IsSentZatca")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("timestamp without time zone")

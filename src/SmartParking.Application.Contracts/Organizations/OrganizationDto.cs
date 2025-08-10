@@ -71,7 +71,6 @@ public class OrganizationDto :AuditedEntityDto<int>
     public string PaymentCode { get; set; }
     public bool DispenserTransaction { get; set; }
     public bool CameraTransaction { get; set; }
-
-
-
+    public string UserNameZatca { get; set; }
+    public string PasswordZatca { get; set; }
 }

@@ -836,6 +836,14 @@
     "Download": "Download",
     "CashierName": "Cashier Name",
     "PaymentVat": "VAT", 
-    "PaymentTotal": "Total"
+    "PaymentTotal": "Total",
+    "User Name Zatca": "إسم المستخدم الزكاة والدخل",
+    "Password Zatca": "كلمة المرور الزكاة والدخل",
+    "ZatcaStatus": "الزكاة و الدخل",
+    "Sent": "Sent",
+    "NotSent": "Not Sent",
+    "Resend to Zatca": "Resend to Zatca",
+    "Not sent to Zatca": "Not sent to Zatca",
+    "Sent with notes to Zatca": "Sent with notes to Zatca"
   }
 }

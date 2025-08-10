@@ -115,6 +115,13 @@
                             <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganization.Email" Placeholder=@L["Type Here"] Label=@L["Contact Email"] />
                         </MudItem>
 
+                        <MudItem sm="4">
+                            <MudTextField RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganization.UserNameZatca" Placeholder=@L["User Name Zatca"] Label=@L["User Name Zatca"] />
+                        </MudItem>
+                          <MudItem sm="4">
+                            <MudTextField RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Password" @bind-Value="_createUpdateOrganization.PasswordZatca" Placeholder=@L["Password Zatca"] Label=@L["Password Zatca"] />
+                        </MudItem>
+
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
                         <MudItem sm="4">
                             <MudSelect T="string" Variant="Variant.Text"
