@@ -1,5 +1,5 @@
 {
-    "culture": "ar",
+  "culture": "ar",
   "texts": {
     "Actions": "الإجراءات",
     "Active": "مفعل",
@@ -866,9 +866,14 @@
     "Download": "تحميل",
     "CashierName": "اسم الكاشير",
     "PaymentVat": "الضريبة",
-    "PaymentTotal": "الإجمالي"
-
-
-
+    "PaymentTotal": "الإجمالي",
+    "User Name Zatca": "إسم المستخدم الزكاة والدخل",
+    "Password Zatca": "كلمة المرور الزكاة والدخل",
+    "ZatcaStatus": "الزكاة و الدخل",
+    "Sent": "تم الارسال",
+    "NotSent": "لم ترسل",
+    "Resend to Zatca": "اعادة الارسال الى الزكاة و الدخل",
+    "Not sent to Zatca": "لم يتم الارسال الى الزكاة والدخل",
+    "Sent with notes to Zatca": "تم الارسال مع وجود ملاحظات الى الزكاة والدخل"
   }
-  }
+}

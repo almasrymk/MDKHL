@@ -22,5 +22,6 @@ public interface IPaymentAppService : ICrudAppService<PaymentDto, Guid, PagedAnd
 
     Task<Result<PaymentCheckoutDto>> PayCustomerInvoiceAsync(PayCustomerInvoiceDto payCustomerInvoiceDto);
 
+    Task<bool> ResendZatca(Guid Id);
 
 }

@@ -67,6 +67,9 @@ public partial class ViewMyAccount
 
     public int Status { get; set; } = 1;
 
+    public string UserNameZatca { get; set; }
+    public string PasswordZatca { get; set; }
+
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
     IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
@@ -147,6 +150,8 @@ public partial class ViewMyAccount
         FreeMinutes = organization.FreeMinutes;
         TaxIdentificationNumber = organization.TaxNumber;
         Graceperiod = organization.Graceperiod;
+        UserNameZatca = organization.UserNameZatca;
+        PasswordZatca = organization.PasswordZatca;
 
     }
 
@@ -232,4 +237,3 @@ public partial class ViewMyAccount
         Navigation.NavigateTo("/");
     }
 }
-
