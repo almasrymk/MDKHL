@@ -396,6 +396,21 @@
 
 
                                     }
+                                    @if (OnDownloadCustomerPackage.HasDelegate && ShowDownloadCustomerPackage)
+                                    {
+                                        <MudTooltip Text=@L["Download"] Color=MudBlazor.Color.Primary>
+
+                                            <MudIconButton OnClick="@(e => OnDownloadCustomerPackage.InvokeAsync(context.Item))"
+                                                           Icon="@Icons.Material.Filled.QrCode2"
+                                                           Variant="Variant.Filled"
+                                                           Color="MudBlazor.Color.Primary"
+                                                           Size="MudBlazor.Size.Small"
+                                                           Class="mx-1" />
+                                        </MudTooltip>
+
+
+                                    }
+
                                     @if (ShowCustomerTransactionsMethod.HasDelegate && ShowCustomerTransactions)
                                     {
                                         <MudTooltip Text=@L["Export"] Color=MudBlazor.Color.Primary>

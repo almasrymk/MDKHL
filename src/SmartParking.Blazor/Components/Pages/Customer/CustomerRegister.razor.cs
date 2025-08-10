@@ -56,6 +56,7 @@ public partial class CustomerRegister
     private string plateNumbers = "";
     private string RoleId = "";
     private int  PackageId { get; set; }
+    public bool ShowAddUser { get; set; } = false;
     private CustomerDto Customer = new CustomerDto();
 
     /// <summary>
@@ -74,10 +75,12 @@ public partial class CustomerRegister
     }
     protected async override Task OnInitializedAsync()
     {
+
         if (!await AuthorizationService.IsGrantedAsync(CustomerPermissions.Create))
         {
             Navigation.NavigateTo("/Account/AccessDenied", true);
         }
+        ShowAddUser = await AuthorizationService.IsGrantedAsync(CustomerPermissions.AddUser);
         var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         Organizations = result.Items.ToList();
         if (CurrentTenant.Id is not null)

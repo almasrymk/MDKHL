@@ -107,7 +107,7 @@ public partial class Region
         RowPerPage = pageInfo.RowsPerPage;
         Console.WriteLine(RowPerPage);
         // Create a request object for paged and sorted data
-        var input = new PagedAndSortedResultRequestDto
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,

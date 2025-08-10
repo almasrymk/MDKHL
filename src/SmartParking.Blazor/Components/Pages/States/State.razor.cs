@@ -112,7 +112,7 @@ public partial class State
         RowPerPage = pageInfo.RowsPerPage;
         Console.WriteLine(RowPerPage);
         // Create a request object for paged and sorted data
-        var input = new PagedAndSortedResultRequestDto
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
@@ -145,7 +145,7 @@ public partial class State
         foreach (var item in states.Items)
         {
             var rowDef = new RowDef();
-            rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Id"], item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ArabicName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.EnglishName));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["RegionArabicName"], item.RegionArabicName));

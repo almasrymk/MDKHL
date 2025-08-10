@@ -5,6 +5,7 @@
 @using SmartParking.PDF
 @using System.IO
 @using SmartParking.Packages
+@using System.Globalization
 @using Volo.Abp.MultiTenancy
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
@@ -13,7 +14,14 @@
 @inject ICurrentTenant currentTenant
 @inject IPDFGeneratorAppService PdfGenetrayorAppService
 @inject IOrganizationsAppService OrganizationService
-<div class="mud-modal">
+
+@{
+    var arabicCulture = new CultureInfo("ar");
+    CultureInfo.CurrentCulture = arabicCulture;
+    CultureInfo.CurrentUICulture = arabicCulture;
+}
+
+<div class="mud-modal" dir="rtl" lang="ar">
 
     <div class="title-content d-flex justify-content-center align-items-center">
 
@@ -35,6 +43,14 @@
                     <h5 class="fw-bold">@L["InvoiceNumberView"]:</h5>
                     <h5>@CommercialRegisteration</h5>
                 </div>
+                @if (Invoice.TicketId != null)
+                {
+                    <div class="d-flex flex-row">
+                        <h5 class="fw-bold">@L["TicketId"]:</h5>
+                        <h5>@Invoice.TicketId</h5>
+                    </div>
+                }
+              
                 <div class="d-flex align-items-center justify-content-center">
                     <h4 class="text-center">
                         @L["HeaderVatReceiptPayment"] @($"{PaymentPrice} ")

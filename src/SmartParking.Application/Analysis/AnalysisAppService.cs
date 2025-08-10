@@ -538,11 +538,14 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         {
             var query = await _paymentRepository.GetQueryableAsync();
             var organizations = await _orgRepo.GetQueryableAsync();
+            var userQuery = await _myUserRepository.GetQueryableAsync();
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
             var resultJoin = from payment in query
                              where tenantId.HasValue ? payment.TenantId == tenantId.Value : true
                              join organization in organizations
                              on payment.OrganizationId equals organization.Id
+                             join user in userQuery
+                             on payment.CreatorId equals user.Id
                              select new PaymentDto
                              {
                                  Amount = payment.Amount,
@@ -562,7 +565,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
                                  InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
-                                 PaymentStatus = payment.PaymentStatus
+                                 PaymentStatus = payment.PaymentStatus , 
+                                 CashierName = user.Name
                              };
             resultJoin = ApplySortPayment(input, resultJoin);
             resultJoin = ApplyFilterPayment(input, resultJoin);
@@ -584,6 +588,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         {
             var query = await _paymentRepository.GetQueryableAsync();
             var organizations = await _orgRepo.GetQueryableAsync();
+            var userQuery = await _myUserRepository.GetQueryableAsync();
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
             query = query.Where(_ => _.PaymentMethod == PaymentMethod.Cash);
             var resultJoin = from payment in query
@@ -591,6 +596,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                              where payment.CustomerId != null 
                              join organization in organizations
                              on payment.OrganizationId equals organization.Id
+                             join user in userQuery
+                             on payment.CreatorId equals user.Id
                              select new PaymentDto
                              {
                                  Amount = payment.Amount,
@@ -610,7 +617,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
                                  InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
-                                 PaymentStatus = payment.PaymentStatus
+                                 PaymentStatus = payment.PaymentStatus , 
+                                 CashierName = user.Name
                              };
             //  resultJoin = CheckTenantPayment(tenantId, resultJoin);
             resultJoin = ApplySortPayment(input, resultJoin);
@@ -633,13 +641,15 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         {
             var query = await _paymentRepository.GetQueryableAsync();
             var organizations = await _orgRepo.GetQueryableAsync();
-
+            var userQuery = await _myUserRepository.GetQueryableAsync();
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
             query = query.Where(_ => _.PaymentMethod != PaymentMethod.Cash);
             var resultJoin = from payment in query
                              where tenantId.HasValue ? payment.TenantId == tenantId.Value : true
                              join organization in organizations
                              on payment.OrganizationId equals organization.Id
+                             join user in userQuery
+                             on payment.CreatorId equals user.Id
                              select new PaymentDto
                              {
                                  Amount = payment.Amount,
@@ -659,7 +669,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
                                  InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
-                                 PaymentStatus = payment.PaymentStatus
+                                 PaymentStatus = payment.PaymentStatus , 
+                                 CashierName = user.Name
                              };
 
             //resultJoin = CheckTenantPayment(tenantId, resultJoin);

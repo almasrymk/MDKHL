@@ -15,4 +15,5 @@ public static class CustomerPermissions
     public const string Edit = Default + SmartParkingPermissions.Edit;
     public const string Delete = Default + SmartParkingPermissions.Delete;
     public const string AddRoleToCustomer = Default + SmartParkingPermissions.AddRoleToCustomer;
+    public const string AddUser = Default + SmartParkingPermissions.AddUser;
 }

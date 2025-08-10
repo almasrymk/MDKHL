@@ -27,13 +27,14 @@ public class PaymentDto
     public DateOnly Date { get; set; }
 
     public TimeOnly Time {  get; set; }
-  public string PaymentNumber { get; set; }
+    public string PaymentNumber { get; set; }
     public string PlateNumber { get; set; }
     public string OrganizationArabicName { get; set; }
     public string OrganizationEnglishName { get; set; }
     public decimal AmountWithoutDiscount { get; set; }
     public Guid? TenantId { get; set; }
     public Invoice Invoice { get; set; }
+    public string CashierName { get; set; }
     public bool IsSentZatca { get; set; } = false;
     public string ErrorMessagesZatca { get; set; }
 }

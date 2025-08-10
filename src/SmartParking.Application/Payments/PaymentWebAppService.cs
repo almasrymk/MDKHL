@@ -12,6 +12,7 @@ using SmartParking.Garages;
 using SmartParking.Invoices;
 using SmartParking.Organizations;
 using SmartParking.Packages;
+using SmartParking.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,10 +35,11 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly IRepository<Invoice, int> _invoiceAppService;
     private readonly IOrganizationsAppService _organizationsAppService;
+    private readonly IMyUserRepository _myUserRepository;
 
-    public PaymentWebAppService(IRepository<Payment,Guid> paymentRepository,IDataFilter dataFilter,IPackagesAppService packagesAppService,
+    public PaymentWebAppService(IRepository<Payment, Guid> paymentRepository, IDataFilter dataFilter, IPackagesAppService packagesAppService,
         IRepository<Customer, Guid> CustomerRepository,
-        IRepository<Invoice,int> invoiceAppService,IOrganizationsAppService organizationsAppService,IRepository<Organization, int> organizationRepository)
+        IRepository<Invoice, int> invoiceAppService, IOrganizationsAppService organizationsAppService, IRepository<Organization, int> organizationRepository, IMyUserRepository myUserRepository)
     {
         _paymentRepository = paymentRepository;
         _dataFilter = dataFilter;
@@ -46,6 +48,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         _invoiceAppService = invoiceAppService;
         _organizationsAppService = organizationsAppService;
         _organizationRepository = organizationRepository;
+        _myUserRepository = myUserRepository;
     }
     #region public methods 
     public async Task<PagedResultDto<PaymentDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
@@ -55,9 +58,11 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             var query = await _paymentRepository.GetQueryableAsync();
             var organizationQuery = await _organizationRepository.GetQueryableAsync();
             var customerQuery = await _customerRepository.GetQueryableAsync();
+            var userQuery = await _myUserRepository.GetQueryableAsync();
             customerQuery = customerQuery.Include(x => x.IdentityUser);
             var result = from payment in query
                     join organization in organizationQuery on payment.OrganizationId equals organization.Id
+                    join user in userQuery on payment.CreatorId equals user.Id
                     join customer in customerQuery on payment.CustomerId equals customer.Id
                     into customerList
                     from customer in customerList.DefaultIfEmpty()
@@ -82,8 +87,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                         PlateNumber = payment.EnPlateNumber,
                         TenantId = payment.TenantId,
                         Customers = customer,
-                        Invoice = payment.Invoice
-
+                        Invoice = payment.Invoice  , 
+                        CashierName = user.Name
                     };
             result = result.OrderByDescending(x => x.CreationTime);
             result = ApplyFilterTenant(tenantId, result);
@@ -105,23 +110,47 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
             var query = await _paymentRepository.GetQueryableAsync();
-            query = query.Where(x => x.OrganizationId == organization.Id);
-            query = query.OrderByDescending(x => x.CreationTime);
-            query = query.Include(x => x.Customers).ThenInclude(c => c.IdentityUser);
-            query = query.Include(x => x.Invoice);
-            query = ApplySearch(input, query);
-            query = ApplySort(input, query);
-            var totalCount = await AsyncExecuter.CountAsync(query);
-            query = query.Skip(input.SkipCount).Take(input.MaxResultCount);
-            var payments = await AsyncExecuter.ToListAsync(query);
-            var paymentDtos = ObjectMapper.Map<List<Payment>, List<PaymentDto>>(payments);
-
+            var customerQuery = await _customerRepository.GetQueryableAsync();
+            var userQuery = await _myUserRepository.GetQueryableAsync();
+            customerQuery = customerQuery.Include(x => x.IdentityUser);
+            var result = from payment in query
+                         join user in userQuery on payment.CreatorId equals user.Id
+                         join customer in customerQuery on payment.CustomerId equals customer.Id
+                         into customerList
+                         from customer in customerList.DefaultIfEmpty()
+                         select new PaymentDto()
+                         {
+                             Amount = payment.Amount,
+                             CheckoutId = payment.CheckoutId,
+                             CreationTime = payment.CreationTime.ToString(),
+                             Currency = payment.Currency,
+                             CustomerId = payment.CustomerId,
+                             Id = payment.Id,
+                             InvoiceId = payment.InvoiceId,
+                             OrganizationId = payment.OrganizationId,
+                             PaymentCategory = payment.PaymentCategory,
+                             PaymentMethod = payment.PaymentMethod,
+                             PaymentStatus = payment.PaymentStatus,
+                             PackageId = payment.PackageId,
+                             QrCodeInvoice = payment.QrCodeInvoice,
+                             PaymentNumber = payment.PaymentNumber,
+                             PlateNumber = payment.EnPlateNumber,
+                             TenantId = payment.TenantId,
+                             Customers = customer,
+                             Invoice = payment.Invoice,
+                             CashierName = user.Name
+                         };
+            result = result.OrderByDescending(x => x.CreationTime);
+            result = ApplySearch(input, result);
+            result = ApplySort(input, result);
+            var totalCount = await AsyncExecuter.CountAsync(result);
+            result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
+            var payments = await AsyncExecuter.ToListAsync(result);
             return new PagedResultDto<PaymentDto>
             {
                 TotalCount = totalCount,
-                Items = paymentDtos
+                Items = payments
             };
         }
 
@@ -149,7 +178,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             var queryable = await _paymentRepository.GetQueryableAsync();
 
             // Apply search filtering
-            queryable = ApplySearch(input, queryable);
+           // queryable = ApplySearch(input, queryable);
             if (!input.Sorting.IsNullOrEmpty())
             {
                 if (input.Sorting.Contains("DESC"))
@@ -260,7 +289,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         return query;
     }
 
-    private static IQueryable<Payment> ApplySort(PagedAndSortedResultRequestDto input, IQueryable<Payment> query)
+    private static IQueryable<PaymentDto> ApplySort(PagedAndSortedResultRequestDto input, IQueryable<PaymentDto> query)
     {
         if (!input.Sorting.IsNullOrEmpty())
         {
@@ -342,7 +371,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 
     }
 
-    private static IQueryable<Payment> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Payment> queryable)
+    private static IQueryable<PaymentDto> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<PaymentDto> queryable)
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
@@ -356,9 +385,10 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 or.Customers.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.Customers.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) || 
-                or.Invoice.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) 
-            // full date-time or includes hour
+                or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Invoice.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower())  ||
+                or.Invoice.Id.ToString().Contains(input.SearchingTerm)  ||
+                or.CashierName.ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
         return queryable;
@@ -377,10 +407,13 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 or.Customers.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.Customers.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Invoice.Id.ToString().Contains(input.SearchingTerm) ||
                 or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) || 
                 or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.OrganizationArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.OrganizationEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) 
+                or.OrganizationEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.CashierName.ToLower().Contains(input.SearchingTerm.ToLower())
+
             // full date-time or includes hour
             );
         }

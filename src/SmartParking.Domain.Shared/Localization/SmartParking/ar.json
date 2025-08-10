@@ -465,7 +465,7 @@
     "Payments": "الفواتير",
     "PackageName": " اسم الباقة",
     "Currency": "العملة",
-    "Amount": "المجموع",
+    "Amount": "القيمة",
     "PaymentCategory": "فئة الدفع",
     "PaymentMethod": "الطريقة",
     "PaymentStatus": "الحالة",
@@ -561,6 +561,7 @@
     "UserDeletedSuccessfully": "تم حذف المستخدم بنجاح",
     "Reqiured": "مطلوب",
     "Permission:AddRoleToCustomer": "إضافة دور للعميل",
+    "Permission:AddUser": "إضافة مستخدم",
     "Hour": "ساعة",
     "From": "من",
     "To": "إلى",
@@ -858,6 +859,17 @@
     "DispenserTransaction": "حركات بالموزع",
     "RangeNumberValildation": ". يجب أن تكون القيمة بين 0 - 9999",
     "Dispensers": "الموزّعات",
+    "CustomerPackagesHead": "باقات-العميل",
+    "OrganizationHoursHeader": "طريقة احتساب الساعات",
+    "TicketId": "رقم التذكرة",
+    "PackageCode": ":كود الباقة",
+    "Download": "تحميل",
+    "CashierName": "اسم الكاشير",
+    "PaymentVat": "الضريبة",
+    "PaymentTotal": "الإجمالي"
+
+
+
     "OrganizationHoursHeader": "طريقة احتساب الساعات",
     "TicketId": "رقم التذكرة",
     "CustomerPackagesHead": "باقات-العميل",

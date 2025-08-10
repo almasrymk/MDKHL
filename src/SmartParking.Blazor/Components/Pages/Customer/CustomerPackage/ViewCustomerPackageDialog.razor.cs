@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.JSInterop;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
@@ -11,6 +12,8 @@ using System.Globalization;
 using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using static Microsoft.AspNetCore.Razor.Language.TagHelperMetadata;
+using static QRCoder.PayloadGenerator;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
 {
@@ -137,6 +140,15 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 tableData.Rows.Add(rowDef);
             }
             itemData = tableData;
+        }
+
+        private async Task HandleDownload(RowDef row)
+        {
+            var customerPackage = await CustomerPackagesAppService.GetAsync(int.Parse(row.Cells[0].Value));
+            if (string.IsNullOrEmpty(customerPackage.QRCodePath))
+                return;
+            await JSRuntime.InvokeVoidAsync("window.open", $"{customerPackage.QRCodePath}", "_blank");
+
         }
 
         /// <summary>

@@ -17,6 +17,7 @@ public static class CustomStringLocalizer
     public const string View = "Permission:View";
     public const string ChanageStatus = "Permission:ChanageStatus";
     public const string AddRoleToCustomer = "Permission:AddRoleToCustomer";
+    public const string AddUser = "Permission:AddUser";
     public const string ViewCustomerCard = "Permission:ViewCustomerCard";
     public const string ViewVisitorCard = "Permission:ViewVisitorCard";
     public const string ViewEmployeeCard = "Permission:ViewEmployeeCard";

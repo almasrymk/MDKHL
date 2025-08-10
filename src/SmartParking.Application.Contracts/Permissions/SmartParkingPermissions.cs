@@ -10,6 +10,7 @@ public static class SmartParkingPermissions
     public const string View = ".View";
     public const string ChanageStatus = ".ChanageStatus";
     public const string AddRoleToCustomer = ".AddRoleToCustomer";
+    public const string AddUser = ".AddUser";
     public const string ViewCustomerCard = ".ViewCustomerCard";
     public const string ViewVisitorCard = ".ViewVisitorCard";
     public const string ViewEmployeeCard = ".ViewEmployeeCard";

@@ -723,7 +723,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
 
-            queryable = queryable.Where(or =>
+           queryable = queryable.Where(or =>
                 or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) ||

@@ -1,0 +1,170 @@
+﻿using SmartParking.Entities.GarageTransactions;
+using SmartParking.Enums;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Volo.Abp.Data;
+using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Domain.Services;
+using Volo.Abp.MultiTenancy;
+
+namespace SmartParking.Services.GarageTransactions;
+public class GarageTransactionManager : DomainService
+{
+    private readonly IRepository<GarageTransaction, int> _repository;
+    private readonly IDataFilter _dataFilter;
+
+    public GarageTransactionManager(IRepository<GarageTransaction, int> repository, IDataFilter dataFilter)
+    {
+        _repository = repository;
+        _dataFilter = dataFilter;
+    }
+    public async Task<GarageTransaction> CheckIfCheckoutFromMobile(string plateNumber)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _repository.GetQueryableAsync();
+            var latestTransaction = query
+                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Exit && gt.IsIn == true)
+                    .OrderByDescending(gt => gt.AccurateTime)
+                    .FirstOrDefault();
+
+            return latestTransaction;
+        }
+    }
+    public async Task CloseCheckoutMobileTransaction(string? plateNumber, int entryTransactionId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query.Where(gt => gt.CameraType == WatcherType.Exit);
+            await SaveClosedEntryTransaction(plateNumber, query, entryTransactionId);
+        }
+    }
+
+    public async Task CloseEntryTransaction(string? plateNumber, string TicketId, int entryTransactionId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            if (!string.IsNullOrEmpty(TicketId))
+            {
+                await SaveClosedEntryTicketTransaction(TicketId, query, entryTransactionId);
+                return;
+            }
+            await SaveClosedEntryTransaction(plateNumber, query, entryTransactionId);
+        }
+    }
+
+    private async Task SaveClosedEntryTicketTransaction(string? TicketNumber, IQueryable<GarageTransaction> query, int entryTransactionId)
+    {
+        if (TicketNumber == null)
+            return;
+        var latestTransactions = query
+                .Where(gt => gt.TicketId == TicketNumber && gt.Id == entryTransactionId && gt.IsIn == true)
+                .OrderByDescending(gt => gt.AccurateTime)
+                .FirstOrDefault();
+
+        latestTransactions.IsIn = false;
+        latestTransactions.IsMapped = true;
+
+        await _repository.UpdateAsync(latestTransactions, true);
+    }
+
+
+
+    private async Task SaveClosedEntryTransaction(string? plateNumber, IQueryable<GarageTransaction> query, int entryTransactionId)
+    {
+        if (plateNumber == null)
+            return;
+        var latestTransactions = query
+                .Where(gt => gt.PlateNumber == plateNumber && gt.Id == entryTransactionId && gt.IsIn == true)
+                .OrderByDescending(gt => gt.AccurateTime)
+                .FirstOrDefault();
+
+        latestTransactions.IsIn = false;
+        latestTransactions.IsMapped = true;
+
+        await _repository.UpdateAsync(latestTransactions, true);
+    }
+
+
+    public async Task<string> FindEntranceImage(string? plateNumber, string ticketId, int OrganiztionId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            var latestTransaction = query
+                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == true)
+                    .OrderByDescending(gt => gt.AccurateTime)
+                    .FirstOrDefault();
+            var img = latestTransaction?.VehiclePicture ?? null;
+
+            if (img == null)
+            {
+                var query2 = await _repository.GetQueryableAsync();
+                var latestTransaction2 = query
+                        .Where(gt => gt.TicketId == ticketId && gt.CameraType == WatcherType.Entry && gt.IsIn == true)
+                        .OrderByDescending(gt => gt.AccurateTime)
+                        .FirstOrDefault();
+                img = latestTransaction2?.VehiclePicture ?? null;
+            }
+            return img;
+        }
+    }
+
+
+
+
+
+    public async Task<GarageTransaction?> GetTransactionByCamera(string plateNumber, int organizationId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            var latestTransaction = query
+                    .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == true && gt.OrganizationID == organizationId)
+                    .OrderByDescending(gt => gt.AccurateTime)
+                    .FirstOrDefault();
+
+            return latestTransaction;
+        }
+    }
+
+
+    public async Task<GarageTransaction> GetTransactionById(int garagetransactionId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(transaction => transaction.Id == garagetransactionId);
+            var transaction = await AsyncExecuter.FirstOrDefaultAsync(query);
+            return transaction;
+        }
+    }
+
+    public async Task<GarageTransaction?> GetTransactionByDispenser(string? TicketId, int organizationId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            var latestTransaction = query
+                    .Where(gt => gt.TicketId == TicketId && gt.CameraType == WatcherType.Entry && gt.IsIn == true && gt.OrganizationID == organizationId)
+                    .OrderByDescending(gt => gt.AccurateTime)
+                    .FirstOrDefault();
+            return latestTransaction;
+        }
+    }
+
+    public async Task UpdateEntryTransactionCheckouFromMobile(int entryGarageTransactionId)
+    {
+        var entryGarageTransaction = await GetTransactionById(entryGarageTransactionId);
+        entryGarageTransaction.CheckoutMobile = DateTime.Now;
+        entryGarageTransaction.IsPending = true;
+        entryGarageTransaction.CanCheckout = false;
+        await _repository.UpdateAsync(entryGarageTransaction, true);
+    }
+
+    //
+}
