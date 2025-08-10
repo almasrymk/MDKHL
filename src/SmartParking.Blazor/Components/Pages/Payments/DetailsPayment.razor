@@ -57,11 +57,14 @@
                 }
             }
             <MudItem sm="4">
+                <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Payment.CashierName" Label=@L["CashierName"] />
+            </MudItem>
+              <MudItem sm="4">
                 <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="LocalizedPaymentCategory" Label=@L["PaymentCategory"] />
             </MudItem>
             <MudItem sm="4">
                 <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="LocalizedPaymentMethod" Label=@L["PaymentMethod"] />
-            </MudItem>
+                </MudItem>
             <MudItem sm="4">
                 <div style="display: flex; flex-direction: column; font-weight:bold">
                     <label style="font-size: 0.75rem; margin-bottom: 4px;">
@@ -71,24 +74,40 @@
                     <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Amount" />
                 </div>
             </MudItem>
+            <MudItem sm="4">
+                <div style="display: flex; flex-direction: column; font-weight:bold">
+                    <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                        @L["PaymentVat"]
+                        @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                    </label>
+                    <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Vat" />
+                </div>
+            </MudItem>
+            <MudItem sm="4">
+                <div style="display: flex; flex-direction: column; font-weight:bold">
+                    <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                        @L["Discount"]
+                        @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                    </label>
+                    <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Discount" />
+                </div>
+            </MudItem>
+            <MudItem sm="4">
+                <div style="display: flex; flex-direction: column; font-weight:bold">
+                    <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                        @L["PaymentTotal"]
+                        @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                    </label>
+                    <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Total" />
+                </div>
+            </MudItem>
 
-            @if (Payment.Invoice is not null)
-            {
-                <!-- Discount -->
-                <MudItem sm="4">
-                    <div style="display: flex; flex-direction: column;font-weight:bold">
-                        <label style="font-size: 0.75rem; margin-bottom: 4px;">
-                            @L["Discount"]
-                            @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
-                        </label>
-                        <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" Value="Payment.Invoice.Discount.ToString()" />
-                    </div>
-                </MudItem>
-
-                <!-- Invoice Type -->
-                <MudItem sm="4">
-                    <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="LocalizedPaymentInvoiceType" Label=@L["InvoiceType"] />
-                </MudItem>
+@if (Payment.Invoice is not null)
+{
+    <!-- Invoice Type -->
+    <MudItem sm="4">
+        <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="LocalizedPaymentInvoiceType" Label=@L["InvoiceType"] />
+    </MudItem>
 
                 <!-- Plate Number -->
                 <MudItem sm="4">

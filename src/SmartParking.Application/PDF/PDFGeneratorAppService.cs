@@ -427,7 +427,7 @@ img[style*='width:120px;'] {
         string HeaderVatReceiptPayment = LocalizationHelper.GetLocalizedString("HeaderVatReceiptPayment");
         string Vats = LocalizationHelper.GetLocalizedString("VAT");
         string Sar = LocalizationHelper.GetLocalizedString("SAR");
-        string CashierNo = LocalizationHelper.GetLocalizedString("Cashier No");
+        string CashierNo = LocalizationHelper.GetLocalizedString("CashierName");
         string OrganizationName = LocalizationHelper.GetLocalizedString("OrganizationNameInvoicePopUp");
         string OrganizationAddress = LocalizationHelper.GetLocalizedString("OrganizationAddressInvoicePopUp");
         string PlateNumber = LocalizationHelper.GetLocalizedString("PlateNumber");
@@ -608,7 +608,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(10)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.RIGHT)
-                 .Add(new Paragraph($"{invoice.GarageArabicName.ArabicWithFontGlyphsToPDF()}")));
+                 .Add(new Paragraph($"{payment.CashierName.ArabicWithFontGlyphsToPDF()}")));
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(9)
                  .SetTextAlignment(TextAlignment.RIGHT)
                  .SetBorder(Border.NO_BORDER)

@@ -9,15 +9,8 @@
         <div class="col-md-12 d-flex justify-content-center ">
 
             <div class="col-md-7">
-                <p><strong>@L["Cashier No"].:</strong>
-                    @if(CultureInfo.CurrentCulture.Name== "ar")
-                      {
-                          @Invoice.GarageArabicName
-                      }
-                      else
-                      {
-                          @Invoice.GarageEnglishName
-                      }
+                <p><strong>@L["Cashier No"]:</strong>
+                  @CashierName
                 </p>
             </div>
 

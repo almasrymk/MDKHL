@@ -25,5 +25,6 @@ public class PaymentGetResponseDto : FullAuditedEntityDto<Guid>
     public string QrCodeInvoice { get; set; }
     public bool IsSentZatca { get; set; } = false;
     public string ErrorMessagesZatca { get; set; }
+    public string CashierName { get; set; }
     public CustomerDto Customers { get; set; } = new CustomerDto();
 }

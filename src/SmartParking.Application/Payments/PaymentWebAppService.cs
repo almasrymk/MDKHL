@@ -165,6 +165,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             paymentMap.Organization = await CheckOrganization(payment);
             paymentMap.Invoice = await CheckInvoice(payment);
             paymentMap.Package = await CheckPackage(payment);
+            paymentMap.CashierName = await GetCashierName(payment.CreatorId);
             return paymentMap;
 
         }
@@ -277,7 +278,10 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            return ObjectMapper.Map<Payment, PaymentDto>(await _paymentRepository.FirstOrDefaultAsync(x => x.InvoiceId == invoiceId));
+            var payment = await _paymentRepository.FirstOrDefaultAsync(x => x.InvoiceId == invoiceId);
+            var paymentDto = ObjectMapper.Map<Payment, PaymentDto>(payment);
+            paymentDto.CashierName = payment is not null ? await GetCashierName(payment.CreatorId) : null;
+            return paymentDto;
         }
     }
     #endregion
@@ -331,7 +335,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     private async Task<PackageDto> CheckPackage(Payment payment)
     {
         int? packageId = payment.PackageId ;
-        if (packageId == null)
+        if (packageId == null || packageId == 0)
             return null; 
        return await _packagesAppService.GetAsync(packageId ?? 0);
     }
@@ -393,7 +397,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         }
         return queryable;
     }
-    
+
     private static IQueryable<PaymentDto> ApplySearchMdkhl(PagedAndSortedAndSearchResultRequestDto input, IQueryable<PaymentDto> queryable)
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
@@ -408,7 +412,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 or.Customers.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.Invoice.Id.ToString().Contains(input.SearchingTerm) ||
-                or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) || 
+                or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.OrganizationArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.OrganizationEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
@@ -418,6 +422,11 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             );
         }
         return queryable;
+    }
+    private async Task<string> GetCashierName(Guid? creatorId)
+    {
+        var user = await _myUserRepository.GetAsync((Guid)creatorId!);
+        return user.Name;
     }
     #endregion
 }

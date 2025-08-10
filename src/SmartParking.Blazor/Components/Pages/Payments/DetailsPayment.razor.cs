@@ -17,6 +17,10 @@ public partial class DetailsPayment
     private PaymentGetResponseDto Payment {  get; set; } = new PaymentGetResponseDto();
     private string CreationTime { get; set; }
     private string Amount { get; set; }
+    public string Vat {  get; set; }
+    public string Discount {  get; set; }
+    public string Total { get; set; }
+    public string CashierName { get; set; }
     private string LocalizedPaymentCategory{ get; set; }
     private string LocalizedPaymentMethod{ get; set; }
     private string LocalizedPaymentStatus{ get; set; }
@@ -30,7 +34,10 @@ public partial class DetailsPayment
     {
         Payment = await paymentWebAppService.GetMdkhlAsync(Guid.Parse(Id));
         CreationTime = Payment.CreationTime.ToString();
-        Amount = Payment.Amount.ToString();
+        Amount = Payment.Invoice is not null ? Payment.Invoice.InvoicePrice.ToString() : "0";
+        Vat = Payment.Invoice is not null ? (Payment.Invoice.InvoicePrice *  0.15m).ToString(): "0";
+        Discount  = Payment.Invoice is not null ?  Payment.Invoice.Discount.ToString() :"0";
+        Total = Payment.Amount.ToString();
         LocalizedPaymentCategory= L[Payment.PaymentCategory];
         LocalizedPaymentMethod=L[Payment.PaymentMethod];
         LocalizedPaymentStatus=L[Payment.PaymentStatus];
@@ -58,6 +65,7 @@ public partial class DetailsPayment
             ["OrganizationAddress"] = Payment.Organization.Address,
             ["Code"] = Payment.PaymentNumber??"",
             ["PaymentPrice"] = Payment.Amount,
+            ["CashierName"] = Payment.CashierName
         };
         return DialogService.ShowAsync<InvoiceDetailsViewDialog>("", parameters);
 
