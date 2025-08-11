@@ -1,60 +1,62 @@
 ﻿using AutoMapper;
+using Microsoft.Build.Framework;
+using SmartParking.Analysis;
+using SmartParking.Authentication;
 using SmartParking.Cameras;
+using SmartParking.Cameras.Watchers.Dispensers;
 using SmartParking.CustomerCategories;
+using SmartParking.CustomerPackages;
+using SmartParking.Cutomers;
+using SmartParking.DailyShifts;
 using SmartParking.DefaultPackages;
+using SmartParking.Discounts;
+using SmartParking.DispenserEndPoint;
+using SmartParking.Entities.Authentication;
 using SmartParking.Entities.Banners;
+using SmartParking.Entities.Cameras.Watchers;
+using SmartParking.Entities.Customers;
+using SmartParking.Entities.Discounts;
+using SmartParking.Entities.GarageTransactions;
+using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Payments;
+using SmartParking.Entities.Shifts;
+using SmartParking.Entities.StateManagements;
+using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Vehicles;
+using SmartParking.Enums;
 using SmartParking.Garages;
-using SmartParking.Invoices;
+using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
+using SmartParking.Invoices;
+using SmartParking.KeeperShifts;
+using SmartParking.Localization;
+using SmartParking.Lookups.CameraBrands;
+using SmartParking.Lookups.CameraMainType;
+using SmartParking.Lookups.CameraModel;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
 using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Lookups.VehicleModel;
 using SmartParking.Mobile.Banners;
+using SmartParking.Mobile.Invoices;
+using SmartParking.Mobile.Vehicles;
 using SmartParking.Organizations;
 using SmartParking.OrganizationsGarages;
+using SmartParking.PackageCodeEndPoint;
 using SmartParking.Packages;
-using SmartParking.Vehicles;
-using SmartParking.Entities.GarageTransactions;
-using SmartParking.Entities.Invoices;
-using Volo.Abp.Identity;
-using SmartParking.Authentication;
-using SmartParking.CustomerPackages;
-using SmartParking.Entities.Subscriptions;
+using SmartParking.Payments;
+using SmartParking.Results;
+using SmartParking.Shifts;
+using SmartParking.StateManagements;
 using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
-using SmartParking.Analysis;
+using SmartParking.Vehicles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartParking.Mobile.Vehicles;
-using SmartParking.Entities.Payments;
-using SmartParking.Payments;
-using SmartParking.GarageTransactionEndPoints;
-using SmartParking.Entities.Customers;
-using SmartParking.Cutomers;
-using System;
-using SmartParking.Enums;
-using SmartParking.Lookups.CameraBrands;
-using SmartParking.Lookups.CameraModel;
-using SmartParking.Lookups.CameraMainType;
-using Microsoft.Build.Framework;
-using SmartParking.Localization;
-using SmartParking.Entities.Authentication;
-using SmartParking.Results;
-using SmartParking.Mobile.Invoices;
-using SmartParking.Entities.Shifts;
-using SmartParking.KeeperShifts;
-using SmartParking.DailyShifts;
-using SmartParking.Shifts;
-using SmartParking.Entities.StateManagements;
-using SmartParking.StateManagements;
-using SmartParking.Entities.Discounts;
-using SmartParking.Discounts;
-using SmartParking.Entities.Cameras.Watchers;
-using SmartParking.Cameras.Watchers.Dispensers;
+using Volo.Abp.Identity;
 
 namespace SmartParking;
 
@@ -299,6 +301,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         // unLinked transaction 
         CreateMap<UnLinkedTransaction, UnLinkedTransactionDto>();
         CreateMap<CreateUpdateGarageTransactionEndPointDto, UnLinkedTransaction>();
+
+
+        CreateMap<PackageCodeExitDto,ExitDto>();
 
 
 

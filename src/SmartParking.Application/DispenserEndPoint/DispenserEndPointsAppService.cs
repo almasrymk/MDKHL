@@ -52,6 +52,8 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     #region public methods
     public async Task<IBaseGateResponseDto> Entry(EntryDto request)
     {
+        _logger.LogError($"{DateTime.Now} => start entry ");
+
         using (DataFilter.Disable<IMultiTenant>())
         {
             var _unlinkedDto = InitiateUnlinkedTransactionDto(request);
@@ -84,6 +86,8 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     }
     public async Task<IBaseGateResponseDto> PreEntry(PackageCodeEntryDto packageCodeEntry)
     {
+        _logger.LogError($"{DateTime.Now} => start pre entry ");
+
         using (DataFilter.Disable<IMultiTenant>())
         {
             var unlinkedDto = InitiateUnlinkedTransactionDto(packageCodeEntry);
@@ -120,7 +124,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            _logger.LogError($"{DateTime.Now} => start pre exit ");
+            _logger.LogError($"{DateTime.Now} => start exit ");
  
             var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis => dis.DeviceId == request.LaneNO);
             if (_dispenser == null)
@@ -159,12 +163,12 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
         {
             _logger.LogError($"{DateTime.Now} => start pre exit ");
             _logger.LogInformation($"Lane Number is found : {packageCodeExit.LaneNO}");
-            var unlinkedDto = InitiatePreExitUnlinkedTransactionDto(packageCodeExit);
             if (string.IsNullOrEmpty(packageCodeExit.PackageCode))
             {
-                await _unlinkedGarageTransactionsAppService.CreateAsync(unlinkedDto);
-                return NotFoundPackageCodeInRequestHandler(packageCodeExit.CarNum);
+                var ExitDto = ObjectMapper.Map<PackageCodeExitDto,ExitDto>(packageCodeExit);
+                return await Exit(ExitDto);
             }
+            var unlinkedDto = InitiatePreExitUnlinkedTransactionDto(packageCodeExit);
             var _dispenser = await _dispenserRepository.FirstOrDefaultAsync(dis => dis.DeviceId == packageCodeExit.LaneNO);
             if (_dispenser == null)
             {
