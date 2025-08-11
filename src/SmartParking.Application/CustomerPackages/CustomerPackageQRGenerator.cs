@@ -53,7 +53,7 @@ public class CustomerPackageQRGenerator : SmartParkingAppService, ICustomerPacka
     /// <returns>A byte array representing the generated PNG QR code image.</returns>
     private byte[] GenerateQrCodeImage(CreateUpdateQrCodeDto input)
     {
-        var jsonQrCode = JsonSerializer.Serialize(input.PackageCode);
+        var jsonQrCode = JsonSerializer.Serialize(input);
         using (var qrGenerator = new QRCodeGenerator())
         using (var qrCodeData = qrGenerator.CreateQrCode(jsonQrCode, QRCodeGenerator.ECCLevel.Q))
         using (var qrCode = new PngByteQRCode(qrCodeData))
