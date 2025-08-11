@@ -27,5 +27,6 @@ public class ExitDto
     public string VehicleClass { get; set; }
     public string VttDevChnId { get; set; }
     public string LeaveTime { get; set; }
-    public string LaneNO { get; set; } 
+    public string LaneNO { get; set; }
+    public string TicketId { get; set; }
 }

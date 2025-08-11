@@ -366,6 +366,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             GarageId = dispenser.GarageId,
             OrganizationID = dispenser.OrganizationId,
             TenantId = dispenser.TenantId,
+            TicketId=input.TicketId,
             CameraType = WatcherType.Exit,
             IsIn = false,
             IsMapped = true
