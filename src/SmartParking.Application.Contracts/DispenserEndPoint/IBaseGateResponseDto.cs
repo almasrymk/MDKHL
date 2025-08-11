@@ -9,5 +9,7 @@ namespace SmartParking.DispenserEndPoint;
 public interface IBaseGateResponseDto
 {
     string ResCode { get; set; }
+    string OpenGate { get; set; }
     string ResMsg { get; set; }
+    string CarNum { get; set; }
 }

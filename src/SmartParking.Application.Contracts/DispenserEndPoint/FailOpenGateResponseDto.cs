@@ -10,4 +10,6 @@ public class FailOpenGateResponseDto : IBaseGateResponseDto
 {
     public string ResCode { get; set; }  
     public string ResMsg { get; set; }
+    public string OpenGate { get; set; }
+    public string CarNum { get; set; }
 }
