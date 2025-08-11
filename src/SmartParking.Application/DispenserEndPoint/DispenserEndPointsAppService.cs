@@ -270,7 +270,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
         }
         _logger.LogError($"{DateTime.Now} ====>  {JsonSerializer.Serialize(response)}");
 
-        return response;
+        return response; 
     }
 
     private CreateUpdateGarageTransactionDto InitalizePreEntryCreateUpdateGarageTransactionDto(PackageCodeEntryDto packageCodeEntryDto, Dispenser dispenser)
