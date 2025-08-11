@@ -11,4 +11,5 @@ public class NotToOpenGateResponseDto : IBaseGateResponseDto
     public string ResCode { get; set; } = "0000";
     public string OpenGate { get; set; } = "0";  
     public string ResMsg { get; set; }
+    public string CarNumber { get; set; }
 }
