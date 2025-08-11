@@ -239,15 +239,23 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     bool shouldOpenGate,
     string reason = null)
     {
+        IBaseGateResponseDto response;
         if (shouldOpenGate)
         {
-            return new OpenGateResponseDto();
+            response = new OpenGateResponseDto();
         }
-
-        return new NotToOpenGateResponseDto
+        else
         {
-            ResMsg = string.IsNullOrWhiteSpace(reason) ? "Vehicle is not allowed to enter" : reason
-        };
+            response = new NotToOpenGateResponseDto
+            {
+
+                ResMsg = string.IsNullOrWhiteSpace(reason) ? "Vehicle is not allowed to enter" : reason
+            };
+
+        }
+        _logger.LogError($"{DateTime.Now} ====>  {JsonSerializer.Serialize(response)}");
+
+        return response;
     }
 
     private CreateUpdateGarageTransactionDto InitalizePreEntryCreateUpdateGarageTransactionDto(PackageCodeEntryDto packageCodeEntryDto, Dispenser dispenser)
