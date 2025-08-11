@@ -965,7 +965,7 @@ img[style*='width:120px;'] {
         {
             Directory.CreateDirectory(directoryPath); 
         }
-        var fileName = Path.Combine(directoryPath, $"{input.PackageCode}.{"pdf"}");
+        var fileName = Path.Combine(directoryPath, $"{input.PhoneNumber}.{"pdf"}");
         FileInfo file = new FileInfo(fileName);
         using (PdfWriter writer = new PdfWriter(file.FullName))
         {
