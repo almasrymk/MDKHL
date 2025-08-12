@@ -1,4 +1,5 @@
 ﻿using SmartParking.Cutomers;
+using SmartParking.Enums;
 using SmartParking.Invoices;
 using SmartParking.Organizations;
 using SmartParking.Packages;
@@ -26,5 +27,6 @@ public class PaymentGetResponseDto : FullAuditedEntityDto<Guid>
     public bool IsSentZatca { get; set; } = false;
     public string ErrorMessagesZatca { get; set; }
     public string CashierName { get; set; }
+    public Status StatusZatca { get; set; }
     public CustomerDto Customers { get; set; } = new CustomerDto();
 }

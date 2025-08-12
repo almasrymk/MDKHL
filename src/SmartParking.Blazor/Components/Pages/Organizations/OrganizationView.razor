@@ -63,15 +63,7 @@
                         </MudItem>
                         <MudItem sm="4">
                             <MudTextField ReadOnly="true" T="string" @bind-Value="organization.ContactMail" Label="@L["Contact Email"]" />
-                        </MudItem>
-
-                        
-                        <MudItem sm="4">
-                            <MudTextField ReadOnly="true"  T="string" InputType="InputType.Text" @bind-Value="organization.UserNameZatca"  Label=@L["User Name Zatca"] />
-                        </MudItem>
-                          <MudItem sm="4">
-                            <MudTextField ReadOnly="true" T="string" InputType="InputType.Password" @bind-Value="organization.PasswordZatca"  Label=@L["Password Zatca"] />
-                        </MudItem>
+                        </MudItem>                       
 
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
@@ -131,6 +123,28 @@
                             <MudTextField ReadOnly="true" dir="rtl" @bind-Value="Address" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["Address"]" />
                         </MudItem>
                         
+                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
+                        <MudItem sm="4">
+                            <div style="display: flex; flex-direction: column;font-weight:bold">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                    @L["ZatcaStatus"]
+                                </label>
+                                <MudRadioGroup Value="@organization.StatusZatca" Class="d-inline-flex align-content-center">
+                                    <div class="d-flex flex-row justify-content-between">
+                                        <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
+                                        <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
+                                    </div>
+                                </MudRadioGroup>
+                            </div>
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Text" @bind-Value="organization.UserNameZatca" Placeholder=@L["UserNameZatca"] Label=@L["UserNameZatca"] readonly="true" />
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudTextField RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Password" @bind-Value="organization.PasswordZatca" Placeholder=@L["PasswordZatca"] Label=@L["PasswordZatca"] readonly="true" />
+                        </MudItem>
+                       
+
                         @* Subscription  *@
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
                         @if (CultureInfo.CurrentCulture.Name == "en")

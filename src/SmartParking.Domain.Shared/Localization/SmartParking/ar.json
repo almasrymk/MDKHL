@@ -867,13 +867,18 @@
     "CashierName": "اسم الكاشير",
     "PaymentVat": "الضريبة",
     "PaymentTotal": "الإجمالي",
-    "User Name Zatca": "إسم المستخدم الزكاة والدخل",
-    "Password Zatca": "كلمة المرور الزكاة والدخل",
+    "UserNameZatca": "إسم المستخدم الزكاة والدخل",
+    "PasswordZatca": "كلمة المرور الزكاة والدخل",
     "ZatcaStatus": "الزكاة و الدخل",
     "Sent": "تم الارسال",
     "NotSent": "لم ترسل",
-    "Resend to Zatca": "اعادة الارسال الى الزكاة و الدخل",
-    "Not sent to Zatca": "لم يتم الارسال الى الزكاة والدخل",
-    "Sent with notes to Zatca": "تم الارسال مع وجود ملاحظات الى الزكاة والدخل"
+    "ResendToZatca": "اعادة الارسال الى الزكاة و الدخل",
+    "NotSentToZatca": "لم يتم الارسال الى الزكاة والدخل",
+    "SentWithNotesToZatca": "تم الارسال مع وجود ملاحظات الى الزكاة والدخل",
+    "StatusZatcaActive": "تفعيل الزكاة و الدخل",
+    "StatusZatcaInActive": "ايقاف تفعيل الزكاة و الدخل",
+    "ThePaymentNotFound": "لم يتم العثور على الدفع",
+    "TheOragnizationNotFound": "لم يتم العثور على المنشأة",
+    "UsernameOrPasswordForZatcaNotFound": "لم يتم العثور على اسم المستخدم أو كلمة المرور لـلزكاة و الدخل"
   }
 }

@@ -835,15 +835,20 @@
     "PackageCode": "Package Code",
     "Download": "Download",
     "CashierName": "Cashier Name",
-    "PaymentVat": "VAT", 
+    "PaymentVat": "VAT",
     "PaymentTotal": "Total",
-    "User Name Zatca": "إسم المستخدم الزكاة والدخل",
-    "Password Zatca": "كلمة المرور الزكاة والدخل",
+    "UserNameZatca": "User Name Zatca",
+    "PasswordZatca": "Password Zatca",
     "ZatcaStatus": "الزكاة و الدخل",
     "Sent": "Sent",
     "NotSent": "Not Sent",
-    "Resend to Zatca": "Resend to Zatca",
-    "Not sent to Zatca": "Not sent to Zatca",
-    "Sent with notes to Zatca": "Sent with notes to Zatca"
+    "ResendToZatca": "Resend to Zatca",
+    "NotSentToZatca": "Not sent to Zatca",
+    "SentWithNotesToZatca": "Sent with notes to Zatca",
+    "StatusZatcaActive": "Status Active",
+    "StatusZatcaInActive": "Status Inactive",
+    "ThePaymentNotFound": "The payment not found",
+    "TheOragnizationNotFound": "The oragnization not found",
+    "UsernameOrPasswordForZatcaNotFound": "Username or password for Zatca not found"
   }
 }

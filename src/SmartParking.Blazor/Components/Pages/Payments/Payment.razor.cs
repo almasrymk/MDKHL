@@ -83,7 +83,6 @@ public partial class Payment
             paymentsDto = await PaymentWebAppService.GetListOrganizationAsync(input);
         TotalItem = (int)paymentsDto.TotalCount;
         await CreateTable(paymentsDto);
-
     }
 
     /// <summary>
@@ -183,6 +182,7 @@ public partial class Payment
             ShowHeader = true
         };
 
+        var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = "Id", Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Code"], Name = "PaymentNumber", IsFilterable = true, PropertyName = "PaymentNumber", IsSortable = true, TypeFilter = TypeFilter.Enum });
@@ -211,7 +211,10 @@ public partial class Payment
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CreationTime"], Name = "CreationTime", IsFilterable = false, PropertyName = "CreationTime", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentStatus"], Name = "PaymentStatus", IsFilterable = true, PropertyName = "PaymentStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ZatcaStatus"], Name = _localizer["ZatcaStatus"], IsFilterable = true, PropertyName = "IsSentZatca", IsSortable = true, TypeFilter = TypeFilter.Text });
+        if (CurrentTenant.Id == null || (organization != null && organization.StatusZatca == Status.Active))
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ZatcaStatus"], Name = _localizer["ZatcaStatus"], IsFilterable = true, PropertyName = "IsSentZatca", IsSortable = true, TypeFilter = TypeFilter.Text });
+        }
 
         foreach (var item in organizations.Items)
         {
@@ -239,7 +242,7 @@ public partial class Payment
             var total = item.Amount == 0 ? "0.0" : item.Amount.ToString();
             var amount = item.Invoice?.InvoicePrice == 0 ? "0.0" : item.Invoice?.InvoicePrice.ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Amount"]}", $"{amount} {IconHtml}"));
-            var vatValue =item.Invoice?.InvoicePrice == 0 ? "0.0" : Math.Round((item.Invoice?.InvoicePrice ?? 0) * 0.15m, 2).ToString();
+            var vatValue = item.Invoice?.InvoicePrice == 0 ? "0.0" : Math.Round((item.Invoice?.InvoicePrice ?? 0) * 0.15m, 2).ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["PaymentVat"]}", $"{vatValue} {IconHtml}"));
             var discountValue = item.Invoice?.Discount == 0 || item.Invoice?.Discount is null ? "0.0" : item.Invoice?.Discount.ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Discount"]}", $"{discountValue} {IconHtml}"));
@@ -259,14 +262,23 @@ public partial class Payment
             }
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CreationTime"], item.CreationTime.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentStatus"], _localizer[$"{item.PaymentStatus.ToString()}"]));
-            if(item.IsSentZatca)
+            if (CurrentTenant.Id == null || (organization != null && organization.StatusZatca == Status.Active))
             {
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ZatcaStatus"], "<span class='text-success'>"+ _localizer["Sent"] + "</span>"));
-            }
-            else
-            {
-                //var buttonHtml = $"<div class=\"mud-grid-item d-flex justify-content-start align-items-center\"><!--!--><div class=\"mud-tooltip-root mud-tooltip-inline\"><!--!--><!--!--><button type=\"button\" class=\"mud-button-root mud-icon-button mud-button mud-button-filled mud-button-filled-primary mud-button-filled-size-small mud-ripple mud-icon-button-size-small mx-1\" _bl_d9afeaff-824e-4182-86d2-e435ae722d15=\"\"><span class=\"mud-icon-button-label\"><!--!--><svg class=\"mud-icon-root mud-svg-icon mud-icon-size-small\" focusable=\"false\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" role=\"img\"><!--!--><path d=\"M0 0h24v24H0z\" fill=\"none\"></path><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z\"></path></svg></span></button><!--!--><div id=\"popover-1af6513d-4c02-411c-9877-b3a27d8ec5da\" class=\"mud-popover-cascading-value\"></div></div></div>";
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ZatcaStatus"], "<span class='text-danger'>" + _localizer["NotSent"] + "</span>"));
+                if (item.StatusZatca == Status.Active)
+                {
+                    if (item.IsSentZatca)
+                    {
+                        rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ZatcaStatus"], "<span class='text-success'>" + _localizer["Sent"] + "</span>"));
+                    }
+                    else
+                    {
+                        rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ZatcaStatus"], "<span class='text-danger'>" + _localizer["NotSent"] + "</span>"));
+                    }
+                }
+                else
+                {
+                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ZatcaStatus"], "<span class='text-warning'>" + _localizer["Status InActive"] + "</span>"));
+                }
             }
             tableData.Rows.Add(rowDef);
         }

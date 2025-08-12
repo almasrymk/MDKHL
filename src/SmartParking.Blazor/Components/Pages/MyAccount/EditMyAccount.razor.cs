@@ -47,6 +47,7 @@ namespace SmartParking.Blazor.Components.Pages.MyAccount
         private int _organizationId;
         private readonly IMapper _mapper;
         private bool _status = true;
+        private bool IsReadOnly = false;
 
         public EditMyAccount(IMapper mapper)
         {
@@ -344,6 +345,13 @@ namespace SmartParking.Blazor.Components.Pages.MyAccount
             }
         }
 
-
+        private void OnRadioChanged(Status newValue)
+        {
+            _createUpdateOrganization.StatusZatca = newValue;
+            if (newValue == Enums.Status.Active)
+                IsReadOnly = false;
+            else
+                IsReadOnly = true;
+        }
     }
 }

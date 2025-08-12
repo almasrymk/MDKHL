@@ -60,7 +60,7 @@ public partial class OrganizationEdit
 
     private bool HasChangeStatusPermission;
     private bool IsPictureChanged;
-
+    private bool IsReadOnly = false;
     private CreateUpdateOrganiztionDto _createUpdateOrganiztionDto = new CreateUpdateOrganiztionDto();
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
@@ -368,5 +368,13 @@ public partial class OrganizationEdit
             StateHasChanged();
         }
     }
- 
+
+    private void OnRadioChanged(Status newValue)
+    {
+        _createUpdateOrganiztionDto.StatusZatca = newValue;
+        if (newValue == Enums.Status.Active)
+            IsReadOnly = false;
+        else
+            IsReadOnly = true;
+    }
 }

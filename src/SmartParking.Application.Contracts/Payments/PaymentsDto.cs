@@ -37,4 +37,5 @@ public class PaymentDto
     public string CashierName { get; set; }
     public bool IsSentZatca { get; set; } = false;
     public string ErrorMessagesZatca { get; set; }
+    public Status StatusZatca { get; set; }
 }

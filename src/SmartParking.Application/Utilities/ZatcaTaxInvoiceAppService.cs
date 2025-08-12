@@ -18,6 +18,7 @@ using SmartParking.Results;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Organizations;
 using SmartParking.Cutomers;
+using SmartParking.Localization;
 
 namespace SmartParking.Utilities
 {
@@ -135,14 +136,20 @@ namespace SmartParking.Utilities
             var payment = await _repository.FirstOrDefaultAsync(e => e.Id == paymentId);
             if (payment == null)
             {
-                response.generalError += " The Payment not found.";
+                response.generalError += LocalizationHelper.GetLocalizedString("ThePaymentNotFound");
                 return response;
             }
 
             var oragnization = await _organizationsRepository.GetAsync(payment.OrganizationId);
             if (oragnization == null)
             {
-                response.generalError += " The Oragnization not found.";
+                response.generalError += LocalizationHelper.GetLocalizedString("TheOragnizationNotFound");
+                return response;
+            }
+
+            if (""  + oragnization.UserNameZatca  == "" || "" + oragnization.PasswordZatca == "")
+            {
+                response.generalError += LocalizationHelper.GetLocalizedString("UsernameOrPasswordForZatcaNotFound");
                 return response;
             }
 
@@ -153,9 +160,9 @@ namespace SmartParking.Utilities
                 customer = new CustomerDto { ArabicName = "غير معرف" };
 
             var token = await GetTokenAsync(oragnization.UserNameZatca, oragnization.PasswordZatca);
-            if (token == "400")
+            if (token == "400" || "" + token == "")
             {
-                response.generalError += " Username or password for Zatca not found.";
+                response.generalError += LocalizationHelper.GetLocalizedString("UsernameOrPasswordForZatcaNotFound");
                 return response;
             }
 
