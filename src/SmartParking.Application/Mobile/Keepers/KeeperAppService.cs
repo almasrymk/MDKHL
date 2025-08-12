@@ -207,7 +207,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     {
         var query = await _invoiceRepository.GetQueryableAsync();
         var totalCount = await AsyncExecuter.CountAsync(query);
-        var invoices = await query.Skip(paged.SkipCount).Take(paged.MaxResultCount).OrderByDescending(inv => inv.InvoiceTime).ToListAsync();
+        var invoices = await query.OrderByDescending(inv => inv.InvoiceTime).Skip(paged.SkipCount).Take(paged.MaxResultCount).ToListAsync();
         var items = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices);
         var finalPaged = new PagedResultDto<InvoiceDto>(
                   totalCount,
