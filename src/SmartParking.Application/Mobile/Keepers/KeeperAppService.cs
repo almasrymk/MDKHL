@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -60,6 +61,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IAuthenticationUtility _authenticationUtility;
     private readonly IVehicleAppService _vehicleAppService;
     private readonly IDiscountAppService _discountAppService;
+    private string _notFound = "Not found";
 
 
     public KeeperAppService
@@ -204,52 +206,9 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     public async Task<Result<PagedResultDto<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId , PagedAndSortedAndSearchResultRequestDto paged)
     {
         var query = await _invoiceRepository.GetQueryableAsync();
-        query = query.Where(inv => inv.OrganizationId == organizationId)
-                              .OrderByDescending(inv => inv.InvoiceTime);
-        var paymentQuery = await _paymentRepository.GetQueryableAsync();
-
-        var finalquery = from inv in query
-                         join payment in paymentQuery
-                         on inv.Id equals payment.InvoiceId into paymentGroup
-                         from payment in paymentGroup.DefaultIfEmpty() 
-                         select new InvoiceDto
-                         {
-                             Id = inv.Id,
-                             InvoiceNumber = inv.InvoiceNumber,
-                             TotalHours = inv.TotalHours,
-                             InvoicePrice = inv.InvoicePrice,
-                             InvoiceType = inv.InvoiceType.ToString(),
-                             OrganizationArabicName = inv.Organization.ArabicName,
-                             OrganizationEnglishName = inv.Organization.EnglishName,
-                             GarageArabicName = inv.Garage.NameAr,
-                             GarageEnglishName = inv.Garage.NameEn,
-                             PlateNumber = inv.PlateNumber,
-                             InvoiceTime = inv.InvoiceTime,
-                             EntranceTime = inv.EntranceTime,
-                             CustomerArName = inv.Customer!.ArabicName,
-                             CustomerEnName = inv.Customer.IdentityUser.Name,
-                             IsPackage = inv.IsPackage,
-                             CustomerId = inv.CustomerId,
-                             EntryTransactionImage = inv.EntryTransactionImage,
-                             ExitTransactionImage = inv.ExitTransactionImage,
-                             QrCodeInvoice = payment.QrCodeInvoice,
-                             InvoiceId = payment != null ? (int)payment.InvoiceId! :0 ,
-                             OrganizationId = inv.OrganizationId,
-                             OrganizationAddress = inv.Organization.Address,
-                             OrganizationTIN = inv.Organization.TaxIdentificationNumber,
-                             GarageTransactionExitId = inv.GarageTransactionExitId,
-                             Discount = inv.Discount,
-                             TicketId = inv.TicketId
-                         };
-
-        var totalCount = await AsyncExecuter.CountAsync(finalquery);
-
-        query = query.Skip(paged.SkipCount).Take(paged.MaxResultCount);
-
-        var invoices = await AsyncExecuter.ToListAsync(finalquery);
-
-        var items = invoices;
-
+        var totalCount = await AsyncExecuter.CountAsync(query);
+        var invoices = await query.Skip(paged.SkipCount).Take(paged.MaxResultCount).OrderByDescending(inv => inv.InvoiceTime).ToListAsync();
+        var items = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices);
         var finalPaged = new PagedResultDto<InvoiceDto>(
                   totalCount,
                   items
@@ -359,6 +318,15 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
 
     /// <inheritdoc/>
+    /// 
+    public async Task<Result<PaymentDto>> GetPaymentByInvoiceId(int InvoiceId)
+    {
+        var payment =await _paymentRepository.FirstOrDefaultAsync(payment => payment.InvoiceId == InvoiceId);
+        if (payment == null) {
+            return Result.Error(_notFound);
+        }
+        return ObjectMapper.Map<Payment,PaymentDto>(payment);
+    }
 
     public async Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum)
 	{
@@ -503,5 +471,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         }
         return null;
     }
+
+ 
     #endregion
 }

@@ -9,6 +9,7 @@ using SmartParking.Invoices;
 using SmartParking.Mobile.Invoices;
 using SmartParking.Mobile.Keepers;
 using SmartParking.MobileInvoices;
+using SmartParking.Payments;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
@@ -231,6 +232,13 @@ public class KeeperController : AbpController
     public async Task<Result<List<DiscountDto>>> GetAllDiscount()
     {
         return await _discountAppService.GetListMobileAsync();
+    }
+
+    [HttpGet("getpaymentbyinvoiceid")]
+    [Authorize]
+    public async Task<Result<PaymentDto>> GetPaymentByInvoiceId([FromQuery]int InvoiceId)
+    {
+        return await _keeperAppService.GetPaymentByInvoiceId(InvoiceId);
     }
 
 }

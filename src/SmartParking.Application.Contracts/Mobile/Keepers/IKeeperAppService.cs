@@ -88,4 +88,7 @@ public interface IKeeperAppService
     /// <param name="organizationId">The unique identifier of the organization.</param>
     /// <returns>A task representing the asynchronous operation, containing the result of type <see cref="List{InvoiceDto}"/> for all paid invoices in the organization.</returns>
     Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdPaidAsync(int organizationId);
+
+
+    Task<Result<PaymentDto>> GetPaymentByInvoiceId(int InvoiceId);
 }
