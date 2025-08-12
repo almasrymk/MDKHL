@@ -13,6 +13,7 @@ using SmartParking.Permissions.GaragePermissions;
 using SmartParking.Permissions.MyAccount;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Permissions.GarageTransactionPermissions;
+using SmartParking.Enums;
 
 namespace SmartParking.Blazor.Components.Pages.MyAccount;
 
@@ -69,6 +70,7 @@ public partial class ViewMyAccount
 
     public string UserNameZatca { get; set; }
     public string PasswordZatca { get; set; }
+    public Status StatusZatca { get; set; }
 
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
@@ -152,7 +154,7 @@ public partial class ViewMyAccount
         Graceperiod = organization.Graceperiod;
         UserNameZatca = organization.UserNameZatca;
         PasswordZatca = organization.PasswordZatca;
-
+        //StatusZatca = organization.StatusZatca;
     }
 
 
