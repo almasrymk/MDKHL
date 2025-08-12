@@ -108,8 +108,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     }
     public async Task<PagedResultDto<PaymentDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
+
             var query = await _paymentRepository.GetQueryableAsync();
             var customerQuery = await _customerRepository.GetQueryableAsync();
             var userQuery = await _myUserRepository.GetQueryableAsync();
@@ -152,8 +151,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 TotalCount = totalCount,
                 Items = payments
             };
-        }
-
+       
     }
 
     public async Task<PaymentGetResponseDto> GetMdkhlAsync(Guid paymentId)
