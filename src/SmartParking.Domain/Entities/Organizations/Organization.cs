@@ -1,6 +1,7 @@
 ﻿using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Lookups;
 using SmartParking.Entities.Subscriptions;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -60,4 +61,5 @@ public class Organization : BaseEntity
     public bool CameraTransaction { get; set; }
     public string UserNameZatca { get; set; }
     public string PasswordZatca { get; set; }
+    public Status StatusZatca { get; set; }
 }

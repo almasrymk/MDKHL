@@ -44,6 +44,7 @@ public partial class OrganizationAdd
     public int ParkingSlot { get; set; }
     private SubscriptionDto? SelectedPackage;
     private string NewAddress { get; set; }
+    private bool IsReadOnly = false;
     public CreateUpdateOrganiztionDto CreateUpdateOrganiztion { get; set; } = new CreateUpdateOrganiztionDto();
     
     IList<StateLookupDto> states = new List<StateLookupDto>();
@@ -186,4 +187,12 @@ public partial class OrganizationAdd
         }
     }
 
+    private void OnRadioChanged(Status newValue)
+    {
+        CreateUpdateOrganiztion.StatusZatca = newValue;
+        if (newValue == Enums.Status.Active)
+            IsReadOnly = false;
+        else
+            IsReadOnly = true;
+    }
 }

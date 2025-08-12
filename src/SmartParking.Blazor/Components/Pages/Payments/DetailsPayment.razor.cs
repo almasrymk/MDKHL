@@ -29,7 +29,7 @@ public partial class DetailsPayment
     private async Task FetchPayment()
     {
         Payment = await paymentWebAppService.GetMdkhlAsync(Guid.Parse(Id));
-        CreationTime = Payment.CreationTime.ToString();
+        CreationTime = Payment.CreationTime.ToString(); 
         Amount = Payment.Amount.ToString();
         LocalizedPaymentCategory= L[Payment.PaymentCategory];
         LocalizedPaymentMethod=L[Payment.PaymentMethod];
@@ -37,8 +37,8 @@ public partial class DetailsPayment
         LocalizedPaymentCurrency = L[Payment.Currency];
         LocalizedPaymentInvoiceType = Payment.Invoice is not null ? L[Payment.Invoice.InvoiceType] : "";
         AmountDiscount= Payment.Invoice is not null ? Math.Round((Payment.Invoice.InvoicePrice+ (Payment.Invoice.InvoicePrice*0.15m))- Payment.Amount, 2).ToString() : "0";
-
     }
+
     protected override async Task OnInitializedAsync()
     {
        await FetchPayment();

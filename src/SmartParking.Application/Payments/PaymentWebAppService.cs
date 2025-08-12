@@ -88,7 +88,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                         TenantId = payment.TenantId,
                         Customers = customer,
                         Invoice = payment.Invoice  , 
-                        CashierName = user.Name
+                        CashierName = user.Name,
+                        StatusZatca = organization.StatusZatca
                     };
             result = result.OrderByDescending(x => x.CreationTime);
             result = ApplyFilterTenant(tenantId, result);
@@ -112,9 +113,11 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         {
             var query = await _paymentRepository.GetQueryableAsync();
             var customerQuery = await _customerRepository.GetQueryableAsync();
+            var organizationQuery = await _organizationRepository.GetQueryableAsync();
             var userQuery = await _myUserRepository.GetQueryableAsync();
             customerQuery = customerQuery.Include(x => x.IdentityUser);
             var result = from payment in query
+                         join organization in organizationQuery on payment.OrganizationId equals organization.Id
                          join user in userQuery on payment.CreatorId equals user.Id
                          join customer in customerQuery on payment.CustomerId equals customer.Id
                          into customerList
@@ -139,7 +142,10 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                              TenantId = payment.TenantId,
                              Customers = customer,
                              Invoice = payment.Invoice,
-                             CashierName = user.Name
+                             CashierName = user.Name,
+                             StatusZatca = organization.StatusZatca,
+                             IsSentZatca = payment.IsSentZatca,
+                             ErrorMessagesZatca = payment.ErrorMessagesZatca
                          };
             result = result.OrderByDescending(x => x.CreationTime);
             result = ApplySearch(input, result);
@@ -165,8 +171,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             paymentMap.Organization = await CheckOrganization(payment);
             paymentMap.Invoice = await CheckInvoice(payment);
             paymentMap.Package = await CheckPackage(payment);
+            paymentMap.StatusZatca = paymentMap.Organization?.StatusZatca ?? Status.Inactive;
             return paymentMap;
-
         }
     }
 

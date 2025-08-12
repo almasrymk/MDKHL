@@ -43,7 +43,8 @@ namespace SmartParking.Mapping
              .ForMember(dest => dest.PaymentCode, opt => opt.MapFrom(src => src.PaymentCode))
              .ForMember(dest => dest.CRExpiryDate, opt => opt.MapFrom(src => src.CRExpiryDate))
              .ForMember(dest => dest.UserNameZatca, opt => opt.MapFrom(src => src.UserNameZatca))
-             .ForMember(dest => dest.PasswordZatca, opt => opt.MapFrom(src => src.PasswordZatca));
+             .ForMember(dest => dest.PasswordZatca, opt => opt.MapFrom(src => src.PasswordZatca))
+             .ForMember(dest => dest.StatusZatca, opt => opt.MapFrom(src => src.StatusZatca));
         }
     }
 }

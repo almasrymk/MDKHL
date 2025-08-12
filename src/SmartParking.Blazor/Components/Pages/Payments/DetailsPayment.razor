@@ -156,37 +156,43 @@
                     </MudItem>
                 }
             }
-            @if (Payment.IsSentZatca == true && "" + Payment.ErrorMessagesZatca != "")
+            @if (Payment.StatusZatca == Enums.Status.Active)
             {
-                <MudItem sm="12">
+                if (Payment.IsSentZatca == true && "" + Payment.ErrorMessagesZatca != "")
+                {
+                    <MudItem sm="12">
 
-                    <MudAlert Severity="Severity.Warning" Elevation="4" Dense="true" Class="my-2" Icon="@Icons.Material.Filled.Warning" Variant="Variant.Filled">
-                        <strong>@L["Sent with notes to Zatca"]:</strong>
-                        <ul>
-                            <li>@Payment.ErrorMessagesZatca</li>
-                        </ul>
-                    </MudAlert>
-                </MudItem>
-            }
-            @if (Payment.IsSentZatca != true)
-            {
-                <MudItem sm="12">
+                        <MudAlert Severity="Severity.Warning" Elevation="4" Dense="true" Class="my-2" Icon="@Icons.Material.Filled.Warning" Variant="Variant.Filled">
+                            <strong>@L["SentWithNotesToZatca"]:</strong>
+                            <ul>
+                                <li>@Payment.ErrorMessagesZatca</li>
+                            </ul>
+                        </MudAlert>
+                    </MudItem>
+                }
+                if (Payment.IsSentZatca != true)
+                {
+                    <MudItem sm="12">
 
-                    <MudAlert Severity="Severity.Error" Elevation="4" Dense="true" Class="my-2" Icon="@Icons.Material.Filled.Error" Variant="Variant.Filled">
-                        <strong>@L["Not sent to Zatca"]:</strong>
-                        <ul>
-                            <li>@Payment.ErrorMessagesZatca</li>
-                        </ul>
-                    </MudAlert>
-                </MudItem>
+                        <MudAlert Severity="Severity.Error" Elevation="4" Dense="true" Class="my-2" Icon="@Icons.Material.Filled.Error" Variant="Variant.Filled">
+                            <strong>@L["NotSentToZatca"]:</strong>
+                            <ul>
+                                <li>@Payment.ErrorMessagesZatca</li>
+                            </ul>
+                        </MudAlert>
+                    </MudItem>
+                }
             }
         </MudGrid>
 
         <MudItem class="d-flex justify-content-between mt-12">
             <MudButton OnClick="@Back" Variant="Variant.Filled" Color="MudBlazor.Color.Dark">@L["Back"]</MudButton>
-            @if (Payment.IsSentZatca != true)
+            @if (Payment.StatusZatca == Enums.Status.Active)
             {
-                <MudButton OnClick="@ResendZatca" Variant="Variant.Filled" Color="MudBlazor.Color.Warning">@L["Resend to Zatca"]</MudButton>
+                if (Payment.IsSentZatca != true)
+                {
+                    <MudButton OnClick="@ResendZatca" Variant="Variant.Filled" Color="MudBlazor.Color.Warning">@L["ResendToZatca"]</MudButton>
+                }
             }
             @if (currentTenant is not null && Payment.Invoice is not null)
             {
