@@ -1851,6 +1851,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<int>("StatusZatca")
+                        .HasColumnType("integer");
+
                     b.Property<string>("StreetName")
                         .HasColumnType("text");
 
