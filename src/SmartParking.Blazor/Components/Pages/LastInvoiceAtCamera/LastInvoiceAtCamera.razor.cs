@@ -66,7 +66,7 @@ public partial class LastInvoiceAtCamera
         try
         {
             var garageTransactionDto=await GarageTransactionAppService.GetAsync(Invoice.GarageTransactionExitId);
-            var OpenGateService =  OpenGateFactoryService.GetOpeningGateService(_organization);  
+            var OpenGateService =await  OpenGateFactoryService.GetOpeningGateService(_organization);  
             var result =await OpenGateService.OpenGateAsync(garageTransactionDto);
             if (result == true)
             {

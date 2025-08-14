@@ -9,5 +9,5 @@ namespace SmartParking.OpeningGate;
 
 public interface IOpenGateFactoryService
 {
-    public IOpeningGateService GetOpeningGateService(OrganizationDto organizationDto);
+     Task<IOpeningGateService> GetOpeningGateService(OrganizationDto organizationDto);
 }

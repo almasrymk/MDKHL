@@ -1,4 +1,6 @@
 ﻿using Castle.MicroKernel;
+using SmartParking.Cameras;
+using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.GarageTransactions;
 using SmartParking.OpeningGate;
 using SmartParking.WebSockets;
@@ -17,11 +19,14 @@ namespace SmartParking.BarrierAppService;
 public class BarrierAppService : SmartParkingAppService, IBarrierAppService , IOpeningGateService
 {
     private readonly IWebSocketConnectionManager _websocketConnectionManager;
+    private readonly ICamerasAppService _cameraAppService;
+
     public string Name => "Barrier";
 
-    public BarrierAppService(IWebSocketConnectionManager websocketConnectionManager)
+    public BarrierAppService(IWebSocketConnectionManager websocketConnectionManager, ICamerasAppService cameraAppService)
     {
         _websocketConnectionManager = websocketConnectionManager;
+        _cameraAppService = cameraAppService;
     }
 
     public async Task<bool> CallingBarrier(int organizationId, BarrierRequest request)
@@ -50,6 +55,14 @@ public class BarrierAppService : SmartParkingAppService, IBarrierAppService , IO
 
     public async Task<bool> OpenGateAsync(GarageTransactionDto garageTransactionDto)
     {
-        return await CallingBarrier(garageTransactionDto.OrganizationID, new BarrierRequest { carNum = garageTransactionDto.PlateNumber, laneNO = garageTransactionDto.LaneNO, operatorType = 5 });
+        var _device = garageTransactionDto.LaneNO;
+        if (string.IsNullOrEmpty(_device)){
+            var camera = await _cameraAppService.GetAsync(garageTransactionDto.CameraId.Value);
+            _device = camera.CameraIP;
+
+
+
+        }
+        return await CallingBarrier(garageTransactionDto.OrganizationID, new BarrierRequest { carNum = garageTransactionDto.PlateNumber, laneNO = _device, operatorType = 5 });
     }
 }

@@ -74,7 +74,7 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
     {
         var _garageTransaction = await _garageTransactionsAppService.GetAsync(transactionId);
         var _organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
-        var _openGateService = _openGateFactoryAppService.GetOpeningGateService(_organization);
+        var _openGateService =await _openGateFactoryAppService.GetOpeningGateService(_organization);
         return await _openGateService.OpenGateAsync(_garageTransaction);
     }
 
