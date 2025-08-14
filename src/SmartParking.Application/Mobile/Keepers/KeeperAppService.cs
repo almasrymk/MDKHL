@@ -57,6 +57,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IMyUserRepository _myUserRepository;
     private readonly IRepository<Tenant,Guid> _tenantRepository;
     private readonly IPaymentAppService _paymentAppService;
+    private readonly IPaymentWebAppService _paymentWebAppService;
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly IAuthenticationUtility _authenticationUtility;
     private readonly IVehicleAppService _vehicleAppService;
@@ -80,7 +81,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IAuthenticationUtility authenticationUtility,
          IVehicleAppService vehicleAppService,
          IDiscountAppService discountAppService,
-         IRepository<Payment, Guid> paymentRepository)
+         IRepository<Payment, Guid> paymentRepository,
+         IPaymentWebAppService paymentWebAppService)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -98,6 +100,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _vehicleAppService = vehicleAppService;
         _discountAppService = discountAppService;
         _paymentRepository = paymentRepository;
+        _paymentWebAppService = paymentWebAppService;
     }
 
     #region Public Methods
@@ -319,13 +322,15 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
     /// <inheritdoc/>
     /// 
-    public async Task<Result<PaymentDto>> GetPaymentByInvoiceId(int InvoiceId)
+    public async Task<Result<string>> GetPaymentQrCodeByInvoiceId(int InvoiceId)
     {
-        var payment =await _paymentRepository.FirstOrDefaultAsync(payment => payment.InvoiceId == InvoiceId);
-        if (payment == null) {
-            return Result.Error(_notFound);
-        }
-        return ObjectMapper.Map<Payment,PaymentDto>(payment);
+        
+            var payment =await _paymentWebAppService.GetPaymentForInvoice(InvoiceId);
+            if (payment == null) {
+                return Result.Error(_notFound);
+            }
+        return payment.QrCodeInvoice;
+        
     }
 
     public async Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum)

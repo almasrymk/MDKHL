@@ -236,9 +236,9 @@ public class KeeperController : AbpController
 
     [HttpGet("getpaymentbyinvoiceid")]
     [Authorize]
-    public async Task<Result<PaymentDto>> GetPaymentByInvoiceId([FromQuery]int InvoiceId)
+    public async Task<Result<string>> GetPaymentQrCodeByInvoiceId([FromQuery]int InvoiceId)
     {
-        return await _keeperAppService.GetPaymentByInvoiceId(InvoiceId);
+        return await _keeperAppService.GetPaymentQrCodeByInvoiceId(InvoiceId);
     }
 
 }

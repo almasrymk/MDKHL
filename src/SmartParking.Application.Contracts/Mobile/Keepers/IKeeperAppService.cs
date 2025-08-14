@@ -90,5 +90,5 @@ public interface IKeeperAppService
     Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdPaidAsync(int organizationId);
 
 
-    Task<Result<PaymentDto>> GetPaymentByInvoiceId(int InvoiceId);
+    Task<Result<string>> GetPaymentQrCodeByInvoiceId(int InvoiceId);
 }
