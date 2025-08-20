@@ -126,23 +126,11 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
 
     public async Task<GarageTransactionDto?> FindEntranceTransaction(string? PlateNumber , string? TicketId, bool DispenserTransaction, bool CameraTransaction , int organizationId , bool hasActivePackage)
     {
-            GarageTransactionDto? result = null!;
            if (DispenserTransaction)
-           {
-                if (TicketId != null)
-                {
-                    result = await GetTransactionByDispenser(TicketId, organizationId);
-                }
-                else if ( hasActivePackage && PlateNumber != null)
-                {
-                    result = await GetTransactionByCamera(PlateNumber, organizationId);
-                }
-                else
-                     return result;
-            }
-            if (CameraTransaction && result==null)
-                result = await GetTransactionByCamera(PlateNumber , organizationId);
-            return result;   
+               return await GetTransactionByDispenser(TicketId, organizationId);
+           if (CameraTransaction)
+              return await GetTransactionByCamera(PlateNumber , organizationId);
+           return null;
     }
 
     private async Task<GarageTransactionDto?> GetTransactionByCamera(string plateNumber , int organizationId)
@@ -215,8 +203,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             return latestTransaction;
         }
 
-        //var latestTransaction = await _garageTransactionManager.GetTransactionByDispenser(TicketId, organizationId);
-        //return ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(latestTransaction);
+
     }
     //
     public async Task<bool> FreeSlotsOfGarageDependsOnCategoryAsync(int garageId,  bool  hasFreeSlots , CustomerCategoryStatus category)

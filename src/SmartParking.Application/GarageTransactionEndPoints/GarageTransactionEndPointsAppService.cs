@@ -115,24 +115,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, bool dispenserTransaction, bool cameraTransaction, CreateUpdateGarageTransactionDto GarageTransaction, CustomerPackageTransactionDto? customerPackageDto = null)
     {
         bool _hasActivePackage = customerPackageDto is not null;
-        if (dispenserTransaction && cameraTransaction && customerPackageDto == null && GarageTransaction.TicketId == null)
-        {
-            _logger.LogInformation($"No Active Customer Package with mix mode  for : {GarageTransaction.PlateNumber}");
-            return false;
-        }
-        if (dispenserTransaction && cameraTransaction && GarageTransaction.TicketId == null)
-        {
-            var last =await  _garageTransactionUtilityAppService.FindEntranceTransaction(GarageTransaction.PlateNumber, null, false, cameraTransaction , GarageTransaction.OrganizationID , _hasActivePackage);
-            if (last!= null && last.AccurateTime >= GarageTransaction.AccurateTime.Value.AddSeconds(-10) && last.AccurateTime <= GarageTransaction.AccurateTime && !last.IsMapped)
-            {
-                _logger.LogInformation($"Cannot enter twice : {GarageTransaction.PlateNumber}");
-                return false;
-            }
-        }
-        
         GarageTransaction.CustomerCategory = customerPackageDto is not null ? customerPackageDto.CustomerCategory : CustomerCategoryStatus.Customer;
-        if(cameraTransaction && GarageTransaction.TicketId == null && string.IsNullOrEmpty(input.PlateNumber))
-           _hasFreeSlots = true;
 
         bool canEnter = await _garageTransactionUtilityAppService.ReserverSlotsOfGarageDependsOnCategoryAsync(GarageTransaction.GarageId , _hasFreeSlots,  GarageTransaction.CustomerCategory);
      
