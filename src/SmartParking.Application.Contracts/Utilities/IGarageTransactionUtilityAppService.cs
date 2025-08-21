@@ -21,7 +21,8 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task<string> CheckPlateNumberBelongsToCustomerToGetHisIdAsync(string plateNumber);
     Task<GarageTransactionDto?> FindEntranceTransaction(string? PlateNumber, string? TicketId, bool DispenserTransaction, bool CameraTransaction, int organizationId , bool hasActivePackage);
     Task<string> FindEntranceImage(string? plateNumber, string ticketId,int OrganiztionId);
-    Task<GarageTransactionDto> CheckIfCheckoutFromMobile(string plateNumber);
+    Task<GarageTransactionDto> CheckIfCheckoutFromMobilePLate(string plateNumber);
+    Task<GarageTransactionDto> CheckIfCheckoutFromMobileTicket(string ticketNumber);
     Task<GarageTransaction> GetTransactionById(int garagetransactionId);
     Task CloseEntryTransaction(string? plateNumber , string ticketId , int entryTransactionId);
     Task CloseCheckoutMobileTransaction(string? plateNumber , int entryTransactionId);

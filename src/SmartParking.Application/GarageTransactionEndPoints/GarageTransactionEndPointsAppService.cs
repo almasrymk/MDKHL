@@ -185,7 +185,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         bool _categoryHasChanged = await GetCategory(exitTransaction, _entryTransaction);
         var _customer = _customerId is not null ? await _garageTransactionUtilityAppService.GetCustomer(Guid.Parse(_customerId)) : null;
         //Check if that transaction has been checked out before.
-        var CheckIfLoggedOutFromMobile = await IfLoggedOutFromMobile(exitTransaction.PlateNumber);
+        var CheckIfLoggedOutFromMobile = await IfLoggedOutFromMobile(exitTransaction.PlateNumber,exitTransaction.TicketId);
         if (CheckIfLoggedOutFromMobile)
             return await CheckoutFromMobileSequence(exitTransaction, organization, _entryTransaction, _categoryHasChanged, _customer);
         //Check if doesn't pass organization free minutes.
@@ -298,12 +298,19 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     /// </summary>
     /// <param name="plateNumber">plate number of vehicle</param>
     /// <returns>true if passed false if no</returns>
-    private async Task<bool> IfLoggedOutFromMobile(string plateNumber)
+    private async Task<bool> IfLoggedOutFromMobile(string plateNumber , string ticketId )
     {
-        var _transaction = await _garageTransactionUtilityAppService.CheckIfCheckoutFromMobile(plateNumber);
-        if (_transaction is null)
-            return false;
-        return _transaction.CheckoutMobile != null ? true : false;
+        GarageTransactionDto _transaction;
+        if (!string.IsNullOrEmpty(ticketId))
+        {
+            _transaction = await _garageTransactionUtilityAppService.CheckIfCheckoutFromMobileTicket(ticketId);
+        }
+        else
+        {
+            _transaction = await _garageTransactionUtilityAppService.CheckIfCheckoutFromMobilePLate(plateNumber);
+
+        }
+        return _transaction != null ;
 
     }
     /// <summary>
