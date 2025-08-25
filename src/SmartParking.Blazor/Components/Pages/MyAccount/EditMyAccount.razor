@@ -218,7 +218,7 @@
                                 <label style="font-size: 0.75rem; margin-bottom: 4px;">
                                     @L["ZatcaStatus"]
                                 </label>
-                                <MudRadioGroup Value="@_createUpdateOrganization.StatusZatca" Class="d-inline-flex align-content-center" ValueChanged="@((Enums.Status val) => OnRadioChanged(val))">
+                                <MudRadioGroup Value="@_createUpdateOrganization.StatusZatca" Disabled="true" Class="d-inline-flex align-content-center" ValueChanged="@((Enums.Status val) => OnRadioChanged(val))">
                                     <div class="d-flex flex-row justify-content-between">
                                         <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
                                         <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
@@ -226,13 +226,7 @@
                                 </MudRadioGroup>
                             </div>
                         </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganization.UserNameZatca" Placeholder=@L["UserNameZatca"] Label=@L["UserNameZatca"] readonly="@IsReadOnly" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Password" @bind-Value="_createUpdateOrganization.PasswordZatca" Placeholder=@L["PasswordZatca"] Label=@L["PasswordZatca"] readonly="@IsReadOnly"  />
-                        </MudItem>
-
+                      
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
                         <MudItem sm="4">
                             <div style="display: flex; flex-direction: column;font-weight:bold">

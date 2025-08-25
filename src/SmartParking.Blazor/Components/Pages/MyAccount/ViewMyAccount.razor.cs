@@ -154,6 +154,7 @@ public partial class ViewMyAccount
         Graceperiod = organization.Graceperiod;
         UserNameZatca = organization.UserNameZatca;
         PasswordZatca = organization.PasswordZatca;
+        StatusZatca = organization.StatusZatca;
         //StatusZatca = organization.StatusZatca;
     }
 

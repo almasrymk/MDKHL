@@ -187,7 +187,7 @@ namespace SmartParking.Blazor.Components.Pages.MyAccount
             _numberOfHours = organization.NumberOfHours;
             _citySelectValue = organization.CityId.ToString();
             _countrySelectValue = organization.CountryId.ToString();
-            _regionSelectValue = organization.RegionId.ToString();
+            _regionSelectValue = organization.RegionId.ToString();            
             _code = organization.Code;
         }
 
