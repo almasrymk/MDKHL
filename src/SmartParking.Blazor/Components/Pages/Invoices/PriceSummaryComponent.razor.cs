@@ -19,7 +19,9 @@ public partial class PriceSummaryComponent
     [Parameter] public int ComponentSize { get; set; }
     [Parameter]
     public EventCallback<decimal> OnValueSelected { get; set; }
-    
+    [Parameter]
+    public EventCallback<PaymentMethod> OnSelectPaymentMethod { get; set; }
+
     [Parameter]
     public bool HasConfirmPermission { get; set; }
 
@@ -33,6 +35,7 @@ public partial class PriceSummaryComponent
         InvoicePriceWithVat = Math.Round((InvoicePrice.Value + (InvoicePrice.Value * 0.15m)), 2);
         base.OnParametersSet();
     }
+
     private async Task OnAddDiscount(decimal discountValue)
     {
         if (discountValue <= InvoicePriceWithVat && discountValue > 0)
@@ -53,4 +56,8 @@ public partial class PriceSummaryComponent
         }
     }
 
+    private async Task OnPaymentMethod(PaymentMethod PM)
+    {
+        await OnSelectPaymentMethod.InvokeAsync(PM);
+    }
 }

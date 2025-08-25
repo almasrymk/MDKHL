@@ -22,6 +22,11 @@ public partial class LastInvoiceAtCamera
         Discount = selected;
     }
 
+    private void OnSelectPaymentMethod(PaymentMethod selected)
+    {
+        PaymentMethod = selected;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         try
