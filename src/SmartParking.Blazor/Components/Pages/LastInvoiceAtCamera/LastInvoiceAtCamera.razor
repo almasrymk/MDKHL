@@ -62,5 +62,5 @@
 	</MudItem>
 
 
-	<PriceSummaryComponent OnValueSelected="HandleAddDiscount" ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice?.InvoicePrice" IsPaid="Invoice.InvoiceType==InvoiceType.Paid.ToString()" Cancel="Cancel" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" NoInvoice="NoInvoice" ShowOpenGate="true" OpenGate="OpenGate" HasConfirmPermission="@(AuthorizationService.IsGrantedAsync(CheckoutPermissions.Confirm).Result)" />
+	<PriceSummaryComponent OnValueSelected="HandleAddDiscount" OnSelectPaymentMethod="OnSelectPaymentMethod" ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice?.InvoicePrice" IsPaid="Invoice.InvoiceType==InvoiceType.Paid.ToString()" Cancel="Cancel" PayInvoice="PayInvoice" PaymentMethod="@PaymentMethod" NoInvoice="NoInvoice" ShowOpenGate="true" OpenGate="OpenGate" HasConfirmPermission="@(AuthorizationService.IsGrantedAsync(CheckoutPermissions.Confirm).Result)" />
 </MudGrid>

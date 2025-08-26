@@ -91,10 +91,10 @@
                 @if (HasConfirmPermission
                 && (!IsPaid || InvoicePrice == 0))
                 {
-                    <MudItem xs="@(ConfirmSize)" Class="d-flex flex-row justify-content-center">
-                        <MudRadioGroup @bind-Value="@PaymentMethod" Class="d-inline-flex align-content-center">
+                    <MudItem xs="@(ConfirmSize)" Class="d-flex flex-row justify-content-center" >
+                        <MudRadioGroup Value="@PaymentMethod" Class="d-inline-flex align-content-center" ValueChanged="@((PaymentMethod val) => OnPaymentMethod(val))">
                             <MudRadio Value="@(Enums.PaymentMethod.Cash)" Color="MudBlazor.Color.Primary">@L["Cash"]</MudRadio>
-                            <MudRadio Value="@(Enums.PaymentMethod.Cash)" Color="MudBlazor.Color.Secondary">@L["POS"]</MudRadio>
+                            <MudRadio Value="@(Enums.PaymentMethod.POS)" Color="MudBlazor.Color.Secondary">@L["POS"]</MudRadio>
                         </MudRadioGroup>
                     </MudItem>
 

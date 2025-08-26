@@ -185,8 +185,8 @@ public class GenerateFilesAppService(IOrganizationsAppService organizationsAppSe
             if (_currentTenant.Id != null)
             {
                 var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
-                 rightImagePath = organization != null && !string.IsNullOrEmpty(organization?.OrganizationPicture) ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
-                                                             : System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
+                rightImagePath = organization != null && !string.IsNullOrEmpty(organization?.OrganizationPicture) ? System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}")
+                                                            : System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
             }
             string title = Data.Name;
             foreach (var columns in Data.Columns)
@@ -194,7 +194,10 @@ public class GenerateFilesAppService(IOrganizationsAppService organizationsAppSe
                 if (columns.Name == "Id" || !columns.IsColumnVisible)
                     continue;
 
-                table.Columns.Add(columns.DisplayName, typeof(string));
+                if (columns.TypeOfColumn != null && columns.TypeOfColumn == typeof(decimal))
+                    table.Columns.Add(columns.DisplayName, columns.TypeOfColumn);
+                else
+                    table.Columns.Add(columns.DisplayName, typeof(string));
             }
 
 
@@ -209,14 +212,8 @@ public class GenerateFilesAppService(IOrganizationsAppService organizationsAppSe
 
             int titleStart = leftImageStart + 1;
 
-
-
-
-
             worksheet.Cells[1, leftImageStart, 2, leftImageStart].Merge = true;
-
             worksheet.Cells[FromRow: 1, rightImageStart, 2, rightImageStart].Merge = true;
-
             worksheet.Cells[1, titleStart, 2, columnCount - 1].Merge = true;
             worksheet.Cells[1, titleStart, 2, columnCount - 1].Value = title;
             worksheet.Cells[1, titleStart, 2, columnCount - 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
@@ -227,14 +224,9 @@ public class GenerateFilesAppService(IOrganizationsAppService organizationsAppSe
             worksheet.Row(1).Height = 30;
             worksheet.Row(2).Height = 30;
 
-
-
-
-
             foreach (var row in Data.Rows)
             {
                 var dataRow = table.NewRow();
-
                 foreach (var cell in row.Cells)
                 {
                     // Skip columns that should not be visible or are "Id"
@@ -245,12 +237,27 @@ public class GenerateFilesAppService(IOrganizationsAppService organizationsAppSe
 
                     // Remove any HTML tags (like the iconHtml) from the value if needed
                     cellValue = RemoveHtmlTags(cellValue);
-
+                    var xx = Data.Columns.FirstOrDefault(e => e.DisplayName == cell.Key)!.TypeOfColumn;
                     // Check if the culture is Arabic and if the cell key contains "وقت" or "تاريخ"
                     if (CultureInfo.CurrentCulture.Name == "ar" && (cell.Key.Contains("وقت") || cell.Key.Contains("تاريخ")))
                     {
                         // Render as MarkupString for Arabic date/time columns
                         dataRow[cell.Key] = new MarkupString(cellValue); // HTML will be rendered here
+                    }
+                    else if (Data.Columns.FirstOrDefault(e => e.DisplayName == cell.Key)!.TypeOfColumn == typeof(decimal))
+                    {
+                        if (!string.IsNullOrEmpty(cellValue.Trim()))
+                        {
+                            cellValue = new string(cellValue.Where(c => !char.IsControl(c) && c != '\u061C').ToArray());
+
+                            if (cellValue.Contains("٫"))
+                                cellValue = cellValue.Trim().Replace("٫", ".");
+
+                            if (cellValue.Contains("-"))
+                                cellValue = "-" + cellValue.Trim().Replace("-", "");
+
+                            dataRow[cell.Key] = decimal.Parse(cellValue, CultureInfo.InvariantCulture);
+                        }
                     }
                     else
                     {
@@ -262,17 +269,13 @@ public class GenerateFilesAppService(IOrganizationsAppService organizationsAppSe
                 table.Rows.Add(dataRow);
             }
 
-
             worksheet.Cells["A4"].LoadFromDataTable(table, true);
-
-
-
             worksheet.Cells.AutoFitColumns();
 
             // Can Error ! 
             worksheet.Cells[4, 1, 4 + table.Rows.Count, columnCount]
                .Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-
+             
             using (var headerRange = worksheet.Cells[4, 1, 4, table.Columns.Count])
             {
                 headerRange.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
@@ -351,7 +354,7 @@ public class GenerateFilesAppService(IOrganizationsAppService organizationsAppSe
         string rightImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png");
         if (organization != null && !string.IsNullOrEmpty(organization.OrganizationPicture))
         {
-            rightImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}");                                        
+            rightImagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}");
         }
         Image rightImage = new Image(ImageDataFactory.Create(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/logo/MDHKL_01.png")))
             .SetHeight(75)
