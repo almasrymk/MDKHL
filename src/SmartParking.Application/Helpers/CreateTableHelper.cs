@@ -314,7 +314,7 @@ public static class CreateTableHelper
 
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = $"{LocalizationHelper.GetLocalizedString("PriceOfPackage")}",
-            Name = "PriceOfPackage", TypeFilter = TypeFilter.Number  , IsSortable = true, PropertyName = "PriceOfPackage", IsFilterable = true });
+            Name = "PriceOfPackage", TypeFilter = TypeFilter.Number  , IsSortable = true, PropertyName = "PriceOfPackage", IsFilterable = true  , TypeOfColumn = typeof(decimal)});
         tableData.Columns.Add(new ColumnDef() { DisplayName = $"{LocalizationHelper.GetLocalizedString("PackageDuration")} ({LocalizationHelper.GetLocalizedString("Hour")})",
             Name = "PackageDuration", TypeFilter = TypeFilter.Number  , IsSortable = true , PropertyName = "DurationOfPackage", IsFilterable = true });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("SubscriptionDate"), Name = "SubscriptionDate", TypeFilter = TypeFilter.DateOnly , IsSortable = true, PropertyName = "ActivationDate", IsFilterable = true, TypeOfColumn = typeof(DateOnly) });
@@ -618,7 +618,7 @@ public static class CreateTableHelper
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("GarageName"), Name = "GarageName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "GarageEnglishName", IsFilterable = true });
         }
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{LocalizationHelper.GetLocalizedString("Amount")}", Name = "TotalAmount", TypeFilter = TypeFilter.Number, IsSortable = true, PropertyName = "TotalAmount", IsFilterable = true });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{LocalizationHelper.GetLocalizedString("Amount")}", Name = "TotalAmount", TypeFilter = TypeFilter.Number, IsSortable = true, PropertyName = "TotalAmount", IsFilterable = true , TypeOfColumn = typeof(decimal) });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("StartDate"), Name = "StartDate", TypeFilter = TypeFilter.DateOnly, IsSortable = true, PropertyName = "StartDate", IsFilterable = true });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("EndDate"), Name = "EndDate", TypeFilter = TypeFilter.DateOnly, IsSortable = true, PropertyName = "EndDate", IsFilterable = true });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("StartTime"), Name = "StartTime", TypeFilter = TypeFilter.Time, IsSortable = true, PropertyName = "StartTime", IsFilterable = true });
@@ -699,8 +699,8 @@ public static class CreateTableHelper
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentCategory"), Name = "PaymentCategory", IsFilterable = true, PropertyName = "PaymentCategory", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(PaymentCategory) });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentMethod"), Name = "PaymentMethod", IsFilterable = true, PropertyName = "PaymentMethod", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(PaymentMethod) });
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Currency"), Name = "Currency", IsFilterable = true, PropertyName = "Currency", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{LocalizationHelper.GetLocalizedString("Discount")}", Name = "Discount", IsFilterable = true, PropertyName = "Discount", IsSortable = true, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{LocalizationHelper.GetLocalizedString("Amount")}", Name = "Amount", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{LocalizationHelper.GetLocalizedString("Discount")}", Name = "Discount", IsFilterable = true, PropertyName = "Discount", IsSortable = true, TypeFilter = TypeFilter.Number , TypeOfColumn = typeof(decimal) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{LocalizationHelper.GetLocalizedString("Amount")}", Name = "Amount", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number, TypeOfColumn = typeof(decimal) });
 
         
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Date"), Name = "Date", IsFilterable = true, PropertyName = "Date", IsSortable = true, TypeFilter = TypeFilter.DateOnly, TypeOfColumn = typeof(DateOnly) });

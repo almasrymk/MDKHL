@@ -1,13 +1,9 @@
 ﻿
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
@@ -23,8 +19,6 @@ using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Mail;
-using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
@@ -34,13 +28,10 @@ using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.Validation;
-using static System.Net.WebRequestMethods;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace SmartParking.Authentication;
@@ -54,6 +45,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IHttpContextAccessor _httpContext;
     private readonly IRepository<IdentityUser, Guid> _userRepository;
+    private readonly IRepository<IdentityUserRole> _userRoleRepository;
     private readonly IRepository<Tenant, Guid> _tenantRepository;
     private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly IRepository<Organization, int> _organizationRepository;
@@ -71,7 +63,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IOptions<TaqnyatSmsOptionsDto> options,
         IHttpContextAccessor httpContext,
         IRepository<IdentityUser, Guid> userRepository,
-        IRepository<Tenant, Guid> tenantRepository,
+    IRepository<Tenant, Guid> tenantRepository,
         IRepository<Customer, Guid> CustomerRepository,
         IRepository<Organization, int> organizationRepository,
         IDataFilter dataFilter,
@@ -79,7 +71,8 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         IUsersAppService usersAppService,
         HttpClient httpClient,
         ICurrentTenant currentTenant,
-        IOrganizationsAppService organizationsAppService)
+        IOrganizationsAppService organizationsAppService,
+        IRepository<IdentityUserRole> userRoleRepository)
     {
         _signInManager = signInManager;
         _userManager = userManager;
@@ -95,6 +88,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
         _currentTenant = currentTenant;
         _options = options.Value;
         _organizationsAppService = organizationsAppService;
+        _userRoleRepository = userRoleRepository;
     }
 
     #region Public Methods
@@ -293,18 +287,10 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     [RemoteService(IsEnabled = false)]
     public async Task<IdentityUser> LoginForWebAsync(LoginInputDto input)
     {
-        IdentityUser? user;
-
-        if (CurrentTenant.IsAvailable)
+        IdentityUser? user;        
+        using (DataFilter.Disable<IMultiTenant>())
         {
             user = await FindUserAsync(input);
-        }
-        else
-        {
-            using (DataFilter.Disable<IMultiTenant>())
-            {
-                user = await FindUserAsync(input);
-            }
         }
 
         if (user == null)
@@ -316,12 +302,9 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
         await CheckPassword(input, user);
 
-
         return user;
     }
-
-   
-
+     
     /// <inheritdoc/>
     public async Task<Result<RegisterResultDto>> RegisterAsync(RegisterInputDto input)
     {
@@ -550,8 +533,14 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     /// <returns>The found <see cref="IdentityUser"/> if found, otherwise null.</returns>
     private async Task<IdentityUser?> FindUserAsync(LoginInputDto input)
     {
-        return await _userRepository.FirstOrDefaultAsync(u =>
+        var user = await _userRepository.FirstOrDefaultAsync(u =>
             u.UserName == input.Username || u.PhoneNumber == input.Username);
+        if (CurrentTenant.IsAvailable && user != null)
+        {
+            if (!await _userRoleRepository.AnyAsync(e => e.UserId == user.Id && e.TenantId == CurrentTenant.Id))
+                return null;
+        }
+        return user;
     }
     /// <summary>
     /// Checks if the provided OTP is valid by comparing it with the current OTP and ensuring it is not expired.
