@@ -7,7 +7,6 @@ using SmartParking.Entities;
 using SmartParking.Repositories;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -28,7 +27,7 @@ using SmartParking.Results;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Filters;
-using SmartParking.Cutomers;
+using Volo.Abp.Identity;
 namespace SmartParking.Authentication;
 
 [Authorize]
@@ -46,7 +45,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
     private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly IRepository<Subscription, int> _subscriptionRepository;
     private readonly IRepository<Organization, int> _organizationsRepository;
- 
+    private readonly IRepository<IdentityUserRole> _userRoleRepository;
+
 
     public UsersAppService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
         , IMyUserRepository userRepository, IDataFilter dataFilter,
@@ -56,7 +56,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
         IBaseCustomerAppService baseCustomer,
         IRepository<Customer, Guid> customerRepository,
         IRepository<Subscription, int> subscriptionRepository,
-        IRepository<Organization, int> organizationsRepository)
+        IRepository<Organization, int> organizationsRepository,
+        IRepository<IdentityUserRole> userRoleRepository)
     {
         _userManager = userManager;
         _userRepository = userRepository;
@@ -68,7 +69,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         _customerRepository = customerRepository;
         _subscriptionRepository = subscriptionRepository;
         _organizationsRepository = organizationsRepository;
-
+        _userRoleRepository = userRoleRepository;
     }
 
     #region Public Methods
@@ -924,6 +925,5 @@ public class UsersAppService : ApplicationService, IUsersAppService
             await _authenticationUtility.CheckIfNationalIDIsUnique(nationalId);
         }
     }
-
     #endregion
 }

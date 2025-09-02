@@ -36,14 +36,14 @@ namespace SmartParking.Packages
 
 
 			RuleFor(x => x.Price)
-				.NotEmpty()
-				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+				//.NotEmpty()
+				//.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
 				.GreaterThan(-1)
 				.WithMessage(LocalizationHelper.GetLocalizedString("PriceValidation"))
 				.PrecisionScale(18, 2, false)
 				.WithMessage(LocalizationHelper.GetLocalizedString("PriceRangeValidation"));
 
-            RuleFor(x => x.PublishFrom)
+			RuleFor(x => x.PublishFrom)
 				.NotEmpty().When(x => !x.Published)
 				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 

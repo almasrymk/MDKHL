@@ -71,6 +71,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
 
     public DbSet<IdentityUser> Users { get; set; }
     public DbSet<IdentityRole> Roles { get; set; }
+    public DbSet<IdentityUserRole> UserRoles { get; set; }
     public DbSet<IdentityClaimType> ClaimTypes { get; set; }
     public DbSet<OrganizationUnit> OrganizationUnits { get; set; }
     public DbSet<IdentitySecurityLog> SecurityLogs { get; set; }
