@@ -40,6 +40,11 @@ public partial class DetailsInvoice
         Discount = selected;
     }
 
+    private void OnSelectPaymentMethod(PaymentMethod selected)
+    {
+        PaymentMethod = selected;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await FetchData();  
@@ -74,7 +79,7 @@ public partial class DetailsInvoice
 
     private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()
     {
-        var paymentChekout = new PaymentCheckoutRequestDto
+        var paymentCheckout = new PaymentCheckoutRequestDto
         {
             OrganizationId = Invoice.OrganizationId,
             PaymentCategory = PaymentCategory.PaymentParking,
@@ -83,7 +88,7 @@ public partial class DetailsInvoice
             Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Discount),
             CustomerId = Invoice.CustomerId
         };
-        PaymentCheckoutDto? payment = await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
+        PaymentCheckoutDto? payment = await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentCheckout);
         return payment;
     }
 }
