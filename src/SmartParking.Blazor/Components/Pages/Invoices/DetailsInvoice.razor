@@ -161,7 +161,7 @@
         </MudItem>
         @if(Invoice != null && Invoice?.InvoiceType=="UnPaid")
         {
-            <PriceSummaryComponent OnValueSelected="HandleAddDiscount" ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice.InvoicePrice" IsPaid="IsPaid" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" ShowOpenGate="false" HasConfirmPermission="@(AuthorizationService.IsGrantedAsync(InvoicePermission.Confirm).Result)" />
+                <PriceSummaryComponent OnValueSelected="HandleAddDiscount" OnSelectPaymentMethod="OnSelectPaymentMethod" ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice.InvoicePrice" IsPaid="IsPaid" PayInvoice="PayInvoice" PaymentMethod="PaymentMethod" ShowOpenGate="false" HasConfirmPermission="@(AuthorizationService.IsGrantedAsync(InvoicePermission.Confirm).Result)" />
         }
         </MudGrid>
     }

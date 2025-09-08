@@ -380,6 +380,7 @@ public static class CreateTableHelper
         }
 
         var rowDef2 = new RowDef();
+        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageName"), LocalizationHelper.GetLocalizedString("Total")));
         rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PriceOfPackage"), $"{TPriceOfPackage} {iconHtml}"));
         tableData.Rows.Add(rowDef2);
 
@@ -469,6 +470,7 @@ public static class CreateTableHelper
         }
 
         var rowDef2 = new RowDef();
+        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Code"), LocalizationHelper.GetLocalizedString("Total")));
         rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Discount"), $"{TDiscount} {IconHtml}"));
         rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentVat"), $"{TVatValue} {IconHtml}"));
         rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Amount"), $"{TAmount} {IconHtml}"));
@@ -551,6 +553,7 @@ public static class CreateTableHelper
         }
 
         var rowDef2 = new RowDef();
+        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageName"), LocalizationHelper.GetLocalizedString("Total")));
         rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ValueOfPackage"), $"{TValueOfPackage} {IconHtml}"));
         rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("ValueTotalPackage"), $"{TValueTotalPackage} {IconHtml}"));
         tableData.Rows.Add(rowDef2);
@@ -714,6 +717,7 @@ public static class CreateTableHelper
         }
 
         var rowDef2 = new RowDef();
+        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("UserName"), LocalizationHelper.GetLocalizedString("Total")));
         rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Amount"), $"{TTotalAmount} {iconHtml}"));
         tableData.Rows.Add(rowDef2);
 
@@ -811,6 +815,7 @@ public static class CreateTableHelper
         }
 
         var rowDef2 = new RowDef();
+        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Code"), LocalizationHelper.GetLocalizedString("Total")));
         rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Discount"), $"{TDiscount} {IconHtml}"));
         rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Amount"), $"{TAmount} {IconHtml}"));
         tableData.Rows.Add(rowDef2);
