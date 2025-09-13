@@ -199,7 +199,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                     //var token = await _invoiceUtility.GetTokenAsync();
                     //var qrCode = await _invoiceUtility.GetQrCodeAsync(payment.Amount, payment.OrganizationId);
                     var organization = await organizationsAppService.GetAsync(payment.OrganizationId);
-                    if ((organization != null && organization.StatusZatca == Status.Active) || payment.Amount > 0)
+                    if (organization != null && organization.StatusZatca == Status.Active && payment.Amount > 0)
                     {
                         var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
                         payment.QrCodeInvoice = res.invoiceQRCode;
@@ -395,7 +395,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
         QRCodeDto qrCode = new QRCodeDto();
         var organization = await organizationsAppService.GetAsync(payment.OrganizationId);
-        if ((organization != null && organization.StatusZatca == Status.Active)  || payment.Amount > 0)
+        if (organization != null && organization.StatusZatca == Status.Active  && payment.Amount > 0)
         {
             var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
             payment.QrCodeInvoice = qrCode .QRCode = res.invoiceQRCode;
