@@ -449,57 +449,8 @@ public class CustomerPackagesAppService:
     }
     private async Task<CustomerPackageTransactionDto?> GetOneActivePackageUsingProjection(IQueryable<CustomerPackage> query)
     {
-        var reult = from x in query
-                    select new CustomerPackageTransactionDto
-                    {
-                        Id = x.Id,
-                        CustomerId = x.CustomerId,
-                        PackageId = (int)x.PackageId,
-                        OrganizationId = (int)x.OrganizationId,
-                        Package = new PackageDto
-                        {
-                            ArabicName = x.Package!.ArabicName,
-                            EnglishName = x.Package.EnglishName,
-                            PackageTypeId = x.Package.PackageTypeId,
-                            Price = x.Package.Price,
-                            Description = x.Package.Description,
-                            Published = x.Package.published,
-                            PublishFrom = x.Package.PublishFrom,
-                            PublishTo = x.Package.PublishTo,
-                            CreatedDate = x.Package.CreatedDate,
-                            CreatedBy = x.Package.CreatedBy,
-                            ActivationDate = x.Package.ActivationDate,
-                            ActivedBy = x.Package.ActivedBy,
-                            DectivationDate = x.Package.DectivationDate,
-                            DeactivatedBy = x.Package.DeactivatedBy,
-                            OrganizationId = x.Package.OrganizationId,
-                            PackageStatus = x.Package.PackageStatus,
-                            CustomerCategory = x.Package.CustomerCategory.ToString(),
-                            DurationOfPackage = x.Package.DurationOfPackage,
-                            Status = x.Package.Status
-                        },
-                        CustomerPackageStatus = x.CustomerPackageStatus,
-                        TenantId = x.TenantId,
-                        DurationOfPackage = x.DurationOfPackage,
-                        PriceOfPackage = x.PriceOfPackage,
-                        DescriptionOfPackage = x.DescriptionOfPackage,
-                        publishedOfPackage = x.publishedOfPackage,
-                        PublishFromOfPackage = x.PublishFromOfPackage,
-                        PublishToOfPackage = x.PublishToOfPackage,
-                        ActivationDateOfPackage = x.ActivationDateOfPackage,
-                        DectivationDateOfPackage = x.DectivationDateOfPackage,
-                        ExpiryDate = x.ExpiryDate,
-                        PackageArabicName = x.PackageArabicName,
-                        PackageEnglishName = x.PackageEnglishName,
-                        CustomerCategory = x.CustomerCategory,
-                        EnPlateNumber = x.EnPlateNumber,
-                        ArPlateNumber = x.ArPlateNumber,
-                        IsCustomPackage = x.IsCustomPackage,
-                        PackageCode = x.PackageCode,
-                        QRCodePath = x.QRCodePath
-                    };
-        var customerPackageDto = await AsyncExecuter.FirstOrDefaultAsync(reult);
-        return customerPackageDto;
+        var customerPackageDto = await AsyncExecuter.FirstOrDefaultAsync(query);
+        return ObjectMapper.Map<CustomerPackage, CustomerPackageTransactionDto>(customerPackageDto);
     }
 
     /// <summary>
