@@ -27,7 +27,7 @@ public partial class InvoiceDetailsViewDialog
         {
             price = Invoice.InvoicePrice;
             title = "Invoice";
-            description = Code;
+            description = Invoice.InvoiceId.ToString();
             var tprice = Math.Round((price + (price * 0.15m)), 2);
             if (tprice != PaymentPrice)
             {
