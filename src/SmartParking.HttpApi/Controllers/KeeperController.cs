@@ -161,9 +161,9 @@ public class KeeperController : AbpController
 
     [HttpGet("PayAtExitCamera")]
     [Authorize]
-    public async Task<Result<InvoiceMobileDto>> PayInvoice(int InvoiceId, decimal DiscountValue)
+    public async Task<Result<InvoiceMobileDto>> PayInvoice(int InvoiceId, decimal DiscountValue, int paymentMethodType)
     {
-        var invoice = await _keeperAppService.CheckoutAsync(InvoiceId, DiscountValue);
+        var invoice = await _keeperAppService.CheckoutAsync(InvoiceId, paymentMethodType, DiscountValue);
         await _keeperTransactionsAppService.OpenGate(invoice.Value.GarageTransactionExitId);
         return invoice;
     }

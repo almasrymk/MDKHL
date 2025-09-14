@@ -71,7 +71,7 @@ public interface IKeeperAppService
     /// <param name="invoiceId">The unique identifier of the invoice to be processed.</param>
     /// <param name="DiscountValue">The discount value to be applied to the invoice (optional, defaults to 0).</param>
     /// <returns>A task representing the asynchronous operation, containing the result of type <see cref="InvoiceMobileDto"/>.</returns>
-    Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId, decimal DiscountValue = default);
+    Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId,int paymentMethodType ,decimal DiscountValue = default);
 
     /// <summary>
     /// Processes a cash payment for the customer request for a specific invoice, including the option for a discount value.

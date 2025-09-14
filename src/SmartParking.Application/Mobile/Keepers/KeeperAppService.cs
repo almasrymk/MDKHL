@@ -210,11 +210,46 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     {
         var query = await _invoiceRepository.GetQueryableAsync();
         var totalCount = await AsyncExecuter.CountAsync(query);
-        var invoices = await query.OrderByDescending(inv => inv.InvoiceTime).Skip(paged.SkipCount).Take(paged.MaxResultCount).ToListAsync();
-        var items = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices);
+        query =  query.OrderByDescending(inv => inv.InvoiceTime).Skip(paged.SkipCount).Take(paged.MaxResultCount);
+        var _paymentQuery = await _paymentRepository.GetQueryableAsync();
+        var invoicesWithPayments = from invoice in query
+                                   join pay in _paymentQuery
+                                       on invoice.Id equals pay.InvoiceId
+                                   select new InvoiceDto
+                                   {
+                                       InvoiceNumber=pay.PaymentNumber,
+                                       Id = invoice.Id,
+                                       TotalHours = invoice.TotalHours,
+                                       InvoicePrice = invoice.InvoicePrice,
+                                       InvoiceType = invoice.InvoiceType.ToString(), // enum → string
+                                       OrganizationArabicName = invoice.Organization!.ArabicName,   
+                                       OrganizationEnglishName = invoice.Organization!.EnglishName, 
+                                       GarageArabicName = invoice.Garage!.NameAr,               
+                                       GarageEnglishName = invoice.Garage!.NameEn,             
+                                       PlateNumber = invoice.PlateNumber,
+                                       InvoiceTime = invoice.InvoiceTime,
+                                       EntranceTime = invoice.EntranceTime,
+                                       CustomerArName = invoice.CustomerArName,
+                                       CustomerEnName = invoice.CustomerEnName,
+                                       IsPackage = invoice.IsPackage,
+                                       CustomerId = invoice.CustomerId,
+                                       EntryTransactionImage = invoice.EntryTransactionImage,
+                                       ExitTransactionImage = invoice.ExitTransactionImage,
+                                       InvoiceId = invoice.Id, 
+                                       OrganizationId = invoice.OrganizationId,
+                                       OrganizationAddress = invoice.Organization!.Address, 
+                                       OrganizationTIN = invoice.Organization!.TaxIdentificationNumber,         
+                                       GarageTransactionExitId = invoice.GarageTransactionExitId,
+                                       TotalPriceWithVatAndDiscount = invoice.InvoicePrice - invoice.Discount, 
+                                       Discount = invoice.Discount,
+                                       TicketId = invoice.TicketId
+
+
+                                   };
+        var invoices =await invoicesWithPayments.ToListAsync();
         var finalPaged = new PagedResultDto<InvoiceDto>(
                   totalCount,
-                  items
+                  invoices
               );
         return  Result<PagedResultDto<InvoiceDto>>.Success(finalPaged);
     }
@@ -342,7 +377,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 	}
     /// <inheritdoc/>
 
-    public async Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId , decimal discountValue =default)
+    public async Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId ,int paymentMethodType ,decimal discountValue =default)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -364,9 +399,12 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 }
                 
             }
-            var result = await RequestToPaymentCheckout(invoice, discountValue);
+            var result = await RequestToPaymentCheckout(invoice, paymentMethodType, discountValue);
             var image = await _invoiceAppService.GetImage(invoice,result is null ? " " : result.QrCodeInvoice);
-            return await ProcessingInvoiceMobileDto(discountValue,invoiceId ,image);
+            var mobileInvoice =await ProcessingInvoiceMobileDto(discountValue,invoiceId ,image);
+            mobileInvoice.Value.PaymentMethod = result.PaymentMethod.ToString();
+            mobileInvoice.Value.InvoiceNumber = result.PaymentNumber;
+            return mobileInvoice;
 
 
         }
@@ -377,7 +415,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
     public async Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId,string PaymentType, decimal discountValue = default)
     {
-       return await CheckoutAsync(invoiceId, discountValue);
+
+       return await CheckoutAsync(invoiceId,(int) PaymentMethod.Cash ,discountValue);
     }
 
   
@@ -428,7 +467,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         invoiceDto.QrCodeInvoice = image.Value;
         invoiceDto.Vehicle = await _vehicleAppService.GetVehicleByPlateNumberAsync(invoice.PlateNumber);
         invoiceDto.TotalPriceWithVatAndDiscount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, discountValue);
-        invoiceDto.ExitTransactionImage = invoiceDto.EntryTransactionImage;
+        invoiceDto.ExitTransactionImage = invoiceDto.ExitTransactionImage;
         return invoiceDto;
     }
 
@@ -438,17 +477,22 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     /// <param name="invoice">The invoice for which the payment checkout is requested.</param>
     /// <param name="discountValue">The discount value to apply to the payment.</param>
     /// <returns>A task representing the asynchronous operation, containing the <see cref="PaymentCheckoutDto"/> for the payment request.</returns>
-    private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout(InvoiceDto invoice, decimal discountValue)
+    private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout(InvoiceDto invoice, int paymentMethodType, decimal discountValue)
     {
+        if (!Enum.IsDefined(typeof(PaymentMethod), paymentMethodType))
+        {
+            throw new ArgumentException($"Invalid payment method type: {paymentMethodType}");
+        }
+        var paymentMethod = (PaymentMethod)paymentMethodType;
         var paymentChekout = new PaymentCheckoutRequestDto
         {
             PaymentCategory = PaymentCategory.PaymentParking,
-            PaymentMethod = PaymentMethod.Cash,
+            PaymentMethod = paymentMethod,
             Amount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, discountValue),
             CustomerId = invoice.CustomerId,
             OrganizationId = invoice.OrganizationId,
             InvoiceId = invoice.Id,
-            PaymentName = PaymentMethod.Cash.ToString()
+            PaymentName = paymentMethod.ToString()
         };
         var payment = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
         return payment;
