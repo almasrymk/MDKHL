@@ -50,26 +50,29 @@ public class GarageTransactionManager : DomainService
             var query = await _repository.GetQueryableAsync();
             if (!string.IsNullOrEmpty(TicketId))
             {
-                await SaveClosedEntryTicketTransaction(TicketId, query, entryTransactionId);
+                await EntryTicketTransactions(TicketId, query, entryTransactionId);
                 return;
             }
             await SaveClosedEntryTransaction(plateNumber, query, entryTransactionId);
         }
     }
 
-    private async Task SaveClosedEntryTicketTransaction(string? TicketNumber, IQueryable<GarageTransaction> query, int entryTransactionId)
+    private async Task EntryTicketTransactions(string? TicketNumber, IQueryable<GarageTransaction> query, int entryTransactionId)
     {
         if (TicketNumber == null)
-            return;
-        var latestTransactions = query
+            return ;
+        var latestTransactions= query
                 .Where(gt => gt.TicketId == TicketNumber && gt.Id == entryTransactionId && gt.IsIn == true)
                 .OrderByDescending(gt => gt.AccurateTime)
-                .FirstOrDefault();
+                .ToList();
+        latestTransactions.ForEach(gt =>
+        {
+            gt.IsIn = false;
+            gt.IsMapped = true;
+        });
+        await _repository.UpdateManyAsync(latestTransactions);
 
-        latestTransactions.IsIn = false;
-        latestTransactions.IsMapped = true;
 
-        await _repository.UpdateAsync(latestTransactions, true);
     }
 
 
@@ -77,16 +80,18 @@ public class GarageTransactionManager : DomainService
     private async Task SaveClosedEntryTransaction(string? plateNumber, IQueryable<GarageTransaction> query, int entryTransactionId)
     {
         if (plateNumber == null)
-            return;
+            return ;
         var latestTransactions = query
                 .Where(gt => gt.PlateNumber == plateNumber && gt.Id == entryTransactionId && gt.IsIn == true)
                 .OrderByDescending(gt => gt.AccurateTime)
-                .FirstOrDefault();
+                .ToList();
+        latestTransactions.ForEach(gt =>
+        {
+            gt.IsIn = false;
+            gt.IsMapped = true;
+        });
 
-        latestTransactions.IsIn = false;
-        latestTransactions.IsMapped = true;
-
-        await _repository.UpdateAsync(latestTransactions, true);
+        await _repository.UpdateManyAsync(latestTransactions);
     }
 
 
