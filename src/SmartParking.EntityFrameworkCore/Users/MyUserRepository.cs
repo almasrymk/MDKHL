@@ -63,9 +63,9 @@ public class MyUserRepository
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
-                    from roleId in user.Roles.Select(r => r.RoleId)
+                    from UserRole in user.Roles
                     join role in dbContext.Roles
-                        on roleId equals role.Id
+                        on UserRole.RoleId equals role.Id
                     where !searchTerm.IsNullOrWhiteSpace() ? 
                     user.Name.ToLower().Contains(searchTerm.ToLower())
                     || role.Name.ToLower().Contains(searchTerm.ToLower())
@@ -106,12 +106,11 @@ public class MyUserRepository
     {
         var dbContext = await GetDbContextAsync();
         var query = from user in dbContext.Users
-                    from roleId in user.Roles.Select(r => (Guid?)r.RoleId).DefaultIfEmpty() // Left join for roles
-                    join role in dbContext.Roles
-                        on roleId equals role.Id into roles
+                    from UserRole in user.Roles // Left join for roles
+                    join role in dbContext.Roles on UserRole.RoleId equals role.Id into roles
                     from r in roles.DefaultIfEmpty() // Preserve users with no roles
                     join organization in dbContext.Organizations
-                        on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
+                        on UserRole.TenantId equals organization.TenantId into org
                     from o in org.DefaultIfEmpty()
                     where tenantId.HasValue ? user.TenantId == tenantId : true
                     where !searchTerm.IsNullOrWhiteSpace() ? 
@@ -121,14 +120,15 @@ public class MyUserRepository
                    || user.UserName.ToLower().Contains(searchTerm.ToLower())
                    || user.Email.ToLower().Contains(searchTerm.ToLower())
                    : true
+                    
                     select new UserWithRole
                     {
                         User = user,
                         Role = r,
                         OrganizationEnglishName = o.EnglishName,
                         OrganizationArabicName = o.ArabicName
-
                     };
+      
         var total = query.Count();
         query = query.Skip(skipCount).Take(maxResultCount);
         query = ApplySort(Sorting, query);
@@ -220,11 +220,11 @@ public class MyUserRepository
 
         var query = from user in dbContext.Users
                     where user.Id == userId
-                    from roleId in user.Roles.Select(r => r.RoleId) // Get RoleIds for the user
+                    from userrole in user.Roles // Get RoleIds for the user
                     join role in dbContext.Roles // Join with Roles table
-                    on roleId equals role.Id // Match RoleId
+                    on userrole.RoleId equals role.Id // Match RoleId
                     join organization in dbContext.Organizations
-                 on EF.Property<int>(user, "OrganizationId") equals organization.Id into org
+                 on userrole.TenantId equals organization.TenantId into org
                     from o in org.DefaultIfEmpty()
 
                     select new UserRolesForMdkhl
