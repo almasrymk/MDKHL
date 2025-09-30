@@ -1,5 +1,6 @@
 ﻿using Abp.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,6 +13,7 @@ using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -31,19 +33,15 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
     private string zatcaLogin = "https://zatca.mazeedit.com/api/Auth/Login";
     private string openGate = "http://mdkhl.mazeedit.com/Barrierer/Open";
     private readonly ILogger<InvoiceUtilityAppService> _logger;
-    private readonly IGarageTransactionsAppService GarageTransactionAppService;
-    private readonly ICamerasAppService CameraAppService;
-    private readonly IGarageAppService GarageAppService;
 
-    public InvoiceUtilityAppService(IRepository<Organization, int> organizationsRepository, HttpClient httpClient, IRepository<Invoice, int> invoiceRepository, ILogger<InvoiceUtilityAppService> logger, IGarageTransactionsAppService garageTransactionAppService, ICamerasAppService cameraAppService, IGarageAppService garageAppService)
+
+    public InvoiceUtilityAppService(IRepository<Organization, int> organizationsRepository, HttpClient httpClient, IRepository<Invoice, int> invoiceRepository, ILogger<InvoiceUtilityAppService> logger)
     {
         _organizationsRepository = organizationsRepository;
         _httpClient = httpClient;
         _invoiceRepository = invoiceRepository;
         _logger = logger;
-        GarageTransactionAppService = garageTransactionAppService;
-        CameraAppService = cameraAppService;
-        GarageAppService = garageAppService;
+
     }
 
     public async Task<QRCodeDto> GetQrCodeAsync(string? token, int? invoiceId)
@@ -52,8 +50,6 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
         var oragnization = await _organizationsRepository.GetAsync(invoice.OrganizationId);
         return await GetQrCodeAsync(invoice.InvoicePrice, invoice.OrganizationId);
     }
-
-
 
     public async Task<QRCodeDto> GetQrCodeAsync(decimal amount, int organizationId)
     {
@@ -119,5 +115,4 @@ public class InvoiceUtilityAppService : SmartParkingAppService, IInvoiceUtilityA
         return token;
     }
 
- 
 }

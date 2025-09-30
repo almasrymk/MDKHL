@@ -211,45 +211,10 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         var query = await _invoiceRepository.GetQueryableAsync();
         var totalCount = await AsyncExecuter.CountAsync(query);
         query =  query.OrderByDescending(inv => inv.InvoiceTime).Skip(paged.SkipCount).Take(paged.MaxResultCount);
-        var _paymentQuery = await _paymentRepository.GetQueryableAsync();
-        var invoicesWithPayments = from invoice in query
-                                   join pay in _paymentQuery
-                                       on invoice.Id equals pay.InvoiceId
-                                   select new InvoiceDto
-                                   {
-                                       InvoiceNumber=pay.PaymentNumber,
-                                       Id = invoice.Id,
-                                       TotalHours = invoice.TotalHours,
-                                       InvoicePrice = invoice.InvoicePrice,
-                                       InvoiceType = invoice.InvoiceType.ToString(), // enum → string
-                                       OrganizationArabicName = invoice.Organization!.ArabicName,   
-                                       OrganizationEnglishName = invoice.Organization!.EnglishName, 
-                                       GarageArabicName = invoice.Garage!.NameAr,               
-                                       GarageEnglishName = invoice.Garage!.NameEn,             
-                                       PlateNumber = invoice.PlateNumber,
-                                       InvoiceTime = invoice.InvoiceTime,
-                                       EntranceTime = invoice.EntranceTime,
-                                       CustomerArName = invoice.CustomerArName,
-                                       CustomerEnName = invoice.CustomerEnName,
-                                       IsPackage = invoice.IsPackage,
-                                       CustomerId = invoice.CustomerId,
-                                       EntryTransactionImage = invoice.EntryTransactionImage,
-                                       ExitTransactionImage = invoice.ExitTransactionImage,
-                                       InvoiceId = invoice.Id, 
-                                       OrganizationId = invoice.OrganizationId,
-                                       OrganizationAddress = invoice.Organization!.Address, 
-                                       OrganizationTIN = invoice.Organization!.TaxIdentificationNumber,         
-                                       GarageTransactionExitId = invoice.GarageTransactionExitId,
-                                       TotalPriceWithVatAndDiscount = invoice.InvoicePrice - invoice.Discount, 
-                                       Discount = invoice.Discount,
-                                       TicketId = invoice.TicketId
-
-
-                                   };
-        var invoices =await invoicesWithPayments.ToListAsync();
+        var invoices =await query.ToListAsync();
         var finalPaged = new PagedResultDto<InvoiceDto>(
                   totalCount,
-                  invoices
+                  ObjectMapper.Map<List<Invoice>,List<InvoiceDto>>(invoices)
               );
         return  Result<PagedResultDto<InvoiceDto>>.Success(finalPaged);
     }

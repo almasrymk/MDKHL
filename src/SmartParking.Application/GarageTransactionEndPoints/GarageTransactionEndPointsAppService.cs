@@ -155,7 +155,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     public async Task<bool> HandleExit(CreateUpdateGarageTransactionDto exitTransaction, TransactionOrganizationDto organization  , CreateUpdateGarageTransactionEndPointDto input , CustomerPackageTransactionDto? _packageDto = null )
     {
         //getting customer id if found
-        var _customerId = await _garageTransactionUtilityAppService.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(exitTransaction.PlateNumber);
+        var _customerId = _packageDto is null ? null : _packageDto.CustomerId.ToString();
         //getting package on vehicle if found
         var _hasActivePackage = _packageDto is not null;
         bool _requestToGate;
@@ -205,6 +205,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         _requestToGate = _initialInvoice.InvoicePrice <= 0;
         //Close and Map Entry Transactions
         await _garageTransactionUtilityAppService.CloseEntryTransaction(exitTransaction.PlateNumber, exitTransaction.TicketId, _entryTransaction.Id);
+
         await CurrentUnitOfWork.SaveChangesAsync();
         _logger.LogInformation($"{DateTime.Now} ====> Get Response {_requestToGate}");
         return _requestToGate;

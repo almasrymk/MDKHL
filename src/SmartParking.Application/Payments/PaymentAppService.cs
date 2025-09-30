@@ -317,10 +317,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
     public async Task<PaymentCheckoutDto?> CreateCheckoutInvoicePaymentWebAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
     {
-        await UpdateInvoiceStatusAsync(paymentCheckoutRequest.InvoiceId);
-        //if (paymentCheckoutRequest.Amount == 0)
-        //    return null;
         var paymentCheckoutDto = await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
+        await UpdateInvoiceStatusAsync(paymentCheckoutRequest.InvoiceId,paymentCheckoutDto.PaymentNumber);
         return paymentCheckoutDto;
     }
 
@@ -471,13 +469,14 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         };
     }
      
-    private async Task<Result<bool>> UpdateInvoiceStatusAsync(int? InvoiceId)
+    private async Task<Result<bool>> UpdateInvoiceStatusAsync(int? InvoiceId,string PaymnetNumber)
     {
         using (dataFilter.Disable<IMultiTenant>())
         {
             var invoice =await _invoiceRepo.FirstOrDefaultAsync(x => x.Id == InvoiceId);
             if (invoice == null) {  return Result<bool>.Success(false); }
             invoice.InvoiceType = InvoiceType.Paid;
+            invoice.InvoiceNumber=PaymnetNumber;
             await _invoiceRepo.UpdateAsync(invoice);
             return Result.Success(true);
 
