@@ -28,5 +28,7 @@ public class PaymentGetResponseDto : FullAuditedEntityDto<Guid>
     public string ErrorMessagesZatca { get; set; }
     public string CashierName { get; set; }
     public Status StatusZatca { get; set; }
+    public string? EnPlateNumber { get; set; }
+    public string? ArPlateNumber { get; set; }
     public CustomerDto Customers { get; set; } = new CustomerDto();
 }

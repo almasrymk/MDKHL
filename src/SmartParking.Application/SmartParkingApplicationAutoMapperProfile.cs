@@ -198,7 +198,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         .ForMember(d => d.PackageTypeEnglishName, o => o.MapFrom(s => s.PackageType.EnglishName))
         .ForMember(d => d.SubscribersInPackages, o => o.MapFrom(s => s.CustomerPackages.Count))
         .ForMember(d => d.Status, o => o.MapFrom(s => s.Status));
-        
+        CreateMap<CustomerPackageDto, CustomerPackage>().ReverseMap();
+
         CreateMap<CreateUpdatePackageDto, Package>()
             .ForMember(dest => dest.DectivationDate , opt => opt.MapFrom (src => src.DeactivationDate));
            
@@ -272,9 +273,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<KeeperShiftDto, KeeperShift>().ReverseMap();
         CreateMap<CustomerPackageDto, CustomerPackage>()
             .ReverseMap();
+        CreateMap<PackageDto, Package>().ReverseMap();
 
-
-
+        CreateMap<CustomerPackageDto, CustomerPackage>()
+        .ForMember(dest => dest.Customer, opt => opt.Ignore());
         CreateMap<Banner, BannerDto>();
         CreateMap<CreateUpdateBannerDto, Banner>();
 

@@ -202,9 +202,9 @@ public class CustomerPackagesAppService:
             {
                 customerPackage = ObjectMapper.Map<CustomerPackageDto, CustomerPackage>(customerPackageDto);
                 customerPackage.PackageId = null;
+                customerPackage.Package = null;
             }
             customerPackage.QRCodePath = await HandleQRCode(customerPackageDto, customer, customerPackage);
-            // Check Subscription Limit for number Of Customers
             var insertPackage = await InsertCustomerPackageAsync(customerPackage);
             return insertPackage.IsSuccess;
         }

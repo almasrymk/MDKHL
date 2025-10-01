@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.Shared
+@using SmartParking.Blazor.Components.State
 @using SmartParking.CustomerPackages
 @using SmartParking.Cutomers
 @using SmartParking.Enums
@@ -7,11 +8,11 @@
 @using SmartParking.Organizations
 @using SmartParking.Packages
 @using System.Globalization
+@using SmartParking.Payments
 @using SmartParking.Vehicles
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
-@inject ICustomerPackagesAppService CustomerPackagesAppService
 @inject IPackagesAppService PackagesAppService
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SmartParkingResource> L
@@ -20,6 +21,11 @@
 @inject ICurrentUser currentUser
 @inject IOrganizationsAppService OrganizationAppService
 @inject IVehiclesAppService VehiclesAppService
+@inject IDialogService DialogService
+@inject ICustomerPackagesAppService CustomerPackagesAppService
+@inject PreAssignPackageState preAssignState
+
+
 
 <PageTitle>@L["Assign Package"]</PageTitle>
 

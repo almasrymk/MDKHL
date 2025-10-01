@@ -12,6 +12,7 @@ using OpenIddict.Validation.AspNetCore;
 using SmartParking.BarrierAppService;
 using SmartParking.Blazor.Components;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Blazor.Components.State;
 using SmartParking.Blazor.Filters;
 using SmartParking.Blazor.Menus;
 using SmartParking.Blazor.MultiTenants;
@@ -148,6 +149,8 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.AddScoped<IOpeningGateService,BarrierAppService.BarrierAppService>();
         context.Services.AddScoped<IOpeningGateService,OpenCameraGateService>();
         context.Services.AddScoped<IOpenGateFactoryService, OpenGateFactoryService>();
+        context.Services.AddScoped<PreAssignPackageState>();
+
 
 
 

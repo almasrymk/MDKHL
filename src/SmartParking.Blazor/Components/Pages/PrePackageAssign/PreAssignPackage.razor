@@ -1,0 +1,123 @@
+﻿@page "/prepayment"
+@using MudBlazor
+@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Pages.Invoices
+@using SmartParking.Blazor.Components.Pages.LastInvoiceAtCamera
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Blazor.Components.State
+@using SmartParking.Currency
+@using SmartParking.CustomerPackages
+@using SmartParking.Cutomers
+@using SmartParking.Enums
+@using SmartParking.Invoices
+@using SmartParking.Localization
+@using SmartParking.Payments
+@using SmartParking.Utilities
+@using System.Globalization
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IPaymentAppService paymentAppService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ICustomerPackagesAppService CustomerPackagesAppService
+@inject PreAssignPackageState preAssignState
+
+<PageTitle>@L["PreInvoice"]</PageTitle>
+
+<MudGrid>
+    <MudItem sm="7" Class="d-flex flex-column">
+        <MudItem sm="8" Class="d-flex flex-row justify-content-between">
+            <MudText Typo="Typo.h6" Class="fw-bold mb-4">@L["Checkout"]</MudText>
+        </MudItem>
+        <div >
+            <LastInvoiceOnGateDetails Key="@L["OrganizationName"]"
+                                      Value="@(CultureInfo.CurrentCulture.Name == "en"
+                                                                                   ? CustomerPackageDto?.Organization?.EnglishName
+                                                                                  : CustomerPackageDto?.Organization?.ArabicName)" />
+            <LastInvoiceOnGateDetails Key="@L["CustomerName"]"
+                                      Value="@(CultureInfo.CurrentCulture.Name == "en"
+                                                                                  ? CustomerDto?.FullName
+                                                                                  : CustomerDto?.ArabicName)" />
+            <LastInvoiceOnGateDetails Key="@L["PlatNumber"]"
+                                      Value="@CustomerPackageDto?.EnPlateNumber" />
+            <LastInvoiceOnGateDetails Key="@L["StartDate"]"
+                Value="@(CustomerPackageDto?.ActivationDateOfPackage.Value.Date.ToString("yyyy-MM-dd") ?? "" )" />
+            
+            <LastInvoiceOnGateDetails Key="@L["EndDate"]"
+                Value="@(CustomerPackageDto?.ExpiryDate.ToString("yyyy-MM-dd") ?? "" )" />
+            
+            <LastInvoiceOnGateDetails Key="@L["StartTime"]"
+                Value="@(CustomerPackageDto?.ActivationDateOfPackage.Value.TimeOfDay.ToString(@"hh\:mm") ?? "" )" />
+            
+            <LastInvoiceOnGateDetails Key="@L["EndTime"]"
+                Value="@(CustomerPackageDto?.ExpiryDate.TimeOfDay.ToString(@"hh\:mm") ?? "")" />
+
+            <LastInvoiceOnGateDetails CurrencyKey="@((MarkupString)$"{L["Price"]}{CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px")}")"
+                                      Value="@CustomerPackageDto?.PriceOfPackage.ToString()"   />
+        </div>
+    </MudItem>
+
+    <PriceSummaryComponent OnValueSelected="HandleAddDiscount"
+                           OnSelectPaymentMethod="OnSelectPaymentMethod"
+                           ComponentSize="5"
+                           ConfirmSize="12"
+                           HasConfirmPermission="true"
+                           InvoicePrice="@(CustomerPackageDto?.PriceOfPackage!.Value ??0 )"
+                           PayInvoice="PayInvoice"
+                           PaymentMethod="PaymentMethod"
+                           ShowOpenGate="false" />
+</MudGrid>
+
+@code {
+    public decimal Discount { get; set; }
+    public bool IsPaid { get; set; }
+    public PaymentMethod PaymentMethod { get; set; }
+    private CustomerPackageDto CustomerPackageDto { get; set; } = new();
+    private CustomerDto CustomerDto { get; set; } = new();
+    private void HandleAddDiscount(decimal selected) => Discount = selected;
+
+    private void OnSelectPaymentMethod(PaymentMethod selected) => PaymentMethod = selected;
+
+    protected override void OnInitialized()
+    {
+        if (string.IsNullOrEmpty(preAssignState.Customer.ArabicName))
+            Navigation.NavigateTo("/customers");
+        CustomerPackageDto = preAssignState.CustomerPackage;
+        CustomerDto = preAssignState.Customer;
+    }
+    private async Task PayInvoice()
+    {
+        CustomerPackageDto.Organization = null;
+        var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(
+            CustomerPackageDto.PackageId, CustomerPackageDto);
+
+        if (!assignPackage)
+            throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                                LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ASSIGN) + " " +
+                                LocalizationHelper.GetLocalizedString("Package"));
+
+        PaymentCheckoutDto payment = await RequestToPaymentCheckout();
+        if (payment != null)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L["CheckoutConfirm"]}", MudBlazor.Severity.Success);
+            await Task.Delay(1000);
+            Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
+        }
+    }
+
+    private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()
+    {
+        var paymentCheckout = new PaymentCheckoutRequestDto
+        {
+            OrganizationId = preAssignState.CustomerPackage!.OrganizationId,
+            PaymentCategory = PaymentCategory.Package,
+            PackageId = preAssignState.CustomerPackage.PackageId,
+            PaymentMethod = PaymentMethod.Cash,
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(preAssignState.CustomerPackage.PriceOfPackage!.Value, Discount),
+            CustomerId = preAssignState.CustomerPackage.CustomerId,
+            ArPlateNumber = preAssignState.CustomerPackage.ArPlateNumber,
+            EnPlateNumber = preAssignState.CustomerPackage.EnPlateNumber,
+        };
+
+        return await paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentCheckout);
+    }
+}

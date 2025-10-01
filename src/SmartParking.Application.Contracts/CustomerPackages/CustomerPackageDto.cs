@@ -19,8 +19,8 @@ public class CustomerPackageDto
     public int PackageId { get; set; }
     public int OrganizationId { get; set; }
     public CustomerPackageStatus CustomerPackageStatus { get; set; }
-    public  PackageDto Package { get; set; }
-    public  OrganizationDto Organization { get; set; }
+    public PackageDto Package { get; set; } = new();
+    public  OrganizationDto Organization { get; set; } = new();
     public Guid? TenantId { get; set; }
     public int? DurationOfPackage { get; set; }
     public decimal? PriceOfPackage { get; set; }
@@ -35,7 +35,7 @@ public class CustomerPackageDto
     public string PackageEnglishName { get; set; }
     public CustomerCategoryStatus CustomerCategory { get; set; }
 
-    public CustomerDto Customer { get; set; }
+    public CustomerDto Customer { get; set; } = new();
     public string CustomerArabicName { get; set; }
     public string CustomerEnglishName { get; set; }
     public string EnPlateNumber { get; set; }

@@ -4,6 +4,7 @@ using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.Invoices;
 using SmartParking.Enums;
 using SmartParking.Invoices;
+using SmartParking.Migrations;
 using SmartParking.Payments;
 using SmartParking.Utilities;
 using System;
@@ -33,18 +34,52 @@ public partial class DetailsPayment
     private async Task FetchPayment()
     {
         Payment = await paymentWebAppService.GetMdkhlAsync(Guid.Parse(Id));
-        CreationTime = Payment.CreationTime.ToString();
-        Amount = Payment.Invoice is not null ? Payment.Invoice.InvoicePrice.ToString() : "0";
-        Vat = Payment.Invoice is not null ? (Payment.Invoice.InvoicePrice *  0.15m).ToString(): "0";
-        Discount  = Payment.Invoice is not null ?  Payment.Invoice.Discount.ToString() :"0";
-        Total = Payment.Amount.ToString();
-        LocalizedPaymentCategory= L[Payment.PaymentCategory];
-        LocalizedPaymentMethod=L[Payment.PaymentMethod];
-        LocalizedPaymentStatus=L[Payment.PaymentStatus];
-        LocalizedPaymentCurrency = L[Payment.Currency];
-        LocalizedPaymentInvoiceType = Payment.Invoice is not null ? L[Payment.Invoice.InvoiceType] : "";
-        AmountDiscount= Payment.Invoice is not null ? Math.Round((Payment.Invoice.InvoicePrice+ (Payment.Invoice.InvoicePrice*0.15m))- Payment.Amount, 2).ToString() : "0";
+
+        CreationTime = Payment?.CreationTime.ToString() ?? "";
+        var invoicePrice = Payment?.Invoice?.InvoicePrice ?? 0m;
+        var packagePrice = Payment?.Package?.Price ?? 0m;
+
+        if (Payment?.Invoice is not null)
+        {
+            Amount = invoicePrice.ToString();
+        }
+        else if (Payment?.Package is not null)
+        {
+            Amount = packagePrice.ToString();
+        }
+        else
+        {
+            Amount = "0";
+        }
+        var amountDecimal = decimal.Parse(Amount);
+        Vat = (amountDecimal * 0.15m).ToString();
+        if (Payment?.Invoice is not null)
+        {
+            Discount = Payment.Invoice.Discount.ToString();
+        }
+        else if (Payment?.Package is not null)
+        {
+            Discount = ((amountDecimal - packagePrice) + (amountDecimal * 0.15m)).ToString();
+        }
+        else
+        {
+            Discount = "0";
+        }
+        Total = Payment?.Amount.ToString() ?? "0";
+
+
+        LocalizedPaymentCategory = Payment?.PaymentCategory != null ? L[Payment.PaymentCategory] : "";
+        LocalizedPaymentMethod = Payment?.PaymentMethod != null ? L[Payment.PaymentMethod] : "";
+        LocalizedPaymentStatus = Payment?.PaymentStatus != null ? L[Payment.PaymentStatus] : "";
+        LocalizedPaymentCurrency = Payment?.Currency != null ? L[Payment.Currency] : "";
+
+        LocalizedPaymentInvoiceType = Payment?.Invoice?.InvoiceType != null ? L[Payment.Invoice.InvoiceType] : "";
+
+        AmountDiscount = Payment?.Invoice != null
+            ? Math.Round(((Payment.Invoice.InvoicePrice + (Payment.Invoice.InvoicePrice * 0.15m)) - (Payment.Amount)), 2).ToString()
+            : "0";
     }
+
 
     protected override async Task OnInitializedAsync()
     {

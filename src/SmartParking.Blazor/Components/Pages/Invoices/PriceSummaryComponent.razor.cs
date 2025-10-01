@@ -32,7 +32,7 @@ public partial class PriceSummaryComponent
 
     protected override void OnParametersSet()
     {
-        InvoicePriceWithVat = Math.Round((InvoicePrice.Value + (InvoicePrice.Value * 0.15m)), 2);
+        InvoicePriceWithVat = Math.Round((InvoicePrice!.Value + (InvoicePrice!.Value * 0.15m)), 2);
         base.OnParametersSet();
     }
 

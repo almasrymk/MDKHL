@@ -22,7 +22,7 @@ public class CustomerDto:AuditedEntityDto<Guid>
     public string MobileNumber { get; set; }
     public string NationalId { get; set; }
     public IdentificationTypes identificationTypes { get; set; }
-    public List<VehicleDto> Vehicles { get; set; }
+    public List<VehicleDto> Vehicles { get; set; } = new();
     public string OrganizationArabicName { get; set; }
     public string OrganizationEnglishName { get; set; }
     public int OrganizationId { get; set; }

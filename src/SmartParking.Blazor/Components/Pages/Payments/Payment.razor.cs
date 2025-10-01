@@ -240,7 +240,7 @@ public partial class Payment
 
             var IconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
             var total = item.Amount == 0 ? "0.0" : item.Amount.ToString();
-            var amount = item.Invoice?.InvoicePrice == 0 ? "0.0" : item.Invoice?.InvoicePrice.ToString();
+            var amount = item.Invoice?.InvoicePrice is null ? (Math.Round(item.Amount/(1.15m),2)).ToString(): item.Invoice?.InvoicePrice.ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Amount"]}", $"{amount} {IconHtml}"));
             var vatValue = item.Invoice?.InvoicePrice == 0 ? "0.0" : Math.Round((item.Invoice?.InvoicePrice ?? 0) * 0.15m, 2).ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["PaymentVat"]}", $"{vatValue} {IconHtml}"));
