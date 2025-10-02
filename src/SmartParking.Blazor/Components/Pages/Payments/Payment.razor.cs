@@ -237,14 +237,26 @@ public partial class Payment
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer[name: "CashierName"], item.CashierName));
 
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentMethod"], _localizer[$"{item.PaymentMethod}"]));
+            string total , amount , vatValue , discountValue ;
+            if (item.PaymentCategory == PaymentCategory.Package)
+            {
+
+                total = item.Amount == 0 ? "0.0" : item.Amount.ToString();
+                amount = item.CustomerPackage?.PriceOfPackage.ToString();
+                vatValue = item.CustomerPackage?.Vat.ToString();
+                discountValue = item.CustomerPackage?.Discount.ToString();
+            }
+            else
+            {
+                total = item.Amount == 0 ? "0.0" : item.Amount.ToString();
+                amount = item.Invoice?.InvoicePrice.ToString();
+                vatValue = item.Invoice?.InvoicePrice == 0 ? "0.0" : Math.Round((item.Invoice?.InvoicePrice ?? 0) * 0.15m, 2).ToString();
+                discountValue = item.Invoice?.Discount.ToString();
+            }
 
             var IconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
-            var total = item.Amount == 0 ? "0.0" : item.Amount.ToString();
-            var amount = item.Invoice?.InvoicePrice is null ? (Math.Round(item.Amount/(1.15m),2)).ToString(): item.Invoice?.InvoicePrice.ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Amount"]}", $"{amount} {IconHtml}"));
-            var vatValue = item.Invoice?.InvoicePrice == 0 ? "0.0" : Math.Round((item.Invoice?.InvoicePrice ?? 0) * 0.15m, 2).ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["PaymentVat"]}", $"{vatValue} {IconHtml}"));
-            var discountValue = item.Invoice?.Discount == 0 || item.Invoice?.Discount is null ? "0.0" : item.Invoice?.Discount.ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Discount"]}", $"{discountValue} {IconHtml}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["PaymentTotal"]}", $"{total} {IconHtml}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentCategory"], _localizer[$"{item.PaymentCategory.ToString()}"]));

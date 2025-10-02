@@ -73,7 +73,7 @@
     public PaymentMethod PaymentMethod { get; set; }
     private CustomerPackageDto CustomerPackageDto { get; set; } = new();
     private CustomerDto CustomerDto { get; set; } = new();
-    private void HandleAddDiscount(decimal selected) => Discount = selected;
+    private void HandleAddDiscount(decimal selected) => CustomerPackageDto.Discount = selected;
 
     private void OnSelectPaymentMethod(PaymentMethod selected) => PaymentMethod = selected;
 
@@ -86,38 +86,50 @@
     }
     private async Task PayInvoice()
     {
-        CustomerPackageDto.Organization = null;
-        var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(
-            CustomerPackageDto.PackageId, CustomerPackageDto);
-
-        if (!assignPackage)
-            throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
-                                LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ASSIGN) + " " +
-                                LocalizationHelper.GetLocalizedString("Package"));
-
-        PaymentCheckoutDto payment = await RequestToPaymentCheckout();
-        if (payment != null)
+        try
         {
-            SnackBar.ShowSnackbar(Snackbar, $"{L["CheckoutConfirm"]}", MudBlazor.Severity.Success);
-            await Task.Delay(1000);
-            Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
+
+            CustomerPackageDto.Organization = null;
+            CustomerPackageDto.Vat=Math.Round((CustomerPackageDto.PriceOfPackage!.Value * 0.15m), 2);
+            var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(
+                CustomerPackageDto.PackageId, CustomerPackageDto);
+
+            if (assignPackage ==0)
+                throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ASSIGN) + " " +
+                                    LocalizationHelper.GetLocalizedString("Package"));
+            CustomerPackageDto.Id = assignPackage;
+            PaymentCheckoutDto payment = await RequestToPaymentCheckout();
+            if (payment != null)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L["PackagePaymentSuccessfully"]}", MudBlazor.Severity.Success);
+                await Task.Delay(1000);
+                Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
+            }
         }
+        catch (Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+        }
+
+   
     }
 
     private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()
     {
         var paymentCheckout = new PaymentCheckoutRequestDto
         {
-            OrganizationId = preAssignState.CustomerPackage!.OrganizationId,
+            OrganizationId = CustomerPackageDto!.OrganizationId,
             PaymentCategory = PaymentCategory.Package,
-            PackageId = preAssignState.CustomerPackage.PackageId,
+            CustomerPackageId = CustomerPackageDto.Id,
+            PackageId=CustomerPackageDto.PackageId,
             PaymentMethod = PaymentMethod.Cash,
-            Amount = PaymentUtilityCalculationts.GetPriceForPayment(preAssignState.CustomerPackage.PriceOfPackage!.Value, Discount),
-            CustomerId = preAssignState.CustomerPackage.CustomerId,
-            ArPlateNumber = preAssignState.CustomerPackage.ArPlateNumber,
-            EnPlateNumber = preAssignState.CustomerPackage.EnPlateNumber,
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(CustomerPackageDto.PriceOfPackage!.Value+CustomerPackageDto.Vat, Discount),
+            CustomerId =CustomerPackageDto.CustomerId,
+            ArPlateNumber = CustomerPackageDto.ArPlateNumber,
+            EnPlateNumber = CustomerPackageDto.EnPlateNumber,
         };
 
-        return await paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentCheckout);
+        return await paymentAppService.CreateCheckoutPackagePaymentWebAsync(paymentCheckout);
     }
 }

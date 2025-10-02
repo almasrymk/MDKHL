@@ -84,8 +84,7 @@ partial class AssignPackgeDialog
             return;
         }
 
-        try
-        {
+       
             var vehicle = await VehiclesAppService.GetAsync(VehicleId);
             if (CustomerPackage.CustomerCategory == CustomerCategoryStatus.Customer.ToString())
             {
@@ -121,6 +120,7 @@ partial class AssignPackgeDialog
             }
             else
             {
+                _customerPackageDto.PackageId = package.Id;
                 _customerPackageDto.PriceOfPackage = package.Price;
                 _customerPackageDto.PackageArabicName = package.ArabicName;
                 _customerPackageDto.PackageEnglishName = package.EnglishName;
@@ -146,11 +146,7 @@ partial class AssignPackgeDialog
             preAssignState.Customer = Customer;
 
             Navigation.NavigateTo("/prepayment");
-        }
-        catch (Exception ex)
-        {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
-        }
+      
     }
     private string ValidateEndTime(TimeSpan? value)
     {

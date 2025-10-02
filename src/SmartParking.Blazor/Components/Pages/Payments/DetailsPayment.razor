@@ -164,7 +164,7 @@
                         <MudTextField ReadOnly="true"
                                       T="string"
                                       InputType="InputType.Text"
-                                      Value="@(Payment?.Package?.ArabicName ?? "")"
+                                      Value="@(Payment?.customerPackageDto?.PackageArabicName ?? "")"
                                       Label="@L["PackageName"]" />
                     </MudItem>
                     <MudItem sm="4">
@@ -182,7 +182,7 @@
                         <MudTextField ReadOnly="true"
                                       T="string"
                                       InputType="InputType.Text"
-                                      Value="@(Payment?.Package?.EnglishName ?? "")"
+                                      Value="@(Payment?.customerPackageDto?.PackageEnglishName ?? "")"
                                       Label="@L["PackageName"]" />
                     </MudItem>
 
