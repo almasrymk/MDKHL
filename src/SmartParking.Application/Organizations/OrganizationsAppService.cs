@@ -235,6 +235,18 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
 
         }
     }
+
+    public async Task<OrganizationDto> GetOrganizationByTenant(Guid? tenantId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(org => org.TenantId == tenantId);
+            var org = await AsyncExecuter.FirstOrDefaultAsync(query);
+            return ObjectMapper.Map<Organization, OrganizationDto>(org);
+        }
+    }
+
     ///<inheritdoc/>
     [RemoteService(isEnabled: false)]
     public async Task<OrganizationDto> GetOrganizationForCurrentTenatAsync()

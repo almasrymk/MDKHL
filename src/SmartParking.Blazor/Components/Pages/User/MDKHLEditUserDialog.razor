@@ -92,7 +92,7 @@
                     @if (IsSelectOrganization)
                     {
                         <MudItem sm="6" md="6">
-                            <MudSelect @bind-Value="@role"
+                            <MudSelect @bind-Value="@role" 
                                        Label="@L["UserRole"]"
                                        Placeholder="@L[ "Choose"]"
                                        HelperText=@L["Helper Text"]
@@ -110,7 +110,11 @@
 
                         </MudItem>
                     }
-
+                    <DialogActions>
+                        <MudItem sm="12">
+                            <MudButton Color="MudBlazor.Color.Primary" Variant="Variant.Filled" OnClick="AddRole">@L["Add"]</MudButton>
+                        </MudItem>
+                    </DialogActions>
                     <MudItem sm="12">
                         <SPDataGrid PageName=@L["UserRoles"] Data="@itemData" OnPageChanged="FetchTableData" OnClickRowDelete="HandleDelete"></SPDataGrid>
                     </MudItem>

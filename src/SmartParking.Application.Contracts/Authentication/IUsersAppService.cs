@@ -250,4 +250,13 @@ public interface IUsersAppService:  IApplicationService
     /// <returns>A task that represents the asynchronous operation, with a <see cref="UserDto"/> as the result.</returns>
     Task<UserDto> UpdateUserWithRoleChangeMdkhlAsync(Guid? id, UpdateUserDto input);
 
+    /// <summary>
+    /// Assigns a role , permissions and organization to a user.
+    /// </summary>
+    /// <param name="UserId">The ID of the user.</param>
+    /// <param name="roleId">The Id of the role to be assigned to the user.</param>
+    /// <param name="TenantId">The Tenant Id of the organization to be assigned to the user.</param>
+    /// <returns>The data transfer object containing user-related information.</returns>
+
+    Task AssignRoleAndPermissionsAsync(Guid UserId, Guid roleId, Guid TenantId);
 }
