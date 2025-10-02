@@ -124,7 +124,7 @@
             CustomerPackageId = CustomerPackageDto.Id,
             PackageId=CustomerPackageDto.PackageId,
             PaymentMethod = PaymentMethod.Cash,
-            Amount = PaymentUtilityCalculationts.GetPriceForPayment(CustomerPackageDto.PriceOfPackage!.Value, CustomerPackageDto.Discount),
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(CustomerPackageDto.PriceOfPackage!.Value+CustomerPackageDto.Vat, Discount),
             CustomerId =CustomerPackageDto.CustomerId,
             ArPlateNumber = CustomerPackageDto.ArPlateNumber,
             EnPlateNumber = CustomerPackageDto.EnPlateNumber,
