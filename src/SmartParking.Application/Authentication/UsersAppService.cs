@@ -925,5 +925,10 @@ public class UsersAppService : ApplicationService, IUsersAppService
             await _authenticationUtility.CheckIfNationalIDIsUnique(nationalId);
         }
     }
+
+    public Task AssignRoleAndPermissionsAsync(Guid UserId, Guid roleId, Guid TenantId)
+    {
+        throw new NotImplementedException();
+    }
     #endregion
 }
