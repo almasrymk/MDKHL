@@ -1507,6 +1507,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("DescriptionOfPackage")
                         .HasColumnType("text");
 
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("numeric");
+
                     b.Property<int?>("DurationOfPackage")
                         .HasColumnType("integer");
 
@@ -1565,6 +1568,9 @@ namespace SmartParking.Migrations
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
+
+                    b.Property<decimal>("Vat")
+                        .HasColumnType("numeric");
 
                     b.Property<bool?>("publishedOfPackage")
                         .HasColumnType("boolean");
@@ -2185,6 +2191,9 @@ namespace SmartParking.Migrations
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uuid");
 
+                    b.Property<int?>("CustomerPackageId")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uuid")
                         .HasColumnName("DeleterId");
@@ -2256,6 +2265,8 @@ namespace SmartParking.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("CustomerPackageId");
 
                     b.HasIndex("InvoiceId");
 
@@ -5048,9 +5059,15 @@ namespace SmartParking.Migrations
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("SmartParking.Entities.Organizations.CustomerPackage", "CustomerPackage")
+                        .WithMany()
+                        .HasForeignKey("CustomerPackageId");
+
                     b.HasOne("SmartParking.Entities.Invoices.Invoice", "Invoice")
                         .WithMany()
                         .HasForeignKey("InvoiceId");
+
+                    b.Navigation("CustomerPackage");
 
                     b.Navigation("Customers");
 

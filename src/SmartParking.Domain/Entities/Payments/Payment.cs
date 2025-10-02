@@ -1,5 +1,6 @@
 ﻿using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
+using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using System;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -36,4 +37,6 @@ public class Payment : FullAuditedEntity<Guid> , IMultiTenant
     public string? ArPlateNumber { get; set; }
     public bool IsSentZatca { get; set; }
     public string ErrorMessagesZatca { get; set; }
+    public int? CustomerPackageId { get; set; }
+    public virtual CustomerPackage? CustomerPackage { get; set; }
 }
