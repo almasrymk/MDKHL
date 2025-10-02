@@ -148,7 +148,8 @@ public class CustomerPackagesAppService:
                 });
             }
 
-            var customerPackage = CreateCustomerPackage(packageId, customer.Id, package, ArabicPlateNumber, EnglishPlateNumber);
+
+            var customerPackage = CreateCustomerMobilePackage(package,customer.Id, ArabicPlateNumber , EnglishPlateNumber);
             var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
             customerPackage.QRCodePath = await HandleQRCode(new CustomerPackageDto { OrganizationId = package.OrganizationId, PackageId = packageId, ArPlateNumber = ArabicPlateNumber, EnPlateNumber = EnglishPlateNumber }, customer, customerPackage);
             if (existingPackage != null)
@@ -160,14 +161,13 @@ public class CustomerPackagesAppService:
                 );
                 return await UpdateCustomerPackageAsync(customerPackage);
             }
-            return await InsertCustomerPackageAsync(customerPackage);
+            var result= await InsertCustomerPackageAsync(customerPackage);
+            return result.Value != 0 ?Result.Success():Result.Error();
         }
     
     }
-
-
     ///<inheritdoc/>
-    public  async Task<bool> AssignPackageToCustomerWebAsync(int? packageId,CustomerPackageDto customerPackageDto)
+    public async Task<int> AssignPackageToCustomerWebAsync(int? packageId,CustomerPackageDto customerPackageDto)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -185,17 +185,13 @@ public class CustomerPackagesAppService:
 
             if (packageId != 0)
             {
-                var result = await AssignNormalPackageToCUstomerAsync(
-                    packageId.Value,
-                    customerId: customer.Id,
-                    customerPackageDto.ArPlateNumber,
-                    customerPackageDto.EnPlateNumber);
+                var result = await AssignNormalPackageToCUstomerAsync(customerPackageDto);
                 customerPackage = result.Item1;
                 if (result.Item2)
                 {
                     customerPackage.QRCodePath = await HandleQRCode(customerPackageDto, customer, customerPackage);
                     await CurrentUnitOfWork.SaveChangesAsync();
-                    return true;
+                    return customerPackage.Id;
                 }
             }
             else
@@ -206,7 +202,7 @@ public class CustomerPackagesAppService:
             }
             customerPackage.QRCodePath = await HandleQRCode(customerPackageDto, customer, customerPackage);
             var insertPackage = await InsertCustomerPackageAsync(customerPackage);
-            return insertPackage.IsSuccess;
+            return insertPackage.Value;
         }
     }
 
@@ -407,12 +403,12 @@ public class CustomerPackagesAppService:
     /// <returns>
     /// A tuple containing the <see cref="CustomerPackage"/> and a boolean flag indicating whether the package was updated (true) or newly assigned (false).
     /// </returns>
-    private async Task<(CustomerPackage, bool)> AssignNormalPackageToCUstomerAsync(int packageId, Guid customerId, string ArabicPlateNumber, string EnglishPlateNumber)
+    private async Task<(CustomerPackage, bool)> AssignNormalPackageToCUstomerAsync(CustomerPackageDto customerPackageDto)
     {
-        var package = await GetPackageAsync(packageId);
+        var package = await GetPackageAsync(customerPackageDto!.PackageId);
         if (package == null)
             throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-        var customerPackage = CreateCustomerPackage(packageId, customerId, package, ArabicPlateNumber, EnglishPlateNumber);
+        var customerPackage = CreateCustomerPackage(customerPackageDto);
         var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
         bool flag = false;
         if (existingPackage != null)
@@ -569,10 +565,10 @@ public class CustomerPackagesAppService:
     /// A task that represents the asynchronous operation.
     /// The task result contains a <see cref="Result"/> indicating success or failure.
     /// </returns>
-    private async Task<Result> InsertCustomerPackageAsync(CustomerPackage customerPackage)
+    private async Task<Result<int>> InsertCustomerPackageAsync(CustomerPackage customerPackage)
     {
         var assignedPackage = await _repository.InsertAsync(customerPackage, true);
-        return assignedPackage != null ? Result.Success() : Result.Error("Can't assign package to customer");
+        return assignedPackage != null ? Result.Success(assignedPackage.Id) : Result.Error("Can't assign package to customer");
     }
     /// <summary>
     /// Creates a new <see cref="CustomerPackage"/> instance from the provided package and customer information.
@@ -585,26 +581,53 @@ public class CustomerPackagesAppService:
     /// <returns>
     /// A new <see cref="CustomerPackage"/> object populated with package and customer data.
     /// </returns>
-    private static CustomerPackage CreateCustomerPackage(int packageId, Guid? customerId, Package package, string arPlateNumber, string enPlateNumber)
+    private static CustomerPackage CreateCustomerPackage(CustomerPackageDto customerPackageDto)
     {
         return new CustomerPackage
         {
-            PackageId = packageId,
-            CustomerId = customerId.Value,
-            OrganizationId = package.OrganizationId,
-            ExpiryDate = DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute),
+            PackageId = customerPackageDto.PackageId,
+            CustomerId = customerPackageDto.CustomerId,
+            OrganizationId = customerPackageDto.OrganizationId,
+            ExpiryDate = DateTime.Now.AddDays(customerPackageDto.DurationOfPackage.Value).AddMinutes(60 - DateTime.Now.AddDays(customerPackageDto.DurationOfPackage.Value).Minute),
             ActivationDateOfPackage = DateTime.Now,
-            DectivationDateOfPackage = package.DectivationDate,
-            DescriptionOfPackage = package.Description,
-            DurationOfPackage = package.DurationOfPackage,
-            PriceOfPackage = package.Price,
-            PublishFromOfPackage = package.PublishFrom,
-            PublishToOfPackage = package.PublishTo,
-            publishedOfPackage = package.published,
-            CustomerCategory = package.CustomerCategory,
-            PackageArabicName = package.ArabicName,
-            PackageEnglishName = package.EnglishName,
-            TenantId = package.TenantId,
+            DectivationDateOfPackage = customerPackageDto.DectivationDateOfPackage,
+            DescriptionOfPackage = customerPackageDto.DescriptionOfPackage,
+            DurationOfPackage = customerPackageDto.DurationOfPackage,
+            PriceOfPackage = customerPackageDto.PriceOfPackage,
+            PublishFromOfPackage = customerPackageDto.PublishFromOfPackage,
+            PublishToOfPackage = customerPackageDto.PublishToOfPackage,
+            publishedOfPackage = customerPackageDto.publishedOfPackage,
+            CustomerCategory = customerPackageDto.CustomerCategory,
+            PackageArabicName = customerPackageDto.PackageArabicName,
+            PackageEnglishName = customerPackageDto.PackageEnglishName,
+            TenantId = customerPackageDto.TenantId,
+            ArPlateNumber = customerPackageDto.ArPlateNumber,
+            EnPlateNumber = customerPackageDto.EnPlateNumber,
+            Vat=customerPackageDto.Vat,
+            Discount=customerPackageDto.Discount,
+
+        };
+    }
+    private static CustomerPackage CreateCustomerMobilePackage(Package PackageDto , Guid CustomerId, string arPlateNumber , string enPlateNumber)
+    {
+        return new CustomerPackage
+        {
+            PackageId = PackageDto.Id,
+            CustomerId = CustomerId,
+            OrganizationId = PackageDto.OrganizationId,
+            ExpiryDate = DateTime.Now.AddDays(PackageDto.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(PackageDto.DurationOfPackage).Minute),
+            ActivationDateOfPackage = DateTime.Now,
+            DectivationDateOfPackage = PackageDto.DectivationDate,
+            DescriptionOfPackage = PackageDto.Description,
+            DurationOfPackage = PackageDto.DurationOfPackage,
+            PriceOfPackage = PackageDto.Price,
+            PublishFromOfPackage = PackageDto.PublishFrom,
+            PublishToOfPackage = PackageDto.PublishTo,
+            publishedOfPackage = PackageDto.published,
+            CustomerCategory = PackageDto.CustomerCategory,
+            PackageArabicName = PackageDto.ArabicName,
+            PackageEnglishName = PackageDto.EnglishName,
+            TenantId = PackageDto.TenantId,
             ArPlateNumber = arPlateNumber,
             EnPlateNumber = enPlateNumber,
 

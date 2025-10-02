@@ -187,7 +187,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
 
                                 });
-                            if (!assignStatus)
+                            if (assignStatus==0)
                             {
                                 throw new Exception("Can't assign package to customer");
                             }
@@ -321,6 +321,11 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         await UpdateInvoiceStatusAsync(paymentCheckoutRequest.InvoiceId,paymentCheckoutDto.PaymentNumber);
         return paymentCheckoutDto;
     }
+    public async Task<PaymentCheckoutDto?> CreateCheckoutPackagePaymentWebAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
+    {
+        var paymentCheckoutDto = await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
+        return paymentCheckoutDto;
+    }
 
     public async Task<Result<PaymentCheckoutDto>> PayCustomerInvoiceAsync(PayCustomerInvoiceDto payCustomerInvoiceDto)
     {
@@ -374,6 +379,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             Currency = Currency,
             PaymentMethod = paymentCheckoutRequest.PaymentMethod,
             InvoiceId = paymentCheckoutRequest.InvoiceId,
+            CustomerPackageId = paymentCheckoutRequest.CustomerPackageId,
             PackageId = paymentCheckoutRequest.PackageId,
             OrganizationId = paymentCheckoutRequest.OrganizationId,
             PaymentCategory = paymentCheckoutRequest.PaymentCategory,
@@ -385,6 +391,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             PaymentNumber = paymentCheckoutRequest.PaymentNumber,
             ArPlateNumber = paymentCheckoutRequest.ArPlateNumber,
             EnPlateNumber = paymentCheckoutRequest.EnPlateNumber,
+            
         };
 
         payment = await _repository.InsertAsync(payment);

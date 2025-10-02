@@ -34,7 +34,6 @@ public class CustomerPackageDto
     public string PackageArabicName { get; set; }
     public string PackageEnglishName { get; set; }
     public CustomerCategoryStatus CustomerCategory { get; set; }
-
     public CustomerDto Customer { get; set; } = new();
     public string CustomerArabicName { get; set; }
     public string CustomerEnglishName { get; set; }
@@ -47,7 +46,7 @@ public class CustomerPackageDto
     public bool IsCustomPackage { get; set; }
     public string? PackageCode { get; set; }
     public string? QRCodePath { get; set; }
-
-
+    public decimal Discount { get; set; }
+    public decimal Vat { get; set; }
 
 }

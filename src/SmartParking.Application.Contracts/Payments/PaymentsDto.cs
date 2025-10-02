@@ -1,6 +1,8 @@
-﻿using SmartParking.Cutomers;
+﻿using SmartParking.CustomerPackages;
+using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
+using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using System;
 
@@ -26,7 +28,7 @@ public class PaymentDto
 
     public DateOnly Date { get; set; }
 
-    public TimeOnly Time {  get; set; }
+    public TimeOnly Time { get; set; }
     public string PaymentNumber { get; set; }
     public string PlateNumber { get; set; }
     public string OrganizationArabicName { get; set; }
@@ -39,4 +41,6 @@ public class PaymentDto
     public bool IsSentZatca { get; set; } = false;
     public string ErrorMessagesZatca { get; set; }
     public Status StatusZatca { get; set; }
+    public int CustomerPackageId { get; set; }
+    public CustomerPackage? CustomerPackage { get; set; }
 }

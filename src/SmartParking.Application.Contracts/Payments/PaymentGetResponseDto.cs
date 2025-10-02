@@ -1,4 +1,5 @@
-﻿using SmartParking.Cutomers;
+﻿using SmartParking.CustomerPackages;
+using SmartParking.Cutomers;
 using SmartParking.Enums;
 using SmartParking.Invoices;
 using SmartParking.Organizations;
@@ -31,4 +32,6 @@ public class PaymentGetResponseDto : FullAuditedEntityDto<Guid>
     public string? EnPlateNumber { get; set; }
     public string? ArPlateNumber { get; set; }
     public CustomerDto Customers { get; set; } = new CustomerDto();
+
+    public CustomerPackageDto customerPackageDto { get; set; } = new CustomerPackageDto();
 }

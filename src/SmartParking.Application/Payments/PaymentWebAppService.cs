@@ -2,6 +2,7 @@
 using Castle.Core.Resource;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
+using SmartParking.CustomerPackages;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
@@ -36,10 +37,11 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     private readonly IRepository<Invoice, int> _invoiceAppService;
     private readonly IOrganizationsAppService _organizationsAppService;
     private readonly IMyUserRepository _myUserRepository;
+    private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
 
     public PaymentWebAppService(IRepository<Payment, Guid> paymentRepository, IDataFilter dataFilter, IPackagesAppService packagesAppService,
         IRepository<Customer, Guid> CustomerRepository,
-        IRepository<Invoice, int> invoiceAppService, IOrganizationsAppService organizationsAppService, IRepository<Organization, int> organizationRepository, IMyUserRepository myUserRepository)
+        IRepository<Invoice, int> invoiceAppService, IOrganizationsAppService organizationsAppService, IRepository<Organization, int> organizationRepository, IMyUserRepository myUserRepository, IRepository<CustomerPackage, int> customerPackageRepository)
     {
         _paymentRepository = paymentRepository;
         _dataFilter = dataFilter;
@@ -49,6 +51,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         _organizationsAppService = organizationsAppService;
         _organizationRepository = organizationRepository;
         _myUserRepository = myUserRepository;
+        _customerPackageRepository = customerPackageRepository;
     }
     #region public methods 
     public async Task<PagedResultDto<PaymentDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
@@ -109,44 +112,50 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     }
     public async Task<PagedResultDto<PaymentDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
+        var query = await _paymentRepository.GetQueryableAsync();
+        var customerQuery = await _customerRepository.GetQueryableAsync();
+        var organizationQuery = await _organizationRepository.GetQueryableAsync();
+        var userQuery = await _myUserRepository.GetQueryableAsync();
+        var customerPackageQuery = await _customerPackageRepository.GetQueryableAsync();
 
-            var query = await _paymentRepository.GetQueryableAsync();
-            var customerQuery = await _customerRepository.GetQueryableAsync();
-            var organizationQuery = await _organizationRepository.GetQueryableAsync();
-            var userQuery = await _myUserRepository.GetQueryableAsync();
-            customerQuery = customerQuery.Include(x => x.IdentityUser);
-            var result = from payment in query
-                         join organization in organizationQuery on payment.OrganizationId equals organization.Id
-                         join user in userQuery on payment.CreatorId equals user.Id
-                         join customer in customerQuery on payment.CustomerId equals customer.Id
-                         into customerList
-                         from customer in customerList.DefaultIfEmpty()
-                         select new PaymentDto()
-                         {
-                             Amount = payment.Amount,
-                             CheckoutId = payment.CheckoutId,
-                             CreationTime = payment.CreationTime.ToString(),
-                             Currency = payment.Currency,
-                             CustomerId = payment.CustomerId,
-                             Id = payment.Id,
-                             InvoiceId = payment.InvoiceId,
-                             OrganizationId = payment.OrganizationId,
-                             PaymentCategory = payment.PaymentCategory,
-                             PaymentMethod = payment.PaymentMethod,
-                             PaymentStatus = payment.PaymentStatus,
-                             PackageId = payment.PackageId,
-                             QrCodeInvoice = payment.QrCodeInvoice,
-                             PaymentNumber = payment.PaymentNumber,
-                             PlateNumber = payment.EnPlateNumber,
-                             TenantId = payment.TenantId,
-                             Customers = customer,
-                             Invoice = payment.Invoice,
-                             CashierName = user.Name,
-                             StatusZatca = organization.StatusZatca,
-                             IsSentZatca = payment.IsSentZatca,
-                             ErrorMessagesZatca = payment.ErrorMessagesZatca
-                         };
-            result = result.OrderByDescending(x => x.CreationTime);
+        customerQuery = customerQuery.Include(x => x.IdentityUser);
+
+        var result =
+            from payment in query
+            join organization in organizationQuery on payment.OrganizationId equals organization.Id
+            join user in userQuery on payment.CreatorId equals user.Id
+            join customer in customerQuery on payment.CustomerId equals customer.Id into customerList
+            from customer in customerList.DefaultIfEmpty()
+            join customerPackage in customerPackageQuery on payment.CustomerPackageId equals customerPackage.Id into packageList
+            from package in packageList.DefaultIfEmpty()
+            select new PaymentDto()
+            {
+                Amount = payment.Amount,
+                CheckoutId = payment.CheckoutId,
+                CreationTime = payment.CreationTime.ToString(),
+                Currency = payment.Currency,
+                CustomerId = payment.CustomerId,
+                Id = payment.Id,
+                InvoiceId = payment.InvoiceId,
+                OrganizationId = payment.OrganizationId,
+                PaymentCategory = payment.PaymentCategory,
+                PaymentMethod = payment.PaymentMethod,
+                PaymentStatus = payment.PaymentStatus,
+                PackageId = payment.PackageId,
+                QrCodeInvoice = payment.QrCodeInvoice,
+                PaymentNumber = payment.PaymentNumber,
+                PlateNumber = payment.EnPlateNumber,
+                TenantId = payment.TenantId,
+
+                Customers = customer,
+                CustomerPackage = package,  
+                Invoice = payment.Invoice,
+                CashierName = user.Name,
+                StatusZatca = organization.StatusZatca,
+                IsSentZatca = payment.IsSentZatca,
+                ErrorMessagesZatca = payment.ErrorMessagesZatca
+            };
+        result = result.OrderByDescending(x => x.CreationTime);
             result = ApplySearch(input, result);
             result = ApplySort(input, result);
             var totalCount = await AsyncExecuter.CountAsync(result);
@@ -168,7 +177,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             var paymentMap = ObjectMapper.Map<Payment, PaymentGetResponseDto>(payment);
             paymentMap.Organization = await CheckOrganization(payment);
             paymentMap.Invoice = await CheckInvoice(payment);
-            paymentMap.Package = await CheckPackage(payment);
+            paymentMap.customerPackageDto = await CheckPackage(payment);
             paymentMap.CashierName = await GetCashierName(payment.CreatorId);
             paymentMap.StatusZatca = paymentMap.Organization?.StatusZatca ?? Status.Inactive;
             return paymentMap;
@@ -336,12 +345,13 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     }
 
    
-    private async Task<PackageDto> CheckPackage(Payment payment)
+    private async Task<CustomerPackageDto> CheckPackage(Payment payment)
     {
-        int? packageId = payment.PackageId ;
-        if (packageId == null || packageId == 0)
+        int? CustomerPackageId = payment.CustomerPackageId ;
+        if (CustomerPackageId == null || CustomerPackageId == 0)
             return null; 
-       return await _packagesAppService.GetAsync(packageId ?? 0);
+        var customerpackage =await _customerPackageRepository.GetAsync(CustomerPackageId ?? 0);
+        return ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(customerpackage);
     }
 
     private async Task<InvoiceDto> CheckInvoice(Payment payment)
