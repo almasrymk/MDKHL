@@ -5,14 +5,19 @@ using SmartParking.Authentication;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.DataTable;
 using SmartParking.Entities;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Organizations;
+using SmartParking.ZATCATaxInvoice;
 using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Identity;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.Users;
 using Volo.Abp.Validation;
+using static MudBlazor.CategoryTypes;
 
 namespace SmartParking.Blazor.Components.Pages.User;
 
@@ -36,7 +41,7 @@ public partial class MDKHLEditUserDialog
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; }
-
+   
     private async Task SelectOrganization(int organizationId)
     {
         IsSelectOrganization = true;
@@ -46,6 +51,7 @@ public partial class MDKHLEditUserDialog
         updateUserDto.OrganizationId = organizationId;
         RolesList = await RoleAppService.GetListByTenant(orag.TenantId);
     }
+     
     public MDKHLEditUserDialog(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
@@ -202,7 +208,15 @@ public partial class MDKHLEditUserDialog
 
     }
 
+    private async Task AddRole()    
+    {
+        await UsersAppService.AssignRoleAndPermissionsAsync(Guid.Parse(userId) , role.Id, Guid.Parse(updateUserDto.TenantId.ToString()));
+        var rowDef = new RowDef();
+        var orag = await OrganizationAppService.GetOrganizationByTenant(updateUserDto.TenantId);
 
-
-
+        rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Id"], role.Id.ToString()));
+        rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Role"], role.Name));
+        rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], orag.ArabicName));
+        itemData.Rows.Add(rowDef);
+    }
 }
