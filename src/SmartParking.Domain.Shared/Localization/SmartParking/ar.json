@@ -879,6 +879,7 @@
     "StatusZatcaInActive": "ايقاف تفعيل الزكاة و الدخل",
     "ThePaymentNotFound": "لم يتم العثور على الدفع",
     "TheOragnizationNotFound": "لم يتم العثور على المنشأة",
-    "UsernameOrPasswordForZatcaNotFound": "لم يتم العثور على اسم المستخدم أو كلمة المرور لـلزكاة و الدخل"
+    "UsernameOrPasswordForZatcaNotFound": "لم يتم العثور على اسم المستخدم أو كلمة المرور لـلزكاة و الدخل",
+    "PackagePaymentSuccessfully": "تم دفع الفاتورة بنجاح"
   }
 }
