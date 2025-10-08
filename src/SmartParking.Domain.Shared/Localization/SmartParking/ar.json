@@ -862,7 +862,7 @@
     "CustomerPackagesHead": "باقات-العميل",
     "OrganizationHoursHeader": "طريقة احتساب الساعات",
     "TicketId": "رقم التذكرة",
-    "PackageCode": ":كود الباقة",
+    "PackageCode": "كود الباقة",
     "Download": "تحميل",
     "CashierName": "اسم الكاشير",
     "PaymentVat": "الضريبة",
@@ -880,6 +880,7 @@
     "ThePaymentNotFound": "لم يتم العثور على الدفع",
     "TheOragnizationNotFound": "لم يتم العثور على المنشأة",
     "UsernameOrPasswordForZatcaNotFound": "لم يتم العثور على اسم المستخدم أو كلمة المرور لـلزكاة و الدخل",
-    "PackagePaymentSuccessfully": "تم دفع الفاتورة بنجاح"
+    "PackagePaymentSuccessfully": "تم دفع الفاتورة بنجاح",
+    "Days": "أيام"
   }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using SmartParking.CustomerPackages;
 using SmartParking.Invoices;
 using SmartParking.Packages;
 
@@ -7,15 +8,17 @@ namespace SmartParking.Blazor.Components.Pages.Invoices;
 public partial class InvoiceDetailsViewDialog
 {
     [Parameter] public InvoiceDto? Invoice { get; set; }
-    [Parameter] public PackageDto? Package { get; set; }
+    [Parameter] public CustomerPackageDto? Package { get; set; }
     [Parameter] public string CommercialRegisteration { get; set; }
     [Parameter] public int ID { get; set; }
     [Parameter] public string OrganizationAddress { get; set; }
     [Parameter] public string Code { get; set; }
     [Parameter] public decimal PaymentPrice { get; set; }
     [Parameter] public string CashierName { get; set; }
+    [Parameter] public string OrganizationArabicName { get; set; }
+    [Parameter] public string OrganizationEnglishName { get; set; }
     public string imagepath { get; set; }
-    public string OrganizationPicture { get; set; }
+    [Parameter] public string OrganizationPicture { get; set; }
     public decimal price { get; set; }
     public string title { get; set; }
     public string description { get; set; }
@@ -33,25 +36,23 @@ public partial class InvoiceDetailsViewDialog
             {
                 HasDiscount = true;
             }
+
+            if (currentTenant.Id == null)
+            {
+
+                imagepath = await InvoiceAppService.GetInvoiceQRCodeForMDKHL(ID);
+            }
+            else
+            {
+                imagepath = await InvoiceAppService.GetInvoiceQRCodeForOrganization(ID);
+            }
         }
         else
         {
 
-            price = Package.Price;
+            price = Package.PriceOfPackage.Value;
             title = "Package";
             description = Code;
-        }
-
-        if (currentTenant.Id == null)
-        {
-
-            imagepath = await InvoiceAppService.GetInvoiceQRCodeForMDKHL(ID);
-        }
-        else
-        {
-            imagepath = await InvoiceAppService.GetInvoiceQRCodeForOrganization(ID);
-            OrganizationPicture = await OrganizationService.GetOrganizationPictureByOrganizationTenant(currentTenant.Id);
-
         }
         StateHasChanged();
 

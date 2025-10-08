@@ -77,12 +77,15 @@ public partial class DetailsPayment
 
             ["Invoice"] = Payment.Invoice is not null ? Payment.Invoice:null,
             ["ID"] = Payment.Invoice is not null ? Payment.Invoice.Id : null,
-            ["Package"]= Payment.Package is not null ? Payment.Package : null,
+            ["Package"]= Payment.customerPackageDto is not null ? Payment.customerPackageDto : null,
             ["CommercialRegisteration"] = Payment.Organization.TaxNumber,
             ["OrganizationAddress"] = Payment.Organization.Address,
             ["Code"] = Payment.PaymentNumber??"",
             ["PaymentPrice"] = Payment.Amount,
-            ["CashierName"] = Payment.CashierName
+            ["CashierName"] = Payment.CashierName,
+            ["OrganizationArabicName"] =Payment.Organization.ArabicName,
+            ["OrganizationEnglishName"] =Payment.Organization.EnglishName,
+            ["OrganizationPicture"] =Payment.Organization.OrganizationPicture,
         };
         return DialogService.ShowAsync<InvoiceDetailsViewDialog>("", parameters);
 

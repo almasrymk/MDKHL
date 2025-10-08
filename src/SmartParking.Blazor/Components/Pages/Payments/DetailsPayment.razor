@@ -234,7 +234,7 @@
                     <MudButton OnClick="@ResendZatca" Variant="Variant.Filled" Color="MudBlazor.Color.Warning">@L["ResendToZatca"]</MudButton>
                 }
             }
-            @if (currentTenant is not null && Payment.Invoice is not null)
+            @if (currentTenant is not null )
             {
                 <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="@ViewInvoiceDetails">@L["Print"]</MudButton>
             }
