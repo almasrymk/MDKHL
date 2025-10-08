@@ -129,9 +129,11 @@ partial class AssignPackgeDialog
                 _customerPackageDto.DectivationDateOfPackage = package.DectivationDate;
                 _customerPackageDto.DescriptionOfPackage = package.Description;
                 _customerPackageDto.DurationOfPackage = package.DurationOfPackage;
+                _customerPackageDto.publishedOfPackage = package.Published;
+
 
             }
-            if (CurrentTenant.Id is null)
+        if (CurrentTenant.Id is null)
             {
                 _customerPackageDto.OrganizationId = organizationId;
                 _customerPackageDto.TenantId = Organizations.FirstOrDefault(x => x.Id == organizationId).TenantId;

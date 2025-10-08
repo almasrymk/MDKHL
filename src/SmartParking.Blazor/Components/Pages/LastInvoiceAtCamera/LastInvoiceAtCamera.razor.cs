@@ -111,7 +111,7 @@ public partial class LastInvoiceAtCamera
         var paymentChekout = new PaymentCheckoutRequestDto
         {
             OrganizationId = Invoice.OrganizationId,
-            PaymentCategory = Invoice.IsPackage ? PaymentCategory.Package : PaymentCategory.PaymentParking,
+            PaymentCategory = PaymentCategory.PaymentParking,
             InvoiceId = Invoice.Id,
             PaymentMethod = PaymentMethod,
             Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Discount),

@@ -130,11 +130,23 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                    $"{LocalizationHelper.GetLocalizedString("Price")}",
                    item.PriceOfPackage != null ? $"{item.PriceOfPackage.ToString()} {iconHtml}" : $"0 {iconHtml}"
                 ));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageDuration"], item.DurationOfPackage.ToString()));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ActivationDate"], item.ActivationDateOfPackage.ToString()));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ExpiryDate"], item.ExpiryDate.ToString()));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], (bool)item.publishedOfPackage ? 24 + _localizer[$"Hour"] : $" {item.PublishFromOfPackage} " + " - " + $" {item.PublishToOfPackage}"));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], $"{RLM}{item.ArPlateNumber} , {LRM}{item.EnPlateNumber}"));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageDuration"], item!.DurationOfPackage.ToString()));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ActivationDate"], item!.ActivationDateOfPackage.ToString()));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ExpiryDate"], item!.ExpiryDate.ToString()));
+                string publishedText;
+
+                if (item.publishedOfPackage.HasValue && item.publishedOfPackage.Value)
+                {
+                    publishedText = $"24 {_localizer["Hour"]}";
+                }
+                else
+                {
+                    var from = item.PublishFromOfPackage?.ToString() ?? "-";
+                    var to = item.PublishToOfPackage?.ToString() ?? "-";
+                    publishedText = $"{from} - {to}";
+                }
+
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], publishedText)); rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], $"{RLM}{item.ArPlateNumber} , {LRM}{item.EnPlateNumber}"));
                 
                 
                 tableData.Rows.Add(rowDef);

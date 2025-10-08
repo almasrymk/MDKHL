@@ -37,7 +37,7 @@
                                       Value="@(CultureInfo.CurrentCulture.Name == "en"
                                                                                   ? CustomerDto?.FullName
                                                                                   : CustomerDto?.ArabicName)" />
-            <LastInvoiceOnGateDetails Key="@L["PlatNumber"]"
+            <LastInvoiceOnGateDetails Key="@L["PlateNumber"]"
                                       Value="@CustomerPackageDto?.EnPlateNumber" />
             <LastInvoiceOnGateDetails Key="@L["StartDate"]"
                 Value="@(CustomerPackageDto?.ActivationDateOfPackage.Value.Date.ToString("yyyy-MM-dd") ?? "" )" />
@@ -46,10 +46,10 @@
                 Value="@(CustomerPackageDto?.ExpiryDate.ToString("yyyy-MM-dd") ?? "" )" />
             
             <LastInvoiceOnGateDetails Key="@L["StartTime"]"
-                Value="@(CustomerPackageDto?.ActivationDateOfPackage.Value.TimeOfDay.ToString(@"hh\:mm") ?? "" )" />
+                Value="@(CustomerPackageDto?.PublishFromOfPackage.Value.ToString(@"hh\:mm") ?? "" )" />
             
             <LastInvoiceOnGateDetails Key="@L["EndTime"]"
-                Value="@(CustomerPackageDto?.ExpiryDate.TimeOfDay.ToString(@"hh\:mm") ?? "")" />
+                Value="@(CustomerPackageDto?.PublishToOfPackage.Value.ToString(@"hh\:mm") ?? "")" />
 
             <LastInvoiceOnGateDetails CurrencyKey="@((MarkupString)$"{L["Price"]}{CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px")}")"
                                       Value="@CustomerPackageDto?.PriceOfPackage.ToString()"   />
@@ -62,7 +62,7 @@
                            ConfirmSize="12"
                            HasConfirmPermission="true"
                            InvoicePrice="@(CustomerPackageDto?.PriceOfPackage!.Value ??0 )"
-                           PayInvoice="PayInvoice"
+                           PayInvoice="PayPackage"
                            PaymentMethod="PaymentMethod"
                            ShowOpenGate="false" />
 </MudGrid>
@@ -83,8 +83,10 @@
             Navigation.NavigateTo("/customers");
         CustomerPackageDto = preAssignState.CustomerPackage;
         CustomerDto = preAssignState.Customer;
+        CustomerPackageDto!.PublishToOfPackage =TimeOnly.FromDateTime( CustomerPackageDto.ActivationDateOfPackage.Value);
+        CustomerPackageDto!.PublishFromOfPackage =TimeOnly.FromDateTime( CustomerPackageDto.ExpiryDate);
     }
-    private async Task PayInvoice()
+    private async Task PayPackage()
     {
         try
         {

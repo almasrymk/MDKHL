@@ -63,37 +63,40 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             var customerQuery = await _customerRepository.GetQueryableAsync();
             var userQuery = await _myUserRepository.GetQueryableAsync();
             customerQuery = customerQuery.Include(x => x.IdentityUser);
-            var result = from payment in query
-                    join organization in organizationQuery on payment.OrganizationId equals organization.Id
-                    join user in userQuery on payment.CreatorId equals user.Id
+
+            var result =
+                from payment in query
+                join organization in organizationQuery on payment.OrganizationId equals organization.Id
+                join user in userQuery on payment.CreatorId equals user.Id
                     join customer in customerQuery on payment.CustomerId equals customer.Id
                     into customerList
                     from customer in customerList.DefaultIfEmpty()
-                         select new PaymentDto()
-                    {
-                        Amount = payment.Amount,
-                        CheckoutId = payment.CheckoutId,
-                        CreationTime = payment.CreationTime.ToString(),
-                        Currency = payment.Currency,
-                        CustomerId = payment.CustomerId,
-                        Id = payment.Id,
-                        InvoiceId = payment.InvoiceId,
-                        OrganizationId = payment.OrganizationId,
-                        PaymentCategory = payment.PaymentCategory,
-                        PaymentMethod = payment.PaymentMethod,
-                        PaymentStatus = payment.PaymentStatus,
-                        PackageId = payment.PackageId,
-                        QrCodeInvoice = payment.QrCodeInvoice,
-                        OrganizationArabicName = organization.ArabicName,
-                        OrganizationEnglishName = organization.EnglishName,
-                        PaymentNumber = payment.PaymentNumber,
-                        PlateNumber = payment.EnPlateNumber,
-                        TenantId = payment.TenantId,
+                select new PaymentDto()
+                {
+                    Amount = payment.Amount,
+                    CheckoutId = payment.CheckoutId,
+                    CreationTime = payment.CreationTime.ToString(),
+                    Currency = payment.Currency,
+                    CustomerId = payment.CustomerId,
+                    Id = payment.Id,
+                    InvoiceId = payment.InvoiceId,
+                    OrganizationId = payment.OrganizationId,
+                    PaymentCategory = payment.PaymentCategory,
+                    PaymentMethod = payment.PaymentMethod,
+                    PaymentStatus = payment.PaymentStatus,
+                    PackageId = payment.PackageId,
+                    QrCodeInvoice = payment.QrCodeInvoice,
+                    OrganizationArabicName = organization.ArabicName,
+                    OrganizationEnglishName = organization.EnglishName,
+                    PaymentNumber = payment.PaymentNumber,
+                    PlateNumber = payment.EnPlateNumber,
+                    TenantId = payment.TenantId,
                         Customers = customer,
                         Invoice = payment.Invoice  , 
-                        CashierName = user.Name,
-                        StatusZatca = organization.StatusZatca
-                    };
+                    CashierName = user.Name,
+                    StatusZatca = organization.StatusZatca
+                };
+
             result = result.OrderByDescending(x => x.CreationTime);
             result = ApplyFilterTenant(tenantId, result);
             result = ApplySearchMdkhl(input, result);
@@ -112,6 +115,9 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     }
     public async Task<PagedResultDto<PaymentDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
         var query = await _paymentRepository.GetQueryableAsync();
         var customerQuery = await _customerRepository.GetQueryableAsync();
         var organizationQuery = await _organizationRepository.GetQueryableAsync();
@@ -166,6 +172,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 TotalCount = totalCount,
                 Items = payments
             };
+        }
        
     }
 
