@@ -41,15 +41,16 @@ public partial class MDKHLEditUserDialog
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; }
-   
+    public int OrganizationId { get; set; }
+    public Guid? TenantId { get; set; }
     private async Task SelectOrganization(int organizationId)
     {
         IsSelectOrganization = true;
         var orag = await OrganizationAppService.GetAsync(organizationId);
 
-        updateUserDto.TenantId = orag.TenantId;
-        updateUserDto.OrganizationId = organizationId;
-        RolesList = await RoleAppService.GetListByTenant(orag.TenantId);
+        TenantId = orag.TenantId;
+        OrganizationId = organizationId;
+        RolesList = await RoleAppService.GetListByTenant(TenantId);
     }
      
     public MDKHLEditUserDialog(IStringLocalizer<SmartParkingResource> localizer)
@@ -75,7 +76,7 @@ public partial class MDKHLEditUserDialog
             }
             else
             {
-                updateUserDto.RoleId = role.Id;
+                //updateUserDto.RoleId = role.Id;
                 userUpdated = await UsersAppService.UpdateUserWithRoleChangeMdkhlAsync(Guid.Parse(userId), updateUserDto);
             }
 
@@ -210,9 +211,9 @@ public partial class MDKHLEditUserDialog
 
     private async Task AddRole()    
     {
-        await UsersAppService.AssignRoleAndPermissionsAsync(Guid.Parse(userId) , role.Id, Guid.Parse(updateUserDto.TenantId.ToString()));
+        await UsersAppService.AssignRoleAndPermissionsAsync(Guid.Parse(userId) , role.Id, Guid.Parse(TenantId.ToString()));
         var rowDef = new RowDef();
-        var orag = await OrganizationAppService.GetOrganizationByTenant(updateUserDto.TenantId);
+        var orag = await OrganizationAppService.GetOrganizationByTenant(TenantId);
 
         rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Id"], role.Id.ToString()));
         rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Role"], role.Name));
