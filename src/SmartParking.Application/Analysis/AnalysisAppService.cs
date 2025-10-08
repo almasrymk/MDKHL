@@ -540,12 +540,15 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var organizations = await _orgRepo.GetQueryableAsync();
             var userQuery = await _myUserRepository.GetQueryableAsync();
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
+            var customerPackageQuery = await _customerPackageRepository.GetQueryableAsync();
             var resultJoin = from payment in query
                              where tenantId.HasValue ? payment.TenantId == tenantId.Value : true
                              join organization in organizations
                              on payment.OrganizationId equals organization.Id
                              join user in userQuery
                              on payment.CreatorId equals user.Id
+                             join customerPackage in customerPackageQuery on payment.CustomerPackageId equals customerPackage.Id into packageList
+                             from package in packageList.DefaultIfEmpty()
                              select new PaymentDto
                              {
                                  Amount = payment.Amount,
@@ -562,6 +565,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  PlateNumber = payment.Invoice != null ? payment.Invoice.PlateNumber : payment.EnPlateNumber,
                                  AmountWithoutDiscount = payment.Invoice != null ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
                                  QrCodeInvoice = payment.QrCodeInvoice,
+                                 CustomerPackage = package,
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
                                  InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
@@ -591,6 +595,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var userQuery = await _myUserRepository.GetQueryableAsync();
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
             query = query.Where(_ => _.PaymentMethod == PaymentMethod.Cash);
+            var customerPackageQuery = await _customerPackageRepository.GetQueryableAsync();
+
             var resultJoin = from payment in query
                              where tenantId.HasValue ? payment.TenantId == tenantId.Value : true && payment.PaymentMethod == PaymentMethod.Cash
                              where payment.CustomerId != null 
@@ -598,6 +604,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                              on payment.OrganizationId equals organization.Id
                              join user in userQuery
                              on payment.CreatorId equals user.Id
+                             join customerPackage in customerPackageQuery on payment.CustomerPackageId equals customerPackage.Id into packageList
+                             from package in packageList.DefaultIfEmpty()
                              select new PaymentDto
                              {
                                  Amount = payment.Amount,
@@ -615,6 +623,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  AmountWithoutDiscount = payment.Invoice != null ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
                                  QrCodeInvoice = payment.QrCodeInvoice,
                                  CreationTime = payment.CreationTime.ToString(),
+                                 CustomerPackage = package??null,
                                  PaymentCategory = payment.PaymentCategory,
                                  InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
                                  PaymentStatus = payment.PaymentStatus , 
