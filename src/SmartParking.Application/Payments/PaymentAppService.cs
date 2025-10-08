@@ -501,13 +501,14 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             var prefix = organization.PaymentCode ?? organization.EnglishName.Substring(0, 3).ToUpper();
 
             // Fetch the last invoice for the current year and organization
-            var invoices = await _repository.GetListAsync(i => i.OrganizationId == organizationId);
 
-            var lastInvoice = invoices
-            .Where(i => i.CreationTime.Year == DateTime.Now.Year && i.OrganizationId == organization.Id)
-            .OrderByDescending(i => i.PaymentNumber)
-            .FirstOrDefault();
-             
+            var query = await _repository.GetQueryableAsync();
+
+            query = query.Where(i => i.CreationTime.Year == DateTime.Now.Year && i.OrganizationId == organization.Id)
+            .OrderByDescending(i => i.CreationTime);
+            var lastInvoice=query.FirstOrDefault();
+
+
             int nextInvoiceSequence = 1;
 
             if (lastInvoice != null)

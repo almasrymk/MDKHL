@@ -19,6 +19,7 @@ public partial class InvoiceDetailsViewDialog
     [Parameter] public string OrganizationEnglishName { get; set; }
     public string imagepath { get; set; }
     [Parameter] public string OrganizationPicture { get; set; }
+    [Parameter] public string QRCode { get; set; }
     public decimal price { get; set; }
     public string title { get; set; }
     public string description { get; set; }
@@ -36,16 +37,6 @@ public partial class InvoiceDetailsViewDialog
             {
                 HasDiscount = true;
             }
-
-            if (currentTenant.Id == null)
-            {
-
-                imagepath = await InvoiceAppService.GetInvoiceQRCodeForMDKHL(ID);
-            }
-            else
-            {
-                imagepath = await InvoiceAppService.GetInvoiceQRCodeForOrganization(ID);
-            }
         }
         else
         {
@@ -53,7 +44,9 @@ public partial class InvoiceDetailsViewDialog
             price = Package.PriceOfPackage.Value;
             title = "Package";
             description = Code;
+            HasDiscount = Package.Discount != default;
         }
+        imagepath = await QRCodeAppService.CreateQRCOdeImageAsync(QRCode);
         StateHasChanged();
 
 

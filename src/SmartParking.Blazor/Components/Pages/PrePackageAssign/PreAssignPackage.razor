@@ -44,12 +44,10 @@
             
             <LastInvoiceOnGateDetails Key="@L["EndDate"]"
                 Value="@(CustomerPackageDto?.ExpiryDate.ToString("yyyy-MM-dd") ?? "" )" />
-            
-            <LastInvoiceOnGateDetails Key="@L["StartTime"]"
-                Value="@(CustomerPackageDto?.PublishFromOfPackage.Value.ToString(@"hh\:mm") ?? "" )" />
-            
-            <LastInvoiceOnGateDetails Key="@L["EndTime"]"
-                Value="@(CustomerPackageDto?.PublishToOfPackage.Value.ToString(@"hh\:mm") ?? "")" />
+
+            <LastInvoiceOnGateDetails Key="@L["Published"]"
+                                      Value="@(publishedText ?? "" )" />
+   
 
             <LastInvoiceOnGateDetails CurrencyKey="@((MarkupString)$"{L["Price"]}{CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px")}")"
                                       Value="@CustomerPackageDto?.PriceOfPackage.ToString()"   />
@@ -71,6 +69,7 @@
     public decimal Discount { get; set; }
     public bool IsPaid { get; set; }
     public PaymentMethod PaymentMethod { get; set; }
+    public string publishedText { get; set; }
     private CustomerPackageDto CustomerPackageDto { get; set; } = new();
     private CustomerDto CustomerDto { get; set; } = new();
     private void HandleAddDiscount(decimal selected) => CustomerPackageDto.Discount = selected;
@@ -83,8 +82,19 @@
             Navigation.NavigateTo("/customers");
         CustomerPackageDto = preAssignState.CustomerPackage;
         CustomerDto = preAssignState.Customer;
-        CustomerPackageDto!.PublishToOfPackage =TimeOnly.FromDateTime( CustomerPackageDto.ActivationDateOfPackage.Value);
-        CustomerPackageDto!.PublishFromOfPackage =TimeOnly.FromDateTime( CustomerPackageDto.ExpiryDate);
+        if (CustomerPackageDto.publishedOfPackage.HasValue && CustomerPackageDto.publishedOfPackage.Value)
+        {
+            publishedText = $"24 {L["Hour"]}";
+        }
+        else
+        {
+
+            var from = CustomerPackageDto.PublishFromOfPackage?.ToString() ?? "-";
+            var to = CustomerPackageDto.PublishToOfPackage?.ToString() ?? "-";
+            publishedText = $"{from} - {to}";
+        }
+                
+                
     }
     private async Task PayPackage()
     {

@@ -6,6 +6,7 @@
 @using System.IO
 @using SmartParking.Packages
 @using System.Globalization
+@using SmartParking.QRCode
 @using Volo.Abp.MultiTenancy
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
@@ -14,7 +15,7 @@
 @inject ICurrentTenant currentTenant
 @inject IPDFGeneratorAppService PdfGenetrayorAppService
 @inject IOrganizationsAppService OrganizationService
-
+@inject IQRCodeAppService QRCodeAppService
 @{
     var arabicCulture = new CultureInfo("ar");
     CultureInfo.CurrentCulture = arabicCulture;

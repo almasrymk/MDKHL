@@ -115,63 +115,63 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     }
     public async Task<PagedResultDto<PaymentDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input)
     {
+        var currentOrganization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
         using (DataFilter.Disable<IMultiTenant>())
         {
+            var query = await _paymentRepository.GetQueryableAsync();
+            query=query.Where(pay=>pay.TenantId==currentOrganization.TenantId);
+            var customerQuery = await _customerRepository.GetQueryableAsync();
+            var organizationQuery = await _organizationRepository.GetQueryableAsync();
+            var userQuery = await _myUserRepository.GetQueryableAsync();
+            var customerPackageQuery = await _customerPackageRepository.GetQueryableAsync();
 
-        var query = await _paymentRepository.GetQueryableAsync();
-        var customerQuery = await _customerRepository.GetQueryableAsync();
-        var organizationQuery = await _organizationRepository.GetQueryableAsync();
-        var userQuery = await _myUserRepository.GetQueryableAsync();
-        var customerPackageQuery = await _customerPackageRepository.GetQueryableAsync();
+            customerQuery = customerQuery.Include(x => x.IdentityUser);
 
-        customerQuery = customerQuery.Include(x => x.IdentityUser);
-
-        var result =
-            from payment in query
-            join organization in organizationQuery on payment.OrganizationId equals organization.Id
-            join user in userQuery on payment.CreatorId equals user.Id
-            join customer in customerQuery on payment.CustomerId equals customer.Id into customerList
-            from customer in customerList.DefaultIfEmpty()
-            join customerPackage in customerPackageQuery on payment.CustomerPackageId equals customerPackage.Id into packageList
-            from package in packageList.DefaultIfEmpty()
-            select new PaymentDto()
-            {
-                Amount = payment.Amount,
-                CheckoutId = payment.CheckoutId,
-                CreationTime = payment.CreationTime.ToString(),
-                Currency = payment.Currency,
-                CustomerId = payment.CustomerId,
-                Id = payment.Id,
-                InvoiceId = payment.InvoiceId,
-                OrganizationId = payment.OrganizationId,
-                PaymentCategory = payment.PaymentCategory,
-                PaymentMethod = payment.PaymentMethod,
-                PaymentStatus = payment.PaymentStatus,
-                PackageId = payment.PackageId,
-                QrCodeInvoice = payment.QrCodeInvoice,
-                PaymentNumber = payment.PaymentNumber,
-                PlateNumber = payment.EnPlateNumber,
-                TenantId = payment.TenantId,
-
-                Customers = customer,
-                CustomerPackage = package,  
-                Invoice = payment.Invoice,
-                CashierName = user.Name,
-                StatusZatca = organization.StatusZatca,
-                IsSentZatca = payment.IsSentZatca,
-                ErrorMessagesZatca = payment.ErrorMessagesZatca
-            };
-        result = result.OrderByDescending(x => x.CreationTime);
-            result = ApplySearch(input, result);
-            result = ApplySort(input, result);
-            var totalCount = await AsyncExecuter.CountAsync(result);
-            result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
-            var payments = await AsyncExecuter.ToListAsync(result);
-            return new PagedResultDto<PaymentDto>
-            {
-                TotalCount = totalCount,
-                Items = payments
-            };
+            var result =
+                from payment in query
+                join organization in organizationQuery on payment.OrganizationId equals organization.Id
+                join user in userQuery on payment.CreatorId equals user.Id
+                join customer in customerQuery on payment.CustomerId equals customer.Id into customerList
+                from customer in customerList.DefaultIfEmpty()
+                join customerPackage in customerPackageQuery on payment.CustomerPackageId equals customerPackage.Id into packageList
+                from package in packageList.DefaultIfEmpty()
+                select new PaymentDto()
+                {
+                    Amount = payment.Amount,
+                    CheckoutId = payment.CheckoutId,
+                    CreationTime = payment.CreationTime.ToString(),
+                    Currency = payment.Currency,
+                    CustomerId = payment.CustomerId,
+                    Id = payment.Id,
+                    InvoiceId = payment.InvoiceId,
+                    OrganizationId = payment.OrganizationId,
+                    PaymentCategory = payment.PaymentCategory,
+                    PaymentMethod = payment.PaymentMethod,
+                    PaymentStatus = payment.PaymentStatus,
+                    PackageId = payment.PackageId,
+                    QrCodeInvoice = payment.QrCodeInvoice,
+                    PaymentNumber = payment.PaymentNumber,
+                    PlateNumber = payment.EnPlateNumber,
+                    TenantId = payment.TenantId,
+                    Customers = customer,
+                    CustomerPackage = package,  
+                    Invoice = payment.Invoice,
+                    CashierName = user.Name,
+                    StatusZatca = organization.StatusZatca,
+                    IsSentZatca = payment.IsSentZatca,
+                    ErrorMessagesZatca = payment.ErrorMessagesZatca
+                };
+                result = result.OrderByDescending(x => x.CreationTime);
+                result = ApplySearch(input, result);
+                result = ApplySort(input, result);
+                var totalCount = await AsyncExecuter.CountAsync(result);
+                result = result.Skip(input.SkipCount).Take(input.MaxResultCount);
+                var payments = await AsyncExecuter.ToListAsync(result);
+                return new PagedResultDto<PaymentDto>
+                {
+                    TotalCount = totalCount,
+                    Items = payments
+                };
         }
        
     }

@@ -95,8 +95,8 @@ partial class AssignPackgeDialog
             _customerPackageDto.EnPlateNumber = vehicle.EnPlateNumber;
             _customerPackageDto.CustomerId = Customer.Id;
 
-            // Handle custom package assignment
-            if (IsCustom)
+        // Handle custom package assignment
+        if (IsCustom)
             {
                 //Method  to Check Is Custom Varaiable
                  CheckIsCustomProperties(_customerPackageDto);
@@ -125,6 +125,8 @@ partial class AssignPackgeDialog
                 _customerPackageDto.PackageArabicName = package.ArabicName;
                 _customerPackageDto.PackageEnglishName = package.EnglishName;
                 _customerPackageDto.ExpiryDate = DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute);
+                 _customerPackageDto.PublishFromOfPackage = package.PublishFrom;
+                 _customerPackageDto.PublishToOfPackage = package.PublishTo;
                 _customerPackageDto.ActivationDateOfPackage = DateTime.Now;
                 _customerPackageDto.DectivationDateOfPackage = package.DectivationDate;
                 _customerPackageDto.DescriptionOfPackage = package.Description;

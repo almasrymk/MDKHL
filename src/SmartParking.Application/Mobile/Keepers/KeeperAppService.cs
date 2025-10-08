@@ -20,6 +20,7 @@ using SmartParking.Invoices;
 using SmartParking.Mobile.Invoices;
 using SmartParking.Mobile.Vehicles;
 using SmartParking.Payments;
+using SmartParking.QRCode;
 using SmartParking.Repositories;
 using SmartParking.Results;
 using SmartParking.Utilities;
@@ -62,6 +63,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IAuthenticationUtility _authenticationUtility;
     private readonly IVehicleAppService _vehicleAppService;
     private readonly IDiscountAppService _discountAppService;
+    private readonly IQRCodeAppService _qrCodeAppService;
     private string _notFound = "Not found";
 
 
@@ -82,7 +84,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IVehicleAppService vehicleAppService,
          IDiscountAppService discountAppService,
          IRepository<Payment, Guid> paymentRepository,
-         IPaymentWebAppService paymentWebAppService)
+         IPaymentWebAppService paymentWebAppService,
+         IQRCodeAppService qrCodeAppService)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -101,6 +104,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _discountAppService = discountAppService;
         _paymentRepository = paymentRepository;
         _paymentWebAppService = paymentWebAppService;
+        _qrCodeAppService = qrCodeAppService;
     }
 
     #region Public Methods
@@ -365,7 +369,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 
             }
             var result = await RequestToPaymentCheckout(invoice, paymentMethodType, discountValue);
-            var image = await _invoiceAppService.GetImage(invoice,result is null ? " " : result.QrCodeInvoice);
+            var image = await _qrCodeAppService.CreateQRCOdeImageAsync(result is null ? " " : result.QrCodeInvoice);
             var mobileInvoice =await ProcessingInvoiceMobileDto(discountValue,invoiceId ,image);
             mobileInvoice.Value.PaymentMethod = result.PaymentMethod.ToString();
             mobileInvoice.Value.InvoiceNumber = result.PaymentNumber;

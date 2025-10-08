@@ -7,6 +7,7 @@ using SmartParking.Entities.Payments;
 using SmartParking.Enums;
 using SmartParking.Filters;
 using SmartParking.Localization;
+using SmartParking.QRCode;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using SmartParking.Validations;
@@ -30,12 +31,11 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     private readonly IDataFilter _dataFilter;
     private readonly IRepository<Invoice, int> _invoiceRepository;
     private readonly IRepository<Organization, int> _organizationsRepository;
-    private string folderQrImage = "QRCodeImage";
-    private string folderImages = "image";
+    private readonly IQRCodeAppService _qrCodeAppService;
     private readonly IInvoiceUtilityAppService _invoiceUtility;
     private readonly IRepository<Payment, Guid> _paymentRepository;
 
-    public InvoiceAppService(IRepository<Invoice, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationsRepository, IInvoiceUtilityAppService invoiceUtility , IRepository<Payment, Guid> paymentRepository)
+    public InvoiceAppService(IRepository<Invoice, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationsRepository, IInvoiceUtilityAppService invoiceUtility, IRepository<Payment, Guid> paymentRepository, IQRCodeAppService qrCodeAppService)
     : base(repository)
     {
         _dataFilter = dataFilter;
@@ -43,6 +43,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         _organizationsRepository = organizationsRepository;
         _invoiceUtility = invoiceUtility;
         _paymentRepository = paymentRepository;
+        _qrCodeAppService = qrCodeAppService;
     }
     #region public methods 
     /// <inheritdoc/>
@@ -230,7 +231,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             }
             string? qrCode = await GetQrCodeAsync(invoice);
 
-            return await GetImage(invoice, qrCode);
+            return await _qrCodeAppService.CreateQRCOdeImageAsync(qrCode);
         }
     }
     /// <inheritdoc/>
@@ -245,35 +246,11 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
                 return Result.NotFound();
             }
             string? qrCode = await GetQrCodeAsync(invoice);
-            var result = await GetImage(invoice, qrCode);
+            var result = await _qrCodeAppService.CreateQRCOdeImageAsync( qrCode);
             return result;
         }
     }
-    [RemoteService(false)]
-    /// <inheritdoc/>
-
-    public async Task<Result<string>> GetImage(InvoiceDto? invoice, string? qrCodedto)
-    {
-        if (qrCodedto.IsNullOrEmpty())
-            return " ";
-        using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
-
-        using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrCodedto, QRCodeGenerator.ECCLevel.Q))
-        using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
-        {
-            byte[] qrCodeImage = qrCode.GetGraphic(20);
-            string imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderQrImage, folderImages);
-            if (!Directory.Exists(imageDirectoryPath))
-            {
-                Directory.CreateDirectory(imageDirectoryPath);
-            }
-            string fileName = $"{Guid.NewGuid()}{DateTime.Now:yyyyMMddHHmmssfff}.png";
-            string fullPath = Path.Combine(imageDirectoryPath, fileName);
-            await File.WriteAllBytesAsync(fullPath, qrCodeImage);
-            return $"{folderQrImage}/{folderImages}/{fileName}";
-        }
-    }
-
+    
     /// <inheritdoc/>
 	public async Task<PagedResultDto<InvoiceDto>> GetAllInvoicesByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {

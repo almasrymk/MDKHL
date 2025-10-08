@@ -96,13 +96,6 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     /// <returns>A task that represents the asynchronous operation, containing a <see cref="Result{List{InvoiceDto}}"/> object with the unpaid invoices for the keeper.</returns>
     Task<Result<List<InvoiceDto>>> GetUnpaidInvoiceForKeeperInHisOrganization(int OrganizationId, string plateNumber);
 
-    /// <summary>
-    /// Asynchronously retrieves an image associated with an invoice, using the provided QR code DTO.
-    /// </summary>
-    /// <param name="invoice">The invoice for which the image is being retrieved.</param>
-    /// <param name="qrCodedto">A QR code DTO to retrieve the corresponding image.</param>
-    /// <returns>A task that represents the asynchronous operation, containing a <see cref="Result{string}"/> object with the image or an error message.</returns>
-    Task<Result<string>> GetImage(InvoiceDto? invoice, string? qrCodedto);
 
     /// <summary>
     /// Asynchronously retrieves the latest invoice for an organization.

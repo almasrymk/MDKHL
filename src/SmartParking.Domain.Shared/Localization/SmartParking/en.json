@@ -851,7 +851,8 @@
     "TheOragnizationNotFound": "The oragnization not found",
     "UsernameOrPasswordForZatcaNotFound": "Username or password for Zatca not found",
     "PackagePaymentSuccessfully": "Package Payment Successfully",
-    "Days": "Days"
+    "Days": "Days",
+    "Duration": "Duration"
 
 
   }

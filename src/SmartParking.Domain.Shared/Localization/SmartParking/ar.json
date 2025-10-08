@@ -881,6 +881,7 @@
     "TheOragnizationNotFound": "لم يتم العثور على المنشأة",
     "UsernameOrPasswordForZatcaNotFound": "لم يتم العثور على اسم المستخدم أو كلمة المرور لـلزكاة و الدخل",
     "PackagePaymentSuccessfully": "تم دفع الفاتورة بنجاح",
-    "Days": "أيام"
+    "Days": "أيام",
+    "Duration": "المدة"
   }
 }

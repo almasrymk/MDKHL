@@ -86,6 +86,7 @@ public partial class DetailsPayment
             ["OrganizationArabicName"] =Payment.Organization.ArabicName,
             ["OrganizationEnglishName"] =Payment.Organization.EnglishName,
             ["OrganizationPicture"] =Payment.Organization.OrganizationPicture,
+            ["QRCode"] =Payment.QrCodeInvoice,
         };
         return DialogService.ShowAsync<InvoiceDetailsViewDialog>("", parameters);
 
