@@ -450,11 +450,14 @@ public static class CreateTableHelper
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("TicketId"), payment.Invoice?.TicketId));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentMethod"), LocalizationHelper.GetLocalizedString(payment.PaymentMethod.ToString())));
             var total = payment.Amount == 0 ? "0.0" : payment.Amount.ToString();
-            var amount = payment.Invoice?.InvoicePrice == 0 ? payment.CustomerPackage?.PriceOfPackage!.Value.ToString() : payment.Invoice?.InvoicePrice.ToString();
+            var amount =
+                payment.Invoice?.InvoicePrice != null && payment.Invoice.InvoicePrice != default
+                    ? payment.Invoice.InvoicePrice.ToString()
+                    : (payment.CustomerPackage?.PriceOfPackage?.ToString() ?? "0.0");
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Amount"), $"{amount} {IconHtml}"));
-            var vatValue = payment.Invoice?.InvoicePrice == 0 ? payment.CustomerPackage?.Vat.ToString() : Math.Round((payment.Invoice?.InvoicePrice ?? 0) * 0.15m, 2).ToString();
+            var vatValue = payment.Invoice==null ? payment.CustomerPackage?.Vat.ToString() : Math.Round((payment.Invoice?.InvoicePrice ??0) * 0.15m, 2).ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentVat"), $"{vatValue} {IconHtml}"));
-            var discountValue = payment.Invoice?.Discount == 0 || payment.Invoice?.Discount is null ? payment.CustomerPackage?.Discount.ToString() : payment.Invoice?.Discount.ToString();
+            var discountValue = payment.Invoice == null ? payment.CustomerPackage?.Discount.ToString() : payment.Invoice?.Discount.ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Discount"), $"{discountValue} {IconHtml}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentTotal"), $"{total} {IconHtml}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Date"), payment.Date.ToString()));
