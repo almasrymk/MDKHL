@@ -28,6 +28,8 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Filters;
 using Volo.Abp.Identity;
+using SmartParking.Lookups.User;
+
 namespace SmartParking.Authentication;
 
 [Authorize]
@@ -926,9 +928,16 @@ public class UsersAppService : ApplicationService, IUsersAppService
         }
     }
 
-    public Task AssignRoleAndPermissionsAsync(Guid UserId, Guid roleId, Guid TenantId)
+    /// <summary>
+    /// Assigns a role and permissions and organization to a user.
+    /// </summary>
+    /// <param name="UserId">The user to whom the role and permissions will be assigned.</param>
+    /// <param name="roleId">The ID of the role to be assigned to the user.</param>
+    /// <param name="TenantId">The ID of the organiztion to be assigned to the user.</param>   
+    public async Task AssignRoleAndPermissionsAsync(Guid UserId, Guid roleId, Guid TenantId)
     {
-        throw new NotImplementedException();
+        var userDto = new IdentityUserRoleDto(UserId, roleId, TenantId);
+        await _userRoleRepository.InsertAsync(userDto.GetModel());
     }
     #endregion
 }
