@@ -469,21 +469,6 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
     }
     #endregion
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public async Task<PagedResultDto<CustomerPackageDto>> ReportCustomerPackage(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())

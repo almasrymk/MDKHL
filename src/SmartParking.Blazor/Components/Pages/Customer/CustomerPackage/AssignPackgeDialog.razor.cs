@@ -95,13 +95,15 @@ partial class AssignPackgeDialog
             _customerPackageDto.ArPlateNumber = vehicle.ArPlateNumber;
             _customerPackageDto.EnPlateNumber = vehicle.EnPlateNumber;
             _customerPackageDto.CustomerId = Customer.Id;
+            _customerPackageDto.CustomerCategory = Customercategory;
+
+
 
         // Handle custom package assignment
         if (IsCustom)
-            {
+        {
                 //Method  to Check Is Custom Varaiable
                  CheckIsCustomProperties(_customerPackageDto);
-                _customerPackageDto.CustomerCategory = Customercategory;
                 _customerPackageDto.publishedOfPackage = true;
                 _customerPackageDto.ActivationDateOfPackage = ActivationDate.HasValue && startTime.HasValue
                                                             ? ActivationDate.Value.Date + startTime.Value
@@ -118,39 +120,39 @@ partial class AssignPackgeDialog
                 _customerPackageDto.PublishToOfPackage = endTime.HasValue ? TimeOnly.FromTimeSpan(endTime.Value) : null;
                 if(ActivationDate == DectivationDate &&endTime.Value  <= startTime.Value)
                     throw new Exception(LocalizationHelper.GetLocalizedString("EndTimeShouldBeGreaterThanStartTime"));
-            }
-            else
-            {
-                _customerPackageDto.PackageId = package.Id;
-                _customerPackageDto.PriceOfPackage = package.Price;
-                _customerPackageDto.PackageArabicName = package.ArabicName;
-                _customerPackageDto.PackageEnglishName = package.EnglishName;
-                _customerPackageDto.ExpiryDate = DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute);
-                 _customerPackageDto.PublishFromOfPackage = package.PublishFrom;
-                 _customerPackageDto.PublishToOfPackage = package.PublishTo;
-                _customerPackageDto.ActivationDateOfPackage = DateTime.Now;
-                _customerPackageDto.DectivationDateOfPackage = package.DectivationDate;
-                _customerPackageDto.DescriptionOfPackage = package.Description;
-                _customerPackageDto.DurationOfPackage = package.DurationOfPackage;
-                _customerPackageDto.publishedOfPackage = package.Published;
+        }
+        else
+        {
+            _customerPackageDto.PackageId = package.Id;
+            _customerPackageDto.PriceOfPackage = package.Price;
+            _customerPackageDto.PackageArabicName = package.ArabicName;
+            _customerPackageDto.PackageEnglishName = package.EnglishName;
+            _customerPackageDto.ExpiryDate = DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute);
+             _customerPackageDto.PublishFromOfPackage = package.PublishFrom;
+             _customerPackageDto.PublishToOfPackage = package.PublishTo;
+            _customerPackageDto.ActivationDateOfPackage = DateTime.Now;
+            _customerPackageDto.DectivationDateOfPackage = package.DectivationDate;
+            _customerPackageDto.DescriptionOfPackage = package.Description;
+            _customerPackageDto.DurationOfPackage = package.DurationOfPackage;
+            _customerPackageDto.publishedOfPackage = package.Published;
 
 
-            }
+        }
         if (CurrentTenant.Id is null)
-            {
-                _customerPackageDto.OrganizationId = organizationId;
-                _customerPackageDto.TenantId = Organizations.FirstOrDefault(x => x.Id == organizationId).TenantId;
-            }
-            else
-            {
-                _customerPackageDto.OrganizationId = Organizations.FirstOrDefault(x => x.TenantId == CurrentTenant.Id).Id;
-                _customerPackageDto.TenantId = CurrentTenant.Id;
-            }
-            _customerPackageDto.Organization = Organizations.FirstOrDefault(x => x.TenantId == CurrentTenant.Id);
-            preAssignState.CustomerPackage = _customerPackageDto;
-            preAssignState.Customer = Customer;
+        {
+            _customerPackageDto.OrganizationId = organizationId;
+            _customerPackageDto.TenantId = Organizations.FirstOrDefault(x => x.Id == organizationId).TenantId;
+        }
+        else
+        {
+            _customerPackageDto.OrganizationId = Organizations.FirstOrDefault(x => x.TenantId == CurrentTenant.Id).Id;
+            _customerPackageDto.TenantId = CurrentTenant.Id;
+        }
+        _customerPackageDto.Organization = Organizations.FirstOrDefault(x => x.TenantId == CurrentTenant.Id);
+        preAssignState.CustomerPackage = _customerPackageDto;
+        preAssignState.Customer = Customer;
 
-            Navigation.NavigateTo("/prepayment");
+        Navigation.NavigateTo("/prepayment");
       
     }
     private string ValidateEndTime(TimeSpan? value)

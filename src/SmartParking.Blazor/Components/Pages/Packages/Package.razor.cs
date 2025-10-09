@@ -303,7 +303,6 @@ public partial class Package
             PublishFrom = packageDto.PublishFrom,
             PublishTo = packageDto.PublishTo,
             PackageStatus = packageDto.PackageStatus,
-            PackageType = packageDto.PackageType,
             CustomerCategory = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), packageDto.CustomerCategory),
             DurationOfPackage = packageDto.DurationOfPackage,
             Status = packageDto.Status,
