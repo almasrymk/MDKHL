@@ -370,7 +370,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             {
                 IdentityUser? user = await IsUserFound(id);
 
-                ChenageRoleInMdkhl(input, user);
+                //ChenageRoleInMdkhl(input, user);
                 await UpdateUserProperties(user, input);
                 await AssignRoleIfCustomerAsync(input, user);
                 var updatedUser = await _userManager.UpdateAsync(user);
