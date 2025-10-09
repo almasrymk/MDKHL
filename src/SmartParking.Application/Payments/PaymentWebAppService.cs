@@ -63,6 +63,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             var customerQuery = await _customerRepository.GetQueryableAsync();
             var userQuery = await _myUserRepository.GetQueryableAsync();
             customerQuery = customerQuery.Include(x => x.IdentityUser);
+            var customerPackageQuery = await _customerPackageRepository.GetQueryableAsync();
+
 
             var result =
                 from payment in query
@@ -71,6 +73,9 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                     join customer in customerQuery on payment.CustomerId equals customer.Id
                     into customerList
                     from customer in customerList.DefaultIfEmpty()
+                join customerPackage in customerPackageQuery on payment.CustomerPackageId equals customerPackage.Id into packageList
+                from package in packageList.DefaultIfEmpty()
+
                 select new PaymentDto()
                 {
                     Amount = payment.Amount,
@@ -84,17 +89,18 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                     PaymentCategory = payment.PaymentCategory,
                     PaymentMethod = payment.PaymentMethod,
                     PaymentStatus = payment.PaymentStatus,
-                    PackageId = payment.PackageId,
                     QrCodeInvoice = payment.QrCodeInvoice,
                     OrganizationArabicName = organization.ArabicName,
                     OrganizationEnglishName = organization.EnglishName,
                     PaymentNumber = payment.PaymentNumber,
                     PlateNumber = payment.EnPlateNumber,
                     TenantId = payment.TenantId,
-                        Customers = customer,
-                        Invoice = payment.Invoice  , 
+                    Customers = customer,
+                    Invoice = payment.Invoice  , 
                     CashierName = user.Name,
-                    StatusZatca = organization.StatusZatca
+                    StatusZatca = organization.StatusZatca,
+                    PackageId = package.Id,
+                    CustomerPackage=package
                 };
 
             result = result.OrderByDescending(x => x.CreationTime);

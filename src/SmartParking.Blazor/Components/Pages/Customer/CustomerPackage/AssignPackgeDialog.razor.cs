@@ -58,6 +58,7 @@ partial class AssignPackgeDialog
             Packages = await PackagesAppService.GetAllMdkhlAsync(organizationId, Customercategory);
         else
             Packages = await PackagesAppService.GetAllOrganizationAsync(Customercategory);
+        selectedPackageDto.Clear();
     }
 
     /// <summary>
