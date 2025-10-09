@@ -638,12 +638,17 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var userQuery = await _myUserRepository.GetQueryableAsync();
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
             query = query.Where(_ => _.PaymentMethod != PaymentMethod.Cash);
+            var customerPackageQuery = await _customerPackageRepository.GetQueryableAsync();
+
+
             var resultJoin = from payment in query
                              where tenantId.HasValue ? payment.TenantId == tenantId.Value : true
                              join organization in organizations
                              on payment.OrganizationId equals organization.Id
                              join user in userQuery
                              on payment.CreatorId equals user.Id
+                             join customerPackage in customerPackageQuery on payment.CustomerPackageId equals customerPackage.Id into packageList
+                             from package in packageList.DefaultIfEmpty()
                              select new PaymentDto
                              {
                                  Amount = payment.Amount,
@@ -663,7 +668,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
                                  InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
-                                 PaymentStatus = payment.PaymentStatus , 
+                                 PaymentStatus = payment.PaymentStatus,
+                                 CustomerPackage = package ??null,
                                  CashierName = user.Name
                              };
 
