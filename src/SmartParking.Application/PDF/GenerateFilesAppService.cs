@@ -105,7 +105,7 @@ public class GenerateFilesAppService(IOrganizationsAppService organizationsAppSe
                         table = new Table(NumberOfColumns);
                         table.SetWidth(UnitValue.CreatePercentValue(100));
                         table = GetColumnHeader(Data, font, styleBold, NumberOfColumns);
-                        if (CultureInfo.CurrentCulture.Name == "en")
+                        if (CultureInfo.CurrentCulture.Name == "en" )
                         {
                             new Canvas(pdfDoc.GetLastPage(), new Rectangle(863, 60))
                             .Add(footerTable);
