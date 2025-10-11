@@ -52,7 +52,7 @@ public class InvoicesController : AbpController
     [HttpGet("getinvoicepdf/{invoiceId}")]
     public async Task<IActionResult> GetInvoicePDF(int invoiceId)
     {
-        var stream = await _pdfAppservice.SaveInvoicePdf(invoiceId);
+        var stream = await _pdfAppservice.CreatePdf(invoiceId);
         return new FileContentResult(stream.GetAllBytes(), "application/pdf");
     }   
     

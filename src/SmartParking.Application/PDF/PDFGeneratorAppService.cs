@@ -34,378 +34,24 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
     private readonly IInvoiceAppService _invoicePdfAppService;
     private readonly IOrganizationsAppService _organizationPdfAppService;
     private readonly IPaymentWebAppService _paymentWebAppService;
-    private string folderInvoiceImage = "Invoice";
-    private string folderPdfs = "PDFs";
-    private string imageDirectoryPath = null;
-
-    public PDFGeneratorAppService(IInvoiceAppService invoicePdfAppService, IOrganizationsAppService organizationPdfAppService, IPaymentWebAppService paymentWebAppService)
+    private readonly ILocalizationFactoryAppService _localizationAppService;
+    public PDFGeneratorAppService(IInvoiceAppService invoicePdfAppService, IOrganizationsAppService organizationPdfAppService, IPaymentWebAppService paymentWebAppService, ILocalizationFactoryAppService localizationAppService)
     {
         _invoicePdfAppService = invoicePdfAppService;
-        imageDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderInvoiceImage, folderPdfs);
         _organizationPdfAppService = organizationPdfAppService;
         _paymentWebAppService = paymentWebAppService;
+        _localizationAppService = localizationAppService;
     }
 
     #region Public Methods
 
-    /// <summary>
-    /// Generates the HTML content for an invoice based on the provided invoice ID, commercial registration, and QR code.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the HTML string of the invoice.</returns>
-    [RemoteService(isEnabled:false)]
-
-    public async Task<string> GenerateInvoiceHtmlAsync(int invoiceId, string commericialRegisteratio,string qrCode)
-    {
-        var invoice = await _invoicePdfAppService.GetAsync(invoiceId);
-
-        string imageDirectory = "wwwroot/images/logo/MDHKL_01.png";
-
-        var htmlContent = $@"
-<div class=""mud-modal"">
-    <div class=""title-content d-flex justify-content-center align-items-center"">
-        <h2 class=""fw-bold"">Invoice {invoice.InvoiceNumber}</h2>
-    </div>
-    <div class=""dialog-content"">
-        <div class=""main-layout-paper d-flex flex-column p-3"" style=""width: 100%; height: 100%; margin-top: 20px;"">
-            <div class=""d-flex justify-content-around align-items-center"" style=""margin-top: 20px;"">
-                <div style=""width: 120px;"">
-                    <img src=""data:image/png;base64,{imageDirectory}"" alt=""Logo"" />
-                </div>
-                <div style=""width: 120px;"">
-                    <img src=""data:image/png;base64,{imageDirectory}"" alt=""Logo"" />
-                </div>
-            </div>
-
-            <div class=""invoice-header d-flex flex-column flex-grow-1 h-100 p-3 justify-content-center align-items-center"">
-                <h3>***Simplified tax invoice***</h3>
-                <div class=""d-flex flex-row"">
-                    <h5 class=""fw-bold"">VAT:</h5>
-                    <h5>{commericialRegisteratio}</h5>
-                </div>
-            </div>
-
-            <div class=""invoice-body d-flex flex-column justify-content-between"">
-                <h4>
-                    This is the receipt for payment of {(int)(invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m))} SAR
-                </h4>
-                <div class=""row"">
-                    <div class=""col-md-6 d-flex flex-column"">
-                        <h4>Payment Number:</h4><p>{invoice.InvoiceNumber}</p>
-                    </div>
-                    <div class=""col-md-6 d-flex flex-column align-items-center"">
-                        <h4>Hotel Name:</h4><p>{invoice.OrganizationArabicName}</p>
-                    </div>
-                    <div class=""col-md-6 d-flex flex-column"">
-                        <h4>Cashier No.:</h4><p>{invoice.GarageArabicName}</p>
-                    </div>
-                    <div class=""col-md-6 d-flex flex-column align-items-center"">
-                        <h4>Hotel Address:</h4>
-                        <p></p>
-                    </div>
-                    <div class=""col-md-12 d-flex flex-column"">
-                        <h4>Payment Date:</h4><p>{DateTime.Now:yyyy-MM-dd}</p>
-                    </div>
-                    <div class=""col-md-12 d-flex flex-column"">
-                        <h4>Plate Number:</h4><p>{invoice.PlateNumber}</p>
-                    </div>
-                    <div class=""col-md-6 d-flex flex-column"">
-                        <h4>Entry Date:</h4><p>{invoice.EntranceTime:yyyy-MM-dd HH:mm:ss}</p>
-                    </div>
-                    <div class=""col-md-6 d-flex flex-column align-items-center"">
-                        <h4>Checkout Date:</h4><p>{invoice.InvoiceTime:yyyy-MM-dd HH:mm:ss}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class=""d-flex justify-content-center align-items-center flex-row"" style=""background-color: beige; margin-top: 2rem; border-radius: 15px;"">
-                <div class=""col-md-4 d-flex flex-column align-items-center justify-content-center"">
-                    <h5>Subscription</h5>
-                    <h5>Hour</h5>
-                </div>
-                <div class=""col-md-4 d-flex flex-column align-items-center justify-content-center"">
-                    <h5>Quota</h5>
-                    <h5>{((int)invoice.InvoicePrice / invoice.TotalHours)} Hour SAR/Hour</h5>
-                </div>
-                <div class=""col-md-4 d-flex flex-column align-items-center justify-content-center"">
-                    <h5>Interval</h5>
-                    <h5>{invoice.TotalHours} Hour</h5>
-                </div>
-            </div>
-
-            <div class=""total-info"" style=""margin-top: 2rem;"">
-                <div class=""row"">
-                    <div class=""col-md-6"">
-                        <div class=""d-flex flex-row"">
-                            <p><strong>Total Pre VAT:</strong> {invoice.InvoicePrice} SAR</p>
-                        </div>
-                        <div class=""d-flex flex-row"">
-                            <p><strong>VAT 14%:</strong> {(int)(invoice.InvoicePrice * 0.15m)} SAR</p>
-                        </div>
-                        <div class=""d-flex flex-row"">
-                            <p><strong>Total Including VAT:</strong> {(int)(invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m))} SAR</p>
-                        </div>
-                    </div>
-                    <div class=""col-md-6"">
-                        <div class=""d-flex flex-row justify-content-end"">
-                            <div style=""width: 120px;"">
-                                <img src=""data:image/png;base64,{qrCode}"" alt=""UnPaid"" style=""width:120px;"" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-";
-
-
-
-        return htmlContent;
-    }
-    /// <summary>
-    /// Generates a PDF document from an invoice ID, commercial registration number, and QR code.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the generated PDF file as a byte array.</returns>
-
-    public async Task<byte[]> GenerateInvoicePdfAsync(int invoiceId, string commericialRegisteratio, string qrCode)
-    {
-        var htmlContent = await GenerateInvoiceHtmlAsync(invoiceId, commericialRegisteratio, qrCode);
-         var result = GeneratePdfFromHtmlAsync(htmlContent, invoiceId);
-        var file =await GetInvoicePDF(invoiceId);
-        if (!Directory.Exists(imageDirectoryPath))
-        {
-           Directory.CreateDirectory(imageDirectoryPath);
-        }
-        string fileName = $"{invoiceId}.{"pdf"}";
-
-
-        string fullPath = Path.Combine(imageDirectoryPath, fileName);
-        await SaveInvoicePdf(invoiceId);
-
-
-        return result;
-    }
-    [RemoteService(isEnabled: false)]
-
-    /// <summary>
-    /// Generates a PDF document from HTML content and CSS for a specific invoice.
-    /// </summary>
-    /// <returns>A byte array containing the generated PDF file.</returns>
-    public byte[] GeneratePdfFromHtmlAsync(string htmlContent,int invoiceId)
-    {
-
-        string cssContent = @"
-.mud-modal {
-    font-family: Arial, sans-serif;
-color:black;
-}
-
-.title-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.fw-bold {
-    font-weight: bold;
-}
-
-.dialog-content {
-    padding: 10px;
-}
-
-.main-layout-paper {
-    width: 100%;
-    height: 100%;
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-}
-
-.d-flex {
-    display: flex;
-}
-
-.justify-content-around {
-    justify-content: space-around;
-}
-
-.align-items-center {
-    align-items: center;
-}
-
-.invoice-header {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    height: 100%;
-    padding: 1rem;
-    justify-content: center;
-    align-items: center;
-}
-
-.invoice-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.row {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.col-md-6 {
-    flex: 0 0 50%;
-    max-width: 50%;
-    padding: 5px;
-}
-
-.col-md-12 {
-    flex: 0 0 100%;
-    max-width: 100%;
-    padding: 5px;
-}
-
-.p-3 {
-    padding: 1rem;
-}
-
-.h-100 {
-    height: 100%;
-}
-
-.invoice-header h3 {
-    margin-bottom: 10px;
-}
-
-.d-flex.flex-row {
-    display: flex;
-    flex-direction: row;
-}
-
-.d-flex.flex-column {
-    display: flex;
-    flex-direction: column;
-}
-
-.total-info {
-    margin-top: 2rem;
-}
-
-.total-info .row {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.total-info .col-md-6 {
-    flex: 0 0 50%;
-    max-width: 50%;
-    padding: 10px;
-}
-
-.d-flex.flex-row.justify-content-end {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.d-flex.flex-row.justify-content-center {
-    display: flex;
-    justify-content: center;
-}
-
-.bg-beige {
-    background-color: beige;
-}
-
-.border-radius-15 {
-    border-radius: 15px;
-}
-
-.col-md-4 {
-    flex: 0 0 33.33%;
-    max-width: 33.33%;
-    padding: 5px;
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-}
-
-img[style*='width:120px;'] {
-    width: 120px;
-}
-";
-
-
-        try
-        {
-            var combinedHtml = $@"
-        <!DOCTYPE html>
-        <html lang='en'>
-        <head>
-            <style>
-                {cssContent}
-            </style>
-        </head>
-        <body>
-            {htmlContent}
-        </body>
-        </html>";
-
-
-            using (var memoryStream = new MemoryStream())
-            {
-                // Create PDF writer using the memory stream
-                var pdfWriter = new PdfWriter(memoryStream);
-
-                // Initialize the PDF document
-                using (var pdfDocument = new PdfDocument(pdfWriter))
-                {
-                    // Create a converter properties object
-                    var converterProperties = new ConverterProperties();
-
-                    // Set inline CSS as part of the properties
-                    converterProperties.SetCssApplierFactory(new DefaultCssApplierFactory());
-                    converterProperties.SetCharset("utf-8");
-
-                    // Embed the CSS in the HTML content
-                    string combinedHtmlWithCss = $@"
-                                                <style>
-                                                    {cssContent}
-                                                </style>
-                                                {combinedHtml}";
-
-                    HtmlConverter.ConvertToPdf(combinedHtmlWithCss, pdfDocument, converterProperties);
-                }
-
-                return memoryStream.ToArray();
-            }
-
-        }
-        catch (IOException ioEx)
-        {
-            Console.WriteLine("IO exception occurred: " + ioEx.Message);
-            throw;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("An unexpected error occurred: " + ex.Message);
-            throw;
-        }
-      
-
-    }
 
     /// <summary>
     /// Saves the generated PDF for an invoice to a file system or storage.
     /// </summary>
     /// <returns>A <see cref="Stream"/> representing the saved PDF file.</returns>
     [RemoteServiceAttribute(isEnabled: true)]
-    public async Task<Stream> SaveInvoicePdf(int invoiceId)
+    public async Task<Stream> CreatePdf(int invoiceId)
     {
         var arabicCulture = new CultureInfo("ar");
         CultureInfo.CurrentCulture = arabicCulture;
@@ -413,141 +59,57 @@ img[style*='width:120px;'] {
 
         var invoice = await _invoicePdfAppService.GetAsync(invoiceId);
         var image = await _invoicePdfAppService.GetInvoiceQRCodeForOrganization(invoiceId);
-        string imageDirectoryPdf = "wwwroot/images/logo/MDHKL_01.png";
-        string CurrencyIcon = "wwwroot/images/Saudi_Riyal_Symbolsvg.png";
-        string fileName = $"{invoiceId}.{"pdf"}";
-        string fullPath = Path.Combine(imageDirectoryPath, fileName);
         var payment = await _paymentWebAppService.GetPaymentForInvoice(invoiceId);
         var organization = await _organizationPdfAppService.GetAsync(payment.OrganizationId);
-        string currentPath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot{organization.OrganizationPicture}");
-        string QRCodePath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/{image.Value}");
-        string InvoiceNumber = LocalizationHelper.GetLocalizedString("Invoice");
-        string TicketId = LocalizationHelper.GetLocalizedString("TicketId");
-        string SimplifiedTaxInvoice = LocalizationHelper.GetLocalizedString("SimplifiedTaxInvoice");
-        string HeaderVatReceiptPayment = LocalizationHelper.GetLocalizedString("HeaderVatReceiptPayment");
-        string Vats = LocalizationHelper.GetLocalizedString("VAT");
-        string Sar = LocalizationHelper.GetLocalizedString("SAR");
-        string CashierNo = LocalizationHelper.GetLocalizedString("CashierName");
-        string OrganizationName = LocalizationHelper.GetLocalizedString("OrganizationNameInvoicePopUp");
-        string OrganizationAddress = LocalizationHelper.GetLocalizedString("OrganizationAddressInvoicePopUp");
-        string PlateNumber = LocalizationHelper.GetLocalizedString("PlateNumber");
-        string EntranceTime = LocalizationHelper.GetLocalizedString("EntranceTime");
-        string ExitTime = LocalizationHelper.GetLocalizedString("ExitTime");
-        string Subscription = LocalizationHelper.GetLocalizedString("Subscription");
-        string Hour = LocalizationHelper.GetLocalizedString("Hour");
-        string Duration = LocalizationHelper.GetLocalizedString("TotalHours");
-        string Hours = LocalizationHelper.GetLocalizedString("Hours");
-        string TotalPreVAT = LocalizationHelper.GetLocalizedString("TotalPreVAT");
-        string TotalIncludeVAT = LocalizationHelper.GetLocalizedString("TotalIncludeVAT");
-        string Discount = LocalizationHelper.GetLocalizedString("Discount");
-        string After = LocalizationHelper.GetLocalizedString("After");
-        string InvoiceNumberView = LocalizationHelper.GetLocalizedString("InvoiceNumberView");
-        decimal price = (Math.Round((invoice.InvoicePrice + (invoice.InvoicePrice * 0.15m)), 2));
-        decimal paymentPrice = payment.Amount;
+        var InvoiceLocalizationDto = new InvoiceLocalizationCreateDto
+        {
+            OrganizationPicture = organization.OrganizationPicture,
+            ImagePath = image,
+            InvoicePrice = invoice.InvoicePrice,
+            PaymentAmount = payment.Amount
+        };
+        var localizationData = _localizationAppService.Create(InvoiceLocalizationDto);
         MemoryStream stream = new MemoryStream();
         PdfWriter writer = new PdfWriter(stream);
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
-        string fontPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot//fonts//NotoNaskhArabic-Regular.ttf");
+        string fontPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), PathHelper.PDFFont);
         PdfFont font = PdfFontFactory.CreateFont(fontPath, PdfEncodings.IDENTITY_H, PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED);
         FontSet set = new FontSet();
         set.AddFont(fontPath);
-        Style styleBold = new Style();
+        Table tableimages = ImagesSection(localizationData);
 
-        Style Center = new Style();
-
-
-        Paragraph header = new Paragraph(invoice.InvoiceNumber.ToString()).
-          AddStyle(styleBold)
+        Paragraph header = new Paragraph(invoice.InvoiceNumber.ToString())
          .SetTextAlignment(TextAlignment.CENTER)
          .SetFontSize(20);
-        Table tableimages = new Table(3).UseAllAvailableWidth();
 
-        if (CultureInfo.CurrentCulture.Name == "ar")
-        {
-            iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf))
-           .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
-           .SetWidth(120);
-
-            iText.Layout.Element.Image OrgLogo = (File.Exists(currentPath)
-          ? new iText.Layout.Element.Image(ImageDataFactory.Create(currentPath))
-          : new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf)))
-              .SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.LEFT)
-              .SetWidth(120);
-
-
-
-
-
-            tableimages.AddCell(new Cell().Add(OrgLogo)
-                .SetBorder(Border.NO_BORDER)
-                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-                .SetHorizontalAlignment(HorizontalAlignment.CENTER));
-
-            tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
-                .SetBorder(Border.NO_BORDER)
-                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-                .SetHorizontalAlignment(HorizontalAlignment.RIGHT));
-
-
-        }
-        else
-        {
-            iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf))
-           .SetHorizontalAlignment(HorizontalAlignment.LEFT)
-           .SetWidth(120);
-
-            iText.Layout.Element.Image OrgLogo = (File.Exists(currentPath)
-          ? new iText.Layout.Element.Image(ImageDataFactory.Create(currentPath))
-          : new iText.Layout.Element.Image(ImageDataFactory.Create(imageDirectoryPdf)))
-              .SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.RIGHT)
-              .SetWidth(120);
-
-
-
-
-            tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
-                .SetBorder(Border.NO_BORDER)
-                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-                .SetHorizontalAlignment(HorizontalAlignment.LEFT));
-
-            tableimages.AddCell(new Cell().Add(OrgLogo)
-                .SetBorder(Border.NO_BORDER)
-                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-                .SetHorizontalAlignment(HorizontalAlignment.CENTER));
-
-        }
-
-        iText.Layout.Element.Image currency = new iText.Layout.Element.Image(ImageDataFactory.Create(CurrencyIcon))
+        iText.Layout.Element.Image currency = new iText.Layout.Element.Image(ImageDataFactory.Create(PathHelper.CurrencyIcon))
       .SetHorizontalAlignment(HorizontalAlignment.LEFT)
       .SetWidth(10);
-
-        Paragraph paymentNumber = new Paragraph(CultureInfo.CurrentCulture.Name == "ar" ? $"{payment.PaymentNumber}{" "}{InvoiceNumber.ArabicWithFontGlyphsToPDF()}" : $"{InvoiceNumber}{" "}{payment.PaymentNumber}")
-      .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
-      .SetFontSize(13);
+        Paragraph paymentNumber = PaymentNumberSection(payment, localizationData, font);
 
         Paragraph subheader = new Paragraph(CultureInfo.CurrentCulture.Name == "ar"
-            ? $"***{SimplifiedTaxInvoice.ArabicWithFontGlyphsToPDF()}***"
-            : $"***{SimplifiedTaxInvoice}***")
+            ? $"***{localizationData.SimplifiedTaxInvoice.ArabicWithFontGlyphsToPDF()}***"
+            : $"***{localizationData.SimplifiedTaxInvoice}***")
     .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
     .SetFontSize(13);
 
         Paragraph Vat = new Paragraph(CultureInfo.CurrentCulture.Name == "ar"
-            ? $"{organization.TaxNumber.ArabicWithFontGlyphsToPDF()}:{InvoiceNumberView.ArabicWithFontGlyphsToPDF()}"
-            : $"{InvoiceNumberView}: {organization.TaxNumber}")
+            ? $"{organization.TaxNumber.ArabicWithFontGlyphsToPDF()}:{localizationData.InvoiceNumberView.ArabicWithFontGlyphsToPDF()}"
+            : $"{localizationData.InvoiceNumberView}: {organization.TaxNumber}")
             .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
             .SetFontSize(13);
 
         Paragraph Ticket = new Paragraph();
         if (invoice?.TicketId != null)
         {
-          Ticket = new Paragraph(CultureInfo.CurrentCulture.Name == "ar"
-                                ? $"{invoice?.TicketId.ArabicWithFontGlyphsToPDF()}:{TicketId.ArabicWithFontGlyphsToPDF()}"
-                                : $"{TicketId}: {invoice?.TicketId}")
-                                .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
-                                .SetFontSize(13);
+            Ticket = new Paragraph(CultureInfo.CurrentCulture.Name == "ar"
+                                  ? $"{invoice?.TicketId.ArabicWithFontGlyphsToPDF()}:{localizationData.TicketId.ArabicWithFontGlyphsToPDF()}"
+                                  : $"{localizationData.TicketId}: {invoice?.TicketId}")
+                                  .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
+                                  .SetFontSize(13);
         }
-        
+
 
         Paragraph RecieptPayemntDetails = new Paragraph().SetFont(font).SetFontSize(13).SimulateBold().SetTextAlignment(TextAlignment.CENTER);
         if (CultureInfo.CurrentCulture.Name == "ar")
@@ -555,16 +117,16 @@ img[style*='width:120px;'] {
             RecieptPayemntDetails
                  .Add(currency)
                  .Add(" ")
-                 .Add(new Text(paymentPrice.ToString()))
+                 .Add(new Text(localizationData.PaymentPrice.ToString()))
                  .Add(" ")
-                .Add(new Text(HeaderVatReceiptPayment.ArabicWithFontGlyphsToPDF()));
+                .Add(new Text(localizationData.HeaderVatReceiptPayment.ArabicWithFontGlyphsToPDF()));
         }
         else
         {
             RecieptPayemntDetails
-                  .Add(new Text(HeaderVatReceiptPayment))
+                  .Add(new Text(localizationData.HeaderVatReceiptPayment))
                  .Add(" ")
-                .Add(new Text(paymentPrice.ToString()))
+                .Add(new Text(localizationData.PaymentPrice.ToString()))
                  .Add(" ")
                 .Add(currency);
         }
@@ -601,7 +163,7 @@ img[style*='width:120px;'] {
                  .SetFontSize(9)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.RIGHT)
-                 .Add(new Paragraph($":{OrganizationName.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
+                 .Add(new Paragraph($":{localizationData.OrganizationName.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
 
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
 
@@ -612,7 +174,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(9)
                  .SetTextAlignment(TextAlignment.RIGHT)
                  .SetBorder(Border.NO_BORDER)
-                 .Add(new Paragraph($":{CashierNo.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
+                 .Add(new Paragraph($":{localizationData.CashierNo.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
 
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(10)
                  .SetBorder(Border.NO_BORDER)
@@ -623,7 +185,7 @@ img[style*='width:120px;'] {
                  .SetFontSize(9)
                  .SetTextAlignment(TextAlignment.RIGHT)
                  .SetBorder(Border.NO_BORDER)
-                 .Add(new Paragraph($":{PlateNumber.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
+                 .Add(new Paragraph($":{localizationData.PlateNumber.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
 
             table.AddCell(new Cell(1, 2).SetFont(font)
                 .SetFontSize(10)
@@ -635,13 +197,14 @@ img[style*='width:120px;'] {
                                 .SetFontSize(9)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.RIGHT)
-                 .Add(new Paragraph($":{OrganizationAddress.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
+                 .Add(new Paragraph($":{localizationData.OrganizationAddress.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
 
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
-            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));  table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
+            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
+            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
@@ -656,7 +219,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(9)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.RIGHT)
-                 .Add(new Paragraph($":{ExitTime.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
+                 .Add(new Paragraph($":{localizationData.ExitTime.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
 
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(10)
@@ -666,9 +229,9 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(9)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.RIGHT)
-                 .Add(new Paragraph($":{EntranceTime.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
+                 .Add(new Paragraph($":{localizationData.EntranceTime.ArabicWithFontGlyphsToPDF()}").SimulateBold()));
 
-         
+
 
             table1.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).SetBorderTopLeftRadius(new BorderRadius(10))
             .SetBorderBottomLeftRadius(new BorderRadius(10))
@@ -676,7 +239,7 @@ img[style*='width:120px;'] {
             .SetTextAlignment(TextAlignment.CENTER)
             .SetVerticalAlignment(VerticalAlignment.MIDDLE)
             .SetFont(font)
-             .Add(new Paragraph($"{Duration.ArabicWithFontGlyphsToPDF()}\n {Hours.ArabicWithFontGlyphsToPDF()}{" "}{invoice.TotalHours}").SetFontSize(14)));
+             .Add(new Paragraph($"{localizationData.Duration.ArabicWithFontGlyphsToPDF()}\n {localizationData.Hours.ArabicWithFontGlyphsToPDF()}{" "}{invoice.TotalHours}").SetFontSize(14)));
 
 
             table1.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).SetBorderTopRightRadius(new BorderRadius(10))
@@ -685,8 +248,8 @@ img[style*='width:120px;'] {
                 .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-                .Add(new Paragraph($"{Subscription.ArabicWithFontGlyphsToPDF()}\n {Hour.ArabicWithFontGlyphsToPDF()}").SetFontSize(14)));
-            iText.Layout.Element.Image QrCodeImage = new iText.Layout.Element.Image(ImageDataFactory.Create(QRCodePath))
+                .Add(new Paragraph($"{localizationData.Subscription.ArabicWithFontGlyphsToPDF()}\n {localizationData.Hour.ArabicWithFontGlyphsToPDF()}").SetFontSize(14)));
+            iText.Layout.Element.Image QrCodeImage = new iText.Layout.Element.Image(ImageDataFactory.Create(localizationData.QRCodePath))
            .SetHorizontalAlignment(HorizontalAlignment.LEFT)
            .SetWidth(120);
 
@@ -698,9 +261,9 @@ img[style*='width:120px;'] {
 
 
             Paragraph paragraph = new Paragraph()
-                .Add(currency) 
-                .Add(new Text($" {invoice.InvoicePrice.ToString("F2")}")) 
-                .Add(new Text($": {TotalPreVAT.ArabicWithFontGlyphsToPDF()}").SimulateBold())
+                .Add(currency)
+                .Add(new Text($" {invoice.InvoicePrice.ToString("F2")}"))
+                .Add(new Text($": {localizationData.TotalPreVAT.ArabicWithFontGlyphsToPDF()}").SimulateBold())
                 .SetFontSize(12);
 
             table21.AddCell(new Cell()
@@ -713,9 +276,9 @@ img[style*='width:120px;'] {
             string vatAmount = Math.Round((invoice.InvoicePrice * 0.15m), 2).ToString("F2");
 
             Paragraph paragraph2 = new Paragraph()
-                .Add(currency) 
-                .Add(new Text($" {vatAmount} ")) 
-                .Add(new Text($": 15% {Vats.ArabicWithFontGlyphsToPDF()}").SimulateBold())
+                .Add(currency)
+                .Add(new Text($" {vatAmount} "))
+                .Add(new Text($": 15% {localizationData.Vats.ArabicWithFontGlyphsToPDF()}").SimulateBold())
                 .SetFontSize(12);
 
             // Add to table cell
@@ -727,9 +290,9 @@ img[style*='width:120px;'] {
                 .Add(paragraph2));
 
             Paragraph paragraph3 = new Paragraph()
-                 .Add(currency) 
-                 .Add(new Text($" {price.ToString("F2")}")) 
-                 .Add(new Text($": {TotalIncludeVAT.ArabicWithFontGlyphsToPDF()}").SimulateBold()) 
+                 .Add(currency)
+                 .Add(new Text($" {localizationData.Price.ToString("F2")}"))
+                 .Add(new Text($": {localizationData.TotalIncludeVAT.ArabicWithFontGlyphsToPDF()}").SimulateBold())
                  .SetFontSize(12);
 
             // Add to table
@@ -739,12 +302,12 @@ img[style*='width:120px;'] {
                 .SetTextAlignment(TextAlignment.RIGHT)
                 .SetVerticalAlignment(VerticalAlignment.TOP)
                 .Add(paragraph3));
-            if (price!=paymentPrice)
+            if (invoice.InvoicePrice != payment.Amount)
             {
                 Paragraph paragraph4 = new Paragraph()
-                  .Add(currency) 
-                  .Add(new Text($" {paymentPrice.ToString("F2")}")) 
-                  .Add(new Text($": {Discount.ArabicWithFontGlyphsToPDF()} {After.ArabicWithFontGlyphsToPDF()}").SimulateBold())
+                  .Add(currency)
+                  .Add(new Text($" {localizationData.PaymentPrice.ToString("F2")}"))
+                  .Add(new Text($": {localizationData.Discount.ArabicWithFontGlyphsToPDF()} {localizationData.After.ArabicWithFontGlyphsToPDF()}").SimulateBold())
                   .SetFontSize(12);
 
                 table21.AddCell(new Cell()
@@ -767,7 +330,7 @@ img[style*='width:120px;'] {
                 .SetFontSize(7)
                   .SetBorder(Border.NO_BORDER)
                   .SetTextAlignment(TextAlignment.LEFT)
-                  .Add(new Paragraph($"{CashierNo}:")).SimulateBold());
+                  .Add(new Paragraph($"{localizationData.CashierNo}:")).SimulateBold());
 
             table.AddCell(new Cell(1, 1)
                 .SetFont(font)
@@ -781,7 +344,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(7)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
-                 .Add(new Paragraph($"{OrganizationName}:")).SimulateBold());
+                 .Add(new Paragraph($"{localizationData.OrganizationName}:")).SimulateBold());
 
             table.AddCell(new Cell(1, 1)
                 .SetFont(font)
@@ -793,7 +356,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(7)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
-                 .Add(new Paragraph($"{OrganizationAddress}:")).SimulateBold());
+                 .Add(new Paragraph($"{localizationData.OrganizationAddress}:")).SimulateBold());
 
             table.AddCell(new Cell(1, 2)
                 .SetFont(font)
@@ -805,7 +368,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(7)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
-                 .Add(new Paragraph($"{PlateNumber}:")).SimulateBold());
+                 .Add(new Paragraph($"{localizationData.PlateNumber}:")).SimulateBold());
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(8)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
@@ -815,7 +378,8 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
-            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   "))); table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
+            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
+            table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
             table.AddCell(new Cell(1, 1).SetBorder(Border.NO_BORDER).Add(new Paragraph("   ")));
@@ -824,7 +388,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(7)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
-                 .Add(new Paragraph($"{EntranceTime}:")).SimulateBold());
+                 .Add(new Paragraph($"{localizationData.EntranceTime}:")).SimulateBold());
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(8)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
@@ -834,7 +398,7 @@ img[style*='width:120px;'] {
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(7)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
-                 .Add(new Paragraph($"{ExitTime}:")).SimulateBold());
+                 .Add(new Paragraph($"{localizationData.ExitTime}:")).SimulateBold());
             table.AddCell(new Cell(1, 1).SetFont(font).SetFontSize(8)
                  .SetBorder(Border.NO_BORDER)
                  .SetTextAlignment(TextAlignment.LEFT)
@@ -846,7 +410,7 @@ img[style*='width:120px;'] {
                 .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-                .Add(new Paragraph($"{Subscription}\n {Hour}").SetFontSize(14)));
+                .Add(new Paragraph($"{localizationData.Subscription}\n {localizationData.Hour}").SetFontSize(14)));
 
 
 
@@ -856,11 +420,11 @@ img[style*='width:120px;'] {
             .SetTextAlignment(TextAlignment.LEFT)
             .SetVerticalAlignment(VerticalAlignment.MIDDLE)
             .SetFont(font)
-             .Add(new Paragraph($"{Duration}\n {invoice.TotalHours}{" "}{Hours}").SetFontSize(14)));
+             .Add(new Paragraph($"{localizationData.Duration}\n {invoice.TotalHours}{" "}{localizationData.Hours}").SetFontSize(14)));
 
             Paragraph paragraph = new Paragraph()
-                .Add(new Text($"{TotalPreVAT}: ").SimulateBold()) 
-                .Add(new Text(invoice.InvoicePrice.ToString("F2") + " ")) 
+                .Add(new Text($"{localizationData.TotalPreVAT}: ").SimulateBold())
+                .Add(new Text(invoice.InvoicePrice.ToString("F2") + " "))
                 .Add(currency)
                 .SetFontSize(12);
 
@@ -871,9 +435,9 @@ img[style*='width:120px;'] {
                 .Add(paragraph));
 
             Paragraph paragraph2 = new Paragraph()
-               .Add(new Text($"{Vats} 15%: ").SimulateBold()) 
-               .Add(new Text((Math.Round((invoice.InvoicePrice * 0.15m), 2)).ToString("F2") + " ")) 
-               .Add(currency) 
+               .Add(new Text($"{localizationData.Vats} 15%: ").SimulateBold())
+               .Add(new Text((Math.Round((invoice.InvoicePrice * 0.15m), 2)).ToString("F2") + " "))
+               .Add(currency)
                .SetFontSize(12);
 
             table21.AddCell(new Cell()
@@ -883,9 +447,9 @@ img[style*='width:120px;'] {
                 .Add(paragraph2));
 
             Paragraph paragraph3 = new Paragraph()
-                .Add(new Text($"{TotalIncludeVAT}: ").SimulateBold()) 
-                .Add(new Text(price.ToString("F2") + " ")) 
-                .Add(currency) 
+                .Add(new Text($"{localizationData.TotalIncludeVAT}: ").SimulateBold())
+                .Add(new Text(localizationData.Price.ToString("F2") + " "))
+                .Add(currency)
                 .SetFontSize(12);
 
             table21.AddCell(new Cell()
@@ -893,7 +457,7 @@ img[style*='width:120px;'] {
                 .SetTextAlignment(TextAlignment.LEFT)
                 .SetVerticalAlignment(VerticalAlignment.TOP)
                 .Add(paragraph3));
-            if (price != paymentPrice)
+            if (invoice.InvoicePrice != payment.Amount)
             {
                 table21.AddCell(new Cell()
               .SetBorder(Border.NO_BORDER)
@@ -901,13 +465,13 @@ img[style*='width:120px;'] {
               .SetTextAlignment(TextAlignment.LEFT)
               .SetVerticalAlignment(VerticalAlignment.TOP)
               .Add(new Paragraph()
-                  .Add(new Text($"{After.ArabicWithFontGlyphsToPDF()+ " " +Discount.ArabicWithFontGlyphsToPDF()}:").SimulateBold())
-                  .Add(new Text($" {paymentPrice.ToString("F2")} {Sar.ArabicWithFontGlyphsToPDF()}"))
+                  .Add(new Text($"{localizationData.After.ArabicWithFontGlyphsToPDF() + " " + localizationData.Discount.ArabicWithFontGlyphsToPDF()}:").SimulateBold())
+                  .Add(new Text($" {localizationData.PaymentPrice.ToString("F2")} {localizationData.Sar.ArabicWithFontGlyphsToPDF()}"))
                   .Add(currency)
                   .SetFontSize(12)));
 
             }
-            iText.Layout.Element.Image QrCodeImage = new iText.Layout.Element.Image(ImageDataFactory.Create(QRCodePath))
+            iText.Layout.Element.Image QrCodeImage = new iText.Layout.Element.Image(ImageDataFactory.Create(localizationData.QRCodePath))
         .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
         .SetWidth(120);
 
@@ -923,26 +487,12 @@ img[style*='width:120px;'] {
         }
 
 
-
-
-
-      
-
-
-
-
-
-         
-
-
-
-
         document.Add(header);
         document.Add(paymentNumber);
         document.Add(tableimages);
         document.Add(subheader);
         document.Add(Vat);
-        if(invoice.TicketId != null)
+        if (invoice.TicketId != null)
         {
             document.Add(Ticket);
         }
@@ -954,76 +504,70 @@ img[style*='width:120px;'] {
         return stream;
     }
 
-
-    public async Task<string> GeneratePdfForCustomerPackage(CreateUpdateQrCodeDto input ,  byte[] qrCodeImage)
+    private static Paragraph PaymentNumberSection(PaymentDto payment, InvoiceLocalizationData localizationData, PdfFont font)
     {
-   
-        await Task.Yield();
-        var directoryPath  = Path.Combine(Directory.GetCurrentDirectory(), PathHelper.WwwRoot, PathHelper.CustomerPackageQRCodeFolder, input.PhoneNumber, input.OrganizationId.ToString());
-        //string fileName = $"{customerPackage.PackageCode}.{"pdf"}";
-        if (!Directory.Exists(directoryPath))
-        {
-            Directory.CreateDirectory(directoryPath); 
-        }
-        var fileName = Path.Combine(directoryPath, $"{input.PhoneNumber}.{"pdf"}");
-        FileInfo file = new FileInfo(fileName);
-        using (PdfWriter writer = new PdfWriter(file.FullName))
-        {
-            using (PdfDocument pdfDoc = new PdfDocument(writer))
-            {
-                iText.Kernel.Geom.PageSize smallPage = new iText.Kernel.Geom.PageSize(300, 300);
-                Document document = new Document(pdfDoc, smallPage);
-                string fontPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot//fonts//NotoNaskhArabic-Regular.ttf");
-                PdfFont font = PdfFontFactory.CreateFont(fontPath, PdfEncodings.IDENTITY_H, PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED);
-                FontSet set = new FontSet();
-                set.AddFont(fontPath);
-                document.SetMargins(20, 20, 20, 20);
-                Style styleBold = new Style();
-                Style Center = new Style();
-                Table tableimages = new Table(3).UseAllAvailableWidth();
-                Image QrCodeImage = new Image(ImageDataFactory.Create(qrCodeImage));
-                // 4. Make the image fit the page (minus margins)
-                QrCodeImage.ScaleToFit(250, 250)
-                       .SetHorizontalAlignment(HorizontalAlignment.CENTER);
-                // 5. Add the image directly (no table)
-                document.Add(QrCodeImage);
-                document.Close();
-                var pdfPath = file.FullName;
-                pdfPath = pdfPath.Substring(pdfPath.IndexOf("wwwroot"));
-
-                return pdfPath.Replace("wwwroot", "").Replace("\\", "/");
-               
-            }
-        }
+        return new Paragraph(CultureInfo.CurrentCulture.Name == "ar" ? $"{payment.PaymentNumber}{" "}{localizationData.InvoiceNumber.ArabicWithFontGlyphsToPDF()}" : $"{localizationData.InvoiceNumber}{" "}{payment.PaymentNumber}")
+              .SimulateBold().SetTextAlignment(TextAlignment.CENTER).SetFont(font)
+              .SetFontSize(13);
     }
 
-    /// <summary>
-    /// Retrieves the PDF invoice for the specified invoice ID and returns it as a downloadable file.
-    /// </summary>
-    /// <returns>A <see cref="FileContentResult"/> containing the PDF file as a downloadable response.</returns>
-    public async Task<IActionResult> GetInvoicePDF(int invoiceId)
+    private static Table ImagesSection(InvoiceLocalizationData localizationData)
     {
-        var stream = await SaveInvoicePdf(invoiceId);
-        return new FileContentResult(stream.GetAllBytes(), "application/pdf");
+        Table tableimages = new Table(3).UseAllAvailableWidth();
+
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(PathHelper.imageDirectoryPdf))
+           .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
+           .SetWidth(120);
+
+            iText.Layout.Element.Image OrgLogo = (File.Exists(localizationData.CurrentPath)
+          ? new iText.Layout.Element.Image(ImageDataFactory.Create(localizationData.CurrentPath))
+          : new iText.Layout.Element.Image(ImageDataFactory.Create(PathHelper.imageDirectoryPdf)))
+              .SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.LEFT)
+              .SetWidth(120);
+
+            tableimages.AddCell(new Cell().Add(OrgLogo)
+                .SetBorder(Border.NO_BORDER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetHorizontalAlignment(HorizontalAlignment.CENTER));
+
+            tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
+                .SetBorder(Border.NO_BORDER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetHorizontalAlignment(HorizontalAlignment.RIGHT));
+
+
+        }
+        else
+        {
+            iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(PathHelper.imageDirectoryPdf))
+           .SetHorizontalAlignment(HorizontalAlignment.LEFT)
+           .SetWidth(120);
+
+            iText.Layout.Element.Image OrgLogo = (File.Exists(localizationData.CurrentPath)
+          ? new iText.Layout.Element.Image(ImageDataFactory.Create(localizationData.CurrentPath))
+          : new iText.Layout.Element.Image(ImageDataFactory.Create(PathHelper.imageDirectoryPdf)))
+              .SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.RIGHT)
+              .SetWidth(120);
+
+            tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
+                .SetBorder(Border.NO_BORDER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetHorizontalAlignment(HorizontalAlignment.LEFT));
+
+            tableimages.AddCell(new Cell().Add(OrgLogo)
+                .SetBorder(Border.NO_BORDER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetHorizontalAlignment(HorizontalAlignment.CENTER));
+
+        }
+
+        return tableimages;
     }
+
+
+  
     #endregion
-    #region UnUsed Methods 
-    public string GetPdfDirectory(int InvoiceId)
-    {
-        if (InvoiceId < 0)
-        {
-            throw new Exception("Invoice Id can't be null");
-        }
-        var invoice = _invoicePdfAppService.GetAsync(InvoiceId);
-        if (invoice == null)
-        {
-            throw new EntityNotFoundException(typeof(Invoice), InvoiceId);
-        }
-        string fileName = $"{InvoiceId}.{"pdf"}";
-        string fullPath = "invoice/PDFs/" + fileName;
 
-        return fullPath;
-
-    }
-    #endregion
 }

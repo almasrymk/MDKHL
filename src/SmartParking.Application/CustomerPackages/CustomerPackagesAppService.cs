@@ -51,9 +51,9 @@ public class CustomerPackagesAppService:
     private readonly IRepository<Subscription, int> _subscriptionRepository;
     private readonly IRepository<Organization, int> _organizationsRepository;
     private readonly ICustomerPackageQRGenerator _customerPackageQRGenerator;
-    private readonly IPDFGeneratorAppService _pDFGeneratorAppService;
+    private readonly ICustomerPackagePDFAppService _pDFGeneratorAppService;
 
-    public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository, IRepository<Package> packageRepository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IOrganizationsAppService organizationsApp, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationsRepository, ICustomerPackageQRGenerator customerPackageQRGenerator, IPDFGeneratorAppService pDFGeneratorAppService) : base(repository)
+    public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository, IRepository<Package> packageRepository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IOrganizationsAppService organizationsApp, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationsRepository, ICustomerPackageQRGenerator customerPackageQRGenerator, ICustomerPackagePDFAppService pDFGeneratorAppService) : base(repository)
     {
         _repository = repository;
         _packageRepository = packageRepository;

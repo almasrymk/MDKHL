@@ -22,6 +22,7 @@ using SmartParking.MultiTenancy;
 using SmartParking.OpenGate;
 using SmartParking.OpeningGate;
 using SmartParking.Organizations;
+using SmartParking.PDF;
 using SmartParking.Results;
 using StackExchange.Profiling;
 using System.Globalization;
@@ -150,6 +151,7 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.AddScoped<IOpeningGateService,OpenCameraGateService>();
         context.Services.AddScoped<IOpenGateFactoryService, OpenGateFactoryService>();
         context.Services.AddScoped<PreAssignPackageState>();
+
 
 
 
