@@ -533,7 +533,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     /// <returns>The found <see cref="IdentityUser"/> if found, otherwise null.</returns>
     private async Task<IdentityUser?> FindUserAsync(LoginInputDto input)
     {
-        var user = await _userRepository.FirstOrDefaultAsync(u =>
+        var user = await _userRepository.FirstOrDefaultAsync(u => u.Email == input.Username ||
             u.UserName == input.Username || u.PhoneNumber == input.Username);
         if (CurrentTenant.IsAvailable && user != null)
         {
