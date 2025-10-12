@@ -148,6 +148,16 @@ public interface IAnalysisAppService : IApplicationService
     /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{PaymentDto}"/> result.</returns>
     Task<PagedResultDto<PaymentDto>> ReportCustomerPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
 
+
+    /// <summary>
+    /// Reports customer payment information based on pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{PaymentDto}"/> result.</returns>
+    Task<PagedResultDto<PaymentDto>> ReportPackageCustomerPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+
     /// <summary>
     /// Reports payment information based on pagination, sorting, and filtering.
     /// </summary>
@@ -155,6 +165,14 @@ public interface IAnalysisAppService : IApplicationService
     /// <param name="tenantId">The unique identifier for the tenant.</param>
     /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{PaymentDto}"/> result.</returns>
     Task<PagedResultDto<PaymentDto>> ReportPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    /// <summary>
+    /// Reports payment of package information based on pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{PaymentDto}"/> result.</returns>
+    Task<PagedResultDto<PaymentDto>> ReportPackagePayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
 
     /// <summary>
     /// Reports garage transaction analysis for a specific customer ID within a date range.
@@ -207,6 +225,14 @@ public interface IAnalysisAppService : IApplicationService
     /// <param name="tenantId">The unique identifier for the tenant.</param>
     /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{PaymentDto}"/> result.</returns>
     Task<PagedResultDto<PaymentDto>> ReportCustomerPaymentForPaymentMethod(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    /// <summary>
+    /// Reports customer payment information for a specific payment method based on pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
+    /// <param name="tenantId">The unique identifier for the tenant.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{PaymentDto}"/> result.</returns>
+    Task<PagedResultDto<PaymentDto>> ReportCustomerPackagePaymentForPaymentMethod(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
 
     /// <summary>
     /// Reports keeper payment information based on pagination, sorting, and filtering.

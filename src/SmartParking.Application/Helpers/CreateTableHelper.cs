@@ -497,6 +497,107 @@ public static class CreateTableHelper
         await Task.Yield();
         return tableData;
     }
+
+    /// <summary>
+    /// Creates a data table for payments with dynamic columns based on localization and the provided payments data.
+    /// </summary>
+    /// <param name="payments">The list of payments to be displayed in the table.</param>
+    /// <returns>A <see cref="Task{TableData}"/> representing the asynchronous operation. The result contains the generated table data.</returns>
+    public static async Task<TableData> CreateDataTableForPackagesPayments(List<PaymentDto> payments)
+    {
+        var tableData = new TableData()
+        {
+            Name = LocalizationHelper.GetLocalizedString("PackagePaymentReports"),
+            ShowHeader = true
+        };
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Code"), Name = "PaymentNumber", IsFilterable = true, PropertyName = "PaymentNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
+        if (CultureInfo.CurrentCulture.Name == "ar")
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerName"), Name = "CustomerName", IsFilterable = true, PropertyName = "Customers.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        else
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerName"), Name = "CustomerName", IsFilterable = true, PropertyName = "Customers.IdentityUser.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
+
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString(key: "CashierName"), Name = "CashierName", IsFilterable = true, PropertyName = "CashierName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", IsFilterable = true, PropertyName = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentCategory"), Name = "PaymentCategory", IsFilterable = true, PropertyName = "PaymentCategory", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(PaymentCategory) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentMethod"), Name = "PaymentMethod", IsFilterable = true, PropertyName = "PaymentMethod", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(PaymentMethod) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Amount"), Name = "Amount", IsFilterable = true, PropertyName = "Invoice.InvoicePrice", IsSortable = true, TypeFilter = TypeFilter.Number, TypeOfColumn = typeof(decimal) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentVat"), Name = "VAT", IsFilterable = false, PropertyName = "Invoice.VAT", IsSortable = false, TypeFilter = TypeFilter.Number, TypeOfColumn = typeof(decimal) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Discount"), Name = "Discount", IsFilterable = true, PropertyName = "Invoice.Discount", IsSortable = true, TypeFilter = TypeFilter.Number, TypeOfColumn = typeof(decimal) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentTotal"), Name = "Total", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number, TypeOfColumn = typeof(decimal) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Date"), Name = "Date", IsFilterable = true, PropertyName = "Date", IsSortable = true, TypeFilter = TypeFilter.DateOnly, TypeOfColumn = typeof(DateOnly) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Time"), Name = "Time", IsFilterable = true, PropertyName = "Time", IsSortable = true, TypeFilter = TypeFilter.Time, TypeOfColumn = typeof(TimeOnly) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PaymentStatus"), Name = "PaymentStatus", IsFilterable = true, PropertyName = "PaymentStatus", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(PaymentStatus) });
+        // Define the columns for the table
+        decimal TAmount = 0, TPaymentTotal = 0, TDiscount = 0, TVatValue = 0;
+        var IconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
+
+        foreach (var payment in payments)
+        {
+            var rowDef = new RowDef();
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Code"), payment.PaymentNumber?.ToString()));
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), payment.Customers?.ArabicName ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), payment.Customers?.IdentityUser?.Name ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
+            }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CashierName"), payment.CashierName));
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), payment.PlateNumber));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentCategory"), LocalizationHelper.GetLocalizedString(payment.PaymentCategory.ToString())));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentMethod"), LocalizationHelper.GetLocalizedString(payment.PaymentMethod.ToString())));
+            var total = payment.Amount == 0 ? "0.0" : payment.Amount.ToString();
+            var amount =
+                payment.Invoice?.InvoicePrice != null && payment.Invoice.InvoicePrice != default
+                    ? payment.Invoice.InvoicePrice.ToString()
+                    : (payment.CustomerPackage?.PriceOfPackage?.ToString() ?? "0.0");
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Amount"), $"{amount} {IconHtml}"));
+            var vatValue = payment.Invoice == null ? payment.CustomerPackage?.Vat.ToString() : Math.Round((payment.Invoice?.InvoicePrice ?? 0) * 0.15m, 2).ToString();
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentVat"), $"{vatValue} {IconHtml}"));
+            var discountValue = payment.Invoice == null ? payment.CustomerPackage?.Discount.ToString() : payment.Invoice?.Discount.ToString();
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Discount"), $"{discountValue} {IconHtml}"));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentTotal"), $"{total} {IconHtml}"));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Date"), payment.Date.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Time"), payment.Time.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentStatus"), LocalizationHelper.GetLocalizedString(payment.PaymentStatus.ToString())));
+
+            try
+            {
+                discountValue = "0" + discountValue?.Trim().Replace(".", "٫");
+                vatValue = "0" + vatValue?.Trim().Replace(".", "٫");
+                amount = "0" + amount?.Trim().Replace(".", "٫");
+                total = "0" + total?.Trim().Replace(".", "٫");
+
+                TDiscount += decimal.Parse("0" + discountValue);
+                TVatValue += decimal.Parse("0" + vatValue);
+                TAmount += decimal.Parse("0" + amount);
+                TPaymentTotal += decimal.Parse("0" + total);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+
+            tableData.Rows.Add(rowDef);
+        }
+
+        var rowDef2 = new RowDef();
+        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Code"), LocalizationHelper.GetLocalizedString("Total")));
+        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Discount"), $"{Math.Round(TDiscount, 2)} {IconHtml}"));
+        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentVat"), $"{Math.Round(TVatValue, 2)} {IconHtml}"));
+        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Amount"), $"{Math.Round(TAmount, 2)} {IconHtml}"));
+        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentTotal"), $"{Math.Round(TPaymentTotal, 2)} {IconHtml}"));
+        tableData.Rows.Add(rowDef2);
+
+        await Task.Yield();
+        return tableData;
+    }
+
     /// <summary>
     /// Creates a data table for package payments, with columns and rows based on the provided payment data. 
     /// It adjusts the columns and their display based on the current UI culture (Arabic or English).
