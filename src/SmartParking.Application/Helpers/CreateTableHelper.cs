@@ -464,24 +464,34 @@ public static class CreateTableHelper
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Time"), payment.Time.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentStatus"), LocalizationHelper.GetLocalizedString(payment.PaymentStatus.ToString())));
 
-            TDiscount += payment.Invoice?.Discount ?? payment.CustomerPackage?.Discount??0;
-            TVatValue += Math.Round(
-                (payment.Invoice?.InvoicePrice ??
-                 (payment.CustomerPackage?.PriceOfPackage.HasValue == true
-                    ? payment.CustomerPackage.PriceOfPackage.Value
-                    : 0)) * 0.15m, 2);
-            TAmount += payment.Invoice?.InvoicePrice ?? payment.CustomerPackage?.PriceOfPackage ?? 0;
-            TPaymentTotal += payment.Amount == 0 ? 0 : payment.Amount;
+            try
+            {
+                discountValue = "0" + discountValue?.Trim().Replace(".", "٫");
+                vatValue = "0" + vatValue?.Trim().Replace(".", "٫");
+                amount = "0" + amount?.Trim().Replace(".", "٫");
+                total = "0" + total?.Trim().Replace(".", "٫");
+
+                TDiscount += decimal.Parse("0" + discountValue);
+                TVatValue += decimal.Parse("0" + vatValue);
+                TAmount += decimal.Parse("0" + amount);
+                TPaymentTotal += decimal.Parse("0" + total);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+       
 
             tableData.Rows.Add(rowDef);
         }
 
         var rowDef2 = new RowDef();
         rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Code"), LocalizationHelper.GetLocalizedString("Total")));
-        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Discount"), $"{TDiscount} {IconHtml}"));
-        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentVat"), $"{TVatValue} {IconHtml}"));
-        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Amount"), $"{TAmount} {IconHtml}"));
-        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentTotal"), $"{TPaymentTotal} {IconHtml}"));
+        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Discount"), $"{Math.Round( TDiscount , 2)} {IconHtml}"));
+        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentVat"), $"{Math.Round(TVatValue, 2)} {IconHtml}"));
+        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Amount"), $"{Math.Round(TAmount, 2)} {IconHtml}"));
+        rowDef2.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentTotal"), $"{Math.Round(TPaymentTotal, 2)} {IconHtml}"));
         tableData.Rows.Add(rowDef2);
 
         await Task.Yield();
