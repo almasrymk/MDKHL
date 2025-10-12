@@ -1,15 +1,19 @@
 ﻿using AraibcPdfUnicodeGlyphsResharper;
+using Humanizer;
 using iText.IO.Image;
+using iText.Kernel.Geom;
 using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using Microsoft.Extensions.Options;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Invoices;
 using SmartParking.Organizations;
 using SmartParking.Payments;
 using SmartParking.QRCode;
 using SmartParking.Utilities;
+using SmartParking.ZATCATaxInvoice;
 using System;
 using System.Globalization;
 using System.IO;
@@ -27,11 +31,12 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
 
 
     public PackagePDFAppService(
+        IOptions<PdfSettings> pdfSettings,
         ICustomerPackagesAppService packageAppService,
         IPaymentWebAppService paymentAppService,
         IOrganizationsAppService organizationAppService,
         ILocalizationFactoryAppService localizationFactoryAppService,
-        IQRCodeAppService qrCodeAppService)
+        IQRCodeAppService qrCodeAppService) : base(pdfSettings)
     {
         _packageAppService = packageAppService;
         _paymentAppService = paymentAppService;
@@ -52,17 +57,16 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
             iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(PathHelper.imageDirectoryPdf))
            .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
            .SetWidth(120);
-
-            iText.Layout.Element.Image OrgLogo = (File.Exists(localizationData.Localization.CurrentPath)
-          ? new iText.Layout.Element.Image(ImageDataFactory.Create(localizationData.Localization.CurrentPath))
-          : new iText.Layout.Element.Image(ImageDataFactory.Create(PathHelper.imageDirectoryPdf)))
-              .SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.LEFT)
-              .SetWidth(120);
+            var orgPicture = System.IO.Path.GetFileName(localizationData.Organization.OrganizationPicture);
+            string imagePath =System.IO.Path.Combine(Directory.GetCurrentDirectory(), PathHelper.WwwRoot,PathHelper.OrganizationFolder ,orgPicture+".png");
+            iText.Layout.Element.Image OrgLogo = (File.Exists(imagePath)
+          ? CreateImage(imagePath, HorizontalAlignment.RIGHT, 120)
+          : CreateImage(PathHelper.imageDirectoryPdf, true ? HorizontalAlignment.RIGHT : HorizontalAlignment.RIGHT, 120));
 
             tableimages.AddCell(new Cell().Add(OrgLogo)
                 .SetBorder(Border.NO_BORDER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-                .SetHorizontalAlignment(HorizontalAlignment.CENTER));
+                .SetHorizontalAlignment(HorizontalAlignment.LEFT));
 
             tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
                 .SetBorder(Border.NO_BORDER)
@@ -74,24 +78,23 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
         else
         {
             iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(PathHelper.imageDirectoryPdf))
-           .SetHorizontalAlignment(HorizontalAlignment.LEFT)
-           .SetWidth(120);
+        .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
+        .SetWidth(120);
 
-            iText.Layout.Element.Image OrgLogo = (File.Exists(localizationData.Localization.CurrentPath)
-          ? new iText.Layout.Element.Image(ImageDataFactory.Create(localizationData.Localization.CurrentPath))
-          : new iText.Layout.Element.Image(ImageDataFactory.Create(PathHelper.imageDirectoryPdf)))
-              .SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.RIGHT)
-              .SetWidth(120);
-
-            tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
-                .SetBorder(Border.NO_BORDER)
-                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-                .SetHorizontalAlignment(HorizontalAlignment.LEFT));
+            iText.Layout.Element.Image OrgLogo = (File.Exists(System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"{PathHelper.WwwRoot}{localizationData.Organization.OrganizationPicture}.png"))
+          ? CreateImage(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot" + localizationData.Organization.OrganizationPicture), true ? HorizontalAlignment.RIGHT : HorizontalAlignment.RIGHT, 120)
+          : CreateImage(PathHelper.imageDirectoryPdf, true ? HorizontalAlignment.RIGHT : HorizontalAlignment.RIGHT, 120));
 
             tableimages.AddCell(new Cell().Add(OrgLogo)
                 .SetBorder(Border.NO_BORDER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-                .SetHorizontalAlignment(HorizontalAlignment.CENTER));
+                .SetHorizontalAlignment(HorizontalAlignment.LEFT));
+
+            tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
+                .SetBorder(Border.NO_BORDER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetHorizontalAlignment(HorizontalAlignment.RIGHT));
+
 
         }
 
@@ -152,7 +155,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
             AddArabicLabelCell(table, $":{loc.OrganizationName.ArabicWithFontGlyphsToPDF()}", Font);
 
             // Row 2: Plate number + Address
-            AddArabicCell(table, package.ArPlateNumber.ArabicWithFontGlyphsToPDF(), Font, 10);
+            AddArabicCell(table, package.EnPlateNumber.ArabicWithFontGlyphsToPDF(), Font, 10);
             AddArabicLabelCell(table, $":{loc.PlateNumber.ArabicWithFontGlyphsToPDF()}", Font);
             AddArabicEmptyCell(table);
             AddArabicCell(table, organization.Address.ArabicWithFontGlyphsToPDF(), Font, 10);
@@ -162,12 +165,11 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
             for (int i = 0; i < 5; i++)
                 AddArabicEmptyCell(table);
 
+            AddArabicCell(table, package.ExpiryDate.ToString(), Font, 10);
+            AddArabicLabelCell(table, $":{loc.ExpirationDate.ArabicWithFontGlyphsToPDF()}", Font);
+            AddArabicEmptyCell(table);
             AddArabicCell(table, package!.ActivationDateOfPackage.Value.ToString(), Font, 10);
             AddArabicLabelCell(table, $":{loc.SubscriptionDate.ArabicWithFontGlyphsToPDF()}", Font);
-            AddArabicEmptyCell(table);
-            AddArabicCell(table, package.ExpiryDate.ToString(), Font, 10);
-            AddArabicLabelCell(table, $":{loc.ExpirationDate
-                .ArabicWithFontGlyphsToPDF()}", Font);
         }
         else
         {
@@ -179,7 +181,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
             AddArabicLabelCell(table, $":{loc.OrganizationName}", Font);
 
             // Row 2: Plate number + Address
-            AddArabicCell(table, package.ArPlateNumber, Font, 10);
+            AddArabicCell(table, package.EnPlateNumber, Font, 10);
             AddArabicLabelCell(table, $":{loc.PlateNumber}", Font);
             AddArabicEmptyCell(table);
             AddArabicCell(table, organization.Address, Font, 10);
@@ -234,7 +236,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
     {
         var container = new Table(2).UseAllAvailableWidth().SetMarginTop(20).SetBorder(Border.NO_BORDER);
         var qrTable = new Table(1).UseAllAvailableWidth().SetBorder(Border.NO_BORDER);
-        var qr = CreateImage(Path.Combine(PathHelper.WwwRoot,data.Localization.QRCodePath), isArabic ? HorizontalAlignment.LEFT : HorizontalAlignment.RIGHT, 120);
+        var qr = CreateImage(System.IO.Path.Combine(PathHelper.WwwRoot,data.Localization.QRCodePath), isArabic ? HorizontalAlignment.LEFT : HorizontalAlignment.RIGHT, 120);
 
         qrTable.AddCell(new Cell().SetBorder(Border.NO_BORDER).Add(qr));
 
@@ -260,15 +262,12 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
         var currency = CreateImage(PathHelper.CurrencyIcon, HorizontalAlignment.LEFT, 10);
         var pkg = data.Data;
         var loc = data.Localization;
-
-        AddSummaryRow(table, loc.TotalPreVAT, pkg.PriceOfPackage.Value.ToString("F2"), Font, isArabic, currency);
-        var vat = Math.Round(pkg.PriceOfPackage.Value * 0.15m, 2).ToString("F2");
+        AddSummaryRow(table, loc.TotalPreVAT, pkg.PriceOfPackage!.Value.ToString("F2"), Font, isArabic, currency);
+        var vat = pkg.Vat.ToString("F2");
         AddSummaryRow(table, $"15% {loc.Vats}", vat, Font, isArabic, currency);
-        AddSummaryRow(table, loc.TotalIncludeVAT, loc.Price.ToString("F2"), Font, isArabic, currency);
-
-        if (pkg.PriceOfPackage.Value != data.Payment.Amount)
-            AddSummaryRow(table, $"{loc.After} {loc.Discount}", loc.PaymentPrice.ToString("F2"), Font, isArabic, currency);
-
+        AddSummaryRow(table, loc.TotalIncludeVAT, data.Payment.Amount.ToString("F2"), Font, isArabic, currency);
+        if ((pkg.PriceOfPackage.Value + pkg.Vat) != data.Payment.Amount)
+            AddSummaryRow(table, $"{loc.After} {loc.Discount}", pkg.Discount.ToString("F2"), Font, isArabic, currency);
         return table;
     }
     public async Task<Stream> CreatePdf(int packageId)

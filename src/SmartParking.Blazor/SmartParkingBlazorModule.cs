@@ -146,6 +146,8 @@ public class SmartParkingBlazorModule : AbpModule
                 options.TenantResolvers.Add(new MultiDomainTenantResolver(tenantDomain));
             }
         });
+        context.Services.Configure<PdfSettings>(
+                  context.Services.GetConfiguration().GetSection("PdfSettings"));
         context.Services.AddSingleton<NotificationService>();
         context.Services.AddScoped<IOpeningGateService,BarrierAppService.BarrierAppService>();
         context.Services.AddScoped<IOpeningGateService,OpenCameraGateService>();

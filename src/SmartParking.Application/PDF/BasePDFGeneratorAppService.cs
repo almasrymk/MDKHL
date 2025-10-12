@@ -3,11 +3,13 @@ using iText.IO.Font;
 using iText.IO.Image;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
+using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using Microsoft.Extensions.Options;
 using QRCoder;
 using SmartParking.CustomerPackages.QRGenerator;
 using SmartParking.Utilities;
@@ -24,9 +26,16 @@ namespace SmartParking.PDF;
 
 public abstract class BasePDFGeneratorAppService<DTO> 
 {
+    private readonly PdfSettings _pdfSettings;
     protected PdfFont Font { get; private set; }
     protected CultureInfo Culture => CultureInfo.CurrentCulture;
     protected string CultureName => CultureInfo.CurrentCulture.Name;
+    protected BasePDFGeneratorAppService(IOptions<PdfSettings> pdfSettings)
+    {
+        _pdfSettings = pdfSettings.Value;
+    }
+
+
 
     public Stream Build(DTO data)
     {
@@ -34,12 +43,17 @@ public abstract class BasePDFGeneratorAppService<DTO>
 
         var writer = new PdfWriter(stream);
         var pdf = new PdfDocument(writer);
-        var document = new Document(pdf);
+        var document = new Document(pdf, GetPageSize());
+        document.SetMargins(
+            _pdfSettings.Margins.Top,
+            _pdfSettings.Margins.Right,
+            _pdfSettings.Margins.Bottom,
+            _pdfSettings.Margins.Left);
         try
         {
             InitializeFont();
             BuildLayout(document, data);
-            document.Close(); // This flushes but doesn't dispose the MemoryStream
+            document.Close(); 
         }
         finally
         {
@@ -47,6 +61,17 @@ public abstract class BasePDFGeneratorAppService<DTO>
             writer.Close();
         }
         return stream;
+    }
+    protected virtual PageSize GetPageSize()
+    {
+        switch (_pdfSettings.PaperSize.ToLower())
+        {
+            case "a4": return PageSize.A4;
+            case "a5": return PageSize.A5;
+            case "thermal7cm": return new PageSize(7 * 28.346f, 100 * 28.346f);
+            case "receipt8cm": return new PageSize(8 * 28.346f, 100 * 28.346f);
+            default: return PageSize.A4;
+        }
     }
 
     /// <summary>
@@ -73,7 +98,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
 
     protected virtual void InitializeFont()
     {
-        string fontPath = Path.Combine(Directory.GetCurrentDirectory(), PathHelper.PDFFont);
+        string fontPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), PathHelper.PDFFont);
         Font = PdfFontFactory.CreateFont(fontPath, PdfEncodings.IDENTITY_H, PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED);
     }
     protected void AddGrayBoxRow(
@@ -138,10 +163,44 @@ public abstract class BasePDFGeneratorAppService<DTO>
 
     protected Image CreateImage(string path, HorizontalAlignment alignment, float width = 120)
     {
-   
-         return  new iText.Layout.Element.Image(ImageDataFactory.Create(path))
-               .SetHorizontalAlignment(alignment)
-               .SetWidth(width);
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Image path cannot be null or empty.", nameof(path));
+
+        try
+        {
+            var imageData = ImageDataFactory.Create(path);
+            return new iText.Layout.Element.Image(imageData)
+                .SetHorizontalAlignment(alignment)
+                .SetWidth(width);
+        }
+        catch (Exception innerEx)
+        {
+            //// ⚠️ Fallback: convert to Base64 and reprocess
+            //string base64 = Convert.ToBase64String(bytes);
+            //string mimeType = DetectMimeType(bytes, fullPath);
+            //string base64DataUrl = $"data:{mimeType};base64,{base64}";
+
+            //try
+            //{
+            //    // Re-decode base64 and retry
+            //    byte[] decoded = Convert.FromBase64String(base64DataUrl.Split(',')[1]);
+            //    var repairedImageData = ImageDataFactory.Create(decoded, true);
+
+            //    return new iText.Layout.Element.Image(repairedImageData)
+            //        .SetHorizontalAlignment(alignment)
+            //        .SetWidth(width);
+            //}
+            //catch (Exception innerEx)
+            //{
+                throw new IOException($"❌ Failed to load image after base64 recovery: {path}", innerEx);
+            //}
+        }
+    }
+    protected float ScaleFactor(Document doc, float referenceWidth = 595f)
+    {
+        float currentWidth = doc.GetPdfDocument().GetDefaultPageSize().GetWidth()
+                             - doc.GetLeftMargin() - doc.GetRightMargin();
+        return currentWidth / referenceWidth;
     }
 
     protected Paragraph CreateCenteredParagraph(string text, int fontSize, bool bold = false)

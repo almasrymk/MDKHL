@@ -12,28 +12,28 @@ namespace SmartParking.PDF;
 
 public class PdfGeneratorFactoryAppService : SmartParkingAppService, IPdfGeneratorFactoryAppService
 {
-    private readonly IPaymentAppService _paymentAppService;
+    private readonly IPaymentWebAppService _paymentAppService;
     private readonly IServiceProvider _serviceProvider;
 
-    public PdfGeneratorFactoryAppService(IPaymentAppService paymentRepository, IServiceProvider serviceProvider)
+    public PdfGeneratorFactoryAppService(IPaymentWebAppService paymentAppService, IServiceProvider serviceProvider)
     {
-        _paymentAppService = paymentRepository;
+        _paymentAppService = paymentAppService;
         _serviceProvider = serviceProvider;
     }
 
     public async Task<Stream> ResolveGeneratorAsync(Guid paymentId)
     {
-        var payment = await _paymentAppService.GetAsync(paymentId);
+        var payment = await _paymentAppService.GetMdkhlAsync(paymentId);
 
-        if (payment.InvoiceId.HasValue && payment.InvoiceId != 0)
+        if (payment.Invoice is not null)
         {
              var service = _serviceProvider.GetRequiredService<InvoicePDFAppService>();
-            return await service.CreatePdf(payment.InvoiceId.Value);
+            return await service.CreatePdf(payment.Invoice.Id);
         }
-        else if (payment.CustomerPackage is not null && payment.CustomerPackageId != 0)
+        else if (payment.customerPackageDto is not null )
         {
             var service= _serviceProvider.GetRequiredService<PackagePDFAppService>();
-            return await service.CreatePdf(payment.CustomerPackageId);
+            return await service.CreatePdf(payment.customerPackageDto.Id);
         }
 
         throw new InvalidOperationException("Payment is not associated with either Invoice or CustomerPackage.");

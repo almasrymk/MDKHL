@@ -5,6 +5,7 @@ using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using Microsoft.Extensions.Options;
 using SmartParking.CustomerPackages.QRGenerator;
 using SmartParking.Entities.Invoices;
 using SmartParking.Invoices;
@@ -29,14 +30,14 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
     private readonly ILocalizationFactoryAppService _localizationAppService;
 
 
-    public InvoicePDFAppService(IInvoiceAppService invoiceAppService, IPaymentWebAppService paymentWebAppService, IOrganizationsAppService organizationAppService, ILocalizationFactoryAppService localizationAppService)
+    public InvoicePDFAppService(IOptions<PdfSettings> pdfSettings,IInvoiceAppService invoiceAppService, IPaymentWebAppService paymentWebAppService, IOrganizationsAppService organizationAppService, ILocalizationFactoryAppService localizationAppService) : base(pdfSettings)
     {
         _invoiceAppService = invoiceAppService;
         _paymentWebAppService = paymentWebAppService;
         _organizationAppService = organizationAppService;
         _localizationAppService = localizationAppService;
     }
-    public void ImagesSection(Document doc ,InvoicePdfData localizationData)
+    public void ImagesSection(Document doc, InvoicePdfData localizationData)
     {
         Table tableimages = new Table(3).UseAllAvailableWidth();
 
@@ -46,11 +47,9 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
            .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
            .SetWidth(120);
 
-            iText.Layout.Element.Image OrgLogo = (File.Exists(localizationData.Localization.CurrentPath)
-          ? new iText.Layout.Element.Image(ImageDataFactory.Create(localizationData.Localization.CurrentPath))
-          : new iText.Layout.Element.Image(ImageDataFactory.Create(PathHelper.imageDirectoryPdf)))
-              .SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.LEFT)
-              .SetWidth(120);
+            iText.Layout.Element.Image OrgLogo = (File.Exists(System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"{PathHelper.WwwRoot}{localizationData.Organization.OrganizationPicture}.png"))
+          ? CreateImage(System.IO.Path.Combine(Directory.GetCurrentDirectory(), $"{PathHelper.WwwRoot}{localizationData.Organization.OrganizationPicture}.png"), true ? HorizontalAlignment.RIGHT : HorizontalAlignment.RIGHT, 120)
+          : CreateImage(PathHelper.imageDirectoryPdf, true ? HorizontalAlignment.RIGHT : HorizontalAlignment.RIGHT, 120));
 
             tableimages.AddCell(new Cell().Add(OrgLogo)
                 .SetBorder(Border.NO_BORDER)
@@ -67,28 +66,27 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         else
         {
             iText.Layout.Element.Image imageMdkhlLogo = new iText.Layout.Element.Image(ImageDataFactory.Create(PathHelper.imageDirectoryPdf))
-           .SetHorizontalAlignment(HorizontalAlignment.LEFT)
-           .SetWidth(120);
+        .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
+        .SetWidth(120);
 
-            iText.Layout.Element.Image OrgLogo = (File.Exists(localizationData.Localization.CurrentPath)
-          ? new iText.Layout.Element.Image(ImageDataFactory.Create(localizationData.Localization.CurrentPath))
-          : new iText.Layout.Element.Image(ImageDataFactory.Create(PathHelper.imageDirectoryPdf)))
-              .SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.RIGHT)
-              .SetWidth(120);
-
-            tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
-                .SetBorder(Border.NO_BORDER)
-                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-                .SetHorizontalAlignment(HorizontalAlignment.LEFT));
+            iText.Layout.Element.Image OrgLogo = (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot" + localizationData.Organization.OrganizationPicture))
+          ? CreateImage(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot" + localizationData.Organization.OrganizationPicture), true ? HorizontalAlignment.RIGHT : HorizontalAlignment.RIGHT, 120)
+          : CreateImage(PathHelper.imageDirectoryPdf, true ? HorizontalAlignment.RIGHT : HorizontalAlignment.RIGHT, 120));
 
             tableimages.AddCell(new Cell().Add(OrgLogo)
                 .SetBorder(Border.NO_BORDER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE)
                 .SetHorizontalAlignment(HorizontalAlignment.CENTER));
 
+            tableimages.AddCell(new Cell().Add(imageMdkhlLogo)
+                .SetBorder(Border.NO_BORDER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetHorizontalAlignment(HorizontalAlignment.RIGHT));
+
+
         }
 
-        doc.Add( tableimages);
+        doc.Add(tableimages);
     }
 
     public void AddHeaderSection(Document doc, InvoicePdfData data)
@@ -128,11 +126,13 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
                 AddArabicEmptyCell(table);
 
             // Row 3: Exit + Entrance times
+            AddArabicCell(table, invoice.EntranceTime.ToString(), Font, 10);
+            AddArabicLabelCell(table, $":{loc.EntranceTime.ArabicWithFontGlyphsToPDF()}", Font);
+
             AddArabicCell(table, invoice.InvoiceTime.ToString(), Font, 10);
             AddArabicLabelCell(table, $":{loc.ExitTime.ArabicWithFontGlyphsToPDF()}", Font);
             AddArabicEmptyCell(table);
-            AddArabicCell(table, invoice.EntranceTime.ToString(), Font, 10);
-            AddArabicLabelCell(table, $":{loc.EntranceTime.ArabicWithFontGlyphsToPDF()}", Font);
+ 
         }
         else
         {
@@ -155,11 +155,12 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
                 AddEnglishEmptyCell(table);
 
             // Row 3: Entrance + Exit times
-            AddEnglishLabelCell(table, $"{loc.EntranceTime}:", Font);
-            AddEnglishCell(table, invoice.EntranceTime.ToString(), Font, 10);
-            AddEnglishEmptyCell(table);
-            AddEnglishLabelCell(table, $"{loc.ExitTime}:", Font);
-            AddEnglishCell(table, invoice.InvoiceTime.ToString(), Font, 10);
+            AddArabicCell(table, invoice.EntranceTime.ToString(), Font, 10);
+            AddArabicLabelCell(table, $":{loc.EntranceTime.ArabicWithFontGlyphsToPDF()}", Font);
+
+            AddArabicCell(table, invoice.InvoiceTime.ToString(), Font, 10);
+            AddArabicLabelCell(table, $":{loc.ExitTime.ArabicWithFontGlyphsToPDF()}", Font);
+            AddArabicEmptyCell(table);
         }
 
         doc.Add(table);
@@ -242,7 +243,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
     public void AddVatAndTicket(Document doc, InvoicePdfData data)
     {
         var vatText = CultureName == "ar"
-               ? $"{data.Organization.TaxNumber.ArabicWithFontGlyphsToPDF()}:{data.Localization.InvoiceNumberView.ArabicWithFontGlyphsToPDF()}"
+               ? $"{data.Payment.PaymentNumber.ArabicWithFontGlyphsToPDF()}:{data.Localization.InvoiceNumberView.ArabicWithFontGlyphsToPDF()}"
                : $"{data.Localization.InvoiceNumberView}: {data.Payment.PaymentNumber}";
         doc.Add(CreateCenteredParagraph(vatText, 13, true));
 
