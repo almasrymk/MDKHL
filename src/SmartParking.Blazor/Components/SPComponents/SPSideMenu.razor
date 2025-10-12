@@ -154,8 +154,9 @@
                          @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement).Result || currenttenant.Id is null)
                          {
                             <MudNavLink Href="/keeperpaymentsreport" Icon="@Icons.Material.Filled.MoreTime">@L["KeeperPayments"]</MudNavLink>
-                             <MudNavLink Href="/packagepayment/reports" Icon="@Icons.Material.Filled.MoneyOff">@L["PackagePaymentsData"]</MudNavLink>
-                             <MudNavLink Href="/paymentsreports" Icon="@Icons.Material.Filled.Money">@L["Payments"]</MudNavLink>
+                            <MudNavLink Href="/packagepayment/reports" Icon="@Icons.Material.Filled.MoneyOff">@L["PackagePaymentsData"]</MudNavLink>
+                            <MudNavLink Href="/paymentsreports" Icon="@Icons.Material.Filled.Money">@L["Payments"]</MudNavLink>
+                            <MudNavLink Href="/packagepaymentreport" Icon="@Icons.Material.Filled.Money">@L["PackagesPayments"] </MudNavLink>
                             <MudNavLink Href="/paymentsbankreports" Icon="@Icons.Material.Filled.Payment">@L["PaymentMehtodReport"]</MudNavLink>
                             <MudNavLink Href="/paymentscustomerreports" Icon="@Icons.Material.Filled.AttachMoney">@L["CustomerAndPaymentReport"]</MudNavLink>
                             <MudNavLink Href="/discount/report" Icon="@Icons.Material.Filled.Discount">@L["DiscountsReport"]</MudNavLink>

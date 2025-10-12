@@ -852,8 +852,7 @@
     "UsernameOrPasswordForZatcaNotFound": "Username or password for Zatca not found",
     "PackagePaymentSuccessfully": "Package Payment Successfully",
     "Days": "Days",
-    "Duration": "Duration"
-
-
+    "Duration": "Duration",
+    "PackagesPayments": "Packages Payments"
   }
 }

@@ -569,8 +569,62 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             };
 
         }
-
     }
+
+    public async Task<PagedResultDto<PaymentDto>> ReportPackagePayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var query = await _paymentRepository.GetQueryableAsync();
+            var organizations = await _orgRepo.GetQueryableAsync();
+            var userQuery = await _myUserRepository.GetQueryableAsync();
+            query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
+            var customerPackageQuery = await _customerPackageRepository.GetQueryableAsync();
+            var resultJoin = from payment in query
+                             where tenantId.HasValue ? payment.TenantId == tenantId.Value : true
+                             //&& payment.PackageId > 0 
+                             join organization in organizations
+                             on payment.OrganizationId equals organization.Id
+                             join user in userQuery
+                             on payment.CreatorId equals user.Id
+                             join customerPackage in customerPackageQuery on payment.CustomerPackageId equals customerPackage.Id into packageList
+                             from package in packageList
+                             select new PaymentDto
+                             {
+                                 Amount = payment.Amount,
+                                 Currency = payment.Currency,
+                                 Invoice = payment.Invoice == null ? null : payment.Invoice,
+                                 CheckoutId = payment.CheckoutId,
+                                 Date = DateOnly.FromDateTime(payment.CreationTime),
+                                 Time = TimeOnly.FromDateTime(payment.CreationTime),
+                                 Customers = payment.Customers,
+                                 PaymentMethod = payment.PaymentMethod,
+                                 PaymentNumber = payment.PaymentNumber,
+                                 OrganizationArabicName = organization.ArabicName,
+                                 OrganizationEnglishName = organization.EnglishName,
+                                 PlateNumber = payment.Invoice != null ? payment.Invoice.PlateNumber : payment.EnPlateNumber,
+                                 AmountWithoutDiscount = payment.Invoice != null ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
+                                 QrCodeInvoice = payment.QrCodeInvoice,
+                                 CustomerPackage = package,
+                                 CreationTime = payment.CreationTime.ToString(),
+                                 PaymentCategory = payment.PaymentCategory,
+                                 InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
+                                 PaymentStatus = payment.PaymentStatus,
+                                 CashierName = user.Name
+                             };
+            resultJoin = ApplySortPayment(input, resultJoin);
+            resultJoin = ApplyFilterPayment(input, resultJoin);
+            var totalCount = await AsyncExecuter.CountAsync(resultJoin);
+            resultJoin = resultJoin.Skip(input.SkipCount).Take(input.MaxResultCount);
+            var result = await AsyncExecuter.ToListAsync(resultJoin);
+            return new PagedResultDto<PaymentDto>
+            {
+                Items = result,
+                TotalCount = totalCount
+            };
+        }
+    }
+
     public async Task<PagedResultDto<PaymentDto>> ReportCustomerPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
@@ -629,6 +683,64 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     }
 
+    public async Task<PagedResultDto<PaymentDto>> ReportPackageCustomerPayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var query = await _paymentRepository.GetQueryableAsync();
+            var organizations = await _orgRepo.GetQueryableAsync();
+            var userQuery = await _myUserRepository.GetQueryableAsync();
+            query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
+            query = query.Where(_ => _.PaymentMethod == PaymentMethod.Cash);
+            var customerPackageQuery = await _customerPackageRepository.GetQueryableAsync();
+
+            var resultJoin = from payment in query
+                             where tenantId.HasValue ? payment.TenantId == tenantId.Value : true && payment.PaymentMethod == PaymentMethod.Cash
+                             where payment.CustomerId != null
+                             join organization in organizations
+                             on payment.OrganizationId equals organization.Id
+                             join user in userQuery
+                             on payment.CreatorId equals user.Id
+                             join customerPackage in customerPackageQuery on payment.CustomerPackageId equals customerPackage.Id into packageList
+                             from package in packageList
+                             select new PaymentDto
+                             {
+                                 Amount = payment.Amount,
+                                 Currency = payment.Currency,
+                                 Invoice = payment.Invoice == null ? null : payment.Invoice,
+                                 CheckoutId = payment.CheckoutId,
+                                 Date = DateOnly.FromDateTime(payment.CreationTime),
+                                 Time = TimeOnly.FromDateTime(payment.CreationTime),
+                                 Customers = payment.Customers,
+                                 PaymentMethod = payment.PaymentMethod,
+                                 PaymentNumber = payment.PaymentNumber,
+                                 OrganizationArabicName = organization.ArabicName,
+                                 OrganizationEnglishName = organization.EnglishName,
+                                 PlateNumber = payment.Invoice != null ? payment.Invoice.PlateNumber : payment.EnPlateNumber,
+                                 AmountWithoutDiscount = payment.Invoice != null ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
+                                 QrCodeInvoice = payment.QrCodeInvoice,
+                                 CreationTime = payment.CreationTime.ToString(),
+                                 CustomerPackage = package ?? null,
+                                 PaymentCategory = payment.PaymentCategory,
+                                 InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
+                                 PaymentStatus = payment.PaymentStatus,
+                                 CashierName = user.Name
+                             };
+            //  resultJoin = CheckTenantPayment(tenantId, resultJoin);
+            resultJoin = ApplySortPayment(input, resultJoin);
+            resultJoin = ApplyFilterPayment(input, resultJoin);
+            var totalCount = await AsyncExecuter.CountAsync(resultJoin);
+            resultJoin = resultJoin.Skip(input.SkipCount).Take(input.MaxResultCount);
+            var result = await AsyncExecuter.ToListAsync(resultJoin);
+            return new PagedResultDto<PaymentDto>
+            {
+                Items = result,
+                TotalCount = totalCount
+            };
+        }
+
+    }
+
     public async Task<PagedResultDto<PaymentDto>> ReportCustomerPaymentForPaymentMethod(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
@@ -670,6 +782,65 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
                                  PaymentStatus = payment.PaymentStatus,
                                  CustomerPackage = package ??null,
+                                 CashierName = user.Name
+                             };
+
+            //resultJoin = CheckTenantPayment(tenantId, resultJoin);
+            resultJoin = ApplySortPayment(input, resultJoin);
+            resultJoin = ApplyFilterPayment(input, resultJoin);
+            var totalCount = await AsyncExecuter.CountAsync(resultJoin);
+            resultJoin = resultJoin.Skip(input.SkipCount).Take(input.MaxResultCount);
+            var result = await AsyncExecuter.ToListAsync(resultJoin);
+            return new PagedResultDto<PaymentDto>
+            {
+                Items = result,
+                TotalCount = totalCount
+            };
+        }
+
+    }
+
+    public async Task<PagedResultDto<PaymentDto>> ReportCustomerPackagePaymentForPaymentMethod(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var query = await _paymentRepository.GetQueryableAsync();
+            var organizations = await _orgRepo.GetQueryableAsync();
+            var userQuery = await _myUserRepository.GetQueryableAsync();
+            query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
+            query = query.Where(_ => _.PaymentMethod != PaymentMethod.Cash);
+            var customerPackageQuery = await _customerPackageRepository.GetQueryableAsync();
+
+
+            var resultJoin = from payment in query
+                             where tenantId.HasValue ? payment.TenantId == tenantId.Value : true
+                             join organization in organizations
+                             on payment.OrganizationId equals organization.Id
+                             join user in userQuery
+                             on payment.CreatorId equals user.Id
+                             join customerPackage in customerPackageQuery on payment.CustomerPackageId equals customerPackage.Id into packageList
+                             from package in packageList
+                             select new PaymentDto
+                             {
+                                 Amount = payment.Amount,
+                                 Currency = payment.Currency,
+                                 Invoice = payment.Invoice == null ? null : payment.Invoice,
+                                 CheckoutId = payment.CheckoutId,
+                                 Date = DateOnly.FromDateTime(payment.CreationTime),
+                                 Time = TimeOnly.FromDateTime(payment.CreationTime),
+                                 Customers = payment.Customers,
+                                 PaymentMethod = payment.PaymentMethod,
+                                 PaymentNumber = payment.PaymentNumber,
+                                 OrganizationArabicName = organization.ArabicName,
+                                 OrganizationEnglishName = organization.EnglishName,
+                                 PlateNumber = payment.Invoice != null ? payment.Invoice.PlateNumber : payment.EnPlateNumber,
+                                 AmountWithoutDiscount = payment.Invoice != null ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
+                                 QrCodeInvoice = payment.QrCodeInvoice,
+                                 CreationTime = payment.CreationTime.ToString(),
+                                 PaymentCategory = payment.PaymentCategory,
+                                 InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
+                                 PaymentStatus = payment.PaymentStatus,
+                                 CustomerPackage = package ?? null,
                                  CashierName = user.Name
                              };
 

@@ -882,6 +882,7 @@
     "UsernameOrPasswordForZatcaNotFound": "لم يتم العثور على اسم المستخدم أو كلمة المرور لـلزكاة و الدخل",
     "PackagePaymentSuccessfully": "تم دفع الفاتورة بنجاح",
     "Days": "أيام",
-    "Duration": "المدة"
+    "Duration": "المدة",
+    "PackagesPayments": "فواتير الباقات"
   }
 }
