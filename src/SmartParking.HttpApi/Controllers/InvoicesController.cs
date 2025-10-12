@@ -20,14 +20,12 @@ namespace SmartParking.Controllers;
 public class InvoicesController : AbpController
 {
     private readonly IInvoicesAppService _invoicesAppService;
-    private readonly IPDFGeneratorAppService _pdfAppservice;
     private readonly IPaymentAppService _paymentAppService;
 
 
-    public InvoicesController(IInvoicesAppService invoicesAppService, IPDFGeneratorAppService pdfAppservice, IPaymentAppService paymentAppService)
+    public InvoicesController(IInvoicesAppService invoicesAppService, IPaymentAppService paymentAppService)
     {
         _invoicesAppService = invoicesAppService;
-        _pdfAppservice = pdfAppservice;
         _paymentAppService = paymentAppService;
     }
     [HttpPost]
@@ -49,13 +47,7 @@ public class InvoicesController : AbpController
     {
         return await _invoicesAppService.GetAsync(invoiceId);
     }
-    [HttpGet("getinvoicepdf/{invoiceId}")]
-    public async Task<IActionResult> GetInvoicePDF(int invoiceId)
-    {
-        var stream = await _pdfAppservice.CreatePdf(invoiceId);
-        return new FileContentResult(stream.GetAllBytes(), "application/pdf");
-    }   
-    
+
     [HttpPost("customerpayinvoice")]
     [Authorize]
     public async Task<Result<PaymentCheckoutDto>> PayCustomerInvoice(PayCustomerInvoiceDto payCustomerInvoice)

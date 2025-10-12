@@ -76,7 +76,7 @@ public partial class DetailsPayment
         {
 
             ["Invoice"] = Payment.Invoice is not null ? Payment.Invoice:null,
-            ["ID"] = Payment.Invoice is not null ? Payment.Invoice.Id : null,
+            ["PaymentId"] = Payment.Id,
             ["Package"]= Payment.customerPackageDto is not null ? Payment.customerPackageDto : null,
             ["CommercialRegisteration"] = Payment.Organization.TaxNumber,
             ["OrganizationAddress"] = Payment.Organization.Address,

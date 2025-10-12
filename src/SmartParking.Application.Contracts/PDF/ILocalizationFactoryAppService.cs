@@ -15,4 +15,5 @@ namespace SmartParking.PDF;
 public interface ILocalizationFactoryAppService : IApplicationService
 {
     InvoiceLocalizationData Create(InvoiceLocalizationCreateDto dto);
+    PackageLocalizationData CreatePackageLocalization(PackageLocalizationCreateDto dto);
 }

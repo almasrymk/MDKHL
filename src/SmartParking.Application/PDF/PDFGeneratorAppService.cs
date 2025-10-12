@@ -65,7 +65,7 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
         {
             OrganizationPicture = organization.OrganizationPicture,
             ImagePath = image,
-            InvoicePrice = invoice.InvoicePrice,
+            Price = invoice.InvoicePrice,
             PaymentAmount = payment.Amount
         };
         var localizationData = _localizationAppService.Create(InvoiceLocalizationDto);

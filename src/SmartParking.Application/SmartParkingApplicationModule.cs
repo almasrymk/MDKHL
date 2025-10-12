@@ -47,7 +47,9 @@ public class SmartParkingApplicationModule : AbpModule
         context.Services.AddSingleton<IWebSocketConnectionManager, WebSocketConnectionManager>();
         context.Services.AddScoped<IHandlerService, HandlerService>();
         context.Services.AddScoped<ILocalizationFactoryAppService, InvoiceLocalizationAppService>();
-        context.Services.AddScoped<IPDFGeneratorAppService, InvoicePDFAppService>();
+        context.Services.AddScoped<InvoicePDFAppService>();
+        context.Services.AddScoped<PackagePDFAppService>();
+        context.Services.AddScoped<IPdfGeneratorFactoryAppService, PdfGeneratorFactoryAppService>();
 
 
         context.Services.AddTransient<WebSocketHeartbeatWorker>();

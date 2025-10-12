@@ -83,11 +83,10 @@
                             </div>
                         </div>
                     </div>
-                    @if(Invoice is not null)
-                    {   
+
                         <div class=" d-flex justify-content-end align-items-center mt-3">
 
-                            <a href="/api/mobile/Invoice/getinvoicepdf/@ID" target="_blank"
+                            <a href="/api/mobile/PDFs/getpdf/@PaymentId" target="_blank"
                             style="display: inline-flex; align-items: center; justify-content: center;
                                  background-color: #3A7398; color: white; text-decoration: none;
                                  font-size: 16px; font-weight: bold; padding: 10px 20px;
@@ -96,7 +95,7 @@
 
                             </a>
                         </div>
-                    }
+                    
                 </div>
             </div>
         </div>

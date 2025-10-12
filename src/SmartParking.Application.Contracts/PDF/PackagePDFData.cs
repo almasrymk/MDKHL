@@ -1,0 +1,13 @@
+﻿using SmartParking.CustomerPackages;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SmartParking.PDF;
+
+public class PackagePdfData : PdfData<CustomerPackageDto>
+{
+    public new PackageLocalizationData Localization { get; set; }
+}

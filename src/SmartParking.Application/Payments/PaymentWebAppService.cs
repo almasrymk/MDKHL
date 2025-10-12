@@ -311,6 +311,16 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             return paymentDto;
         }
     }
+    public async Task<PaymentDto> GetPaymentForPackage(int CustomerPackageId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var payment = await _paymentRepository.FirstOrDefaultAsync(x => x.CustomerPackageId == CustomerPackageId);
+            var paymentDto = ObjectMapper.Map<Payment, PaymentDto>(payment);
+            paymentDto.CashierName = payment is not null ? await GetCashierName(payment.CreatorId) : null;
+            return paymentDto;
+        }
+    }
     #endregion
     #region private methods 
     private static IQueryable<PaymentDto> ApplyFilterTenant(Guid? tenantId, IQueryable<PaymentDto> query)

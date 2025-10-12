@@ -10,7 +10,7 @@ public partial class InvoiceDetailsViewDialog
     [Parameter] public InvoiceDto? Invoice { get; set; }
     [Parameter] public CustomerPackageDto? Package { get; set; }
     [Parameter] public string CommercialRegisteration { get; set; }
-    [Parameter] public int ID { get; set; }
+    [Parameter] public Guid PaymentId { get; set; }
     [Parameter] public string OrganizationAddress { get; set; }
     [Parameter] public string Code { get; set; }
     [Parameter] public decimal PaymentPrice { get; set; }

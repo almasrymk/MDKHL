@@ -2,6 +2,7 @@
 using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -37,7 +38,40 @@ public class InvoiceLocalizationAppService :SmartParkingAppService, ILocalizatio
             Discount: LocalizationHelper.GetLocalizedString(dto.DiscountKey),
             After: LocalizationHelper.GetLocalizedString(dto.AfterKey),
             InvoiceNumberView: LocalizationHelper.GetLocalizedString(dto.InvoiceNumberViewKey),
-            Price: Math.Round(dto.InvoicePrice + (dto.InvoicePrice * 0.15m), 2),
+            Price: Math.Round(dto.Price + (dto.Price * 0.15m), 2),
+            PaymentPrice: dto.PaymentAmount
+        );
+    }
+    public PackageLocalizationData CreatePackageLocalization(PackageLocalizationCreateDto dto)
+    {
+        var culture = CultureInfo.CurrentCulture.Name;
+        bool isArabic = culture == "ar";
+
+        return new PackageLocalizationData(
+            CurrentPath: Directory.GetCurrentDirectory(),
+            QRCodePath: dto.QRCodePath,
+            PackageNumber: isArabic ? "رقم الباقة" : "Package Number",
+            TicketId: isArabic ? "رقم التذكرة" : "Ticket ID",
+            SimplifiedTaxInvoice: isArabic ? "فاتورة ضريبية مبسطة" : "Simplified Tax Invoice",
+            HeaderVatReceiptPayment: isArabic ? "سداد ضريبة القيمة المضافة" : "VAT Payment Receipt",
+            Vats: isArabic ? "ضريبة القيمة المضافة" : "VAT",
+            Sar: isArabic ? "ريال سعودي" : "SAR",
+            CashierNo: isArabic ? "اسم الكاشير" : "Cashier Name",
+            OrganizationName: isArabic ? "اسم المنشأة" : "Organization Name",
+            OrganizationAddress: isArabic ? "عنوان المنشأة" : "Organization Address",
+            PlateNumber: isArabic ? "رقم اللوحة" : "Plate Number",
+            SubscriptionDate: isArabic ? "وقت الاشتراك" : "Subscription Time",
+            ExpirationDate: isArabic ? "وقت الانتهاء" : "Expiration Time",
+            Subscription: isArabic ? "الاشتراك" : "Subscription",
+            Duration: isArabic ? "المدة" : "Duration",
+            Days: isArabic ? "أيام" : "Days",
+            TotalPreVAT: isArabic ? "الإجمالي قبل الضريبة" : "Total Before VAT",
+            TotalIncludeVAT: isArabic ? "الإجمالي بعد الضريبة" : "Total After VAT",
+            Discount: isArabic ? "الخصم" : "Discount",
+            After: isArabic ? "بعد" : "After",
+            PackageNumberView: isArabic ? "باقة" : "Package",
+            PaymentNumber : isArabic ? "رقم الفاتورة" : "Payment Number",
+            Price: dto.Price,
             PaymentPrice: dto.PaymentAmount
         );
     }

@@ -14,6 +14,6 @@ public interface IPaymentWebAppService
     Task<PagedResultDto<PaymentDto>> GetListOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
     Task<PagedResultDto<PaymentDto>> SearchMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input);
     Task<PagedResultDto<PaymentDto>> SearchOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
-
+    Task<PaymentDto> GetPaymentForPackage(int CustomerPackageId);
     Task<PaymentDto> GetPaymentForInvoice(int invoiceId);
 }
