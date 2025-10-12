@@ -14,6 +14,9 @@ public class InvoiceLocalizationAppService :SmartParkingAppService, ILocalizatio
 
     public InvoiceLocalizationData Create(InvoiceLocalizationCreateDto dto)
     {
+        var culture = CultureInfo.CurrentCulture.Name;
+        bool isArabic = culture == "ar";
+
         return new InvoiceLocalizationData(
             CurrentPath: Path.Combine(Directory.GetCurrentDirectory(), $"{PathHelper.WwwRoot}{dto.OrganizationPicture}"),
             QRCodePath: Path.Combine(Directory.GetCurrentDirectory(), $"{PathHelper.WwwRoot}/{dto.ImagePath}"),
@@ -21,7 +24,7 @@ public class InvoiceLocalizationAppService :SmartParkingAppService, ILocalizatio
             TicketId: LocalizationHelper.GetLocalizedString(dto.TicketIdKey),
             SimplifiedTaxInvoice: LocalizationHelper.GetLocalizedString(dto.SimplifiedTaxInvoiceKey),
             HeaderVatReceiptPayment: LocalizationHelper.GetLocalizedString(dto.HeaderVatReceiptPaymentKey),
-            Vats: LocalizationHelper.GetLocalizedString(dto.VatKey),
+            Vats: isArabic ? "الضريبة (15%)" : "VAT",
             Sar: LocalizationHelper.GetLocalizedString(dto.SarKey),
             CashierNo: LocalizationHelper.GetLocalizedString(dto.CashierNameKey),
             OrganizationName: LocalizationHelper.GetLocalizedString(dto.OrganizationNameKey),
@@ -33,9 +36,9 @@ public class InvoiceLocalizationAppService :SmartParkingAppService, ILocalizatio
             Hour: LocalizationHelper.GetLocalizedString(dto.HourKey),
             Duration: LocalizationHelper.GetLocalizedString(dto.DurationKey),
             Hours: LocalizationHelper.GetLocalizedString(dto.HoursKey),
-            TotalPreVAT: LocalizationHelper.GetLocalizedString(dto.TotalPreVatKey),
-            TotalIncludeVAT: LocalizationHelper.GetLocalizedString(dto.TotalIncludeVatKey),
-            Discount: LocalizationHelper.GetLocalizedString(dto.DiscountKey),
+            TotalPreVAT: isArabic ? "االمجموع" : "Total Before VAT",
+            TotalIncludeVAT: isArabic ? "الإجمالي " : "Total After VAT",
+            Discount: isArabic ? "الخصم" : "Discount",
             After: LocalizationHelper.GetLocalizedString(dto.AfterKey),
             InvoiceNumberView: LocalizationHelper.GetLocalizedString(dto.InvoiceNumberViewKey),
             Price: Math.Round(dto.Price + (dto.Price * 0.15m), 2),
@@ -54,7 +57,7 @@ public class InvoiceLocalizationAppService :SmartParkingAppService, ILocalizatio
             TicketId: isArabic ? "رقم التذكرة" : "Ticket ID",
             SimplifiedTaxInvoice: isArabic ? "فاتورة ضريبية مبسطة" : "Simplified Tax Invoice",
             HeaderVatReceiptPayment: isArabic ? "سداد ضريبة القيمة المضافة" : "VAT Payment Receipt",
-            Vats: isArabic ? "ضريبة القيمة المضافة" : "VAT",
+            Vats: isArabic ? "الضريبة (15%)" : "VAT",
             Sar: isArabic ? "ريال سعودي" : "SAR",
             CashierNo: isArabic ? "اسم الكاشير" : "Cashier Name",
             OrganizationName: isArabic ? "اسم المنشأة" : "Organization Name",
@@ -65,8 +68,8 @@ public class InvoiceLocalizationAppService :SmartParkingAppService, ILocalizatio
             Subscription: isArabic ? "الاشتراك" : "Subscription",
             Duration: isArabic ? "المدة" : "Duration",
             Days: isArabic ? "أيام" : "Days",
-            TotalPreVAT: isArabic ? "الإجمالي قبل الضريبة" : "Total Before VAT",
-            TotalIncludeVAT: isArabic ? "الإجمالي بعد الضريبة" : "Total After VAT",
+            TotalPreVAT: isArabic ? "االمجموع" : "Total Before VAT",
+            TotalIncludeVAT: isArabic ? "الإجمالي " : "Total After VAT",
             Discount: isArabic ? "الخصم" : "Discount",
             After: isArabic ? "بعد" : "After",
             PackageNumberView: isArabic ? "باقة" : "Package",
