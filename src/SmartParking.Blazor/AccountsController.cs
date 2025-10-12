@@ -56,12 +56,16 @@ public class AccountsController : ControllerBase
             var claimsIdentity = new ClaimsIdentity(jwtToken.Claims, "Bearer");
             var userId = claimsIdentity.FindFirst("userId")?.Value;
             var user = await _authenticationApp.IsUserFoundAsync(userId);
-            currentTenant.Change(user.TenantId);
+            //currentTenant.Change(user.TenantId);
             
-            if (user.TenantId.HasValue)
+            if (currentTenant.Id.HasValue)
             {
-                Response.Cookies.Append(TenantResolverConsts.DefaultTenantKey, user.TenantId.ToString(), new CookieOptions { Expires = DateTime.Now.AddDays(1) });
-            }
+                Response.Cookies.Append(TenantResolverConsts.DefaultTenantKey, currentTenant.Id.ToString(), new CookieOptions { Expires = DateTime.Now.AddDays(1) });
+                var type = user.GetType();
+                var TenantIdProperty = type.GetProperty("TenantId");
+                TenantIdProperty.SetValue(user, currentTenant.Id);
+            } 
+
             await _signInManager.SignInAsync(user, false);
             await _userSingleton.SetAsync(user.Id);
             _stateManagement.Refresh();
