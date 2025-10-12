@@ -51,7 +51,7 @@ public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppSe
     /// </summary>
     /// <returns>A <see cref="Stream"/> representing the saved PDF file.</returns>
     [RemoteServiceAttribute(isEnabled: true)]
-    public async Task<Stream> CreatePdf(int invoiceId)
+    public async Task<Stream> CreatePdf(int invoiceId,string PageSize)
     {
         var arabicCulture = new CultureInfo("ar");
         CultureInfo.CurrentCulture = arabicCulture;

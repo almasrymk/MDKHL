@@ -6,5 +6,5 @@ namespace SmartParking.PDF;
 
 public interface IPDFGeneratorAppService : IApplicationService 
 {
-    Task<Stream> CreatePdf(int EntityId);
+    Task<Stream> CreatePdf(int EntityId , string PageSize);
 }

@@ -37,18 +37,13 @@ public abstract class BasePDFGeneratorAppService<DTO>
 
 
 
-    public Stream Build(DTO data)
+    public Stream Build(DTO data, string PageSize)
     {
         var stream = new MemoryStream();
 
         var writer = new PdfWriter(stream);
         var pdf = new PdfDocument(writer);
-        var document = new Document(pdf, GetPageSize());
-        document.SetMargins(
-            _pdfSettings.Margins.Top,
-            _pdfSettings.Margins.Right,
-            _pdfSettings.Margins.Bottom,
-            _pdfSettings.Margins.Left);
+        var document = new Document(pdf, GetPageSize(PageSize));
         try
         {
             InitializeFont();
@@ -62,9 +57,9 @@ public abstract class BasePDFGeneratorAppService<DTO>
         }
         return stream;
     }
-    protected virtual PageSize GetPageSize()
+    protected virtual PageSize GetPageSize(string Size)
     {
-        switch (_pdfSettings.PaperSize.ToLower())
+        switch (Size.ToLower())
         {
             case "a4": return PageSize.A4;
             case "a5": return PageSize.A5;
@@ -101,13 +96,27 @@ public abstract class BasePDFGeneratorAppService<DTO>
         string fontPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), PathHelper.PDFFont);
         Font = PdfFontFactory.CreateFont(fontPath, PdfEncodings.IDENTITY_H, PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED);
     }
-    protected void AddGrayBoxRow(
-      Table table,
-      string rightText,
-      string leftText,
-      PdfFont font,
-      bool isArabic)
+
+    // -----------------------------
+    // SCALING SUPPORT
+    // -----------------------------
+    protected float ScaleFactor(Document doc, float referenceWidth = 595f)
     {
+        float currentWidth = doc.GetPdfDocument().GetDefaultPageSize().GetWidth()
+                             - doc.GetLeftMargin() - doc.GetRightMargin();
+        return currentWidth / referenceWidth;
+    }
+    protected void AddGrayBoxRow(
+     Table table,
+     string rightText,
+     string leftText,
+     PdfFont font,
+     bool isArabic,
+     Document? doc = null)
+    {
+        float scale = doc != null ? ScaleFactor(doc) : 1f;
+        float fontSize = 14 * scale;
+
         if (isArabic)
         {
             table.AddCell(new Cell(1, 1)
@@ -116,7 +125,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE)
                 .SetFont(font)
-                .Add(new Paragraph(rightText).SetFontSize(14)));
+                .Add(new Paragraph(rightText).SetFontSize(fontSize)));
 
             table.AddCell(new Cell(1, 1)
                 .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
@@ -124,7 +133,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE)
                 .SetFont(font)
-                .Add(new Paragraph(leftText).SetFontSize(14)));
+                .Add(new Paragraph(leftText).SetFontSize(fontSize)));
         }
         else
         {
@@ -134,7 +143,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE)
                 .SetFont(font)
-                .Add(new Paragraph(leftText).SetFontSize(14)));
+                .Add(new Paragraph(leftText).SetFontSize(fontSize)));
 
             table.AddCell(new Cell(1, 1)
                 .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
@@ -142,14 +151,14 @@ public abstract class BasePDFGeneratorAppService<DTO>
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE)
                 .SetFont(font)
-                .Add(new Paragraph(rightText).SetFontSize(14)));
+                .Add(new Paragraph(rightText).SetFontSize(fontSize)));
         }
     }
 
-
-    protected void AddSummaryRow(Table table, string label, string value, PdfFont font, bool isArabic, Image currency, int colspan = 1)
+    protected void AddSummaryRow(Table table, string label, string value, PdfFont font, bool isArabic, Image currency, Document doc, int colspan = 1)
     {
-        var paragraph = new Paragraph().SetFont(font).SetFontSize(12);
+        var scale = ScaleFactor(doc);
+        var paragraph = new Paragraph().SetFont(font).SetFontSize(12 * scale);
         if (isArabic)
             paragraph.Add(currency).Add($" {value} ").Add(new Text($": {label.ArabicWithFontGlyphsToPDF()}"));
         else
@@ -161,58 +170,38 @@ public abstract class BasePDFGeneratorAppService<DTO>
             .Add(paragraph));
     }
 
-    protected Image CreateImage(string path, HorizontalAlignment alignment, float width = 120)
+
+
+     protected Image CreateImage(string path, HorizontalAlignment alignment, Document doc, float baseWidth = 120f)
     {
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Image path cannot be null or empty.", nameof(path));
+
+        float scale = ScaleFactor(doc);
 
         try
         {
             var imageData = ImageDataFactory.Create(path);
             return new iText.Layout.Element.Image(imageData)
                 .SetHorizontalAlignment(alignment)
-                .SetWidth(width);
+                .SetWidth(baseWidth * scale);
         }
-        catch (Exception innerEx)
+        catch (Exception ex)
         {
-            //// ⚠️ Fallback: convert to Base64 and reprocess
-            //string base64 = Convert.ToBase64String(bytes);
-            //string mimeType = DetectMimeType(bytes, fullPath);
-            //string base64DataUrl = $"data:{mimeType};base64,{base64}";
-
-            //try
-            //{
-            //    // Re-decode base64 and retry
-            //    byte[] decoded = Convert.FromBase64String(base64DataUrl.Split(',')[1]);
-            //    var repairedImageData = ImageDataFactory.Create(decoded, true);
-
-            //    return new iText.Layout.Element.Image(repairedImageData)
-            //        .SetHorizontalAlignment(alignment)
-            //        .SetWidth(width);
-            //}
-            //catch (Exception innerEx)
-            //{
-                throw new IOException($"❌ Failed to load image after base64 recovery: {path}", innerEx);
-            //}
+            throw new IOException($"❌ Failed to load image: {path}", ex);
         }
     }
-    protected float ScaleFactor(Document doc, float referenceWidth = 595f)
+    protected Paragraph CreateCenteredParagraph(string text, int fontSize, bool bold = false, Document? doc = null)
     {
-        float currentWidth = doc.GetPdfDocument().GetDefaultPageSize().GetWidth()
-                             - doc.GetLeftMargin() - doc.GetRightMargin();
-        return currentWidth / referenceWidth;
-    }
+        var scale = doc != null ? ScaleFactor(doc) : 1f;
 
-    protected Paragraph CreateCenteredParagraph(string text, int fontSize, bool bold = false)
-    {
         var p = new Paragraph(text)
             .SetFont(Font)
-            .SetFontSize(fontSize)
+            .SetFontSize(fontSize * scale)
             .SetTextAlignment(TextAlignment.CENTER);
 
         return p;
     }
-
     #region Arabic Layout Helpers
     protected void AddArabicCell(Table table, string text, PdfFont font, int fontSize = 9)
     {
@@ -224,12 +213,12 @@ public abstract class BasePDFGeneratorAppService<DTO>
             .Add(new Paragraph(text)));
     }
 
-    protected void AddArabicLabelCell(Table table, string label, PdfFont font)
+    protected void AddArabicLabelCell(Table table, string label, PdfFont font, int fontSize = 9)
     {
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
             .SetFont(font)
-            .SetFontSize(9)
+            .SetFontSize(fontSize)
             .SetTextAlignment(TextAlignment.RIGHT)
             .Add(new Paragraph(label).SimulateBold()));
     }
@@ -254,12 +243,12 @@ public abstract class BasePDFGeneratorAppService<DTO>
             .Add(new Paragraph(text)));
     }
 
-    protected void AddEnglishLabelCell(Table table, string label, PdfFont font)
+    protected void AddEnglishLabelCell(Table table, string label, PdfFont font , int fontSize = 9)
     {
         table.AddCell(new Cell(1, 1)
             .SetBorder(Border.NO_BORDER)
             .SetFont(font)
-            .SetFontSize(9)
+            .SetFontSize(fontSize)
             .SetTextAlignment(TextAlignment.LEFT)
             .Add(new Paragraph(label).SimulateBold()));
     }

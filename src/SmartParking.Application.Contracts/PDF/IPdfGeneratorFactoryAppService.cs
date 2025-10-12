@@ -1,4 +1,5 @@
-﻿using NuGet.Protocol.Plugins;
+﻿using iText.Kernel.Geom;
+using NuGet.Protocol.Plugins;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +12,6 @@ namespace SmartParking.PDF;
 
 public interface IPdfGeneratorFactoryAppService : IApplicationService
 {
-    Task<Stream> ResolveGeneratorAsync(Guid paymentId);
+    Task<Stream> ResolveGeneratorAsync(Guid paymentId,string PageSize);
 
 }

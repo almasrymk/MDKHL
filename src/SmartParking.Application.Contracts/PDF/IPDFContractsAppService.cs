@@ -22,5 +22,5 @@ public interface IPDFContractsAppService<DTO>
      void AddSummarySection(Document doc, DTO data, bool isArabic);
      void AddQrAndTotalsSection(Document doc, DTO data, bool isArabic);
 
-     Table BuildTotalsTable(DTO data, bool isArabic);
+     Table BuildTotalsTable(DTO data, bool isArabic,Document doc);
 }

@@ -14,16 +14,23 @@ namespace SmartParking.Controllers;
 public class PDFsController : AbpController
 {
     private readonly IPdfGeneratorFactoryAppService _pdfFactoryAppservice;
-
+    private const string Thermal = "thermal7cm";
+    private const string A4 = "a4";
     public PDFsController(IPdfGeneratorFactoryAppService pdfFactoryAppservice)
     {
         _pdfFactoryAppservice = pdfFactoryAppservice;
     }
 
-    [HttpGet("getpdf/{PaymentId}")]
-    public async Task<IActionResult> GetInvoicePDF(Guid PaymentId)
+    [HttpGet("getthermalpdf/{PaymentId}")]
+    public async Task<IActionResult> GetPaymentThermalDF(Guid PaymentId)
     {
-        var stream = await _pdfFactoryAppservice.ResolveGeneratorAsync(PaymentId);
+        var stream = await _pdfFactoryAppservice.ResolveGeneratorAsync(PaymentId, Thermal);
+        return new FileContentResult(stream.GetAllBytes(), "application/pdf");
+    }
+    [HttpGet("geta4pdf/{PaymentId}")]
+    public async Task<IActionResult> GetPaymentA4PDF(Guid PaymentId)
+    {
+        var stream = await _pdfFactoryAppservice.ResolveGeneratorAsync(PaymentId, A4);
         return new FileContentResult(stream.GetAllBytes(), "application/pdf");
     }
 
