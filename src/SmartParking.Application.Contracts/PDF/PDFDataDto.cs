@@ -11,7 +11,7 @@ namespace SmartParking.PDF;
 public class PdfData<T>
 {
     public T Data { get; set; }
-    public PaymentDto Payment { get; set; }
+    public PaymentGetResponseDto Payment { get; set; }
     public OrganizationDto Organization { get; set; }
     public InvoiceLocalizationData Localization { get; set; }
 }

@@ -1,20 +1,11 @@
 ﻿using AraibcPdfUnicodeGlyphsResharper;
-using Humanizer;
-using iText.IO.Image;
-using iText.Kernel.Geom;
 using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
-using Microsoft.Extensions.Options;
-using SmartParking.CustomerPackages;
-using SmartParking.Entities.Invoices;
-using SmartParking.Organizations;
 using SmartParking.Payments;
 using SmartParking.QRCode;
 using SmartParking.Utilities;
-using SmartParking.ZATCATaxInvoice;
-using System;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
@@ -25,24 +16,16 @@ namespace SmartParking.PDF;
 
 public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, IPDFContractsAppService<PackagePdfData>, IPDFGeneratorAppService
 {
-    private readonly ICustomerPackagesAppService _packageAppService;
-    private readonly IPaymentWebAppService _paymentAppService;
-    private readonly IOrganizationsAppService _organizationAppService;
+
     private readonly ILocalizationFactoryAppService _localizationFactoryAppService;
     private readonly IQRCodeAppService _qrCodeAppService;
 
 
     public PackagePDFAppService(
-        IOptions<PdfSettings> pdfSettings,
-        ICustomerPackagesAppService packageAppService,
-        IPaymentWebAppService paymentAppService,
-        IOrganizationsAppService organizationAppService,
         ILocalizationFactoryAppService localizationFactoryAppService,
-        IQRCodeAppService qrCodeAppService) : base(pdfSettings)
+        IQRCodeAppService qrCodeAppService)
     {
-        _packageAppService = packageAppService;
-        _paymentAppService = paymentAppService;
-        _organizationAppService = organizationAppService;
+
         _localizationFactoryAppService = localizationFactoryAppService;
         _qrCodeAppService = qrCodeAppService;
     }
@@ -214,30 +197,27 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
 
         return table;
     }
-    public async Task<Stream> CreatePdf(int packageId, string PageSize)
+    public async Task<Stream> CreatePdf(PaymentGetResponseDto payment, string PageSize)
     {
         var arabicCulture = new CultureInfo("ar");
         CultureInfo.CurrentCulture = arabicCulture;
         CultureInfo.CurrentUICulture = arabicCulture;
 
-        var package = await _packageAppService.GetAsync(packageId);
-        var payment = await _paymentAppService.GetPaymentForPackage(packageId);
-        var organization = await _organizationAppService.GetAsync(payment.OrganizationId);
         var qrCode = await _qrCodeAppService.CreateQRCOdeImageAsync(payment.QrCodeInvoice);
 
         var localization = _localizationFactoryAppService.CreatePackageLocalization(new PackageLocalizationCreateDto
         {
-            PackageName = package.PackageArabicName,
+            PackageName = payment.customerPackageDto.PackageArabicName,
             QRCodePath = qrCode.Value,
-            Price = package.PriceOfPackage.Value,
+            Price = payment.customerPackageDto.PriceOfPackage.Value,
             PaymentAmount = payment.Amount
         });
 
         var data = new PackagePdfData
         {
-            Data = package,
+            Data = payment.customerPackageDto,
             Payment = payment,
-            Organization = organization,
+            Organization = payment.Organization,
             Localization = localization
         };
 

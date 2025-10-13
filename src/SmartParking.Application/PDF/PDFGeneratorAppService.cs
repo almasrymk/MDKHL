@@ -29,7 +29,7 @@ using RemoteServiceAttribute = Volo.Abp.RemoteServiceAttribute;
 
 namespace SmartParking.PDF;
 
-public class PDFGeneratorAppService : SmartParkingAppService, IPDFGeneratorAppService
+public class PDFGeneratorAppService : SmartParkingAppService
 {
     private readonly IInvoiceAppService _invoicePdfAppService;
     private readonly IOrganizationsAppService _organizationPdfAppService;

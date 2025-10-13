@@ -63,7 +63,7 @@ public class InvoiceLocalizationAppService :SmartParkingAppService, ILocalizatio
             OrganizationName: isArabic ? "اسم المنشأة" : "Organization Name",
             OrganizationAddress: isArabic ? "عنوان المنشأة" : "Organization Address",
             PlateNumber: isArabic ? "رقم اللوحة" : "Plate Number",
-            SubscriptionDate: isArabic ? "تاريــخ التفعيل" : "Subscription Time",
+            SubscriptionDate: isArabic ? "تاريخ التفعيل" : "Subscription Time",
             ExpirationDate: isArabic ? "تاريخ الإنتهاء" : "Expiration Time",
             Subscription: isArabic ? "الاشتراك" : "Subscription",
             Duration: isArabic ? "المدة" : "Duration",

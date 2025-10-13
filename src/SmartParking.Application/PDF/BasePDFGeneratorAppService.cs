@@ -31,10 +31,6 @@ public abstract class BasePDFGeneratorAppService<DTO>
     protected PdfFont Font { get; private set; }
     protected CultureInfo Culture => CultureInfo.CurrentCulture;
     protected string CultureName => CultureInfo.CurrentCulture.Name;
-    protected BasePDFGeneratorAppService(IOptions<PdfSettings> pdfSettings)
-    {
-        _pdfSettings = pdfSettings.Value;
-    }
 
     public virtual void ImagesSection(Document doc, string OrganizationPicture)
     {
@@ -52,7 +48,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
         Image leftLogo;
         if (File.Exists(imagePath))
         {
-            leftLogo = CreateImage(imagePath, HorizontalAlignment.LEFT, doc, 120 * scale);
+            leftLogo = CreateImage(imagePath, HorizontalAlignment.LEFT, doc, 220 * scale);
         }
         else
         {

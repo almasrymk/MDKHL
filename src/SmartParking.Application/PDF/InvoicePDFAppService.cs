@@ -1,50 +1,48 @@
 ﻿using AraibcPdfUnicodeGlyphsResharper;
-using Humanizer;
-using iText.IO.Image;
 using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
-using Microsoft.Extensions.Options;
-using SmartParking.CustomerPackages.QRGenerator;
-using SmartParking.Entities.Invoices;
-using SmartParking.Invoices;
-using SmartParking.Organizations;
 using SmartParking.Payments;
+using SmartParking.QRCode;
 using SmartParking.Utilities;
-using SmartParking.ZATCATaxInvoice;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SmartParking.PDF;
 
 public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, IPDFContractsAppService<InvoicePdfData> , IPDFGeneratorAppService
 {
-    private readonly IInvoiceAppService _invoiceAppService;
-    private readonly IPaymentWebAppService _paymentWebAppService;
-    private readonly IOrganizationsAppService _organizationAppService;
+
     private readonly ILocalizationFactoryAppService _localizationAppService;
+    private readonly IQRCodeAppService _qrCodeAppService;
 
 
-    public InvoicePDFAppService(IOptions<PdfSettings> pdfSettings,IInvoiceAppService invoiceAppService, IPaymentWebAppService paymentWebAppService, IOrganizationsAppService organizationAppService, ILocalizationFactoryAppService localizationAppService) : base(pdfSettings)
+
+    public InvoicePDFAppService( ILocalizationFactoryAppService localizationAppService, IQRCodeAppService qrCodeAppService) 
     {
-        _invoiceAppService = invoiceAppService;
-        _paymentWebAppService = paymentWebAppService;
-        _organizationAppService = organizationAppService;
+
         _localizationAppService = localizationAppService;
+        _qrCodeAppService = qrCodeAppService;
     }
     // -----------------------------
     // IMAGES HEADER SECTION
     // -----------------------------
-  
+
     public void AddHeaderSection(Document doc, InvoicePdfData data)
     {
-        doc.Add(CreateCenteredParagraph($"{data.Localization.InvoiceNumber.ArabicWithFontGlyphsToPDF()}", 20, true,doc));
+        var txt = $"{data.Data.InvoiceId.ToString().ArabicWithFontGlyphsToPDF()} : {data.Localization.InvoiceNumber.ArabicWithFontGlyphsToPDF()}";
+        doc.Add(CreateCenteredParagraph(txt, 20, true, doc));
+    }
+
+    public void AddSubHeader(Document doc, InvoicePdfData data)
+    {
+        var text = CultureName == "ar"
+            ? $"***{data.Localization.SimplifiedTaxInvoice.ArabicWithFontGlyphsToPDF()}***"
+            : $"***{data.Localization.SimplifiedTaxInvoice}***";
+        doc.Add(CreateCenteredParagraph(text, 13, true, doc));
     }
 
     public void AddOrganizationSection(Document doc, InvoicePdfData data, bool isArabic)
@@ -145,13 +143,6 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         doc.Add(container);
     }
 
-    public void AddSubHeader(Document doc, InvoicePdfData data)
-    {
-        var text = CultureName == "ar"
-            ? $"***{data.Localization.SimplifiedTaxInvoice.ArabicWithFontGlyphsToPDF()}***"
-            : $"***{data.Localization.SimplifiedTaxInvoice}***";
-        doc.Add(CreateCenteredParagraph(text, 13, true,doc));
-    }
 
     public void AddSummarySection(Document doc, InvoicePdfData data, bool isArabic)
     {
@@ -177,16 +168,16 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
     public void AddVatAndTicket(Document doc, InvoicePdfData data)
     {
         var vatText = CultureName == "ar"
-               ? $"{data.Payment.PaymentNumber.ArabicWithFontGlyphsToPDF()}:{data.Localization.InvoiceNumberView.ArabicWithFontGlyphsToPDF()}"
+               ? $"{data.Payment.PaymentNumber.ArabicWithFontGlyphsToPDF()}:{data.Localization.InvoiceNumber.ArabicWithFontGlyphsToPDF()}"
                : $"{data.Localization.InvoiceNumberView}: {data.Payment.PaymentNumber}";
-        doc.Add(CreateCenteredParagraph(vatText, 13, true));
+        doc.Add(CreateCenteredParagraph(vatText, 13, true,doc));
 
         if (data.Data.TicketId != null)
         {
             var tText = CultureName == "ar"
                 ? $"{data.Data.TicketId.ArabicWithFontGlyphsToPDF()}:{data.Localization.TicketId.ArabicWithFontGlyphsToPDF()}"
                 : $"{data.Localization.TicketId}: {data.Data.TicketId}";
-            doc.Add(CreateCenteredParagraph(tText, 13, true));
+            doc.Add(CreateCenteredParagraph(tText, 13, true,doc));
         }
     }
 
@@ -200,9 +191,11 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         AddSummaryRow(table, loc.TotalPreVAT, inv.InvoicePrice.ToString("F2"), Font, isArabic, currency, doc);
         var vat = Math.Round(inv.InvoicePrice * 0.15m, 2).ToString("F2");
         AddSummaryRow(table, $"{loc.Vats}", vat, Font, isArabic, currency, doc);
-        if (inv.InvoicePrice != data.Payment.Amount)
-            AddSummaryRow(table, $"{loc.Discount}", loc.PaymentPrice.ToString("F2"), Font, isArabic, currency, doc);
-        AddSummaryRow(table, loc.TotalIncludeVAT, loc.Price.ToString("F2"), Font, isArabic, currency, doc);
+        var tprice = Math.Round((inv.InvoicePrice + (inv.InvoicePrice * 0.15m)), 2);
+
+        if (tprice != data.Payment.Amount)
+            AddSummaryRow(table, $"{loc.Discount}", (tprice-data.Payment.Amount).ToString("F2"), Font, isArabic, currency, doc);
+        AddSummaryRow(table, loc.TotalIncludeVAT, data.Payment.Amount.ToString("F2"), Font, isArabic, currency, doc);
 
         return table;
     }
@@ -210,30 +203,27 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
     // -----------------------------
     // MAIN ENTRY POINT
     // -----------------------------
-    public async Task<Stream> CreatePdf(int entityId, string PageSize)
+    public async Task<Stream> CreatePdf(PaymentGetResponseDto payment, string PageSize)
     {
         var arabicCulture = new CultureInfo("ar");
         CultureInfo.CurrentCulture = arabicCulture;
         CultureInfo.CurrentUICulture = arabicCulture;
+        var qrCode = await _qrCodeAppService.CreateQRCOdeImageAsync(payment.QrCodeInvoice);
 
-        var invoice = await _invoiceAppService.GetAsync(entityId);
-        var image = await _invoiceAppService.GetInvoiceQRCodeForOrganization(entityId);
-        var payment = await _paymentWebAppService.GetPaymentForInvoice(entityId);
-        var org = await _organizationAppService.GetAsync(payment.OrganizationId);
 
         var localization = _localizationAppService.Create(new InvoiceLocalizationCreateDto
         {
-            OrganizationPicture = org.OrganizationPicture,
-            ImagePath = image,
-            Price = invoice.InvoicePrice,
+            OrganizationPicture = payment.Organization.OrganizationPicture,
+            ImagePath = qrCode,
+            Price = payment.Invoice.InvoicePrice,
             PaymentAmount = payment.Amount
         });
 
         var pdfData = new InvoicePdfData
         {
-            Data = invoice,
+            Data = payment.Invoice,
             Payment = payment,
-            Organization = org,
+            Organization = payment.Organization,
             Localization = localization
         };
 
@@ -245,6 +235,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         ImagesSection(doc, data.Organization.OrganizationPicture);
         AddHeaderSection(doc, data);
         AddSubHeader(doc, data);
+        AddVatAndTicket(doc, data);
         AddOrganizationSection(doc, data, true);
         AddSummarySection(doc, data, true);
         AddQrAndTotalsSection(doc, data, true);
