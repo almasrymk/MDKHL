@@ -464,24 +464,10 @@ public static class CreateTableHelper
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Time"), payment.Time.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentStatus"), LocalizationHelper.GetLocalizedString(payment.PaymentStatus.ToString())));
 
-            try
-            {
-                discountValue = "0" + discountValue?.Trim().Replace(".", "٫");
-                vatValue = "0" + vatValue?.Trim().Replace(".", "٫");
-                amount = "0" + amount?.Trim().Replace(".", "٫");
-                total = "0" + total?.Trim().Replace(".", "٫");
-
-                TDiscount += decimal.Parse("0" + discountValue);
-                TVatValue += decimal.Parse("0" + vatValue);
-                TAmount += decimal.Parse("0" + amount);
-                TPaymentTotal += decimal.Parse("0" + total);
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-       
+            TDiscount += Convert.ToDecimal("0" + discountValue);
+            TVatValue += Convert.ToDecimal("0" + vatValue);
+            TAmount += Convert.ToDecimal("0" + amount);
+            TPaymentTotal += Convert.ToDecimal("0" + total);
 
             tableData.Rows.Add(rowDef);
         }
@@ -564,24 +550,10 @@ public static class CreateTableHelper
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Time"), payment.Time.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentStatus"), LocalizationHelper.GetLocalizedString(payment.PaymentStatus.ToString())));
 
-            try
-            {
-                discountValue = "0" + discountValue?.Trim().Replace(".", "٫");
-                vatValue = "0" + vatValue?.Trim().Replace(".", "٫");
-                amount = "0" + amount?.Trim().Replace(".", "٫");
-                total = "0" + total?.Trim().Replace(".", "٫");
-
-                TDiscount += decimal.Parse("0" + discountValue);
-                TVatValue += decimal.Parse("0" + vatValue);
-                TAmount += decimal.Parse("0" + amount);
-                TPaymentTotal += decimal.Parse("0" + total);
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-
+            TDiscount += Convert.ToDecimal("0" + discountValue);
+            TVatValue += Convert.ToDecimal("0" + vatValue);
+            TAmount += Convert.ToDecimal("0" + amount);
+            TPaymentTotal += Convert.ToDecimal("0" + total);
 
             tableData.Rows.Add(rowDef);
         }
