@@ -48,11 +48,11 @@ public abstract class BasePDFGeneratorAppService<DTO>
         Image leftLogo;
         if (File.Exists(imagePath))
         {
-            leftLogo = CreateImage(imagePath, HorizontalAlignment.LEFT, doc, 220 * scale);
+            leftLogo = CreateImage(imagePath, HorizontalAlignment.LEFT, doc, 120);
         }
         else
         {
-            leftLogo = CreateImage(PathHelper.imageDirectoryPdf, HorizontalAlignment.LEFT, doc, 120 * scale);
+            leftLogo = CreateImage(PathHelper.imageDirectoryPdf, HorizontalAlignment.LEFT, doc, 120);
 
         }
         table.AddCell(new Cell().Add(leftLogo)
