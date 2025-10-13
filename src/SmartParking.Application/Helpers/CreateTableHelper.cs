@@ -464,10 +464,12 @@ public static class CreateTableHelper
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Time"), payment.Time.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentStatus"), LocalizationHelper.GetLocalizedString(payment.PaymentStatus.ToString())));
 
-            TDiscount += Convert.ToDecimal("0" + discountValue);
-            TVatValue += Convert.ToDecimal("0" + vatValue);
-            TAmount += Convert.ToDecimal("0" + amount);
-            TPaymentTotal += Convert.ToDecimal("0" + total);
+            TDiscount += (payment.Invoice == null ? payment.CustomerPackage?.Discount : payment.Invoice?.Discount) ?? 0;
+            TVatValue += (payment.Invoice == null ? payment.CustomerPackage?.Vat : Math.Round((payment.Invoice?.InvoicePrice ?? 0) * 0.15m, 2)) ?? 0;
+            TAmount += (payment.Invoice?.InvoicePrice != null && payment.Invoice.InvoicePrice != default
+                    ? payment.Invoice.InvoicePrice
+                    : payment.CustomerPackage?.PriceOfPackage) ?? 0;
+            TPaymentTotal += payment.Amount == 0 ? 0 : payment.Amount;
 
             tableData.Rows.Add(rowDef);
         }
@@ -550,10 +552,12 @@ public static class CreateTableHelper
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Time"), payment.Time.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentStatus"), LocalizationHelper.GetLocalizedString(payment.PaymentStatus.ToString())));
 
-            TDiscount += Convert.ToDecimal("0" + discountValue);
-            TVatValue += Convert.ToDecimal("0" + vatValue);
-            TAmount += Convert.ToDecimal("0" + amount);
-            TPaymentTotal += Convert.ToDecimal("0" + total);
+            TDiscount += (payment.Invoice == null ? payment.CustomerPackage?.Discount : payment.Invoice?.Discount) ?? 0;
+            TVatValue += (payment.Invoice == null ? payment.CustomerPackage?.Vat : Math.Round((payment.Invoice?.InvoicePrice ?? 0) * 0.15m, 2)) ?? 0;
+            TAmount += (payment.Invoice?.InvoicePrice != null && payment.Invoice.InvoicePrice != default
+                    ? payment.Invoice.InvoicePrice
+                    : payment.CustomerPackage?.PriceOfPackage) ?? 0;
+            TPaymentTotal += payment.Amount == 0 ? 0 : payment.Amount;
 
             tableData.Rows.Add(rowDef);
         }
