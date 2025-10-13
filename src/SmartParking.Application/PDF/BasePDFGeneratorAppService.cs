@@ -21,6 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static QRCoder.SvgQRCode;
+using Path = System.IO.Path;
 
 namespace SmartParking.PDF;
 
@@ -35,7 +36,41 @@ public abstract class BasePDFGeneratorAppService<DTO>
         _pdfSettings = pdfSettings.Value;
     }
 
+    public virtual void ImagesSection(Document doc, string OrganizationPicture)
+    {
+        float scale = ScaleFactor(doc);
+        var table = new Table(3).UseAllAvailableWidth();
 
+        var rightLogo = CreateImage(PathHelper.imageDirectoryPdf, HorizontalAlignment.RIGHT, doc, 120);
+
+        string orgPicture = Path.GetFileName(OrganizationPicture);
+        string imagePath = Path.Combine(
+            PathHelper.WwwRoot,
+            PathHelper.OrganizationFolder,
+            orgPicture);
+
+        Image leftLogo;
+        if (File.Exists(imagePath))
+        {
+            leftLogo = CreateImage(imagePath, HorizontalAlignment.LEFT, doc, 120 * scale);
+        }
+        else
+        {
+            leftLogo = CreateImage(PathHelper.imageDirectoryPdf, HorizontalAlignment.LEFT, doc, 120 * scale);
+
+        }
+        table.AddCell(new Cell().Add(leftLogo)
+            .SetBorder(Border.NO_BORDER)
+            .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+            .SetHorizontalAlignment(HorizontalAlignment.LEFT));
+
+        table.AddCell(new Cell().Add(rightLogo)
+            .SetBorder(Border.NO_BORDER)
+            .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+            .SetHorizontalAlignment(HorizontalAlignment.RIGHT));
+
+        doc.Add(table);
+    }
 
     public Stream Build(DTO data, string PageSize)
     {

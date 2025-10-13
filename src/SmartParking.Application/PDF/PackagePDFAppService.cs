@@ -50,40 +50,10 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
     // -----------------------------
     // PDF BUILDERS
     // -----------------------------
-    public void ImagesSection(Document doc, PackagePdfData data)
-    {
-        float scale = ScaleFactor(doc);
-        var table = new Table(3).UseAllAvailableWidth();
-
-        var rightLogo = CreateImage(PathHelper.imageDirectoryPdf, HorizontalAlignment.RIGHT, doc, 120 * scale);
-
-        string orgPicture =Path.GetFileName(data.Organization.OrganizationPicture);
-        string imagePath = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            PathHelper.WwwRoot,
-            PathHelper.OrganizationFolder,
-            orgPicture + ".png");
-
-        var leftLogo = File.Exists(imagePath)
-            ? CreateImage(imagePath, HorizontalAlignment.LEFT, doc, 120 * scale)
-            : CreateImage(PathHelper.imageDirectoryPdf, HorizontalAlignment.LEFT, doc, 120 * scale);
-
-        table.AddCell(new Cell().Add(leftLogo)
-            .SetBorder(Border.NO_BORDER)
-            .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-            .SetHorizontalAlignment(HorizontalAlignment.LEFT));
-
-        table.AddCell(new Cell().Add(rightLogo)
-            .SetBorder(Border.NO_BORDER)
-            .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-            .SetHorizontalAlignment(HorizontalAlignment.RIGHT));
-
-        doc.Add(table);
-    }
 
     protected override void BuildArabicLayout(Document doc, PackagePdfData data)
     {
-        ImagesSection(doc, data);
+        ImagesSection(doc, data.Organization.OrganizationPicture);
         AddHeaderSection(doc, data);
         AddSubHeader(doc, data);
         AddVatAndTicket(doc, data);
@@ -94,7 +64,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
 
     protected override void BuildEnglishLayout(Document doc, PackagePdfData data)
     {
-        ImagesSection(doc, data);
+        ImagesSection(doc, data.Organization.OrganizationPicture);
         AddHeaderSection(doc, data);
         AddSubHeader(doc, data);
         AddVatAndTicket(doc, data);
@@ -236,7 +206,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
         var loc = data.Localization;
 
         AddSummaryRow(table, loc.TotalPreVAT, pkg.PriceOfPackage!.Value.ToString("F2"), Font, isArabic, currency, doc);
-        AddSummaryRow(table, $"15% {loc.Vats}", pkg.Vat.ToString("F2"), Font, isArabic, currency, doc);
+        AddSummaryRow(table, $"{loc.Vats}", pkg.Vat.ToString("F2"), Font, isArabic, currency, doc);
         if ((pkg.PriceOfPackage.Value + pkg.Vat) != data.Payment.Amount)
             AddSummaryRow(table, $"{loc.Discount}", pkg.Discount.ToString("F2"), Font, isArabic, currency, doc);
         AddSummaryRow(table, loc.TotalIncludeVAT, data.Payment.Amount.ToString("F2"), Font, isArabic, currency, doc);

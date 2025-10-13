@@ -92,9 +92,6 @@
             @if (Payment.PaymentCategory == PaymentCategory.PaymentParking.ToString())
             {
                 <MudItem sm="4">
-                    <MudTextField ReadOnly="true" T="string" InputType="InputType.Text" @bind-Value="Payment.PaymentNumber" Label=@L["Code"] />
-                </MudItem>
-                <MudItem sm="4">
                     <MudTextField Value="@(Payment?.Invoice?.Id.ToString() ?? "0")"
                                   Immediate="true"
                                   Variant="Variant.Text"

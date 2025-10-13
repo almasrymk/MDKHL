@@ -12,6 +12,7 @@ using SmartParking.Invoices;
 using SmartParking.Organizations;
 using SmartParking.Payments;
 using SmartParking.Utilities;
+using SmartParking.ZATCATaxInvoice;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -40,30 +41,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
     // -----------------------------
     // IMAGES HEADER SECTION
     // -----------------------------
-    public void ImagesSection(Document doc, InvoicePdfData localizationData)
-    {
-        float scale = ScaleFactor(doc);
-        var table = new Table(3).UseAllAvailableWidth();
-
-        var rightLogo = CreateImage(PathHelper.imageDirectoryPdf, HorizontalAlignment.RIGHT, doc, 120);
-
-        string orgPath = Path.Combine(Directory.GetCurrentDirectory(), $"{PathHelper.WwwRoot}{localizationData.Organization.OrganizationPicture}.png");
-        var leftLogo = File.Exists(orgPath)
-            ? CreateImage(orgPath, HorizontalAlignment.LEFT, doc, 120)
-            : CreateImage(PathHelper.imageDirectoryPdf, HorizontalAlignment.LEFT, doc, 120);
-
-        table.AddCell(new Cell().Add(leftLogo)
-            .SetBorder(Border.NO_BORDER)
-            .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-            .SetHorizontalAlignment(HorizontalAlignment.LEFT));
-
-        table.AddCell(new Cell().Add(rightLogo)
-            .SetBorder(Border.NO_BORDER)
-            .SetVerticalAlignment(VerticalAlignment.MIDDLE)
-            .SetHorizontalAlignment(HorizontalAlignment.RIGHT));
-
-        doc.Add(table);
-    }
+  
     public void AddHeaderSection(Document doc, InvoicePdfData data)
     {
         doc.Add(CreateCenteredParagraph($"{data.Localization.InvoiceNumber.ArabicWithFontGlyphsToPDF()}", 20, true,doc));
@@ -221,11 +199,10 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
 
         AddSummaryRow(table, loc.TotalPreVAT, inv.InvoicePrice.ToString("F2"), Font, isArabic, currency, doc);
         var vat = Math.Round(inv.InvoicePrice * 0.15m, 2).ToString("F2");
-        AddSummaryRow(table, $"15% {loc.Vats}", vat, Font, isArabic, currency, doc);
-        AddSummaryRow(table, loc.TotalIncludeVAT, loc.Price.ToString("F2"), Font, isArabic, currency, doc);
-
+        AddSummaryRow(table, $"{loc.Vats}", vat, Font, isArabic, currency, doc);
         if (inv.InvoicePrice != data.Payment.Amount)
-            AddSummaryRow(table, $"{loc.After} {loc.Discount}", loc.PaymentPrice.ToString("F2"), Font, isArabic, currency, doc);
+            AddSummaryRow(table, $"{loc.Discount}", loc.PaymentPrice.ToString("F2"), Font, isArabic, currency, doc);
+        AddSummaryRow(table, loc.TotalIncludeVAT, loc.Price.ToString("F2"), Font, isArabic, currency, doc);
 
         return table;
     }
@@ -265,7 +242,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
 
     protected override void BuildArabicLayout(Document doc, InvoicePdfData data)
     {
-        ImagesSection(doc, data);
+        ImagesSection(doc, data.Organization.OrganizationPicture);
         AddHeaderSection(doc, data);
         AddSubHeader(doc, data);
         AddOrganizationSection(doc, data, true);
@@ -275,7 +252,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
 
     protected override void BuildEnglishLayout(Document doc, InvoicePdfData data)
     {
-        ImagesSection(doc, data);
+        ImagesSection(doc, data.Organization.OrganizationPicture);
         AddHeaderSection(doc, data);
         AddSubHeader(doc, data);
         AddOrganizationSection(doc, data, false);
