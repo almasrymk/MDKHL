@@ -37,7 +37,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
         float scale = ScaleFactor(doc);
         var table = new Table(3).UseAllAvailableWidth();
 
-        var rightLogo = CreateImage(PathHelper.imageDirectoryPdf, HorizontalAlignment.RIGHT, doc, 120);
+        var rightLogo = CreateImage(PathHelper.imageDirectoryPdf, HorizontalAlignment.RIGHT, doc, 180);
 
         string orgPicture = Path.GetFileName(OrganizationPicture);
         string imagePath = Path.Combine(
@@ -48,11 +48,11 @@ public abstract class BasePDFGeneratorAppService<DTO>
         Image leftLogo;
         if (File.Exists(imagePath))
         {
-            leftLogo = CreateImage(imagePath, HorizontalAlignment.LEFT, doc, 120);
+            leftLogo = CreateImage(imagePath, HorizontalAlignment.LEFT, doc, 180);
         }
         else
         {
-            leftLogo = CreateImage(PathHelper.imageDirectoryPdf, HorizontalAlignment.LEFT, doc, 120);
+            leftLogo = CreateImage(PathHelper.imageDirectoryPdf, HorizontalAlignment.LEFT, doc, 180);
 
         }
         table.AddCell(new Cell().Add(leftLogo)
