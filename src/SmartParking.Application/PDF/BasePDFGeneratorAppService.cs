@@ -10,6 +10,7 @@ using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
 using Microsoft.Extensions.Options;
+using OfficeOpenXml;
 using QRCoder;
 using SmartParking.CustomerPackages.QRGenerator;
 using SmartParking.Utilities;
@@ -25,7 +26,7 @@ using Path = System.IO.Path;
 
 namespace SmartParking.PDF;
 
-public abstract class BasePDFGeneratorAppService<DTO> 
+public abstract class BasePDFGeneratorAppService<DTO>
 {
     private readonly PdfSettings _pdfSettings;
     protected PdfFont Font { get; private set; }
@@ -78,8 +79,13 @@ public abstract class BasePDFGeneratorAppService<DTO>
         try
         {
             InitializeFont();
+            document.SetFont(Font);
+            pdf.GetDocumentInfo().SetTitle("Invoice");
+            pdf.GetCatalog().SetViewerPreferences(
+                new PdfViewerPreferences().SetDisplayDocTitle(true)
+            );
             BuildLayout(document, data);
-            document.Close(); 
+            document.Close();
         }
         finally
         {
@@ -146,8 +152,9 @@ public abstract class BasePDFGeneratorAppService<DTO>
      Document? doc = null)
     {
         float scale = doc != null ? ScaleFactor(doc) : 1f;
-        float fontSize = 14 * scale;
-
+        float fontSize = (float)Math.Round(14 * scale);
+        if (fontSize < 5)
+            fontSize = 5;
         if (isArabic)
         {
             table.AddCell(new Cell(1, 1)
@@ -189,7 +196,10 @@ public abstract class BasePDFGeneratorAppService<DTO>
     protected void AddSummaryRow(Table table, string label, string value, PdfFont font, bool isArabic, Image currency, Document doc, int colspan = 1)
     {
         var scale = ScaleFactor(doc);
-        var paragraph = new Paragraph().SetFont(font).SetFontSize(12 * scale);
+        var fontSize = (int)Math.Round(12 * scale);
+        if (fontSize < 4)
+            fontSize = 4;
+        var paragraph = new Paragraph().SetFont(font).SetFontSize(fontSize);
         if (isArabic)
             paragraph.Add(currency).Add($" {value} ").Add(new Text($": {label.ArabicWithFontGlyphsToPDF()}"));
         else
@@ -203,7 +213,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
 
 
 
-     protected Image CreateImage(string path, HorizontalAlignment alignment, Document doc, float baseWidth = 120f)
+    protected Image CreateImage(string path, HorizontalAlignment alignment, Document doc, float baseWidth = 120f)
     {
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Image path cannot be null or empty.", nameof(path));
@@ -225,38 +235,44 @@ public abstract class BasePDFGeneratorAppService<DTO>
     protected Paragraph CreateCenteredParagraph(string text, int fontSize, bool bold = false, Document? doc = null)
     {
         var scale = doc != null ? ScaleFactor(doc) : 1f;
-
+        fontSize = (int)Math.Round(fontSize * scale);
+        if (fontSize < 6)
+            fontSize = 6;
         var p = new Paragraph(text)
             .SetFont(Font)
-            .SetFontSize(fontSize * scale)
+            .SetFontSize(fontSize)
             .SetTextAlignment(TextAlignment.CENTER);
 
         return p;
     }
     #region Arabic Layout Helpers
-    protected void AddArabicCell(Table table, string text, PdfFont font, int fontSize = 9)
+    protected void AddArabicCell(Table table, string text, PdfFont font, int fontSize = 9, int rowSpan = 1, int colSpan = 1)
     {
-        table.AddCell(new Cell(1, 1)
+        table.AddCell(new Cell(rowSpan, colSpan)
             .SetBorder(Border.NO_BORDER)
+            .SetPadding(0)
+            .SetMargin(0)
             .SetFont(font)
             .SetFontSize(fontSize)
             .SetTextAlignment(TextAlignment.RIGHT)
             .Add(new Paragraph(text)));
     }
 
-    protected void AddArabicLabelCell(Table table, string label, PdfFont font, int fontSize = 9)
+    protected void AddArabicLabelCell(Table table, string label, PdfFont font, int fontSize = 9, int rowSpan = 1, int colSpan = 1)
     {
-        table.AddCell(new Cell(1, 1)
+        table.AddCell(new Cell(rowSpan, colSpan)
             .SetBorder(Border.NO_BORDER)
+             .SetPadding(0)
+            .SetMargin(0)
             .SetFont(font)
             .SetFontSize(fontSize)
             .SetTextAlignment(TextAlignment.RIGHT)
             .Add(new Paragraph(label).SimulateBold()));
     }
 
-    protected void AddArabicEmptyCell(Table table)
+    protected void AddArabicEmptyCell(Table table, int rowSpan = 1, int colSpan = 1)
     {
-        table.AddCell(new Cell(1, 1)
+        table.AddCell(new Cell(rowSpan, colSpan)
             .SetBorder(Border.NO_BORDER)
             .Add(new Paragraph(" ")));
     }
@@ -264,9 +280,9 @@ public abstract class BasePDFGeneratorAppService<DTO>
 
 
     #region English Layout Helpers
-    protected void AddEnglishCell(Table table, string text, PdfFont font, int fontSize = 9)
+    protected void AddEnglishCell(Table table, string text, PdfFont font, int fontSize = 9, int rowSpan = 1, int colSpan = 1)
     {
-        table.AddCell(new Cell(1, 1)
+        table.AddCell(new Cell(rowSpan, colSpan)
             .SetBorder(Border.NO_BORDER)
             .SetFont(font)
             .SetFontSize(fontSize)
@@ -274,9 +290,9 @@ public abstract class BasePDFGeneratorAppService<DTO>
             .Add(new Paragraph(text)));
     }
 
-    protected void AddEnglishLabelCell(Table table, string label, PdfFont font , int fontSize = 9)
+    protected void AddEnglishLabelCell(Table table, string label, PdfFont font, int fontSize = 9, int rowSpan = 1, int colSpan = 1)
     {
-        table.AddCell(new Cell(1, 1)
+        table.AddCell(new Cell(rowSpan, colSpan)
             .SetBorder(Border.NO_BORDER)
             .SetFont(font)
             .SetFontSize(fontSize)
@@ -284,9 +300,9 @@ public abstract class BasePDFGeneratorAppService<DTO>
             .Add(new Paragraph(label).SimulateBold()));
     }
 
-    protected void AddEnglishEmptyCell(Table table)
+    protected void AddEnglishEmptyCell(Table table, int rowSpan = 1, int colSpan = 1)
     {
-        table.AddCell(new Cell(1, 1)
+        table.AddCell(new Cell(rowSpan, colSpan)
             .SetBorder(Border.NO_BORDER)
             .Add(new Paragraph(" ")));
     }
