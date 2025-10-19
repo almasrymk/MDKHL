@@ -75,11 +75,13 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
     public void AddOrganizationSection(Document doc, PackagePdfData data, bool isArabic)
     {
         float scale = ScaleFactor(doc);
-        var table = new Table(UnitValue.CreatePercentArray(new float[] { 2, 2, 1, 2, 2 }))
+        var table = new Table(UnitValue.CreatePercentArray(6))
             .UseAllAvailableWidth()
             .SetBorder(Border.NO_BORDER);
 
         var fontsize = (int)(10 * scale);
+        if (fontsize < 4)
+            fontsize = 4;
 
         var pkg = data.Data;
         var loc = data.Localization;
@@ -88,46 +90,43 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
 
         if (isArabic)
         {
-            AddArabicCell(table, pay.CashierName.ArabicWithFontGlyphsToPDF(), Font,fontsize);
-            AddArabicLabelCell(table, $":{loc.CashierNo.ArabicWithFontGlyphsToPDF()}", Font , fontsize);
-            AddArabicEmptyCell(table);
-            AddArabicCell(table, org.ArabicName.ArabicWithFontGlyphsToPDF(), Font,fontsize);
+            AddArabicCell(table, pay.CashierName.ArabicWithFontGlyphsToPDF(), Font, fontsize, 1, 2);
+            AddArabicLabelCell(table, $":{loc.CashierNo.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
+            AddArabicCell(table, org.ArabicName.ArabicWithFontGlyphsToPDF(), Font, fontsize, 1, 2);
             AddArabicLabelCell(table, $":{loc.OrganizationName.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-
-            AddArabicCell(table, pkg.EnPlateNumber.ArabicWithFontGlyphsToPDF(), Font,fontsize);
-            AddArabicLabelCell(table, $":{loc.PlateNumber.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            AddArabicEmptyCell(table);
-            AddArabicCell(table, org.Address.ArabicWithFontGlyphsToPDF(), Font,fontsize);
-            AddArabicLabelCell(table, $":{loc.OrganizationAddress.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-
-            for (int i = 0; i < 5; i++) AddArabicEmptyCell(table);
-
-            AddArabicCell(table, pkg.ExpiryDate.ToString(), Font,fontsize);
+            AddArabicEmptyCell(table, 1, 6);
+            AddArabicCell(table, pkg.ExpiryDate.ToString(), Font, fontsize, 1, 2);
             AddArabicLabelCell(table, $":{loc.ExpirationDate.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            AddArabicEmptyCell(table);
-            AddArabicCell(table, pkg.ActivationDateOfPackage!.Value.ToString(), Font,fontsize);
+            AddArabicCell(table, pkg.ActivationDateOfPackage!.Value.ToString(), Font, fontsize, 1, 2);
             AddArabicLabelCell(table, $":{loc.SubscriptionDate.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
+            AddArabicEmptyCell(table, 1, 6);
+            AddArabicEmptyCell(table, 1, 3);
+            AddArabicCell(table, pkg.EnPlateNumber.ArabicWithFontGlyphsToPDF(), Font, fontsize, 1, 2);
+            AddArabicLabelCell(table, $":{loc.PlateNumber.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
+            AddArabicEmptyCell(table, 1, 6);
+            AddArabicCell(table, org.Address.ArabicWithFontGlyphsToPDF(), Font, fontsize, 1, 5);
+            AddArabicLabelCell(table, $":{loc.OrganizationAddress.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
         }
         else
         {
-            AddEnglishLabelCell(table, $"{loc.CashierNo}:", Font , fontsize);
-            AddEnglishCell(table, pay.CashierName, Font,fontsize);
+            AddEnglishLabelCell(table, $"{loc.CashierNo}:", Font, fontsize);
+            AddEnglishCell(table, pay.CashierName, Font, fontsize);
             AddEnglishEmptyCell(table);
             AddEnglishLabelCell(table, $"{loc.OrganizationName}:", Font, fontsize);
-            AddEnglishCell(table, org.EnglishName, Font,fontsize);
+            AddEnglishCell(table, org.EnglishName, Font, fontsize);
 
             AddEnglishLabelCell(table, $"{loc.PlateNumber}:", Font, fontsize);
-            AddEnglishCell(table, pkg.EnPlateNumber, Font,fontsize);
+            AddEnglishCell(table, pkg.EnPlateNumber, Font, fontsize);
             AddEnglishEmptyCell(table);
             AddEnglishLabelCell(table, $"{loc.OrganizationAddress}:", Font, fontsize);
-            AddEnglishCell(table, org.Address, Font,fontsize);
+            AddEnglishCell(table, org.Address, Font, fontsize);
 
             for (int i = 0; i < 5; i++) AddEnglishEmptyCell(table);
 
             AddEnglishLabelCell(table, $"{loc.SubscriptionDate}:", Font, fontsize);
-            AddEnglishCell(table, pkg.ActivationDateOfPackage!.Value.ToString(), Font,fontsize);
+            AddEnglishCell(table, pkg.ActivationDateOfPackage!.Value.ToString(), Font, fontsize);
             AddEnglishLabelCell(table, $"{loc.ExpirationDate}:", Font, fontsize);
-            AddEnglishCell(table, pkg.ExpiryDate.ToString(), Font,fontsize);
+            AddEnglishCell(table, pkg.ExpiryDate.ToString(), Font, fontsize);
         }
 
         doc.Add(table);
@@ -221,7 +220,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
             Localization = localization
         };
 
-        return Build(data , PageSize);
+        return Build(data, PageSize);
     }
 
     public void AddVatAndTicket(Document doc, PackagePdfData data)
