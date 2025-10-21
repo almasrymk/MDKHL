@@ -3,9 +3,11 @@ using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using Microsoft.Reporting.NETCore;
 using SmartParking.Payments;
 using SmartParking.QRCode;
 using SmartParking.Utilities;
+using SmartParking.ZATCATaxInvoice;
 using System;
 using System.Globalization;
 using System.IO;
@@ -13,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.PDF;
 
-public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, IPDFContractsAppService<InvoicePdfData> , IPDFGeneratorAppService
+public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, IPDFContractsAppService<InvoicePdfData>, IPDFGeneratorAppService
 {
 
     private readonly ILocalizationFactoryAppService _localizationAppService;
@@ -21,7 +23,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
 
 
 
-    public InvoicePDFAppService( ILocalizationFactoryAppService localizationAppService, IQRCodeAppService qrCodeAppService) 
+    public InvoicePDFAppService(ILocalizationFactoryAppService localizationAppService, IQRCodeAppService qrCodeAppService)
     {
 
         _localizationAppService = localizationAppService;
@@ -62,51 +64,51 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
             AddArabicCell(table, pay.CashierName.ArabicWithFontGlyphsToPDF(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.CashierNo.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
             AddArabicEmptyCell(table);
-            AddArabicCell(table, inv.OrganizationArabicName.ArabicWithFontGlyphsToPDF(), Font,fontsize);
+            AddArabicCell(table, inv.OrganizationArabicName.ArabicWithFontGlyphsToPDF(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.OrganizationName.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
 
-            AddArabicCell(table, inv.PlateNumber, Font,fontsize);
-            AddArabicLabelCell(table, $":{loc.PlateNumber.ArabicWithFontGlyphsToPDF()}", Font,fontsize);
+            AddArabicCell(table, inv.PlateNumber, Font, fontsize);
+            AddArabicLabelCell(table, $":{loc.PlateNumber.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
             AddArabicEmptyCell(table);
-            AddArabicCell(table, inv.OrganizationAddress.ArabicWithFontGlyphsToPDF(), Font,fontsize);
+            AddArabicCell(table, inv.OrganizationAddress.ArabicWithFontGlyphsToPDF(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.OrganizationAddress.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
 
             for (int i = 0; i < 5; i++) AddArabicEmptyCell(table);
             AddArabicCell(table, inv.InvoiceTime.ToString(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.ExitTime.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
             AddArabicEmptyCell(table);
-            AddArabicCell(table, inv.EntranceTime.ToString(), Font,fontsize);
+            AddArabicCell(table, inv.EntranceTime.ToString(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.EntranceTime.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-          
+
         }
         else
         {
             AddEnglishLabelCell(table, $"{loc.CashierNo}:", Font, fontsize);
-            AddEnglishCell(table, pay.CashierName, Font,fontsize);
+            AddEnglishCell(table, pay.CashierName, Font, fontsize);
             AddEnglishEmptyCell(table);
             AddEnglishLabelCell(table, $"{loc.OrganizationName}:", Font, fontsize);
-            AddEnglishCell(table, inv.OrganizationEnglishName, Font,fontsize);
+            AddEnglishCell(table, inv.OrganizationEnglishName, Font, fontsize);
 
             AddEnglishLabelCell(table, $"{loc.PlateNumber}:", Font, fontsize);
-            AddEnglishCell(table, inv.PlateNumber, Font,fontsize);
+            AddEnglishCell(table, inv.PlateNumber, Font, fontsize);
             AddEnglishEmptyCell(table);
             AddEnglishLabelCell(table, $"{loc.OrganizationAddress}:", Font, fontsize);
-            AddEnglishCell(table, inv.OrganizationAddress, Font,fontsize);
+            AddEnglishCell(table, inv.OrganizationAddress, Font, fontsize);
 
             for (int i = 0; i < 5; i++) AddEnglishEmptyCell(table);
 
             AddEnglishLabelCell(table, $"{loc.ExitTime}:", Font, fontsize);
-            AddEnglishCell(table, inv.InvoiceTime.ToString(), Font,fontsize);
+            AddEnglishCell(table, inv.InvoiceTime.ToString(), Font, fontsize);
             AddEnglishEmptyCell(table);
             AddEnglishLabelCell(table, $"{loc.EntranceTime}:", Font, fontsize);
-            AddEnglishCell(table, inv.EntranceTime.ToString(), Font,fontsize);
+            AddEnglishCell(table, inv.EntranceTime.ToString(), Font, fontsize);
         }
 
         doc.Add(table);
     }
     public void AddPaymentHeader(Document doc, InvoicePdfData data)
     {
-        var currencyImg = CreateImage(PathHelper.CurrencyIcon, HorizontalAlignment.LEFT,doc ,10);
+        var currencyImg = CreateImage(PathHelper.CurrencyIcon, HorizontalAlignment.LEFT, doc, 10);
         var p = new Paragraph().SetFont(Font).SetFontSize(13).SetTextAlignment(TextAlignment.CENTER);
 
         if (CultureName == "ar")
@@ -170,14 +172,14 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         var vatText = CultureName == "ar"
                ? $"{data.Payment.PaymentNumber.ArabicWithFontGlyphsToPDF()}:{data.Localization.InvoiceNumber.ArabicWithFontGlyphsToPDF()}"
                : $"{data.Localization.InvoiceNumberView}: {data.Payment.PaymentNumber}";
-        doc.Add(CreateCenteredParagraph(vatText, 13, true,doc));
+        doc.Add(CreateCenteredParagraph(vatText, 13, true, doc));
 
         if (data.Data.TicketId != null)
         {
             var tText = CultureName == "ar"
                 ? $"{data.Data.TicketId.ArabicWithFontGlyphsToPDF()}:{data.Localization.TicketId.ArabicWithFontGlyphsToPDF()}"
                 : $"{data.Localization.TicketId}: {data.Data.TicketId}";
-            doc.Add(CreateCenteredParagraph(tText, 13, true,doc));
+            doc.Add(CreateCenteredParagraph(tText, 13, true, doc));
         }
     }
 
@@ -194,7 +196,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         var tprice = Math.Round((inv.InvoicePrice + (inv.InvoicePrice * 0.15m)), 2);
 
         if (tprice != data.Payment.Amount)
-            AddSummaryRow(table, $"{loc.Discount}", (tprice-data.Payment.Amount).ToString("F2"), Font, isArabic, currency, doc);
+            AddSummaryRow(table, $"{loc.Discount}", (tprice - data.Payment.Amount).ToString("F2"), Font, isArabic, currency, doc);
         AddSummaryRow(table, loc.TotalIncludeVAT, data.Payment.Amount.ToString("F2"), Font, isArabic, currency, doc);
 
         return table;
@@ -227,7 +229,10 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
             Localization = localization
         };
 
-        return Build(pdfData, PageSize);
+        if (PageSize == "thermal7cm")
+            return Buildrdlc(pdfData);
+        else
+            return Build(pdfData, PageSize);
     }
 
     protected override void BuildArabicLayout(Document doc, InvoicePdfData data)

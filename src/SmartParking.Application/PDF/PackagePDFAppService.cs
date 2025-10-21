@@ -220,7 +220,10 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
             Localization = localization
         };
 
-        return Build(data, PageSize);
+        if (PageSize == "thermal7cm")
+            return Buildrdlc(data);
+        else
+            return Build(data, PageSize);
     }
 
     public void AddVatAndTicket(Document doc, PackagePdfData data)
