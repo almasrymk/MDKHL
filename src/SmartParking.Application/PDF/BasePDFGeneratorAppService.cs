@@ -119,7 +119,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
     public Stream Buildrdlc(PackagePdfData dt)
     {
         // Path to your RDLC file
-        string reportPath = Path.Combine(Directory.GetCurrentDirectory(), "Components/Reportrdlc", "PackagePDF.rdlc");
+        string reportPath = Path.Combine(PathHelper.WwwRoot, "Reportrdlc", "PackagePDF.rdlc");
 
         // Create LocalReport instance
         LocalReport report = new LocalReport();
@@ -147,17 +147,17 @@ public abstract class BasePDFGeneratorAppService<DTO>
 
         byte[] ImgOrgBytes = File.ReadAllBytes(ImgOrg);
 
-       var QRCodePath = Path.Combine(
-             PathHelper.WwwRoot,
-             "QRCodeImage\\image",
-             Path.GetFileName(dt.Localization.QRCodePath));
+        var QRCodePath = Path.Combine(
+              PathHelper.WwwRoot,
+              "QRCodeImage\\image",
+              Path.GetFileName(dt.Localization.QRCodePath));
 
         byte[] ImgQrBytes = File.ReadAllBytes(QRCodePath);
 
         byte[] curr = File.ReadAllBytes(PathHelper.imageDirectoryPdf);
 
         var Days = (dt.Data.ExpiryDate - dt.Data.ActivationDateOfPackage!.Value).Days;
-        
+
         // Example dataset
         System.Data.DataTable table = new System.Data.DataTable("InvoicerdlcData");
         table.Columns.Add("ImgMadkhal", typeof(byte[]));
@@ -192,20 +192,20 @@ public abstract class BasePDFGeneratorAppService<DTO>
         row["OrganizationAddress"] = dt.Organization.Address;
         row["Subscription"] = dt.Localization.PackageNumberView;
         row["Duration"] = $"{Days}{dt.Localization.Days}";
-        row["TotalPreVAT"] = dt.Data.PriceOfPackage!.Value.ToString("F2") ;
-        row["Vats"] = dt.Data.Vat.ToString("F2") ;
-        row["Discount"] = dt.Data.Discount.ToString("F2") ;
-        row["TotalIncludeVAT"] = dt.Payment.Amount.ToString("F2") ;
-        row["ExpiryDate"] =  dt.Data.ExpiryDate;
+        row["TotalPreVAT"] = dt.Data.PriceOfPackage!.Value.ToString("F2");
+        row["Vats"] = dt.Data.Vat.ToString("F2");
+        row["Discount"] = dt.Data.Discount.ToString("F2");
+        row["TotalIncludeVAT"] = dt.Payment.Amount.ToString("F2");
+        row["ExpiryDate"] = dt.Data.ExpiryDate;
         row["ActivationDateOfPackage"] = dt.Data.ActivationDateOfPackage!.Value;
         table.Rows.Add(row);
         return table;
     }
-   
+
     public Stream Buildrdlc(InvoicePdfData dt)
     {
         // Path to your RDLC file
-        string reportPath = Path.Combine(Directory.GetCurrentDirectory(), "Components/Reportrdlc", "InvoicePDF.rdlc");
+        string reportPath = Path.Combine(PathHelper.WwwRoot, "Reportrdlc", "InvoicePDF.rdlc");
 
         // Create LocalReport instance
         LocalReport report = new LocalReport();
@@ -277,7 +277,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
         row["Subscription"] = dt.Localization.Hours;
         row["Duration"] = $"{dt.Data.TotalHours}{dt.Localization.Hours}";
         row["TotalPreVAT"] = dt.Data.TotalPriceWithVatAndDiscount.ToString("F2");
-        row["Vats"] = Math.Round(dt.Data.InvoicePrice * 0.15m, 2).ToString("F2") ;
+        row["Vats"] = Math.Round(dt.Data.InvoicePrice * 0.15m, 2).ToString("F2");
         row["Discount"] = dt.Data.Discount.ToString("F2");
         row["TotalIncludeVAT"] = dt.Payment.Amount.ToString("F2");
         row["ExitTime"] = dt.Data.InvoiceTime;
