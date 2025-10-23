@@ -105,5 +105,7 @@ namespace SmartParking.CustomerPackages
         /// <returns>A task that represents the asynchronous operation.</returns>
         Task CheckSubscriptionCustomersLimitsAsync(int organizationId);
         Task AddDefaultPackageToCustomerAsync(Guid CustomerId);
+        new Task DeleteAsync(int id);
+
     }
 }

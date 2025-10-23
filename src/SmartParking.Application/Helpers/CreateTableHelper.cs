@@ -872,7 +872,7 @@ public static class CreateTableHelper
             var rowDef = new RowDef();
 
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Code"), payment.PaymentNumber?.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("InvoiceId"), payment.InvoiceId?.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("InvoiceId"), payment.InvoiceId is not null ? payment.InvoiceId?.ToString() : LocalizationHelper.GetLocalizedString(payment.PaymentCategory.ToString())));
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), payment.CustomerArabicName ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
