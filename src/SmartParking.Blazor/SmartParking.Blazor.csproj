@@ -102,4 +102,9 @@
     <Folder Include="wwwroot\GarageTransactionsImages\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Reportrdlc\InvoicePDF.rdlc" />
+    <None Include="wwwroot\Reportrdlc\PackagePDF.rdlc" />
+  </ItemGroup>
+
 </Project>
