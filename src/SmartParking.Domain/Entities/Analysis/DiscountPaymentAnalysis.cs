@@ -12,6 +12,7 @@ public class DiscountPaymentAnalysis
 {
     public string PaymentNumber { get; set; }
     public int? InvoiceId { get; set; }
+    public int? CustomerPackageId { get; set; }
     public string CustomerArabicName { get; set; }
     public string CustomerEnglishName { get; set; }
     public Guid? TenantId { get; set; }

@@ -854,6 +854,8 @@
     "PackagePaymentSuccessfully": "Package Payment Successfully",
     "Days": "Days",
     "Duration": "Duration",
-    "PackagesPayments": "Packages Payments"
+    "PackagesPayments": "Packages Payments",
+    "PackageCheckout": "Packages Payments",
+    "PackageDiscountsReport": "Packages Discount Report"
   }
 }

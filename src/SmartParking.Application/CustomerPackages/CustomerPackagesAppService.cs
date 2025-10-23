@@ -654,19 +654,9 @@ public class CustomerPackagesAppService:
         {
             throw new EntityNotFoundException(typeof(CustomerPackage), id);
         }
-
-        int RelatedPackages = await CheckCountOfCustomerPackage(customerPackage);
-
-        if (RelatedPackages > 1)
-        {
-            await _repository.HardDeleteAsync(customerPackage);
-        }
-        else
-        {
-            ClearPackageDetails(customerPackage);
-
-            await _repository.UpdateAsync(customerPackage, true);
-        }
+        ClearPackageDetails(customerPackage);
+        await _repository.UpdateAsync(customerPackage, true);
+        
     }
 
 

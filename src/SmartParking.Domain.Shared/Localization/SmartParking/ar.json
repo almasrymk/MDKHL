@@ -884,6 +884,9 @@
     "PackagePaymentSuccessfully": "تم دفع الفاتورة بنجاح",
     "Days": "أيام",
     "Duration": "المدة",
-    "PackagesPayments": "فواتير الباقات"
+    "PackagesPayments": "فواتير الباقات",
+    "PackageCheckout": "دفع الباقات",
+    "PackageDiscountsReport": "تقرير بخصومات الباقات"
   }
+  
 }

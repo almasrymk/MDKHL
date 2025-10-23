@@ -141,16 +141,17 @@ public class PaymentAnalysisRepository
         var dbContext = await GetDbContextAsync();
         var query = from payments in dbContext.Payments
                     where tenantId == null || payments.TenantId == tenantId
-                    where payments.Invoice != null && payments.Invoice.Discount > 0
+                    where (payments.Invoice != null && payments.Invoice.Discount > 0 ) || (payments.CustomerPackage != null && payments.CustomerPackage.Discount > 0)
                     select new DiscountPaymentAnalysis
                     {
-                        Discount = payments != null && payments.Invoice != null ? payments.Invoice.Discount : 0m,
+                        Discount =payments!=null && payments.Invoice != null ? payments.Invoice.Discount :payments!.CustomerPackage!.Discount,
                         Amount = payments.Amount,
                         Currency = payments.Currency,
                         CustomerArabicName = payments.Customers.ArabicName ?? "NotCustomer",
                         CustomerEnglishName = payments.Customers.IdentityUser.Name ?? "NotCustomer",
-                        PlateNumber = payments != null && payments.Invoice != null?payments.Invoice.PlateNumber : "NotPlateNumber",
+                        PlateNumber = payments != null && payments.Invoice != null?payments.Invoice.PlateNumber : payments!.CustomerPackage!.EnPlateNumber,
                         InvoiceId = payments.InvoiceId,
+                        CustomerPackageId=payments.CustomerPackageId,
                         PaymentCategory = payments.PaymentCategory,
                         PaymentDate = payments.CreationTime,
                         PaymentMethod = payments.PaymentMethod,
@@ -159,8 +160,6 @@ public class PaymentAnalysisRepository
                         TenantId = payments.TenantId,
                         Date = DateOnly.FromDateTime(payments.CreationTime),
                         Time = TimeOnly.FromDateTime(payments.CreationTime),
-
-                        
                     };
         query = query.Where(filterRequests);
         if(!string.IsNullOrWhiteSpace(searchTerm))

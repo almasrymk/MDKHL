@@ -1141,9 +1141,8 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var queryCustomerPackage = await _customerPackageRepository.GetQueryableAsync();
             var queryCustomer = await _custeRepo.GetQueryableAsync();
             var userQuery = await _myUserRepository.GetQueryableAsync();
-
             var result = from customer in queryCustomer
-                         join cp in queryCustomer on customer.Id equals cp.Id
+                         join cp in queryCustomerPackage on customer.Id equals cp.CustomerId
                          where tenantId.HasValue ? cp.TenantId == tenantId.Value : true
                          select new CustomerAnalysis
                          {
@@ -1151,14 +1150,31 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                              BeneficiaryNameEn = customer.IdentityUser.Name,
                              PhoneNumber = customer.IdentityUser.PhoneNumber,
                              PackageCategory = customer.CustomerPackages.Select(_ => _.CustomerCategory).FirstOrDefault(),
-                             CreatedBy = userQuery.Where(_ => _.Id == customer.CreatorId).FirstOrDefault().Name,
+
+                             CreatedBy = userQuery
+                                            .Where(_ => _.Id == customer.CreatorId)
+                                            .Select(_ => _.Name)
+                                            .FirstOrDefault() ?? "MDKHL",
                              CreationTime = TimeOnly.FromDateTime(customer.CreationTime),
                              CreationDate = DateOnly.FromDateTime(customer.CreationTime),
-                             ModifiedBy = userQuery.Where(_ => _.Id == customer.LastModifierId).FirstOrDefault().Name,
-                             ModifiedTime = TimeOnly.FromDateTime((DateTime)customer.LastModificationTime),
-                             ModifiedDate = DateOnly.FromDateTime((DateTime)customer.LastModificationTime),
+
+                             ModifiedBy = customer.LastModifierId !=null
+                                            ? userQuery
+                                                .Where(_ => _.Id == customer.LastModifierId)
+                                                .Select(_ => _.Name)
+                                                .FirstOrDefault()
+                                            : (customer.LastModificationTime != null ? "MDKHL" : null),
+
+                             ModifiedTime = customer.LastModificationTime != null
+                                            ? TimeOnly.FromDateTime(customer.LastModificationTime.Value)
+                                            : (TimeOnly?)null,
+
+                             ModifiedDate = customer.LastModificationTime != null
+                                            ? DateOnly.FromDateTime(customer.LastModificationTime.Value)
+                                            : (DateOnly?)null,
                          };
-          
+
+
             if (!input.Sorting.IsNullOrEmpty())
             {
                 if (input.Sorting.Contains("DESC"))
