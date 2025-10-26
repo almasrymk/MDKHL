@@ -145,6 +145,9 @@ public abstract class BasePDFGeneratorAppService<DTO>
             PathHelper.OrganizationFolder,
             Path.GetFileName(dt.Organization.OrganizationPicture));
 
+        if (!File.Exists(ImgOrg))
+            ImgOrg = PathHelper.imageDirectoryPdf;
+
         byte[] ImgOrgBytes = File.ReadAllBytes(ImgOrg);
 
         var QRCodePath = Path.Combine(
@@ -230,6 +233,9 @@ public abstract class BasePDFGeneratorAppService<DTO>
             PathHelper.WwwRoot,
             PathHelper.OrganizationFolder,
             Path.GetFileName(dt.Organization.OrganizationPicture));
+
+        if (!File.Exists(ImgOrg))
+            ImgOrg = PathHelper.imageDirectoryPdf;
 
         byte[] ImgOrgBytes = File.ReadAllBytes(ImgOrg);
 
