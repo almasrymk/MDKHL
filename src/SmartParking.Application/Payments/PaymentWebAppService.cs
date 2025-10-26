@@ -430,7 +430,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.Invoice.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower())  ||
                 or.Invoice.Id.ToString().Contains(input.SearchingTerm)  ||
-                or.CashierName.ToLower().Contains(input.SearchingTerm.ToLower())
+                or.CashierName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.CheckoutId!.ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
         return queryable;
@@ -454,8 +455,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.OrganizationArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.OrganizationEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.CashierName.ToLower().Contains(input.SearchingTerm.ToLower())
-
+                or.CashierName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.CheckoutId!.ToLower().Contains(input.SearchingTerm.ToLower())
             // full date-time or includes hour
             );
         }

@@ -32,6 +32,8 @@ public class CustomerDto:AuditedEntityDto<Guid>
     public Guid IdentityId { get; set; }
     public string _packageEnglishNames;
     public string _packageArabicNames;
+    public string PlateNumberArabic;
+    public string PlateNumberEnglish;
 
     public string PackageEnglishNames
     {
