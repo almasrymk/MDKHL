@@ -257,11 +257,13 @@ public partial class Customer
         if (CultureInfo.CurrentCulture.Name == "ar")
         {
 
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = false, PropertyName = "PlateNumberArabic", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Package"], Name = "Package", IsFilterable = false, PropertyName = "CustomerPackages.PackageArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
         }
         else
         {
 
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = false, PropertyName = "PlateNumberEnglish", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Package"], Name = "Package", IsFilterable = false, PropertyName = "CustomerPackages.PackageEnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
         }
         if (CurrentTenant.Id == null)
@@ -292,11 +294,13 @@ public partial class Customer
             if (CultureInfo.CurrentCulture.Name == "ar")
             {
 
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNumberArabic.IsNullOrWhiteSpace() ? _localizer["NoPlateNumber"] : item.PlateNumberArabic));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Package"], item.PackageArabicNames.IsNullOrWhiteSpace() ? _localizer["NoPackages"] : item.PackageArabicNames));
 
             }
             else
             {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNumberEnglish.IsNullOrWhiteSpace() ? _localizer["NoPlateNumber"] : item.PlateNumberEnglish));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Package"], item.PackageEnglishNames.IsNullOrWhiteSpace() ? _localizer["NoPackages"] : item.PackageEnglishNames));
 
             }

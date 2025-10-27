@@ -139,7 +139,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
             query = query.Include(c => c.IdentityUser);
             query = query.Where(x => x.CustomerPackages.Any(org => org.OrganizationId == organization.Id));
-            query = CreateSearchQuery(input, query);
+            query = await CreateSearchWithVehiclesQuery(input, query);
             query = AddSortQuery(input, query);
             var paged = await AddPaged(input, query);
             query = paged.query;
@@ -176,14 +176,15 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     public async Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
-        {
+        {           
             var query = await _repository.GetQueryableAsync();
             query = query.Include(c => c.IdentityUser);
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
             if (tenantId.HasValue)
                 query = query.Where(x => x.CustomerPackages.Any(org => org.TenantId == tenantId.Value));
-            query = CreateSearchQuery(input, query);
+            query = await CreateSearchWithVehiclesQuery(input, query);           
             query = AddSortQuery(input, query);
+
             var paged = await AddPaged(input, query);
             query = paged.query;
             List<CustomerDto> cutomersDtos = await AddMap(query, null);
@@ -612,7 +613,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// <returns>List of <see cref="CustomerDto"/> mapped from the query.</returns>
     private async Task<List<CustomerDto>> AddMap(IQueryable<Customer> query, CustomerCategoryStatus? customerCategory)
     {
-
+        var vehicles = await _repositoryVehicle.GetQueryableAsync();
         List<CustomerDto> customersDtos = await query
             .Select(c => new CustomerDto
             {
@@ -622,6 +623,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 Email = c.IdentityUser.Email,
                 MobileNumber = c.IdentityUser.PhoneNumber,
                 NationalId = c.NationalId,
+                PlateNumberArabic = vehicles.Count(e=>e.CustomerId == c.Id) > 1 ? "متعدد" : vehicles.FirstOrDefault(e=>e.CustomerId == c.Id)!.ArPlateNumber,
+                PlateNumberEnglish = vehicles.Count(e=>e.CustomerId == c.Id) > 1 ? "متعدد" : vehicles.FirstOrDefault(e=>e.CustomerId == c.Id)!.EnPlateNumber,
                 _packageEnglishNames = string.Join(", ", c.CustomerPackages
                            .Where(_ =>
                                (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))
@@ -721,22 +724,52 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     private static IQueryable<Customer> CreateSearchQuery(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Customer> queryable)
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
-
-           queryable = queryable.Where(or =>
+        {           
+            queryable = queryable.Where(or =>
                 or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.Surname.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())  
             );
 
         }
 
         return queryable;
     }
+
+    /// <summary>
+    /// Applies search filters to the customer query based on the search term in the input.
+    /// </summary>
+    /// <param name="input">Search input parameters.</param>
+    /// <param name="queryable">The queryable to apply search filters on.</param>
+    /// <returns>Filtered <see cref="IQueryable{Customer}"/> with search conditions.</returns>
+    private async Task<IQueryable<Customer>> CreateSearchWithVehiclesQuery(PagedAndSortedAndSearchResultRequestDto input , IQueryable<Customer> queryable)
+    {
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+            var vehicles = await _repositoryVehicle.GetQueryableAsync();
+            var Ids = vehicles.Where( 
+                e => e.ArPlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                e.EnPlateNumber.ToLower().Contains(input.SearchingTerm.ToLower())
+               ).Select(e => e.CustomerId);
+             
+            queryable = queryable.Where(or =>
+                or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.IdentityUser.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.IdentityUser.Surname.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                Ids.Contains(or.Id)
+            );
+        }
+        return queryable;
+    }
+
     /// <summary>
     /// Updates the user associated with a customer, excluding role changes.
     /// </summary>

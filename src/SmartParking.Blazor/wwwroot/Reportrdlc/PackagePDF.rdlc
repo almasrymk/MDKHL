@@ -652,7 +652,7 @@
       <Width>3.29632in</Width>
       <Page>
         <PageHeader>
-          <Height>3.43625in</Height>
+          <Height>3.00694in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -661,10 +661,10 @@
               <Value>=First(Fields!ImgMadkhal.Value, "DataSet1")</Value>
               <MIMEType>image/png</MIMEType>
               <Sizing>Fit</Sizing>
-              <Top>0.67027cm</Top>
+              <Top>0.03527cm</Top>
               <Left>4.9299cm</Left>
-              <Height>0.97917in</Height>
-              <Width>1.11583in</Width>
+              <Height>0.85417in</Height>
+              <Width>0.99083in</Width>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -676,7 +676,7 @@
               <Value>=First(Fields!ImgOrg.Value, "DataSet1")</Value>
               <MIMEType>image/png</MIMEType>
               <Sizing>Fit</Sizing>
-              <Top>0.67027cm</Top>
+              <Top>0.03527cm</Top>
               <Left>0.67012cm</Left>
               <Height>0.97917in</Height>
               <Width>1.11583in</Width>
@@ -707,7 +707,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>SimplifiedTaxInvoice</rd:DefaultName>
-              <Top>1.70708in</Top>
+              <Top>1.33208in</Top>
               <Left>0.26383in</Left>
               <Height>0.23958in</Height>
               <Width>2.79291in</Width>
@@ -741,7 +741,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>PaymentNumber</rd:DefaultName>
-              <Top>1.94667in</Top>
+              <Top>1.57167in</Top>
               <Left>0.26383in</Left>
               <Height>0.25in</Height>
               <Width>2.79291in</Width>
@@ -776,7 +776,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>2.21056in</Top>
+              <Top>1.83556in</Top>
               <Left>2.49424in</Left>
               <Height>0.25in</Height>
               <Width>0.6875in</Width>
@@ -812,7 +812,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>2.21056in</Top>
+              <Top>1.83556in</Top>
               <Left>1.06716in</Left>
               <Height>0.25in</Height>
               <Width>0.60417in</Width>
@@ -848,7 +848,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>2.46056in</Top>
+              <Top>2.08556in</Top>
               <Left>1.06716in</Left>
               <Height>0.25in</Height>
               <Width>0.6504in</Width>
@@ -884,7 +884,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>2.46056in</Top>
+              <Top>2.08556in</Top>
               <Left>2.49424in</Left>
               <Height>0.25in</Height>
               <Width>0.6875in</Width>
@@ -920,10 +920,10 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>3.07986in</Top>
+              <Top>2.70486in</Top>
               <Left>2.49424in</Left>
               <Height>0.25in</Height>
-              <Width>0.80208in</Width>
+              <Width>0.6875in</Width>
               <ZIndex>8</ZIndex>
               <Style>
                 <Border>
@@ -956,7 +956,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>2.76611in</Top>
+              <Top>2.39111in</Top>
               <Left>2.49424in</Left>
               <Height>0.25in</Height>
               <Width>0.58333in</Width>
@@ -982,6 +982,7 @@
                       <Value>=First(Fields!OrganizationName.Value, "DataSet1")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -991,7 +992,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>OrganizationName</rd:DefaultName>
-              <Top>2.21056in</Top>
+              <Top>1.83556in</Top>
               <Left>1.67133in</Left>
               <Height>0.25in</Height>
               <Width>0.79512in</Width>
@@ -1017,6 +1018,7 @@
                       <Value>=First(Fields!CashierName.Value, "DataSet1")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -1026,7 +1028,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>CashierName</rd:DefaultName>
-              <Top>2.21056in</Top>
+              <Top>1.83556in</Top>
               <Left>0.125in</Left>
               <Height>0.25in</Height>
               <Width>0.94216in</Width>
@@ -1052,6 +1054,7 @@
                       <Value>=First(Fields!PlateNumber.Value, "DataSet1")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -1061,7 +1064,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>PlateNumber</rd:DefaultName>
-              <Top>2.76611in</Top>
+              <Top>2.39111in</Top>
               <Left>1.54632in</Left>
               <Height>0.25in</Height>
               <Width>0.92013in</Width>
@@ -1086,6 +1089,7 @@
                       <Value>=First(Fields!OrganizationAddress.Value, "DataSet1")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -1095,7 +1099,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>OrganizationAddress</rd:DefaultName>
-              <Top>3.07986in</Top>
+              <Top>2.70486in</Top>
               <Left>0.10417in</Left>
               <Height>0.25in</Height>
               <Width>2.36229in</Width>
@@ -1120,6 +1124,7 @@
                       <Value>=First(Fields!ExpiryDate.Value, "DataSet1")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -1129,7 +1134,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>ExpiryDate</rd:DefaultName>
-              <Top>2.46056in</Top>
+              <Top>2.08556in</Top>
               <Left>1.54632in</Left>
               <Height>0.25in</Height>
               <Width>0.92013in</Width>
@@ -1154,6 +1159,7 @@
                       <Value>=First(Fields!ActivationDateOfPackage.Value, "DataSet1")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -1163,7 +1169,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>ActivationDateOfPackage</rd:DefaultName>
-              <Top>2.47445in</Top>
+              <Top>2.09945in</Top>
               <Left>0.125in</Left>
               <Height>0.23611in</Height>
               <Width>0.94216in</Width>
@@ -1198,7 +1204,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Title1</rd:DefaultName>
-              <Top>1.40152in</Top>
+              <Top>1.02652in</Top>
               <Left>1.14816in</Left>
               <Height>0.25in</Height>
               <Width>1in</Width>
