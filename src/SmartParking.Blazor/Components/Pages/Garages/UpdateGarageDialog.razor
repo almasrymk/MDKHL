@@ -137,9 +137,20 @@
                                          Label="@L["MaxSlotsForFree"]"
                                          ValueChanged="HandleFreeSlotsChange" />
                     </MudItem>
+
+                    <MudItem sm="6" md="6">
+                        <MudNumericField Value="Garage.CurrnetCapicity"
+                                         Variant="Variant.Text"
+                                         Class="w-100"
+                                         Validation="@(new Func<int, string>(NumbersValidations.validateNumber0to9999))"
+                                         HideSpinButtons="true"
+                                         T="int"
+                                         Placeholder="@L["Type Here"]"
+                                         Label="@L["CurrnetCapicity"]"
+                                         ValueChanged="HandleCurrnetCapicity" />
+                    </MudItem>
+
                     <MudItem sm="9" md="9">
-
-
                         <MudRadioGroup @bind-Value="@Garage.Status" Class="d-inline-flex align-content-center">
                             <div class="d-flex flex-row justify-content-between">
                                 <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>

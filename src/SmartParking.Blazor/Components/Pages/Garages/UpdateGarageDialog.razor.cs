@@ -104,6 +104,12 @@ public partial class UpdateGarageDialog
         Disrtibute();
     }
 
+    private void HandleCurrnetCapicity(int currnetCapicity)
+    {
+        Garage.CurrnetCapicity = currnetCapicity;
+        Disrtibute();
+    }
+
     private void Disrtibute()
     {
         int MaxSlotsForEmployess = Garage.MaxSlotsForEmployess;

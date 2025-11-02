@@ -856,6 +856,7 @@
     "Duration": "Duration",
     "PackagesPayments": "Packages Payments",
     "PackageCheckout": "Packages Payments",
-    "PackageDiscountsReport": "Packages Discount Report"
+    "PackageDiscountsReport": "Packages Discount Report",
+    "CurrnetCapicity": "اشغال الاماكن"
   }
 }

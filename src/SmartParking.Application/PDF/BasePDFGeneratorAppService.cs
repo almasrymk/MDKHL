@@ -275,7 +275,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
         row["ImgQr"] = ImgQrBytes;
         row["Title1"] = $"{dt.Data.InvoiceId.ToString()} : {dt.Localization.InvoiceNumber}";
         row["SimplifiedTaxInvoice"] = "***" + dt.Localization.SimplifiedTaxInvoice + "***";
-        row["PaymentNumber"] = $"{dt.Payment.PaymentNumber} : {dt.Localization.InvoiceNumber}";
+        row["PaymentNumber"] = $"{dt.Payment.PaymentNumber} : {dt.Localization.InvoiceNumberView}";
         row["OrganizationName"] = dt.Organization.ArabicName;
         row["CashierName"] = dt.Payment.CashierName;
         row["PlateNumber"] = dt.Data.PlateNumber;
