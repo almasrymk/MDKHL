@@ -19,5 +19,6 @@ public class GaragePermissionDefinitionProvider : PermissionDefinitionProvider
         garagePermission.AddChild(GaragePermissions.Create, CustomStringLocalizer.L(CustomStringLocalizer.Add));
         garagePermission.AddChild(GaragePermissions.Edit, CustomStringLocalizer.L(CustomStringLocalizer.Edit));
         garagePermission.AddChild(GaragePermissions.Delete, CustomStringLocalizer.L(CustomStringLocalizer.Delete));
+        garagePermission.AddChild(GaragePermissions.EditCountCurrnetCapicity, CustomStringLocalizer.L("Permission:EditCountCurrnetCapicity"));
     }
 }

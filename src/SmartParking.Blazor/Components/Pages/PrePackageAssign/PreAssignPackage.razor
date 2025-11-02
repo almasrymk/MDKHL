@@ -45,11 +45,16 @@
             <LastInvoiceOnGateDetails Key="@L["EndDate"]"
                 Value="@(CustomerPackageDto?.ExpiryDate.ToString("yyyy-MM-dd") ?? "" )" />
 
+            <LastInvoiceOnGateDetails CurrencyKey="@((MarkupString)$"{L["CountOfDays"]}")"
+                                      Value="@CustomerPackageDto?.CountOfDays.ToString()"   />
+
             <LastInvoiceOnGateDetails Key="@L["Published"]"
                                       Value="@(publishedText ?? "" )" />
    
+            <LastInvoiceOnGateDetails CurrencyKey="@((MarkupString)$"{L["PriceOfPackagePerDay"]}{CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px")}")"
+                                      Value="@CustomerPackageDto?.PriceOfPackagePerDay.ToString()"   />
 
-            <LastInvoiceOnGateDetails CurrencyKey="@((MarkupString)$"{L["Price"]}{CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px")}")"
+            <LastInvoiceOnGateDetails CurrencyKey="@((MarkupString)$"{L["PriceOfPackage2"]}{CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px")}")"
                                       Value="@CustomerPackageDto?.PriceOfPackage.ToString()"   />
         </div>
     </MudItem>

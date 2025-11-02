@@ -1,5 +1,4 @@
-﻿
-@using SmartParking.Garages
+﻿@using SmartParking.Garages
 @inject ISnackbar Snackbar
 @inject IGarageAppService GarageAppService
 @using Microsoft.Extensions.Localization
@@ -10,22 +9,24 @@
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
 @using SmartParking.Blazor.Components.Shared;
-@inject ICurrentUser currrentUser
+@using SmartParking.Permissions.GaragePermissions;
+@inject ICurrentUser currentUser
 @inject ICurrentTenant currrentTenant
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IOrganizationsAppService OrganizationAppService
 @inject NavigationManager Navigation
+@inject IAuthorizationService AuthorizationService
 
 <PageTitle>@L["Update Garage"]</PageTitle>
 <div class="modal-wrapper">
 
-    <MudDialog Class="mud-modal" >
+    <MudDialog Class="mud-modal">
         <TitleContent>
             <MudText Typo="Typo.h6">@L["Edit"]</MudText>
         </TitleContent>
         <DialogContent>
 
-            <MudForm Model="Garage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" >
+            <MudForm Model="Garage" Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
                 <MudGrid>
                     <MudItem sm="6" md="6">
                         <MudTextField @bind-Value="Garage.NameEn"
@@ -34,7 +35,7 @@
                                       Required
                                       Class="w-100"
                                       Placeholder="@L["Type Here"]"
-                                      Label="@L["EnGarageName"]" 
+                                      Label="@L["EnGarageName"]"
                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     <MudItem sm="6" md="6">
@@ -44,7 +45,7 @@
                                       Required
                                       Class="w-100"
                                       Placeholder="@L["Type Here"]"
-                                      Label="@L["ArGarageName"]" 
+                                      Label="@L["ArGarageName"]"
                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                     </MudItem>
                     @if (currrentTenant.Id == null)
@@ -106,7 +107,6 @@
                         <MudNumericField Variant="Variant.Text"
                                          Class="w-100"
                                          T="int"
-                                        
                                          Validation="@(new Func<int, string>(NumbersValidations.validateNumber0to9999))"
                                          HideSpinButtons="true"
                                          Value="Garage.MaxSlotsForCustomers"
@@ -137,19 +137,20 @@
                                          Label="@L["MaxSlotsForFree"]"
                                          ValueChanged="HandleFreeSlotsChange" />
                     </MudItem>
-
-                    <MudItem sm="6" md="6">
-                        <MudNumericField Value="Garage.CurrnetCapicity"
-                                         Variant="Variant.Text"
-                                         Class="w-100"
-                                         Validation="@(new Func<int, string>(NumbersValidations.validateNumber0to9999))"
-                                         HideSpinButtons="true"
-                                         T="int"
-                                         Placeholder="@L["Type Here"]"
-                                         Label="@L["CurrnetCapicity"]"
-                                         ValueChanged="HandleCurrnetCapicity" />
-                    </MudItem>
-
+                    @if (currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentUser.IsInRole("admin") || AuthorizationService.IsGrantedAsync(GaragePermissions.EditCountCurrnetCapicity).Result)
+                    {
+                        <MudItem sm="6" md="6">
+                            <MudNumericField Value="Garage.CurrnetCapicity"
+                                             Variant="Variant.Text"
+                                             Class="w-100"
+                                             Validation="@(new Func<int, string>(NumbersValidations.validateNumber0to9999))"
+                                             HideSpinButtons="true"
+                                             T="int"
+                                             Placeholder="@L["Type Here"]"
+                                             Label="@L["CurrnetCapicity"]"
+                                             ValueChanged="HandleCurrnetCapicity" />
+                        </MudItem>
+                    }
                     <MudItem sm="9" md="9">
                         <MudRadioGroup @bind-Value="@Garage.Status" Class="d-inline-flex align-content-center">
                             <div class="d-flex flex-row justify-content-between">
@@ -160,20 +161,18 @@
                     </MudItem>
                 </MudGrid>
             </MudForm>
-              
+
         </DialogContent>
         <DialogActions>
-        <DialogActionComponent 
-        ButtonTwoColor="MudBlazor.Color.Primary" 
-        ButtonOneColor="MudBlazor.Color.Dark" 
-        ButtonTwoLabel="@L["Save"]" 
-        ButtonOneLabel="@L["Back"]" 
-        ButtonTwoClick="SubmitEdit" 
-        ButtonOneClick="CancelEdit" 
-        ButtonTwoVariant="MudBlazor.Variant.Filled" 
-        ButtonOneVariant="MudBlazor.Variant.Filled" 
-            />
-</DialogActions>
+            <DialogActionComponent ButtonTwoColor="MudBlazor.Color.Primary"
+                                   ButtonOneColor="MudBlazor.Color.Dark"
+                                   ButtonTwoLabel="@L["Save"]"
+                                   ButtonOneLabel="@L["Back"]"
+                                   ButtonTwoClick="SubmitEdit"
+                                   ButtonOneClick="CancelEdit"
+                                   ButtonTwoVariant="MudBlazor.Variant.Filled"
+                                   ButtonOneVariant="MudBlazor.Variant.Filled" />
+        </DialogActions>
     </MudDialog>
 </div>
 

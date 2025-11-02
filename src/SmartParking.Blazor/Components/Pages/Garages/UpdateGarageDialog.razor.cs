@@ -8,6 +8,7 @@ using System.Security.Authentication;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Validation;
+using SmartParking.Permissions.GaragePermissions;
 
 namespace SmartParking.Blazor.Components.Pages.Garages;
 
@@ -23,7 +24,7 @@ public partial class UpdateGarageDialog
     protected async override Task OnInitializedAsync()
     {
         _time = Garage.ClosingHours.ToTimeSpan();
-        if (currrentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currrentUser.IsInRole("admin"))
+        if (currentUser.IsInRole(Enums.RolesType.Mdkhl.ToString()) || currentUser.IsInRole("admin"))
         {
 
             var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());

@@ -857,6 +857,10 @@
     "PackagesPayments": "Packages Payments",
     "PackageCheckout": "Packages Payments",
     "PackageDiscountsReport": "Packages Discount Report",
-    "CurrnetCapicity": "اشغال الاماكن"
+    "CurrnetCapicity": "Currnet Capicity",
+    "Permission:EditCountCurrnetCapicity": "Edit count currnet capicity",
+    "CountOfDays": "Count of days in the package",
+    "PriceOfPackage2": "Total package price",
+    "PriceOfPackagePerDay": "Package price per day"
   }
 }
