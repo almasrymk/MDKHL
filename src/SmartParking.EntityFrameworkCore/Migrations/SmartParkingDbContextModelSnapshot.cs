@@ -1476,6 +1476,9 @@ namespace SmartParking.Migrations
                     b.Property<string>("ArPlateNumber")
                         .HasColumnType("text");
 
+                    b.Property<decimal?>("CountOfDays")
+                        .HasColumnType("numeric");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("CreationTime");
@@ -1552,6 +1555,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal?>("PriceOfPackage")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("PriceOfPackagePerDay")
                         .HasColumnType("numeric");
 
                     b.Property<TimeOnly?>("PublishFromOfPackage")
