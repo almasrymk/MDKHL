@@ -209,5 +209,57 @@ partial class AssignPackgeDialog
         }
     }
 
+    private void OnActivationDateChanged(DateTime? newDate)
+    {
+        ActivationDate = newDate;
+        OnDateChanged();
+    }
 
+    private void OnDectivationDateChanged(DateTime? newDate)
+    {       
+        DectivationDate = newDate;
+        OnDateChanged();
+    }
+
+    private void OnPriceOfPackageChanged(decimal? amount)
+    {
+        _customerPackageDto.PriceOfPackage = amount;
+        if (_customerPackageDto.CountOfDays > 0)
+            _customerPackageDto.PriceOfPackagePerDay = _customerPackageDto.PriceOfPackage / _customerPackageDto.CountOfDays;
+    }
+
+    private void OnPriceOfPackagePerDayChanged(decimal? amount)
+    {
+        _customerPackageDto.PriceOfPackagePerDay = amount;
+        if (_customerPackageDto.CountOfDays > 0)
+            _customerPackageDto.PriceOfPackage = _customerPackageDto.PriceOfPackagePerDay * _customerPackageDto.CountOfDays;
+    }
+
+    private void OnCountOfDaysChanged(decimal? count)
+    {
+        _customerPackageDto.CountOfDays = count;
+        if (ActivationDate != null && _customerPackageDto.CountOfDays > 0)
+        {
+            DectivationDate = ActivationDate;
+            if (_customerPackageDto.CountOfDays.Value - 1 > 0)
+                DectivationDate = ActivationDate.Value.AddDays((int)_customerPackageDto.CountOfDays.Value - 1);
+            if (_customerPackageDto.PriceOfPackagePerDay > 0)
+            {
+                _customerPackageDto.PriceOfPackage = _customerPackageDto.PriceOfPackagePerDay * _customerPackageDto.CountOfDays;
+            }
+        }
+    }
+
+    private void OnDateChanged()
+    {
+        _customerPackageDto.CountOfDays = 0;       
+        if (ActivationDate != null && DectivationDate != null)
+        {
+            _customerPackageDto.CountOfDays = (decimal)DectivationDate.Value.Subtract(ActivationDate.Value).TotalDays + 1;
+            if(_customerPackageDto.PriceOfPackagePerDay > 0 )
+            {
+                _customerPackageDto.PriceOfPackage = _customerPackageDto.PriceOfPackagePerDay * _customerPackageDto.CountOfDays;
+            }
+        }
+    }
 }

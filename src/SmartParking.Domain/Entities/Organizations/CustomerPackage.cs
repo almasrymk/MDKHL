@@ -19,6 +19,8 @@ public class CustomerPackage : FullAuditedEntity<int>, IBaseEntity
     public DateTime ExpiryDate { get; set; }
     public int? DurationOfPackage { get; set; }
     public decimal? PriceOfPackage { get; set; }
+    public decimal? PriceOfPackagePerDay { get; set; }
+    public decimal? CountOfDays { get; set; }
     public string? DescriptionOfPackage { get; set; }
     public bool? publishedOfPackage { get; set; }
     public TimeOnly? PublishFromOfPackage { get; set; }

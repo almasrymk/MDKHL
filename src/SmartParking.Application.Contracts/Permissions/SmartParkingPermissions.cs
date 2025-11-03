@@ -33,5 +33,6 @@ public static class SmartParkingPermissions
     public const string ExportExcel = ".ExportExcel";
     public const string TransactionCheckout = ".TransactionCheckout";
     public const string ChangePassword = ".ChangePassword";
+    public const string EditCountCurrnetCapicity = ".EditCountCurrnetCapicity";
 
 }

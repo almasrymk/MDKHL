@@ -341,8 +341,308 @@
               <BackgroundColor>LightGrey</BackgroundColor>
             </Style>
           </Rectangle>
+          <Image Name="ImgQR">
+            <Source>Database</Source>
+            <Value>=First(Fields!ImgQr.Value, "DataSet1")</Value>
+            <MIMEType>image/png</MIMEType>
+            <Sizing>Fit</Sizing>
+            <Top>2.53122cm</Top>
+            <Left>0.7405cm</Left>
+            <Height>0.80209in</Height>
+            <Width>0.87625in</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Image>
+          <Textbox Name="TotalPreVAT">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=First(Fields!TotalPreVAT.Value, "DataSet1")</Value>
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Right</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>TotalPreVAT</rd:DefaultName>
+            <Top>0.93403in</Top>
+            <Left>1.35876in</Left>
+            <Height>0.25in</Height>
+            <Width>1in</Width>
+            <ZIndex>2</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Vats">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=First(Fields!Vats.Value, "DataSet1")</Value>
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Right</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Vats</rd:DefaultName>
+            <Top>1.19792in</Top>
+            <Left>1.35876in</Left>
+            <Height>0.25in</Height>
+            <Width>1in</Width>
+            <ZIndex>3</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Discount">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=First(Fields!Discount.Value, "DataSet1")</Value>
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Right</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Discount</rd:DefaultName>
+            <Top>1.46181in</Top>
+            <Left>1.35876in</Left>
+            <Height>0.25in</Height>
+            <Width>1in</Width>
+            <ZIndex>4</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="TotalIncludeVAT">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=First(Fields!TotalIncludeVAT.Value, "DataSet1")</Value>
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Right</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>TotalIncludeVAT</rd:DefaultName>
+            <Top>1.7257in</Top>
+            <Left>1.35876in</Left>
+            <Height>0.25in</Height>
+            <Width>1in</Width>
+            <ZIndex>5</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox11">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>: المجموع </Value>
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox3</rd:DefaultName>
+            <Top>0.93403in</Top>
+            <Left>2.39007in</Left>
+            <Height>0.25in</Height>
+            <Width>0.6875in</Width>
+            <ZIndex>6</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <VerticalAlign>Middle</VerticalAlign>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox12">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>: الخصم </Value>
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox3</rd:DefaultName>
+            <Top>1.46181in</Top>
+            <Left>2.39007in</Left>
+            <Height>0.25in</Height>
+            <Width>0.6875in</Width>
+            <ZIndex>7</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <VerticalAlign>Middle</VerticalAlign>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox13">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>: (15%) الضريبة  </Value>
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox3</rd:DefaultName>
+            <Top>1.19792in</Top>
+            <Left>2.39007in</Left>
+            <Height>0.25in</Height>
+            <Width>0.81938in</Width>
+            <ZIndex>8</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <VerticalAlign>Middle</VerticalAlign>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox14">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>: الاجمالى </Value>
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox3</rd:DefaultName>
+            <Top>1.7257in</Top>
+            <Left>2.39007in</Left>
+            <Height>0.25in</Height>
+            <Width>0.6875in</Width>
+            <ZIndex>9</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <VerticalAlign>Middle</VerticalAlign>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
         </ReportItems>
-        <Height>0.86459in</Height>
+        <Height>2.02778in</Height>
         <Style>
           <Border>
             <Style>None</Style>
@@ -352,7 +652,7 @@
       <Width>3.29632in</Width>
       <Page>
         <PageHeader>
-          <Height>3.20486in</Height>
+          <Height>3.08458in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -361,8 +661,8 @@
               <Value>=First(Fields!ImgMadkhal.Value, "DataSet1")</Value>
               <MIMEType>image/png</MIMEType>
               <Sizing>Fit</Sizing>
-              <Top>0.35277cm</Top>
-              <Left>4.9299cm</Left>
+              <Top>0.04726cm</Top>
+              <Left>5.00031cm</Left>
               <Height>0.85417in</Height>
               <Width>0.99083in</Width>
               <Style>
@@ -376,8 +676,8 @@
               <Value>=First(Fields!ImgOrg.Value, "DataSet1")</Value>
               <MIMEType>image/png</MIMEType>
               <Sizing>Fit</Sizing>
-              <Top>0.35277cm</Top>
-              <Left>0.67012cm</Left>
+              <Top>0.04726cm</Top>
+              <Left>0.74053cm</Left>
               <Height>0.97917in</Height>
               <Width>1.11583in</Width>
               <ZIndex>1</ZIndex>
@@ -407,8 +707,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>SimplifiedTaxInvoice</rd:DefaultName>
-              <Top>1.45708in</Top>
-              <Left>0.26383in</Left>
+              <Top>1.3368in</Top>
+              <Left>0.29155in</Left>
               <Height>0.23958in</Height>
               <Width>2.79291in</Width>
               <ZIndex>2</ZIndex>
@@ -441,8 +741,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>PaymentNumber</rd:DefaultName>
-              <Top>1.69667in</Top>
-              <Left>0.26383in</Left>
+              <Top>1.57639in</Top>
+              <Left>0.29155in</Left>
               <Height>0.25in</Height>
               <Width>2.79291in</Width>
               <ZIndex>3</ZIndex>
@@ -476,8 +776,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>1.96056in</Top>
-              <Left>2.49424in</Left>
+              <Top>1.84028in</Top>
+              <Left>2.52196in</Left>
               <Height>0.25in</Height>
               <Width>0.6875in</Width>
               <ZIndex>4</ZIndex>
@@ -512,8 +812,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>1.96056in</Top>
-              <Left>1.06716in</Left>
+              <Top>1.84028in</Top>
+              <Left>1.09488in</Left>
               <Height>0.25in</Height>
               <Width>0.60417in</Width>
               <ZIndex>5</ZIndex>
@@ -548,8 +848,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>2.21056in</Top>
-              <Left>1.06716in</Left>
+              <Top>2.09028in</Top>
+              <Left>1.09488in</Left>
               <Height>0.25in</Height>
               <Width>0.6504in</Width>
               <ZIndex>6</ZIndex>
@@ -584,8 +884,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>2.21056in</Top>
-              <Left>2.49424in</Left>
+              <Top>2.09028in</Top>
+              <Left>2.52196in</Left>
               <Height>0.25in</Height>
               <Width>0.6875in</Width>
               <ZIndex>7</ZIndex>
@@ -620,8 +920,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>2.82986in</Top>
-              <Left>2.49424in</Left>
+              <Top>2.70958in</Top>
+              <Left>2.52196in</Left>
               <Height>0.25in</Height>
               <Width>0.6875in</Width>
               <ZIndex>8</ZIndex>
@@ -656,8 +956,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>2.51611in</Top>
-              <Left>2.49424in</Left>
+              <Top>2.39583in</Top>
+              <Left>2.52196in</Left>
               <Height>0.25in</Height>
               <Width>0.58333in</Width>
               <ZIndex>9</ZIndex>
@@ -692,8 +992,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>OrganizationName</rd:DefaultName>
-              <Top>1.96056in</Top>
-              <Left>1.67133in</Left>
+              <Top>1.84028in</Top>
+              <Left>1.69905in</Left>
               <Height>0.25in</Height>
               <Width>0.79512in</Width>
               <ZIndex>10</ZIndex>
@@ -728,8 +1028,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>CashierName</rd:DefaultName>
-              <Top>1.96056in</Top>
-              <Left>0.125in</Left>
+              <Top>1.84028in</Top>
+              <Left>0.15272in</Left>
               <Height>0.25in</Height>
               <Width>0.94216in</Width>
               <ZIndex>11</ZIndex>
@@ -764,8 +1064,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>PlateNumber</rd:DefaultName>
-              <Top>2.51611in</Top>
-              <Left>1.54632in</Left>
+              <Top>2.39583in</Top>
+              <Left>1.57404in</Left>
               <Height>0.25in</Height>
               <Width>0.92013in</Width>
               <ZIndex>12</ZIndex>
@@ -799,8 +1099,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>OrganizationAddress</rd:DefaultName>
-              <Top>2.82986in</Top>
-              <Left>0.10417in</Left>
+              <Top>2.70958in</Top>
+              <Left>0.13189in</Left>
               <Height>0.375in</Height>
               <Width>2.36229in</Width>
               <ZIndex>13</ZIndex>
@@ -834,8 +1134,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>ExpiryDate</rd:DefaultName>
-              <Top>2.21056in</Top>
-              <Left>1.54632in</Left>
+              <Top>2.09028in</Top>
+              <Left>1.57404in</Left>
               <Height>0.25in</Height>
               <Width>0.92013in</Width>
               <ZIndex>14</ZIndex>
@@ -869,8 +1169,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>ActivationDateOfPackage</rd:DefaultName>
-              <Top>2.22445in</Top>
-              <Left>0.125in</Left>
+              <Top>2.10417in</Top>
+              <Left>0.15272in</Left>
               <Height>0.23611in</Height>
               <Width>0.94216in</Width>
               <ZIndex>15</ZIndex>
@@ -904,8 +1204,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Title1</rd:DefaultName>
-              <Top>1.15152in</Top>
-              <Left>1.14816in</Left>
+              <Top>1.03124in</Top>
+              <Left>1.17588in</Left>
               <Height>0.25in</Height>
               <Width>1in</Width>
               <ZIndex>16</ZIndex>
@@ -926,317 +1226,6 @@
             </Border>
           </Style>
         </PageHeader>
-        <PageFooter>
-          <Height>1.21528in</Height>
-          <PrintOnFirstPage>true</PrintOnFirstPage>
-          <PrintOnLastPage>true</PrintOnLastPage>
-          <ReportItems>
-            <Image Name="ImgQR">
-              <Source>Database</Source>
-              <Value>=First(Fields!ImgQr.Value, "DataSet1")</Value>
-              <MIMEType>image/png</MIMEType>
-              <Sizing>Fit</Sizing>
-              <Top>0.33515cm</Top>
-              <Left>0.67012cm</Left>
-              <Height>0.80209in</Height>
-              <Width>0.87625in</Width>
-              <Style>
-                <Border>
-                  <Style>None</Style>
-                </Border>
-              </Style>
-            </Image>
-            <Textbox Name="TotalPreVAT">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=First(Fields!TotalPreVAT.Value, "DataSet1")</Value>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Right</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <rd:DefaultName>TotalPreVAT</rd:DefaultName>
-              <Top>0.06944in</Top>
-              <Left>1.33105in</Left>
-              <Height>0.25in</Height>
-              <Width>1in</Width>
-              <ZIndex>1</ZIndex>
-              <Style>
-                <Border>
-                  <Style>None</Style>
-                </Border>
-                <PaddingLeft>2pt</PaddingLeft>
-                <PaddingRight>2pt</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-            <Textbox Name="Vats">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=First(Fields!Vats.Value, "DataSet1")</Value>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Right</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <rd:DefaultName>Vats</rd:DefaultName>
-              <Top>0.33333in</Top>
-              <Left>1.33105in</Left>
-              <Height>0.25in</Height>
-              <Width>1in</Width>
-              <ZIndex>2</ZIndex>
-              <Style>
-                <Border>
-                  <Style>None</Style>
-                </Border>
-                <PaddingLeft>2pt</PaddingLeft>
-                <PaddingRight>2pt</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-            <Textbox Name="Discount">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=First(Fields!Discount.Value, "DataSet1")</Value>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Right</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <rd:DefaultName>Discount</rd:DefaultName>
-              <Top>0.59722in</Top>
-              <Left>1.33105in</Left>
-              <Height>0.25in</Height>
-              <Width>1in</Width>
-              <ZIndex>3</ZIndex>
-              <Style>
-                <Border>
-                  <Style>None</Style>
-                </Border>
-                <PaddingLeft>2pt</PaddingLeft>
-                <PaddingRight>2pt</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-            <Textbox Name="TotalIncludeVAT">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>=First(Fields!TotalIncludeVAT.Value, "DataSet1")</Value>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Right</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <rd:DefaultName>TotalIncludeVAT</rd:DefaultName>
-              <Top>0.86111in</Top>
-              <Left>1.33105in</Left>
-              <Height>0.25in</Height>
-              <Width>1in</Width>
-              <ZIndex>4</ZIndex>
-              <Style>
-                <Border>
-                  <Style>None</Style>
-                </Border>
-                <PaddingLeft>2pt</PaddingLeft>
-                <PaddingRight>2pt</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-            <Textbox Name="Textbox11">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>: المجموع </Value>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Left</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>0.06944in</Top>
-              <Left>2.36236in</Left>
-              <Height>0.25in</Height>
-              <Width>0.6875in</Width>
-              <ZIndex>5</ZIndex>
-              <Style>
-                <Border>
-                  <Style>None</Style>
-                </Border>
-                <VerticalAlign>Middle</VerticalAlign>
-                <PaddingLeft>2pt</PaddingLeft>
-                <PaddingRight>2pt</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-            <Textbox Name="Textbox12">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>: الخصم </Value>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Left</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>0.59722in</Top>
-              <Left>2.36236in</Left>
-              <Height>0.25in</Height>
-              <Width>0.6875in</Width>
-              <ZIndex>6</ZIndex>
-              <Style>
-                <Border>
-                  <Style>None</Style>
-                </Border>
-                <VerticalAlign>Middle</VerticalAlign>
-                <PaddingLeft>2pt</PaddingLeft>
-                <PaddingRight>2pt</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-            <Textbox Name="Textbox13">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>: (15%) الضريبة  </Value>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Left</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>0.33333in</Top>
-              <Left>2.36236in</Left>
-              <Height>0.25in</Height>
-              <Width>0.81938in</Width>
-              <ZIndex>7</ZIndex>
-              <Style>
-                <Border>
-                  <Style>None</Style>
-                </Border>
-                <VerticalAlign>Middle</VerticalAlign>
-                <PaddingLeft>2pt</PaddingLeft>
-                <PaddingRight>2pt</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-            <Textbox Name="Textbox14">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>: الاجمالى </Value>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Left</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>0.86111in</Top>
-              <Left>2.36236in</Left>
-              <Height>0.25in</Height>
-              <Width>0.6875in</Width>
-              <ZIndex>8</ZIndex>
-              <Style>
-                <Border>
-                  <Style>None</Style>
-                </Border>
-                <VerticalAlign>Middle</VerticalAlign>
-                <PaddingLeft>2pt</PaddingLeft>
-                <PaddingRight>2pt</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-          </ReportItems>
-          <Style>
-            <Border>
-              <Style>None</Style>
-            </Border>
-          </Style>
-        </PageFooter>
         <PageHeight>11.69291in</PageHeight>
         <PageWidth>3.4in</PageWidth>
         <ColumnSpacing>0.05118in</ColumnSpacing>

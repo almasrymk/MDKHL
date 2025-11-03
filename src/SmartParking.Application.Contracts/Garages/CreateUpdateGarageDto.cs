@@ -25,6 +25,8 @@ public class CreateUpdateGarageDto
     public int MaxSlotsForEmployess { get; set; }
     public int MaxSlotsForFree { get; set; }
     public string OpenGateURL { get; set; }
-
+    public int CurrnetCapacityForCustomers { get; set; }
+    public int CurrnetCapacityEmployees { get; set; }
+    public int CurrnetCapacityForFree { get; set; }
 
 }

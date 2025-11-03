@@ -170,7 +170,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
     public void AddVatAndTicket(Document doc, InvoicePdfData data)
     {
         var vatText = CultureName == "ar"
-               ? $"{data.Payment.PaymentNumber.ArabicWithFontGlyphsToPDF()}:{data.Localization.InvoiceNumber.ArabicWithFontGlyphsToPDF()}"
+               ? $"{data.Payment.PaymentNumber.ArabicWithFontGlyphsToPDF()}:{data.Localization.InvoiceNumberView.ArabicWithFontGlyphsToPDF()}"
                : $"{data.Localization.InvoiceNumberView}: {data.Payment.PaymentNumber}";
         doc.Add(CreateCenteredParagraph(vatText, 13, true, doc));
 

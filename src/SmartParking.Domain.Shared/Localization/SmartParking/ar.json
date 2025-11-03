@@ -886,7 +886,12 @@
     "Duration": "المدة",
     "PackagesPayments": "فواتير الباقات",
     "PackageCheckout": "دفع الباقات",
-    "PackageDiscountsReport": "تقرير بخصومات الباقات"
+    "PackageDiscountsReport": "تقرير بخصومات الباقات",
+    "CurrnetCapicity": "عدد اماكن الركن المشغولة حاليا",
+    "Permission:EditCountCurrnetCapicity": "تعديل عدد اماكن الركن المشغولة حاليا",
+    "CountOfDays": "عدد ايام الباقة",
+    "PriceOfPackage2": "إجمالى سعر الباقة",
+    "PriceOfPackagePerDay": "سعر الباقة باليوم"
   }
   
 }
