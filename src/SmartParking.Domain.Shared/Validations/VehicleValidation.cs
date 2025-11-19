@@ -174,7 +174,7 @@ public static class VehicleValidation
     private static string ReversStringBuilder(StringBuilder result)
     {
         var resultText = result.ToString();
-        return new string(resultText.ToCharArray().Reverse().ToArray());
+        return new string(resultText.Reverse().ToArray());
     }
 
     public static (string,string) HandleKeyUp(string e)
