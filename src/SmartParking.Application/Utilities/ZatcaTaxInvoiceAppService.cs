@@ -66,7 +66,7 @@ namespace SmartParking.Utilities
         /// <returns></returns>
         private InvoiceRequestDto CreateInvoiceRequestDto(Payment payment, CustomerDto customer, OrganizationDto oragnization)
         {            
-            var NetAmount = payment.Amount / (decimal)1.15;           
+            var NetAmount = Math.Round(Math.Round( payment.Amount,2) / (decimal)1.15,2);           
             InvoiceRequestDto request = new InvoiceRequestDto();
             request.CompanyProfile = //ObjectMapper.Map<Organization, CompanyProfileDto>(oragnization!);
                 new CompanyProfileDto
@@ -107,7 +107,7 @@ namespace SmartParking.Utilities
                 Net = NetAmount,
                 Quantity = 1,
                 UnitName = "سيارة",
-                Vat = NetAmount * 15 / 100,
+                Vat = Math.Round(NetAmount * 15 / 100,2),
                 VatPercentage = 15
             });
 
