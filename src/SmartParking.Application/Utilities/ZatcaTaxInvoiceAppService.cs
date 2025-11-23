@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 using SmartParking.Organizations;
 using SmartParking.Cutomers;
 using SmartParking.Localization;
+using SmartParking.Entities.Invoices;
 
 namespace SmartParking.Utilities
 {
@@ -28,6 +29,7 @@ namespace SmartParking.Utilities
         private readonly ICustomerAppService _customerRepository;
         private readonly ILogger<InvoiceUtilityAppService> _logger;
         private readonly IOrganizationsAppService _organizationsRepository;
+        private readonly IRepository<Invoice, int> _invoiceRepository;
 
         /// <summary>
         /// 
@@ -39,12 +41,14 @@ namespace SmartParking.Utilities
             IRepository<Payment, Guid> repository,
             ILogger<InvoiceUtilityAppService> logger,
             ICustomerAppService customerRepository,
-            IOrganizationsAppService organizationsRepository)
+            IOrganizationsAppService organizationsRepository,
+            IRepository<Invoice, int> invoiceRepository)
         {
             _repository = repository;
             _logger = logger;
             _organizationsRepository = organizationsRepository;
             _customerRepository = customerRepository;
+            _invoiceRepository = invoiceRepository;
         }
 
         /// <summary>
@@ -53,7 +57,7 @@ namespace SmartParking.Utilities
         /// <returns></returns>
         private async Task<string> GetTokenAsync(string userName, string password)
         {
-            JObject json = await SendPostRequest("https://zatca.mazeedit.com/api/Auth/Login", new { userName = userName , password = password});
+            JObject json = await SendPostRequest("https://zatca.mazeedit.com/api/Auth/Login", new { userName = userName, password = password });
             var token = json["data"]?["token"]?.ToString();
             return "" + token;
         }
@@ -64,9 +68,11 @@ namespace SmartParking.Utilities
         /// <param name="payment"></param>
         /// <param name="oragnization"></param>
         /// <returns></returns>
-        private InvoiceRequestDto CreateInvoiceRequestDto(Payment payment, CustomerDto customer, OrganizationDto oragnization)
-        {            
-            var NetAmount = Math.Round(Math.Round( payment.Amount,2) / (decimal)1.15,2);           
+        private InvoiceRequestDto CreateInvoiceRequestDto(decimal Amount, decimal Discount, Payment payment, CustomerDto customer, OrganizationDto oragnization)
+        {
+            var vat = Math.Round(Amount * (decimal)0.15, 2);
+            var NetAmount = Amount + vat - Discount;
+
             InvoiceRequestDto request = new InvoiceRequestDto();
             request.CompanyProfile = //ObjectMapper.Map<Organization, CompanyProfileDto>(oragnization!);
                 new CompanyProfileDto
@@ -92,8 +98,8 @@ namespace SmartParking.Utilities
                     DealerName = customer.ArabicName,
                     ExchangeRate = 1,
                     VatPercentage = 15,
-                    DiscountAmount = 0,
-                    Total = NetAmount,
+                    DiscountAmount = Discount,
+                    Total = Amount,                    
                     DealerTaxNumber = "",
                     InvoiceDetails = new List<InvoiceDetailDto>()
                 };
@@ -102,12 +108,12 @@ namespace SmartParking.Utilities
             {
                 Id = 1,
                 ItemName = "حجز موقف",
-                ItemPrice = NetAmount,
+                ItemPrice = Amount,
                 Discount = 0,
-                Net = NetAmount,
+                Net = Amount,
                 Quantity = 1,
                 UnitName = "سيارة",
-                Vat = Math.Round(NetAmount * 15 / 100,2),
+                Vat = vat,
                 VatPercentage = 15
             });
 
@@ -132,6 +138,7 @@ namespace SmartParking.Utilities
         /// <exception cref="NotImplementedException"></exception>
         public async Task<ResponseInvoice> SendToZACTA(Guid paymentId)
         {
+            decimal Amount = 0, Discount = 0;
             ResponseInvoice response = new ResponseInvoice();
             var payment = await _repository.FirstOrDefaultAsync(e => e.Id == paymentId);
             if (payment == null)
@@ -147,7 +154,7 @@ namespace SmartParking.Utilities
                 return response;
             }
 
-            if (""  + oragnization.UserNameZatca  == "" || "" + oragnization.PasswordZatca == "")
+            if ("" + oragnization.UserNameZatca == "" || "" + oragnization.PasswordZatca == "")
             {
                 response.generalError += LocalizationHelper.GetLocalizedString("UsernameOrPasswordForZatcaNotFound");
                 return response;
@@ -166,7 +173,19 @@ namespace SmartParking.Utilities
                 return response;
             }
 
-            InvoiceRequestDto request = CreateInvoiceRequestDto(payment!, customer, oragnization);
+            Amount = payment.Amount;
+
+            if (payment.InvoiceId > 0)
+            {
+                var invoice = await _invoiceRepository.GetAsync(payment.InvoiceId.Value);
+                if (invoice != null)
+                {
+                    Amount = invoice.InvoicePrice;
+                    Discount = invoice.Discount;
+                }
+            }
+
+            InvoiceRequestDto request = CreateInvoiceRequestDto(Amount, Discount, payment!, customer, oragnization);
             response = await SendPostRequest("https://zatca.mazeedit.com/Api/Invoices/Reporting", request, token);
             return response;
         }
@@ -197,7 +216,7 @@ namespace SmartParking.Utilities
 
                 responseQR.EnsureSuccessStatusCode();
                 response = JsonConvert.DeserializeObject<ResponseInvoice>(resultResponseQR)!;
-                
+
 
 
                 //if (responseQR.IsSuccessStatusCode)
