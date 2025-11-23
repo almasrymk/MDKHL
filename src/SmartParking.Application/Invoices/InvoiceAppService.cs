@@ -393,7 +393,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("Invoice") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation") + LocalizationHelper.GetLocalizedString("AtGate"));
             }
-            var result = NumbersValidations.ValidateInvoice(discount, Math.Round((invoice.InvoicePrice * 0.15m) + (invoice.InvoicePrice), 2));
+            var result = NumbersValidations.ValidateInvoice(discount, invoice.InvoicePrice);
             if (result == null)
             {
 
