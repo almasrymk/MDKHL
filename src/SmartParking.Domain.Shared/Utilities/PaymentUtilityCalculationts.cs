@@ -10,9 +10,10 @@ public static class PaymentUtilityCalculationts
 {
     public static decimal GetPriceForPayment(decimal InvoicePrice, decimal DiscountPercent)
     {
-        var price = Math.Round((InvoicePrice + (InvoicePrice * 0.15m)), 2);
+        var vat = Math.Round(InvoicePrice * 0.15m, 2);
         if (DiscountPercent == default)
-            return price;
-        return Math.Round(price - DiscountPercent,2);
+            return Math.Round(InvoicePrice+vat,2);
+        var _newPrice = InvoicePrice - DiscountPercent;
+        return Math.Round((_newPrice) *1.15m,2);
     }
 }
