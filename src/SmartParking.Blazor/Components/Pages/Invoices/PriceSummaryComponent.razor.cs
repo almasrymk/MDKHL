@@ -28,7 +28,6 @@ public partial class PriceSummaryComponent
     public decimal InvoicePriceBeforeDiscount { get; set; }
     public decimal InvoicePriceWithVat { get; set; }
     public decimal Vat { get; set; }
-    public bool OnChooseDiscount { get; set; } = false;
     public decimal Discount { get; set; } = default;
     public bool CanPayInvoice { get; set; } = true;
 
@@ -42,20 +41,24 @@ public partial class PriceSummaryComponent
 
     private async Task OnAddDiscount(decimal discountValue)
     {
-        if (discountValue <= InvoicePrice.Value && discountValue > 0)
+        if (discountValue <= InvoicePrice.Value && discountValue >= 0)
         {
 
             InvoicePriceAfterDiscount = InvoicePrice.Value - discountValue;
             if (discountValue != default)
             {
-                OnChooseDiscount = true;
                 Discount = discountValue;
             }
             else
-                OnChooseDiscount = false;
+            {
+                Discount = default;
+
+            }
             CanPayInvoice = true;
             Vat =Math.Round(InvoicePriceAfterDiscount*0.15m,2);
             InvoicePriceWithVat = Math.Round(InvoicePriceAfterDiscount + Vat,2);
+            await OnValueSelected.InvokeAsync(discountValue);
+
         }
         else
         {
@@ -63,9 +66,7 @@ public partial class PriceSummaryComponent
             Discount = default;
             Vat = Math.Round(InvoicePriceBeforeDiscount * 0.15m, 2);
             InvoicePriceWithVat = Math.Round(InvoicePriceAfterDiscount + Vat, 2);
-            OnChooseDiscount = false;
         }
-        await OnValueSelected.InvokeAsync(discountValue);
         await InvokeAsync(StateHasChanged);
     }
 
