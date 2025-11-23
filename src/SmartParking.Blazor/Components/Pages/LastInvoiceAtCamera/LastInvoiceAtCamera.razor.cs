@@ -17,9 +17,20 @@ public partial class LastInvoiceAtCamera
     private bool NoInvoice { get; set; } = false;
     public PaymentMethod PaymentMethod { get; set; }
     public decimal Discount { get; set; } = default;
-    private void HandleAddDiscount(decimal selected)
+    public decimal InvoicePrice { get; set; } = default;
+    private Task HandleAddDiscount(decimal selected)
     {
         Discount = selected;
+        if(Discount==0 || Discount == default)
+        {
+            Invoice.InvoicePrice = InvoicePrice;
+        }
+        else
+        {
+
+            Invoice.InvoicePrice -= Discount;
+        }
+        return Task.CompletedTask;
     }
 
     private void OnSelectPaymentMethod(PaymentMethod selected)
@@ -34,6 +45,7 @@ public partial class LastInvoiceAtCamera
             _organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
 
             Invoice = await InvoiceAppService.GetLatestInvoiceForOrganization();
+            InvoicePrice = Invoice.InvoicePrice;
         }
         catch (Exception ex)
         {
@@ -114,7 +126,7 @@ public partial class LastInvoiceAtCamera
             PaymentCategory = PaymentCategory.PaymentParking,
             InvoiceId = Invoice.Id,
             PaymentMethod = PaymentMethod,
-            Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Discount),
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(InvoicePrice, Discount),
             CustomerId = Invoice.CustomerId,
             PaymentName = PaymentMethod.Cash.ToString()
         };

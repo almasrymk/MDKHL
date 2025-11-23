@@ -55,7 +55,7 @@
                                       Value="@CustomerPackageDto?.PriceOfPackagePerDay.ToString()"   />
 
             <LastInvoiceOnGateDetails CurrencyKey="@((MarkupString)$"{L["PriceOfPackage2"]}{CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px")}")"
-                                      Value="@CustomerPackageDto?.PriceOfPackage.ToString()"   />
+                                      Value="@packagePrice.ToString()"   />
         </div>
     </MudItem>
 
@@ -71,13 +71,25 @@
 </MudGrid>
 
 @code {
-    public decimal Discount { get; set; }
     public bool IsPaid { get; set; }
     public PaymentMethod PaymentMethod { get; set; }
     public string publishedText { get; set; }
     private CustomerPackageDto CustomerPackageDto { get; set; } = new();
     private CustomerDto CustomerDto { get; set; } = new();
-    private void HandleAddDiscount(decimal selected) => CustomerPackageDto.Discount = selected;
+    private decimal packagePrice { get; set; } = default;
+    private Task HandleAddDiscount(decimal selected)  { 
+        CustomerPackageDto.Discount = selected;
+        if (selected == 0 || selected == default)
+        {
+            CustomerPackageDto.PriceOfPackage = packagePrice;
+        }
+        else
+        {
+
+            CustomerPackageDto.PriceOfPackage -= selected;
+        }
+        return Task.CompletedTask;
+    }
 
     private void OnSelectPaymentMethod(PaymentMethod selected) => PaymentMethod = selected;
 
@@ -87,6 +99,7 @@
             Navigation.NavigateTo("/customers");
         CustomerPackageDto = preAssignState.CustomerPackage;
         CustomerDto = preAssignState.Customer;
+        packagePrice = CustomerPackageDto.PriceOfPackage.Value;
         if (CustomerPackageDto.publishedOfPackage.HasValue && CustomerPackageDto.publishedOfPackage.Value)
         {
             publishedText = $"24 {L["Hour"]}";
@@ -141,7 +154,7 @@
             CustomerPackageId = CustomerPackageDto.Id,
             PackageId=CustomerPackageDto.PackageId,
             PaymentMethod = PaymentMethod,
-            Amount = PaymentUtilityCalculationts.GetPriceForPayment(CustomerPackageDto.PriceOfPackage!.Value, CustomerPackageDto.Discount),
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(packagePrice, CustomerPackageDto.Discount),
             CustomerId =CustomerPackageDto.CustomerId,
             ArPlateNumber = CustomerPackageDto.ArPlateNumber,
             EnPlateNumber = CustomerPackageDto.EnPlateNumber,

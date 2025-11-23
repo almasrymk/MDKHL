@@ -61,7 +61,7 @@
 			<LastInvoiceOnGateDetails Key="@L["CustomerName"]" Value="@(CultureInfo.CurrentCulture.Name=="en"?Invoice?.CustomerEnName:Invoice?.CustomerArName)" />
 			<LastInvoiceOnGateDetails Key="@($"{L["TotalHours"]} ({L["Hour"]})")" Value="@Invoice?.TotalHours.ToString()" />
 			<LastInvoiceOnGateDetails CurrencyKey="@((MarkupString)$"{L["Price"]}{CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px")}")"
-									  Value="@Invoice?.InvoicePrice.ToString()"   />
+									  Value="@InvoicePrice.ToString()"   />
 		</div>
 
 	</MudItem>

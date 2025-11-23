@@ -24,36 +24,49 @@ public partial class PriceSummaryComponent
 
     [Parameter]
     public bool HasConfirmPermission { get; set; }
-
     public decimal InvoicePriceAfterDiscount { get; set; }
+    public decimal InvoicePriceBeforeDiscount { get; set; }
     public decimal InvoicePriceWithVat { get; set; }
+    public decimal Vat { get; set; }
     public bool OnChooseDiscount { get; set; } = false;
+    public decimal Discount { get; set; } = default;
     public bool CanPayInvoice { get; set; } = true;
 
     protected override void OnParametersSet()
     {
-        InvoicePriceWithVat = Math.Round((InvoicePrice!.Value + (InvoicePrice!.Value * 0.15m)), 2);
+        Vat = Math.Round(InvoicePrice!.Value * 0.15m, 2);
+        InvoicePriceWithVat = Math.Round(InvoicePrice.Value + Vat,2);
+        InvoicePriceBeforeDiscount =InvoicePrice.Value;
         base.OnParametersSet();
     }
 
     private async Task OnAddDiscount(decimal discountValue)
     {
-        if (discountValue <= InvoicePriceWithVat && discountValue > 0)
+        if (discountValue <= InvoicePrice.Value && discountValue > 0)
         {
 
-            InvoicePriceAfterDiscount = InvoicePriceWithVat - discountValue;
+            InvoicePriceAfterDiscount = InvoicePrice.Value - discountValue;
             if (discountValue != default)
+            {
                 OnChooseDiscount = true;
+                Discount = discountValue;
+            }
             else
                 OnChooseDiscount = false;
             CanPayInvoice = true;
-            await OnValueSelected.InvokeAsync(discountValue);
+            Vat =Math.Round(InvoicePriceAfterDiscount*0.15m,2);
+            InvoicePriceWithVat = Math.Round(InvoicePriceAfterDiscount + Vat,2);
         }
         else
         {
-            InvoicePriceAfterDiscount = 0;
+            InvoicePriceAfterDiscount = InvoicePriceBeforeDiscount;
+            Discount = default;
+            Vat = Math.Round(InvoicePriceBeforeDiscount * 0.15m, 2);
+            InvoicePriceWithVat = Math.Round(InvoicePriceAfterDiscount + Vat, 2);
             OnChooseDiscount = false;
         }
+        await OnValueSelected.InvokeAsync(discountValue);
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task OnPaymentMethod(PaymentMethod PM)

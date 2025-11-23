@@ -25,16 +25,28 @@
                 </MudItem>
                 <MudItem xs="6" Class="text-end">
                     <MudText Typo="Typo.h6">
-                        @((MarkupString)$"{InvoicePrice!.Value} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
+                        @((MarkupString)$"{InvoicePriceBeforeDiscount} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
                     </MudText>
                 </MudItem>
+                @if (Discount != default)
+                {
+                 <MudItem xs="6">
+                    
+                         <MudText Typo="Typo.h6">@L["Discount"]</MudText>
+                        </MudItem>
+                        <MudItem xs="6" Class="text-end">
+                        <MudText Typo="Typo.h6">
+                            @((MarkupString)$"{Discount} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
+                        </MudText>
+                 </MudItem>
 
+                }
                 <MudItem xs="6">
                     <MudText Typo="Typo.h6">@L["VAT"]</MudText>
                 </MudItem>
                 <MudItem xs="6" Class="text-end">
                     <MudText Typo="Typo.h6">
-                        @((MarkupString)$"{Math.Round((InvoicePrice!.Value * 0.15m), 2)} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
+                        @((MarkupString)$"{Vat} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
                     </MudText>
                 </MudItem>
 
@@ -42,23 +54,23 @@
                     <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["Total"]</MudText>
                 </MudItem>
                 <MudItem xs="6" Class="text-end">
-                    <MudText Typo="Typo.h6" style="@(OnChooseDiscount ? "text-decoration: line-through;" : "")">
+                    <MudText Typo="Typo.h6">
                         @((MarkupString)$"{InvoicePriceWithVat} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
                     </MudText>
                 </MudItem>
-                @if (OnChooseDiscount)
+ @*                @if (OnChooseDiscount)
                 {
 
-                <MudItem xs="6">
-                            <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["After"] @L["Discount"]</MudText>
-                        </MudItem>
-                        <MudItem xs="6" Class="text-end">
-                            <MudText Typo="Typo.h6" Color="MudBlazor.Color.Tertiary">
-                                @((MarkupString)$"{InvoicePriceAfterDiscount} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
+                    <MudItem xs="6">
+                                <MudText Color="MudBlazor.Color.Tertiary" Typo="Typo.h6">@L["After"] @L["Discount"]</MudText>
+                            </MudItem>
+                            <MudItem xs="6" Class="text-end">
+                                <MudText Typo="Typo.h6" Color="MudBlazor.Color.Tertiary">
+                            @((MarkupString)$"{InvoicePriceWithVat} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
                             </MudText>
-                 </MudItem>
+                    </MudItem>
                 }
-
+ *@
                  
 
             </MudGrid>
