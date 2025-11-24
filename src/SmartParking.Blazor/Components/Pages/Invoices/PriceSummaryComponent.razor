@@ -89,7 +89,7 @@
                                     </label>
 
                                     <MudNumericField T="decimal"
-                                                     Validation="@( (decimal value) => NumbersValidations.ValidateInvoice(value, InvoicePriceWithVat))"
+                                                     Validation="@( (decimal value) => NumbersValidations.ValidateInvoice(value, InvoicePriceBeforeDiscount))"
                                                      HideSpinButtons="true"
                                                      ValueChanged="OnAddDiscount"
                                                      Variant="Variant.Text"

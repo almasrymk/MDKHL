@@ -79,16 +79,10 @@
     private decimal packagePrice { get; set; } = default;
     private Task HandleAddDiscount(decimal selected)  { 
         CustomerPackageDto.Discount = selected;
-        if (selected == 0 || selected == default)
-        {
-            CustomerPackageDto.PriceOfPackage = packagePrice;
-        }
-        else
-        {
+        CustomerPackageDto.PriceOfPackage = packagePrice;
 
-            CustomerPackageDto.PriceOfPackage -= selected;
-        }
         return Task.CompletedTask;
+
     }
 
     private void OnSelectPaymentMethod(PaymentMethod selected) => PaymentMethod = selected;

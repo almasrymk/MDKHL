@@ -21,15 +21,7 @@ public partial class LastInvoiceAtCamera
     private Task HandleAddDiscount(decimal selected)
     {
         Discount = selected;
-        if(Discount==0 || Discount == default)
-        {
-            Invoice.InvoicePrice = InvoicePrice;
-        }
-        else
-        {
-
-            Invoice.InvoicePrice -= Discount;
-        }
+        Invoice.InvoicePrice = InvoicePrice;
         return Task.CompletedTask;
     }
 

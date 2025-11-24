@@ -31,20 +31,20 @@ public partial class PriceSummaryComponent
     public decimal Discount { get; set; } = default;
     public bool CanPayInvoice { get; set; } = true;
 
+
     protected override void OnParametersSet()
     {
-        Vat = Math.Round(InvoicePrice!.Value * 0.15m, 2);
-        InvoicePriceWithVat = Math.Round(InvoicePrice.Value + Vat,2);
-        InvoicePriceBeforeDiscount =InvoicePrice.Value;
-        base.OnParametersSet();
+       Vat = Math.Round((InvoicePrice!.Value - Discount) * 0.15m, 2);
+       InvoicePriceWithVat = Math.Round((InvoicePrice!.Value - Discount) + Vat, 2);
+       InvoicePriceBeforeDiscount = InvoicePrice.Value;
     }
 
     private async Task OnAddDiscount(decimal discountValue)
     {
-        if (discountValue <= InvoicePrice.Value && discountValue >= 0)
+        if (discountValue <= InvoicePriceBeforeDiscount && discountValue >= 0)
         {
 
-            InvoicePriceAfterDiscount = InvoicePrice.Value - discountValue;
+            InvoicePriceAfterDiscount = InvoicePriceBeforeDiscount - discountValue;
             if (discountValue != default)
             {
                 Discount = discountValue;
@@ -62,10 +62,9 @@ public partial class PriceSummaryComponent
         }
         else
         {
-            InvoicePriceAfterDiscount = InvoicePriceBeforeDiscount;
             Discount = default;
             Vat = Math.Round(InvoicePriceBeforeDiscount * 0.15m, 2);
-            InvoicePriceWithVat = Math.Round(InvoicePriceAfterDiscount + Vat, 2);
+            InvoicePriceWithVat = Math.Round(InvoicePriceBeforeDiscount + Vat, 2);
         }
         await InvokeAsync(StateHasChanged);
     }
