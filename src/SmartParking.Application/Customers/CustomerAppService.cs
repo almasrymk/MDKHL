@@ -73,8 +73,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             var user = await _userManager.FindByNameAsync(input.UserName);
             if (user != null)
             {
-                    throw new BusinessException(LocalizationHelper.GetLocalizedString("User") + " " +
-                   LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("User") + " " +
+               LocalizationHelper.GetLocalizedString("DuplicateValidation"));
             }
             await _baseCustomer.CheckCustomer(input);
             var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
@@ -84,24 +84,26 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                     LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
             }
-            var result2 = await _baseCustomer.CheckIfNationalIDIsUnique(input.NationalId);
-            if (!result2)
+            if ("" + input.NationalId != "")
             {
-                throw new BusinessException(LocalizationHelper.GetLocalizedString("NationId") + " " +
-                    LocalizationHelper.GetLocalizedString("DuplicateValidation"));
-
+                var result2 = await _baseCustomer.CheckIfNationalIDIsUnique(input.NationalId);
+                if (!result2)
+                {
+                    throw new BusinessException(LocalizationHelper.GetLocalizedString("NationId") + " " +
+                        LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+                }
             }
             var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
             customer.IdentificationTypes = input.IdentificationType;
             UserDto userCreated;
             if (input.IsUser)
             {
-                
+
                 userCreated = await AddUser(input);
             }
             else
             {
-                
+
                 userCreated = await AddUserForCustomer(input);
             }
             customer.IdentityUserId = userCreated.Id;
@@ -176,13 +178,13 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     public async Task<PagedResultDto<CustomerDto>> GetListMdkhlAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
-        {           
+        {
             var query = await _repository.GetQueryableAsync();
             query = query.Include(c => c.IdentityUser);
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
             if (tenantId.HasValue)
                 query = query.Where(x => x.CustomerPackages.Any(org => org.TenantId == tenantId.Value));
-            query = await CreateSearchWithVehiclesQuery(input, query);           
+            query = await CreateSearchWithVehiclesQuery(input, query);
             query = AddSortQuery(input, query);
 
             var paged = await AddPaged(input, query);
@@ -204,7 +206,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
         {
             var query = await _repository.GetQueryableAsync();
             query = query.Include(c => c.CustomerPackages).ThenInclude(p => p.Organization);
-            query = query.Where(x => x.CustomerPackages.Count == 0  || x.CustomerPackages.Any(x => x.ExpiryDate < DateTime.Now));
+            query = query.Where(x => x.CustomerPackages.Count == 0 || x.CustomerPackages.Any(x => x.ExpiryDate < DateTime.Now));
             query = CheckTenant(tenantId, query);
             query = IsOrganization(organizationId, query);
             query = CreateSearchQuery(input, query);
@@ -595,8 +597,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 Email = c.IdentityUser.Email,
                 MobileNumber = c.IdentityUser.PhoneNumber,
                 NationalId = c.NationalId,
-                _packageEnglishNames = string.Empty , 
-                _packageArabicNames =  string.Empty , 
+                _packageEnglishNames = string.Empty,
+                _packageArabicNames = string.Empty,
                 OrganizationArabicName = string.Empty,
                 OrganizationEnglishName = string.Empty,
             })
@@ -623,8 +625,8 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 Email = c.IdentityUser.Email,
                 MobileNumber = c.IdentityUser.PhoneNumber,
                 NationalId = c.NationalId,
-                PlateNumberArabic = vehicles.Count(e=>e.CustomerId == c.Id) > 1 ? "متعدد" : vehicles.FirstOrDefault(e=>e.CustomerId == c.Id)!.ArPlateNumber,
-                PlateNumberEnglish = vehicles.Count(e=>e.CustomerId == c.Id) > 1 ? "متعدد" : vehicles.FirstOrDefault(e=>e.CustomerId == c.Id)!.EnPlateNumber,
+                PlateNumberArabic = vehicles.Count(e => e.CustomerId == c.Id) > 1 ? "متعدد" : vehicles.FirstOrDefault(e => e.CustomerId == c.Id)!.ArPlateNumber,
+                PlateNumberEnglish = vehicles.Count(e => e.CustomerId == c.Id) > 1 ? "Multiple" : vehicles.FirstOrDefault(e => e.CustomerId == c.Id)!.EnPlateNumber,
                 _packageEnglishNames = string.Join(", ", c.CustomerPackages
                            .Where(_ =>
                                (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))
@@ -665,7 +667,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                            .Where(name => !string.IsNullOrWhiteSpace(name))),
                 _packageArabicNames = string.Join(", ", c.CustomerPackages
                            .Where(_ =>
-                               _.ExpiryDate < DateTime.Now &&(!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))
+                               _.ExpiryDate < DateTime.Now && (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))
                            .Select(cp => cp.PackageArabicName)
                            .Where(name => !string.IsNullOrWhiteSpace(name))),
                 OrganizationArabicName = string.Join(", ", c.CustomerPackages
@@ -724,7 +726,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     private static IQueryable<Customer> CreateSearchQuery(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Customer> queryable)
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {           
+        {
             queryable = queryable.Where(or =>
                 or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
@@ -732,7 +734,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.Surname.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())  
+                or.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
             );
 
         }
@@ -746,16 +748,16 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     /// <param name="input">Search input parameters.</param>
     /// <param name="queryable">The queryable to apply search filters on.</param>
     /// <returns>Filtered <see cref="IQueryable{Customer}"/> with search conditions.</returns>
-    private async Task<IQueryable<Customer>> CreateSearchWithVehiclesQuery(PagedAndSortedAndSearchResultRequestDto input , IQueryable<Customer> queryable)
+    private async Task<IQueryable<Customer>> CreateSearchWithVehiclesQuery(PagedAndSortedAndSearchResultRequestDto input, IQueryable<Customer> queryable)
     {
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
             var vehicles = await _repositoryVehicle.GetQueryableAsync();
-            var Ids = vehicles.Where( 
+            var Ids = vehicles.Where(
                 e => e.ArPlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 e.EnPlateNumber.ToLower().Contains(input.SearchingTerm.ToLower())
                ).Select(e => e.CustomerId);
-             
+
             queryable = queryable.Where(or =>
                 or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||

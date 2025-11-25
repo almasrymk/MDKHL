@@ -52,7 +52,7 @@ public class VehiclesAppService :
 
     #region Public Methods
     /// <inheritdoc/>
- 
+
     public override async Task<VehicleDto> CreateAsync(CreateUpdateVehicleDto input)
     {
         input.CreatorId = _currentUser.Id;
@@ -61,7 +61,8 @@ public class VehiclesAppService :
         ValidateModelYear(input.ModelYear);
 
         await CheckVehicleIfExistsAsync(input);
-        await AssignPlateColorFromLicenceTypeAsync(input);
+        if (input.LicenceTypeId > 0)
+            await AssignPlateColorFromLicenceTypeAsync(input);
 
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {

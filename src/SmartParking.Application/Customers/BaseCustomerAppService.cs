@@ -24,19 +24,19 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
 {
     private readonly IRepository<Customer, Guid> _repository;
     private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
-	private readonly IRepository<Package, int> _packageRepository;
-	private readonly IDataFilter _dataFilter;
+    private readonly IRepository<Package, int> _packageRepository;
+    private readonly IDataFilter _dataFilter;
 
-	public BaseCustomerAppService(IRepository<Customer, Guid> repository, IRepository<CustomerPackage, int> customerPackageRepository,IRepository<Package,int> packageRepository , IDataFilter dataFilter)
+    public BaseCustomerAppService(IRepository<Customer, Guid> repository, IRepository<CustomerPackage, int> customerPackageRepository, IRepository<Package, int> packageRepository, IDataFilter dataFilter)
     {
         _repository = repository;
         _customerPackageRepository = customerPackageRepository;
-		_packageRepository = packageRepository;
-		_dataFilter = dataFilter;
-	}
+        _packageRepository = packageRepository;
+        _dataFilter = dataFilter;
+    }
     #region public methods 
     ///<inheritdoc/>
-    public async Task AddCustomerPackage(int organizationId, Guid customerId,int packageId)
+    public async Task AddCustomerPackage(int organizationId, Guid customerId, int packageId)
     {
         var package = await _packageRepository.GetAsync(packageId);
         var customerPackage = new CustomerPackage
@@ -51,15 +51,15 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
             PriceOfPackage = package.Price,
             publishedOfPackage = package.published,
             ActivationDateOfPackage = package.ActivationDate,
-            DectivationDateOfPackage= package.DectivationDate,
+            DectivationDateOfPackage = package.DectivationDate,
             DescriptionOfPackage = package.Description,
             DurationOfPackage = package.DurationOfPackage,
             ExpiryDate = DateTime.Today.AddDays(package.DurationOfPackage),
             PublishFromOfPackage = package.PublishFrom,
             PublishToOfPackage = package.PublishTo,
-            
 
-		};
+
+        };
         await _customerPackageRepository.InsertAsync(customerPackage, true);
     }
 
@@ -67,6 +67,9 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
     ///<inheritdoc/>
     public async Task CheckCustomer(CreateUpdateCustomerDto input)
     {
+        if (input.NationalId == null)
+            return;
+
         if (input.IdentificationType == IdentificationTypes.NationalID)
         {
             var nationalIdPattern = new Regex(@"^(1|2)\d{9}$");
@@ -86,7 +89,7 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
         var result2 = await CheckIfNationalIDIsUnique(input.NationalId);
         if (!result2)
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("NationalId") +" "+LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+            throw new Exception(LocalizationHelper.GetLocalizedString("NationalId") + " " + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
         }
     }
@@ -111,17 +114,17 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-			var query = await _repository.GetQueryableAsync();
-			var result = query.Where(x => x.IdentityUser.PhoneNumber == phoneNumber).ToList();
+            var query = await _repository.GetQueryableAsync();
+            var result = query.Where(x => x.IdentityUser.PhoneNumber == phoneNumber).ToList();
 
-			if (result.Count == 0)
-			{
-				return true;
+            if (result.Count == 0)
+            {
+                return true;
 
-			}
-			return false;
-		}
-       
+            }
+            return false;
+        }
+
 
     }
 
@@ -203,7 +206,7 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
         {
             var customerQuery = await _repository.GetQueryableAsync();
             var customer = customerQuery.Where(s => s.IdentityUserId == IdentityUserId).FirstOrDefault();
-            return ObjectMapper.Map<Customer,CustomerDto>(customer);
+            return ObjectMapper.Map<Customer, CustomerDto>(customer);
         }
     }
     #endregion

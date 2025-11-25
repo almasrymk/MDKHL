@@ -30,7 +30,7 @@ using Microsoft.AspNetCore.Http;
 using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 namespace SmartParking.Utilities;
 
-public class AuthenticationUtility : IAuthenticationUtility , ITransientDependency
+public class AuthenticationUtility : IAuthenticationUtility, ITransientDependency
 {
     private readonly ICustomRoleReository _roleReository;
     private readonly IMyUserRepository _userRepository;
@@ -56,6 +56,9 @@ public class AuthenticationUtility : IAuthenticationUtility , ITransientDependen
 
     public async Task CheckNationalId(IdentificationTypes identification, string NationalId)
     {
+        if ("" + NationalId == "")
+            return;
+
         if (identification == IdentificationTypes.NationalID)
         {
             var nationalIdPattern = new Regex(@"^(1|2)\d{9}$");
@@ -76,6 +79,8 @@ public class AuthenticationUtility : IAuthenticationUtility , ITransientDependen
 
     public async Task CheckIfNationalIDIsUnique(string NationalId)
     {
+        if (NationalId + "" == "")
+            return;
         var query = await _userRepository.GetQueryableAsync();
         query = query.Where(x => EF.Property<string>(x, "NationalId") == NationalId);
         var result = await query.FirstOrDefaultAsync();
@@ -97,7 +102,7 @@ public class AuthenticationUtility : IAuthenticationUtility , ITransientDependen
 
     public async Task CheckPhoneNumberIsValid(string phoneNumber)
     {
-       await Task.Yield();
+        await Task.Yield();
         var phoneNumberPattern = new Regex(@"(05\d{8}|\+9665\d{8})$");
         if (!phoneNumberPattern.IsMatch(phoneNumber))
         {

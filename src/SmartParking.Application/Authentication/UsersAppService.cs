@@ -101,7 +101,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
     [AllowAnonymous]
     ///<inheritdoc/>
 
-    public async Task<IdentityUser> AddAndValidateUserAsync (UserCreateDto input)
+    public async Task<IdentityUser> AddAndValidateUserAsync(UserCreateDto input)
     {
         await _identityOptions.SetAsync();
         await _authenticationUtility.CheckPhoneNumberIsValid(input.PhoneNumber);
@@ -114,8 +114,11 @@ public class UsersAppService : ApplicationService, IUsersAppService
                 LocalizationHelper.GetLocalizedString("DuplicateValidation"));
         }
         SetUserProperties(user, input);
-        await _authenticationUtility.CheckNationalId(input.IdentificationTypes, input.NationalId);
-        await _authenticationUtility.CheckIfNationalIDIsUnique(input.NationalId);
+        if ("" + input.NationalId != "")
+        {
+            await _authenticationUtility.CheckNationalId(input.IdentificationTypes, input.NationalId);
+            await _authenticationUtility.CheckIfNationalIDIsUnique(input.NationalId);
+        }
         var creationResult = await _userManager.CreateAsync(user, input.Password);
 
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
@@ -139,10 +142,10 @@ public class UsersAppService : ApplicationService, IUsersAppService
                 }
             }
         }
-        }
-        
-    
-    
+    }
+
+
+
     [AllowAnonymous]
     ///<inheritdoc/>
 
@@ -201,13 +204,13 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
     }
     ///<inheritdoc/>
-    public async Task<PagedResultDto<UserWithRole>> GetListMdklAsync(PagedAndSortedAndSearchResultRequestDto input,Guid? tenantId)
+    public async Task<PagedResultDto<UserWithRole>> GetListMdklAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IQueryable<IdentityUser> query = await FindByUserType();
-            var users = await _userRepository.FindUserWithRoleMdkhlAsync(input.SkipCount,input.MaxResultCount,input.Sorting,input.SearchingTerm, tenantId);
-            
+            var users = await _userRepository.FindUserWithRoleMdkhlAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.SearchingTerm, tenantId);
+
             return new PagedResultDto<UserWithRole>
             {
                 Items = users.Queryable.ToList(),
@@ -221,7 +224,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var users = await _userRepository.SearchUserWithRoleMdkhlAsync(input.SkipCount, input.MaxResultCount,input.SearchingTerm,input.Sorting);
+            var users = await _userRepository.SearchUserWithRoleMdkhlAsync(input.SkipCount, input.MaxResultCount, input.SearchingTerm, input.Sorting);
             return new PagedResultDto<UserWithRole>
             {
                 Items = users.Queryable.ToList(),
@@ -302,14 +305,14 @@ public class UsersAppService : ApplicationService, IUsersAppService
             var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == userId);
             if (user == null)
             {
-                throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") +" "+ 
+                throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " +
                     LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
             }
 
             return user;
         }
-       
+
     }
     ///<inheritdoc/>
 
@@ -320,7 +323,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             IdentityUser? user = await IsUserFound(id);
             input.IsActive = false;
             await UpdateUserProperties(user, input);
-            
+
             var updatedUser = await _userManager.UpdateAsync(user);
             if (!updatedUser.Succeeded)
             {
@@ -423,10 +426,10 @@ public class UsersAppService : ApplicationService, IUsersAppService
                 var UpdateDataDto = new UpdateUserDto
                 {
                     Name = input.FullName,
-                    IdentificationTypes= (IdentificationTypes)Enum.Parse(typeof(IdentificationTypes), input.IdentificationTypes),
+                    IdentificationTypes = (IdentificationTypes)Enum.Parse(typeof(IdentificationTypes), input.IdentificationTypes),
                     PhoneNumber = input.Phone,
-                    Email = input.Email , 
-                    NationalId = input.NationalId  
+                    Email = input.Email,
+                    NationalId = input.NationalId
                 };
                 await UpdateUserProperties(user, UpdateDataDto);
                 var createdUser = await _userManager.UpdateAsync(user);
@@ -442,11 +445,11 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
                 return Result<UserDataDto>.Success(userDto);
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 return Result<UserDataDto>.Error(ex.Message);
             }
-            
+
         }
     }
     ///<inheritdoc/>
@@ -628,7 +631,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
     /// <param name="UserId">The ID of the user to remove the role from.</param>
     /// <param name="RoleId">The ID of the role to remove.</param>
     /// <exception cref="Exception">Thrown if the user has the "Customer" role.</exception>
-    
+
 
     /// <summary>
     /// Checks if the specified user has the "Customer" role.

@@ -15,12 +15,16 @@ public class CreatedUpdatedUserDtoValidator : AbstractValidator<UserCreateDto>
     public CreatedUpdatedUserDtoValidator()
     {
 
-        RuleFor(x => x.Email)
-            .EmailAddress().WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
-            .Must(NotContainArabicLetters).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
-            .Must(HaveContentAfterAt).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
-            .Must(EndWithLetter).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace());
+        //RuleFor(x => x.Email)
+        //    .EmailAddress().WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
+        //    .Must(NotContainArabicLetters).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
+        //    .Must(HaveContentAfterAt).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
+        //    .Must(EndWithLetter).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace());
 
+        RuleFor(x => x.PhoneNumber)
+          .NotEmpty()
+          .Matches(ConstantValidations.WhatsAppNumber)
+          .WithMessage(LocalizationHelper.GetLocalizedString("PhoneValidation"));
 
         RuleFor(x => x.Password)
             .NotEmpty()
@@ -30,9 +34,9 @@ public class CreatedUpdatedUserDtoValidator : AbstractValidator<UserCreateDto>
             .IsInEnum()
             .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
-        RuleFor(x => x.NationalId)
-            .NotEmpty()
-            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+        //RuleFor(x => x.NationalId)
+        //    .NotEmpty()
+        //    .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
         RuleFor(x => x.UserType)
             .NotNull()

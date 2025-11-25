@@ -11,9 +11,8 @@ using Volo.Abp.Validation;
 
 namespace SmartParking.Authentication;
 
-public class UpdateUserDto 
+public class UpdateUserDto
 {
-    [Required]
     [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxUserNameLength))]
     public string UserName { get; set; }
     [Required]
@@ -28,18 +27,16 @@ public class UpdateUserDto
 
     public bool IsActive { get; set; } = true;
     public Guid? TenantId { get; set; }
-    
+
     [RegularExpression(@"^(([^<>()\[\]\\.,;:\s@\""]+(\.[^<>()\[\]\\.,;:\s@\""]+)*)|(\"".+\""))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$",
        ErrorMessage = "Invalid email format")]
     public string Email { get; set; } = string.Empty;
     public Guid RoleId { get; set; }
     public string ConcurrencyStamp { get; set; }
     public bool ISNoRole { get; set; }
-    [Required]
     public IdentificationTypes IdentificationTypes { get; set; }
-    [Required]
     public string NationalId { get; set; }
     public bool IsCustomer { get; set; }
-    public  UserTypeCategory? UserTypeCategory { get; set; }
+    public UserTypeCategory? UserTypeCategory { get; set; }
     public int OrganizationId { get; set; }
 }

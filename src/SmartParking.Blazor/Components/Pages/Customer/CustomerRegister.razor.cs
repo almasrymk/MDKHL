@@ -55,7 +55,7 @@ public partial class CustomerRegister
     private string plateLetters = "";
     private string plateNumbers = "";
     private string RoleId = "";
-    private int  PackageId { get; set; }
+    private int PackageId { get; set; }
     public bool ShowAddUser { get; set; } = false;
     private CustomerDto Customer = new CustomerDto();
 
@@ -71,7 +71,7 @@ public partial class CustomerRegister
             var organization = await OrganizationAppService.GetAsync(organizationId);
             Roles = await RoleAppService.GetListByTenant(organization.TenantId);
         }
-            
+
     }
     protected async override Task OnInitializedAsync()
     {
@@ -84,9 +84,9 @@ public partial class CustomerRegister
         var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         Organizations = result.Items.ToList();
         if (CurrentTenant.Id is not null)
-         {
+        {
             var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
-            Roles = await RoleAppService.GetListByTenant(CurrentTenant.Id);   
+            Roles = await RoleAppService.GetListByTenant(CurrentTenant.Id);
             createUpdateCustomerDto.OrganizationId = organization.Id;
             createUpdateCustomerDto.TenantId = CurrentTenant.Id;
             Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(CurrentTenant.Id);
@@ -106,29 +106,32 @@ public partial class CustomerRegister
     /// <param name="brandId"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    private async Task SelectBrand(int brandId)
+    private async Task SelectBrand(int? brandId)
     {
         createUpdateVehicle.VehicleBrandId = brandId;
-        var resultVehicleModel = await VehicleModelAppService.GetModelsByBrandAsync(brandId);
-        VehicleModels = resultVehicleModel.Value;
-        if(VehicleModels.Count < 0) 
-            throw new Exception(L["Model"] + " " + L["NotSelected"]);
+        var resultVehicleModel = await VehicleModelAppService.GetModelsByBrandAsync(brandId ?? 0);
+        if (resultVehicleModel != null)
+        {
+            VehicleModels = resultVehicleModel.Value;
+            if (VehicleModels.Count < 0)
+                throw new Exception(L["Model"] + " " + L["NotSelected"]);
+        }
     }
 
     /// <summary>
     /// method to handle submit
     /// </summary>
     /// <returns></returns>
-    public async  Task HandleSubmit()
+    public async Task HandleSubmit()
     {
-		try
+        try
         {
             await CreateUser();
             createUpdateCustomerDto.Password = "P@ssw0rd";
             createUpdateCustomerDto.RepeatPassword = "P@ssw0rd";
             createUpdateCustomerDto.UserName = createUpdateCustomerDto.PhoneNumber;
             var ExistedCustomer = await CustomerAppService.CheckIfCustomerAlreadyExistInOrganization(createUpdateCustomerDto);
-            if(CurrentTenant.Id!=null && ExistedCustomer != null)
+            if (CurrentTenant.Id != null && ExistedCustomer != null)
             {
                 Navigation.NavigateTo($"/customers/edit/{ExistedCustomer.Id}", true);
             }
@@ -139,10 +142,11 @@ public partial class CustomerRegister
                 {
                     CustomerId = Customer.Id;
                     SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}  {createUpdateCustomerDto.FullName}", Severity.Success);
+                    createUpdateVehicle = new CreateUpdateVehicleDto { CustomerId = CustomerId };
                     showVehicle = true;
                 }
             }
-           
+
         }
         catch (AbpValidationException abpValidationException)
         {
@@ -258,7 +262,7 @@ public partial class CustomerRegister
         catch (Exception ex)
         {
             createUpdateVehicle.EnPlateLetters = createUpdateVehicle.ArPlateLetters = "";
-            SnackBar.ShowSnackbar(Snackbar,ex.Message, Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, ex.Message, Severity.Error);
         }
     }
     /// <summary>

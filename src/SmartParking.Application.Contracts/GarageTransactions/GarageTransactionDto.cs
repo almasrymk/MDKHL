@@ -36,10 +36,6 @@ namespace SmartParking.GarageTransactions
         public int? DispenserId { get; set; }
         public string? LaneNO { get; set; }
         public string? TicketId { get; set; }
-
-
-
-
-
+        public string? CustomerName { get; set; }
     }
 }
