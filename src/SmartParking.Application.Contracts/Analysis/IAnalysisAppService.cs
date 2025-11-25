@@ -172,7 +172,7 @@ public interface IAnalysisAppService : IApplicationService
     /// <param name="input">The input parameters for pagination, sorting, and filtering.</param>
     /// <param name="tenantId">The unique identifier for the tenant.</param>
     /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{PaymentDto}"/> result.</returns>
-    Task<PagedResultDto<PaymentDto>> ReportPackagePayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+    Task<PagedResultDto<PaymentDto>> ReportPackagePaymentPayVat(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
 
     /// <summary>
     /// Reports garage transaction analysis for a specific customer ID within a date range.

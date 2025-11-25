@@ -571,7 +571,7 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
     }
 
-    public async Task<PagedResultDto<PaymentDto>> ReportPackagePayment(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
+    public async Task<PagedResultDto<PaymentDto>> ReportPackagePaymentPayVat(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
         using (_datafilter.Disable<IMultiTenant>())
         {

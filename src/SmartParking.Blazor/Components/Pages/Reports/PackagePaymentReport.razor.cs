@@ -161,7 +161,7 @@ public partial class PackagePaymentReport
             SearchingTerm = paged.SearchTerm
 
         };
-        var payments = await AnalysisAppService.ReportPackagePayment(input, CurrentTenant.Id);
+        var payments = await AnalysisAppService.ReportPackagePaymentPayVat(input, CurrentTenant.Id);
         TotalItem = (int)payments.TotalCount;
         if (paged.IsExport)
         {

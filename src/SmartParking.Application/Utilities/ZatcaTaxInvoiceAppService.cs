@@ -30,6 +30,7 @@ namespace SmartParking.Utilities
         private readonly ILogger<InvoiceUtilityAppService> _logger;
         private readonly IOrganizationsAppService _organizationsRepository;
         private readonly IRepository<Invoice, int> _invoiceRepository;
+        private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
 
         /// <summary>
         /// 
@@ -42,13 +43,15 @@ namespace SmartParking.Utilities
             ILogger<InvoiceUtilityAppService> logger,
             ICustomerAppService customerRepository,
             IOrganizationsAppService organizationsRepository,
-            IRepository<Invoice, int> invoiceRepository)
+            IRepository<Invoice, int> invoiceRepository,
+            IRepository<CustomerPackage, int> customerPackageRepository)
         {
             _repository = repository;
             _logger = logger;
             _organizationsRepository = organizationsRepository;
             _customerRepository = customerRepository;
             _invoiceRepository = invoiceRepository;
+            _customerPackageRepository = customerPackageRepository;
         }
 
         /// <summary>
@@ -99,7 +102,7 @@ namespace SmartParking.Utilities
                     ExchangeRate = 1,
                     VatPercentage = 15,
                     DiscountAmount = Discount,
-                    Total = Amount,                    
+                    Total = Amount,
                     DealerTaxNumber = "",
                     InvoiceDetails = new List<InvoiceDetailDto>()
                 };
@@ -182,6 +185,15 @@ namespace SmartParking.Utilities
                 {
                     Amount = invoice.InvoicePrice;
                     Discount = invoice.Discount;
+                }
+            }
+            else if (payment.CustomerPackageId > 0)
+            {
+                var customerPackage = await _customerPackageRepository.GetAsync(payment.CustomerPackageId.Value);
+                if (customerPackage != null)
+                {
+                    Amount = customerPackage.PriceOfPackage??0;
+                    Discount = customerPackage.Discount;
                 }
             }
 
