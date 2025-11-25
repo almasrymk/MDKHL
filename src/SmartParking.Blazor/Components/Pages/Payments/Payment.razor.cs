@@ -192,8 +192,8 @@ public partial class Payment
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CashierName"], Name = "CashierName", IsFilterable = true, PropertyName = "CashierName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentMethod"], Name = "PaymentMethod", IsFilterable = true, PropertyName = "PaymentMethod", IsSortable = true, TypeFilter = TypeFilter.Enum });
         tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["Amount"]}", Name = "Amount", IsFilterable = true, PropertyName = "Invoice.InvoicePrice", IsSortable = true, TypeFilter = TypeFilter.Number });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["PaymentVat"]}", Name = "VAT", IsFilterable = true, PropertyName = "Invoice.InvoicePrice", IsSortable = false, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["Discount"]}", Name = "Discount", IsFilterable = true, PropertyName = "Invoice.Discount", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["PaymentVat"]}", Name = "VAT", IsFilterable = true, PropertyName = "Invoice.InvoicePrice", IsSortable = false, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = $"{_localizer["PaymentTotal"]}", Name = "Total", IsFilterable = true, PropertyName = "Amount", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentCategory"], Name = "PaymentCategory", IsFilterable = true, PropertyName = "PaymentCategory", IsSortable = true, TypeFilter = TypeFilter.Enum });
         if (CurrentTenant.Id == null)
@@ -237,26 +237,32 @@ public partial class Payment
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer[name: "CashierName"], item.CashierName));
 
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentMethod"], _localizer[$"{item.PaymentMethod}"]));
-            string total , amount , vatValue , discountValue ;
-            total = item.Amount == default ? "0.0" : item.Amount.ToString();
-            if (item.CustomerPackage is not null)
-            {
+            string total = item.Amount == 0 ? "0.0" : item.Amount.ToString();
+            string amount, vatValue, discountValue;
 
-                amount = item.CustomerPackage?.PriceOfPackage.ToString();
-                vatValue = item.CustomerPackage?.Vat.ToString();
-                discountValue = item.CustomerPackage?.Discount.ToString();
-            }
-            else
+            if (item.CustomerPackage is not null) 
             {
-                amount = item.Invoice?.InvoicePrice.ToString();
-                vatValue = item.Invoice?.InvoicePrice == 0 ? "0.0" : Math.Round((item.Invoice?.InvoicePrice ?? 0) * 0.15m, 2).ToString();
-                discountValue = item.Invoice?.Discount.ToString();
+                amount = item.CustomerPackage.PriceOfPackage?.ToString();
+                vatValue = item.CustomerPackage.Vat.ToString();
+                discountValue = item.CustomerPackage.Discount.ToString();
             }
+            else 
+            {
+                amount = Math.Round(item.Invoice.InvoicePrice,2).ToString();
+                discountValue = Math.Round(item.Invoice.Discount,2).ToString();
 
+                decimal price = item.Invoice?.InvoicePrice ?? 0;
+                decimal discount = item.Invoice?.Discount ?? 0;
+                decimal baseAmount = price - discount;
+
+                vatValue = baseAmount > 0
+                    ? Math.Round((baseAmount) * 0.15m, 2).ToString()
+                    : "0.0";
+            }
             var IconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Amount"]}", $"{amount} {IconHtml}"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["PaymentVat"]}", $"{vatValue} {IconHtml}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Discount"]}", $"{discountValue} {IconHtml}"));
+            rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["PaymentVat"]}", $"{vatValue} {IconHtml}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["PaymentTotal"]}", $"{total} {IconHtml}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PaymentCategory"], _localizer[$"{item.PaymentCategory.ToString()}"]));
 

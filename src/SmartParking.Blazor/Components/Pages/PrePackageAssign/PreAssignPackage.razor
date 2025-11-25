@@ -114,7 +114,7 @@
         {
 
             CustomerPackageDto.Organization = null;
-            CustomerPackageDto.Vat=Math.Round((CustomerPackageDto.PriceOfPackage!.Value * 0.15m), 2);
+            CustomerPackageDto.Vat = Math.Round( (packagePrice - CustomerPackageDto.Discount) * 0.15m, 2);
             var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(
                 CustomerPackageDto.PackageId, CustomerPackageDto);
 

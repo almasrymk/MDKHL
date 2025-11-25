@@ -48,7 +48,12 @@ public partial class DetailsPayment
         {
             Total = Payment.Amount == 0 ? "0.0" : Payment.Amount.ToString();
             Amount = Payment.Invoice?.InvoicePrice.ToString();
-            Vat = Payment.Invoice?.InvoicePrice == 0 ? "0.0" : Math.Round((Payment.Invoice?.InvoicePrice ?? 0) * 0.15m, 2).ToString();
+            Vat =
+                Payment.Invoice?.InvoicePrice is decimal price &&
+                Payment.Invoice?.Discount is decimal discount &&
+                (price - discount) != 0
+                    ? Math.Round( (price - discount)*0.15m, 2).ToString()
+                    : "0.0"; 
             Discount = Payment.Invoice?.Discount.ToString();
         }
 
