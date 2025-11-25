@@ -218,6 +218,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d => d.OrganizationId, o => o.MapFrom(s => s.OrganizationId))
             .ForMember(d => d.GarageTransactionExitId, o => o.MapFrom(s => s.GarageTransactionExitId))
             .ForMember(d => d.TicketId, o => o.MapFrom(s => s.TicketId))
+            .ForMember(d => d.Vat, o => o.MapFrom(s => Math.Round((s.InvoicePrice-s.Discount) * 0.15m, 2)))
             .ForMember(d => d.CustomerEnName, o => o.MapFrom(s => s.CustomerEnName)).ReverseMap();   
         
         CreateMap<Invoice, InvoiceMobileDto>()
@@ -234,6 +235,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d => d.GarageTransactionExitId, o => o.MapFrom(s => s.GarageTransactionExitId))
             .ForMember(d => d.TicketId, o => o.MapFrom(s => s.TicketId))
             .ForMember(d => d.CustomerEnName, o => o.MapFrom(s => s.CustomerEnName)).ReverseMap();
+
         CreateMap<InvoiceDto, InvoiceMobileDto>().ReverseMap(); 
         
         CreateMap<Payment, PaymentDto>()

@@ -79,18 +79,8 @@ public class InvoicesAppService : ApplicationService, IInvoicesAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var queryable = await _invoiceRepoistory.GetQueryableAsync();
-            //queryable = queryable.Include(c => c.Customer.IdentityUser);
-
-            queryable = queryable.Where(_ => _.Customer.IdentityUserId == CurrentUser.Id);
-
-
-            // Execute the query and get the list of hotel entities
-            var invoices = await AsyncExecuter.ToListAsync(queryable);
-
-            // Map the hotel entities to hotelDto objects
-            var invoicesDto = ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices);
-            // Return the paginated result
-            return invoicesDto;
+            var invoices = await queryable.Where(_ => _.Customer.IdentityUserId == CurrentUser.Id).ToListAsync();
+            return ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices);
         }
         
     }

@@ -380,6 +380,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             ExitTransactionImage = exitTransaction.VehiclePicture,
             EntryTransactionImage = entryTransactionImage,
             TicketId = exitTransaction.TicketId,
+            Vat=Math.Round(price*0.15m,2)
         };
 
         return invoice;

@@ -1,4 +1,5 @@
 ﻿using SmartParking.Packages;
+using SmartParking.Payments;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -61,7 +62,7 @@ namespace SmartParking.CustomerPackages
         /// A task that represents the asynchronous operation. 
         /// The task result contains a <see cref="Result"/> indicating the outcome of the assignment.
         /// </returns>
-        Task<Result> AssignPackageToCustomerAsync(int packageId, string ArabicPlateNumber, string EnglishPlateNumber);
+        Task<Result<PaymentCheckoutRequestDto>> AssignPackageToCustomerAsync(int packageId, string ArabicPlateNumber, string EnglishPlateNumber);
 
 
         /// <summary>
