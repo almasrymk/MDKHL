@@ -239,20 +239,20 @@ public abstract class BasePDFGeneratorAppService<DTO>
 
         byte[] ImgOrgBytes = File.ReadAllBytes(ImgOrg);
 
-        var QRCodePath = Path.Combine(
-              PathHelper.WwwRoot,
-              "QRCodeImage\\image",
-              Path.GetFileName(dt.Localization.QRCodePath));
+        //var QRCodePath = Path.Combine(
+        //      PathHelper.WwwRoot,
+        //      "QRCodeImage\\image",
+        //      Path.GetFileName(dt.Localization.QRCodePath));
 
-        byte[] ImgQrBytes = File.ReadAllBytes(QRCodePath);
+        //byte[] ImgQrBytes = File.ReadAllBytes(QRCodePath);
 
-        byte[] curr = File.ReadAllBytes(PathHelper.imageDirectoryPdf);
+        //byte[] curr = File.ReadAllBytes(PathHelper.imageDirectoryPdf);
 
         // Example dataset
         System.Data.DataTable table = new System.Data.DataTable("InvoicerdlcData");
         table.Columns.Add("ImgMadkhal", typeof(byte[]));
         table.Columns.Add("ImgOrg", typeof(byte[]));
-        table.Columns.Add("ImgQr", typeof(byte[]));
+        //table.Columns.Add("ImgQr", typeof(byte[]));
         table.Columns.Add("Title1", typeof(string));
         table.Columns.Add("SimplifiedTaxInvoice", typeof(string));
         table.Columns.Add("PaymentNumber", typeof(string));
@@ -272,7 +272,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
         var row = table.NewRow();
         row["ImgMadkhal"] = ImgMadkhalBytes;
         row["ImgOrg"] = ImgOrgBytes;
-        row["ImgQr"] = ImgQrBytes;
+        //row["ImgQr"] = ImgQrBytes;
         row["Title1"] = $"{dt.Data.InvoiceId.ToString()} : {dt.Localization.InvoiceNumber}";
         row["SimplifiedTaxInvoice"] = "***" + dt.Localization.SimplifiedTaxInvoice + "***";
         row["PaymentNumber"] = $"{dt.Payment.PaymentNumber} : {dt.Localization.InvoiceNumberView}";
