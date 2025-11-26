@@ -243,7 +243,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         AddVatAndTicket(doc, data);
         AddOrganizationSection(doc, data, true);
         AddSummarySection(doc, data, true);
-        AddQrAndTotalsSection(doc, data, true);
+        //AddQrAndTotalsSection(doc, data, true);
     }
 
     protected override void BuildEnglishLayout(Document doc, InvoicePdfData data)
@@ -253,6 +253,6 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         AddSubHeader(doc, data);
         AddOrganizationSection(doc, data, false);
         AddSummarySection(doc, data, false);
-        AddQrAndTotalsSection(doc, data, false);
+        //AddQrAndTotalsSection(doc, data, false);
     }
 }
