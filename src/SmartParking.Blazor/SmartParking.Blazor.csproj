@@ -21,6 +21,9 @@
     <PackageReference Include="Blazorise.Components" Version="1.7.5" />
     <PackageReference Include="Blazorise.DataGrid" Version="1.7.5" />
     <PackageReference Include="BouncyCastle.Cryptography" Version="2.5.1" />
+    <PackageReference Include="itext7" Version="9.1.0" />
+    <PackageReference Include="itext7.bouncy-castle-adapter" Version="9.1.0" />
+    <PackageReference Include="itext7.font-asian" Version="9.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.3" />
     <PackageReference Include="Blazorise.Bootstrap5" Version="1.7.5" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.7.5" />
