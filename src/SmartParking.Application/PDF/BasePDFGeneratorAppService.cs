@@ -42,8 +42,13 @@ public abstract class BasePDFGeneratorAppService<DTO>
     protected CultureInfo Culture => CultureInfo.CurrentCulture;
     protected string CultureName => CultureInfo.CurrentCulture.Name;
 
+    protected BasePDFGeneratorAppService(IOptions<PdfSettings> pdfOptions)
+    {
+        _pdfSettings = pdfOptions.Value;
+    }
     public virtual void ImagesSection(Document doc, string OrganizationPicture)
     {
+        
         float scale = ScaleFactor(doc);
         var table = new Table(3).UseAllAvailableWidth();
 
@@ -85,6 +90,10 @@ public abstract class BasePDFGeneratorAppService<DTO>
         var writer = new PdfWriter(stream);
         var pdf = new PdfDocument(writer);
         var document = new Document(pdf, GetPageSize(PageSize));
+        if (GetPageSize(PageSize).Equals(new PageSize(7 * 28.346f, 100 * 28.346f)))
+        {
+            document.SetMargins(_pdfSettings.Margins.Top, _pdfSettings.Margins.Right, _pdfSettings.Margins.Bottom, _pdfSettings.Margins.Left);
+        }
         try
         {
             InitializeFont();
