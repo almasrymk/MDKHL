@@ -13,8 +13,10 @@ using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.Packages;
+using SmartParking.Payments;
 using SmartParking.PDF;
 using SmartParking.Results;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -126,8 +128,8 @@ public class CustomerPackagesAppService :
     }
 
     ///<inheritdoc/>
-    [RemoteService(IsEnabled = false)]
-    public async Task<Result> AssignPackageToCustomerAsync(int packageId, string ArabicPlateNumber, string EnglishPlateNumber)
+    [RemoteService(IsEnabled =false)]
+    public  async Task<Result<PaymentCheckoutRequestDto>> AssignPackageToCustomerAsync(int packageId, string ArabicPlateNumber, string EnglishPlateNumber)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -161,8 +163,11 @@ public class CustomerPackagesAppService :
                 );
                 return await UpdateCustomerPackageAsync(customerPackage);
             }
-            var result = await InsertCustomerPackageAsync(customerPackage);
-            return result.Value != 0 ? Result.Success() : Result.Error();
+            var result= await InsertCustomerPackageAsync(customerPackage);
+            var packageDto = ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(result);
+            var paymentRqDto= RequestToPaymentCheckout(packageDto);
+            return Result.Success(paymentRqDto);
+
         }
 
     }
@@ -202,7 +207,7 @@ public class CustomerPackagesAppService :
             }
             customerPackage.QRCodePath = await HandleQRCode(customerPackageDto, customer, customerPackage);
             var insertPackage = await InsertCustomerPackageAsync(customerPackage);
-            return insertPackage.Value;
+            return insertPackage.Value.Id;
         }
     }
 
@@ -284,19 +289,13 @@ public class CustomerPackagesAppService :
 
     public async Task<DateTime> GetExpireyDateForPackageSubscripedByCustomerInSpecificOrganization(int OrgId, Guid CustomerId, int PackageId)
     {
-
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var query = await _repository.GetQueryableAsync();
-            query = query.Where(p => p.OrganizationId == OrgId && p.CustomerId == CustomerId && p.PackageId == PackageId);
-            var result = await AsyncExecuter.FirstOrDefaultAsync(query);
-            return result.ExpiryDate;
-
-        }
-
-
-
-
+         using (_dataFilter.Disable<IMultiTenant>())
+         {
+             var query =await _repository.GetQueryableAsync();
+             query = query.Where(p => p.OrganizationId == OrgId && p.CustomerId == CustomerId && p.PackageId == PackageId);
+             var result =await AsyncExecuter.FirstOrDefaultAsync(query);
+             return result.ExpiryDate;
+         }
     }
 
     ///<inheritdoc/>
@@ -566,10 +565,10 @@ public class CustomerPackagesAppService :
     /// A task that represents the asynchronous operation.
     /// The task result contains a <see cref="Result"/> indicating success or failure.
     /// </returns>
-    private async Task<Result<int>> InsertCustomerPackageAsync(CustomerPackage customerPackage)
+    private async Task<Result<CustomerPackage>> InsertCustomerPackageAsync(CustomerPackage customerPackage)
     {
         var assignedPackage = await _repository.InsertAsync(customerPackage, true);
-        return assignedPackage != null ? Result.Success(assignedPackage.Id) : Result.Error("Can't assign package to customer");
+        return assignedPackage != null ? assignedPackage : Result.Error("Can't assign package to customer");
     }
     /// <summary>
     /// Creates a new <see cref="CustomerPackage"/> instance from the provided package and customer information.
@@ -657,6 +656,22 @@ public class CustomerPackagesAppService :
         }
         ClearPackageDetails(customerPackage);
         await _repository.UpdateAsync(customerPackage, true);
+
+    }
+    private  PaymentCheckoutRequestDto RequestToPaymentCheckout(CustomerPackageDto customerPackageDto)
+    {
+        return  new PaymentCheckoutRequestDto
+        {
+            OrganizationId = customerPackageDto!.OrganizationId,
+            PaymentCategory = PaymentCategory.Package,
+            CustomerPackageId = customerPackageDto.Id,
+            PackageId = customerPackageDto.PackageId,
+            PaymentMethod = PaymentMethod.Cash,
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(customerPackageDto.PriceOfPackage.Value, customerPackageDto.Discount),
+            CustomerId = customerPackageDto.CustomerId,
+            ArPlateNumber = customerPackageDto.ArPlateNumber,
+            EnPlateNumber = customerPackageDto.EnPlateNumber,
+        };  
 
     }
 
