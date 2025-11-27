@@ -3,6 +3,7 @@ using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using Microsoft.Extensions.Options;
 using SmartParking.Payments;
 using SmartParking.QRCode;
 using SmartParking.Utilities;
@@ -23,7 +24,8 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
 
     public PackagePDFAppService(
         ILocalizationFactoryAppService localizationFactoryAppService,
-        IQRCodeAppService qrCodeAppService)
+        IQRCodeAppService qrCodeAppService,
+        IOptions<PdfSettings> pdfOptions) : base(pdfOptions)
     {
 
         _localizationFactoryAppService = localizationFactoryAppService;
