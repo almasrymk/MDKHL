@@ -3,6 +3,7 @@ using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using Microsoft.Extensions.Options;
 using Microsoft.Reporting.NETCore;
 using SmartParking.Payments;
 using SmartParking.QRCode;
@@ -23,7 +24,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
 
 
 
-    public InvoicePDFAppService(ILocalizationFactoryAppService localizationAppService, IQRCodeAppService qrCodeAppService)
+    public InvoicePDFAppService(ILocalizationFactoryAppService localizationAppService, IQRCodeAppService qrCodeAppService, IOptions<PdfSettings> pdfOptions) : base(pdfOptions)
     {
 
         _localizationAppService = localizationAppService;
@@ -229,10 +230,12 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
             Localization = localization
         };
 
-        if (PageSize == "thermal7cm")
-            return Buildrdlc(pdfData);
-        else
-            return Build(pdfData, PageSize);
+        return Build(pdfData, PageSize);
+
+        //if (PageSize == "thermal7cm")
+        //    return Buildrdlc(pdfData);
+        //else
+        //    return Build(pdfData, PageSize);
     }
 
     protected override void BuildArabicLayout(Document doc, InvoicePdfData data)
