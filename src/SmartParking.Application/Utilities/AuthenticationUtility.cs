@@ -56,23 +56,23 @@ public class AuthenticationUtility : IAuthenticationUtility, ITransientDependenc
 
     public async Task CheckNationalId(IdentificationTypes identification, string NationalId)
     {
-        if ("" + NationalId == "")
-            return;
-
-        if (identification == IdentificationTypes.NationalID)
+        if (!string.IsNullOrEmpty(NationalId))
         {
-            var nationalIdPattern = new Regex(@"^(1|2)\d{9}$");
-            if (!nationalIdPattern.IsMatch(NationalId))
+            if (identification == IdentificationTypes.NationalID)
             {
-                throw new Exception(LocalizationHelper.GetLocalizedString("NationIdValidation"));
+                var nationalIdPattern = new Regex(@"^(1|2)\d{9}$");
+                if (!nationalIdPattern.IsMatch(NationalId))
+                {
+                    throw new Exception(LocalizationHelper.GetLocalizedString("NationIdValidation"));
+                }
             }
-        }
-        else if (identification == IdentificationTypes.Passport)
-        {
-            var passportPattern = new Regex(@"^(?=.*[a-zA-Z]{0,1})[a-zA-Z0-9]{6,9}$");
-            if (!passportPattern.IsMatch(NationalId))
+            else if (identification == IdentificationTypes.Passport)
             {
-                throw new Exception(LocalizationHelper.GetLocalizedString("PassportValidation"));
+                var passportPattern = new Regex(@"^(?=.*[a-zA-Z]{0,1})[a-zA-Z0-9]{6,9}$");
+                if (!passportPattern.IsMatch(NationalId))
+                {
+                    throw new Exception(LocalizationHelper.GetLocalizedString("PassportValidation"));
+                }
             }
         }
     }

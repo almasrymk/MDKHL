@@ -14,8 +14,8 @@ namespace SmartParking.GarageTransactions
 	{
 		public int? CameraId { get; set; }
 		public string PlateNumber { get; set; }
-		public DateTime SnapTime { get; set; }
-		public DateTime AccurateTime { get; set; }
+		public DateTime? SnapTime { get; set; }
+		public DateTime? AccurateTime { get; set; }
 		public int OrganizationID { get; set; }
 		public int GarageId { get; set; }
 		public string VehiclePicture { get; set; }
@@ -36,6 +36,6 @@ namespace SmartParking.GarageTransactions
         public int? DispenserId { get; set; }
         public string? LaneNO { get; set; }
         public string? TicketId { get; set; }
-        public string? CustomerName { get; set; }
+        public string ArabicName { get; set; }
     }
 }
