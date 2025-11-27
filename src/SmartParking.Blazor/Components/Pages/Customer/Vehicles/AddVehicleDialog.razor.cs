@@ -86,7 +86,7 @@ public partial class AddVehicleDialog
     private async Task SelectBrand(string brandId)
     {
         createUpdateVehicle.VehicleBrandId = int.Parse(brandId);
-        var resultVehicleModel = await VehicleModelAppService.GetModelsByBrandAsync(createUpdateVehicle.VehicleBrandId ?? 0);
+        var resultVehicleModel = await VehicleModelAppService.GetModelsByBrandAsync(createUpdateVehicle.VehicleBrandId);
         VehicleModels = resultVehicleModel.Value;
     }
 
@@ -98,20 +98,8 @@ public partial class AddVehicleDialog
         try
         {
             createUpdateVehicle.CustomerId = CustomerId;
-            if (VehicleModelId != null)
-                createUpdateVehicle.VehicleModelId = int.Parse("0" + VehicleModelId);
-            else
-                createUpdateVehicle.VehicleModelId = null;
-            if (LicenceTypeId != null)
-                createUpdateVehicle.LicenceTypeId = int.Parse("0" + LicenceTypeId);
-            else
-                createUpdateVehicle.LicenceTypeId = null;
-
-            if (createUpdateVehicle.VehicleBrandId == 0)
-                createUpdateVehicle.VehicleBrandId = null;
-
-            if (createUpdateVehicle.PlateColorId == 0)
-                createUpdateVehicle.PlateColorId = null;
+            createUpdateVehicle.VehicleModelId = int.Parse(VehicleModelId);
+            createUpdateVehicle.LicenceTypeId = int.Parse(LicenceTypeId);
 
             var vehichle = await VehicleAppService.CreateAsync(createUpdateVehicle);
 

@@ -13,31 +13,22 @@ public class CreatedUpdatedVehiclesDtoValidator : AbstractValidator<CreateUpdate
 {
     public CreatedUpdatedVehiclesDtoValidator()
     {
-        //RuleFor(x => x.VehicleModelId)
-        //.NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-        //         .GreaterThan(0);
+        RuleFor(x => x.VehicleModelId)
+        .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+        .GreaterThan(0);
 
 
-        //RuleFor(x => x.VehicleBrandId)
-        //.NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-        //         .GreaterThan(0);
+        RuleFor(x => x.VehicleBrandId)
+        .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+        .GreaterThan(0);
 
-        //RuleFor(x => x.LicenceTypeId)
-        //.NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-        //         .GreaterThan(0);
+        RuleFor(x => x.LicenceTypeId)
+        .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+        .GreaterThan(0);
 
         RuleFor(x => x.ModelYear)
-        //.NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-        .Must(modelYear =>
-        {
-            if (string.IsNullOrWhiteSpace(modelYear))
-                return true;
-
-            // Validate only if not null
-            return int.TryParse(modelYear, out int year)
-                   && year >= 1980
-                   && year <= DateTime.Now.Year;
-        })
+        .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
+        .Must(modelYear => int.TryParse(modelYear, out int year) && year >= 1980 && year <= DateTime.Now.Year)
         .WithMessage(LocalizationHelper.GetLocalizedString("MustBeGreaterThan") + ' ' + 1980 + ' ' + LocalizationHelper.GetLocalizedString("MustBeSmallerThan") + ' ' + DateTime.Now.Year);
 
         RuleFor(x => x.ArPlateLetters)
@@ -75,10 +66,10 @@ public class CreatedUpdatedVehiclesDtoValidator : AbstractValidator<CreateUpdate
               .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
 
-        //RuleFor(x => x.CompanyName)
-        //    .NotEmpty()
-        //    .When(x => x.BelongToCompany)
-        //    .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+        RuleFor(x => x.CompanyName)
+            .NotEmpty()
+            .When(x => x.BelongToCompany)
+            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
 
 

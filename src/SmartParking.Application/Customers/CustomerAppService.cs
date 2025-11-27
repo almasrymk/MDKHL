@@ -84,14 +84,12 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                     LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
             }
-            if ("" + input.NationalId != "")
+            var result2 = await _baseCustomer.CheckIfNationalIDIsUnique(input.NationalId);
+            if (!result2)
             {
-                var result2 = await _baseCustomer.CheckIfNationalIDIsUnique(input.NationalId);
-                if (!result2)
-                {
-                    throw new BusinessException(LocalizationHelper.GetLocalizedString("NationId") + " " +
-                        LocalizationHelper.GetLocalizedString("DuplicateValidation"));
-                }
+                throw new BusinessException(LocalizationHelper.GetLocalizedString("NationId") + " " +
+                    LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+
             }
             var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
             customer.IdentificationTypes = input.IdentificationType;
@@ -626,7 +624,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 MobileNumber = c.IdentityUser.PhoneNumber,
                 NationalId = c.NationalId,
                 PlateNumberArabic = vehicles.Count(e => e.CustomerId == c.Id) > 1 ? "متعدد" : vehicles.FirstOrDefault(e => e.CustomerId == c.Id)!.ArPlateNumber,
-                PlateNumberEnglish = vehicles.Count(e => e.CustomerId == c.Id) > 1 ? "Multiple" : vehicles.FirstOrDefault(e => e.CustomerId == c.Id)!.EnPlateNumber,
+                PlateNumberEnglish = vehicles.Count(e => e.CustomerId == c.Id) > 1 ? "متعدد" : vehicles.FirstOrDefault(e => e.CustomerId == c.Id)!.EnPlateNumber,
                 _packageEnglishNames = string.Join(", ", c.CustomerPackages
                            .Where(_ =>
                                (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true))

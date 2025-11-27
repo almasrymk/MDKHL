@@ -114,11 +114,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
                 LocalizationHelper.GetLocalizedString("DuplicateValidation"));
         }
         SetUserProperties(user, input);
-        if (!string.IsNullOrEmpty(input.NationalId))
-        {
-            await _authenticationUtility.CheckNationalId(input.IdentificationTypes, input.NationalId);
-            await _authenticationUtility.CheckIfNationalIDIsUnique(input.NationalId);
-        }
+        await _authenticationUtility.CheckNationalId(input.IdentificationTypes, input.NationalId);
+        await _authenticationUtility.CheckIfNationalIDIsUnique(input.NationalId);
         var creationResult = await _userManager.CreateAsync(user, input.Password);
 
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);

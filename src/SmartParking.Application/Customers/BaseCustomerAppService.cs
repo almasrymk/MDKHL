@@ -67,9 +67,6 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
     ///<inheritdoc/>
     public async Task CheckCustomer(CreateUpdateCustomerDto input)
     {
-        if (input.NationalId == null)
-            return;
-
         if (input.IdentificationType == IdentificationTypes.NationalID)
         {
             var nationalIdPattern = new Regex(@"^(1|2)\d{9}$");

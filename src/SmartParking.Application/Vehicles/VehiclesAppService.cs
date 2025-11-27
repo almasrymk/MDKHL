@@ -61,8 +61,7 @@ public class VehiclesAppService :
         ValidateModelYear(input.ModelYear);
 
         await CheckVehicleIfExistsAsync(input);
-        if (input.LicenceTypeId > 0)
-            await AssignPlateColorFromLicenceTypeAsync(input);
+        await AssignPlateColorFromLicenceTypeAsync(input);
 
         if (_currentUser.IsInRole(RolesType.Mdkhl.ToString()) || _currentUser.IsInRole("admin"))
         {

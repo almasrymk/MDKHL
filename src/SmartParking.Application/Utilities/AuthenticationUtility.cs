@@ -56,31 +56,26 @@ public class AuthenticationUtility : IAuthenticationUtility, ITransientDependenc
 
     public async Task CheckNationalId(IdentificationTypes identification, string NationalId)
     {
-        if (!string.IsNullOrEmpty(NationalId))
+        if (identification == IdentificationTypes.NationalID)
         {
-            if (identification == IdentificationTypes.NationalID)
+            var nationalIdPattern = new Regex(@"^(1|2)\d{9}$");
+            if (!nationalIdPattern.IsMatch(NationalId))
             {
-                var nationalIdPattern = new Regex(@"^(1|2)\d{9}$");
-                if (!nationalIdPattern.IsMatch(NationalId))
-                {
-                    throw new Exception(LocalizationHelper.GetLocalizedString("NationIdValidation"));
-                }
+                throw new Exception(LocalizationHelper.GetLocalizedString("NationIdValidation"));
             }
-            else if (identification == IdentificationTypes.Passport)
+        }
+        else if (identification == IdentificationTypes.Passport)
+        {
+            var passportPattern = new Regex(@"^(?=.*[a-zA-Z]{0,1})[a-zA-Z0-9]{6,9}$");
+            if (!passportPattern.IsMatch(NationalId))
             {
-                var passportPattern = new Regex(@"^(?=.*[a-zA-Z]{0,1})[a-zA-Z0-9]{6,9}$");
-                if (!passportPattern.IsMatch(NationalId))
-                {
-                    throw new Exception(LocalizationHelper.GetLocalizedString("PassportValidation"));
-                }
+                throw new Exception(LocalizationHelper.GetLocalizedString("PassportValidation"));
             }
         }
     }
 
     public async Task CheckIfNationalIDIsUnique(string NationalId)
     {
-        if (NationalId + "" == "")
-            return;
         var query = await _userRepository.GetQueryableAsync();
         query = query.Where(x => EF.Property<string>(x, "NationalId") == NationalId);
         var result = await query.FirstOrDefaultAsync();

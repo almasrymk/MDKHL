@@ -22,14 +22,14 @@ public class RegisterUserDtoValidator : AbstractValidator<RegisterInputDto>
         .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
 
-        //RuleFor(x => x.Email)
-        //    .EmailAddress().WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
-        //    .Must(NotContainArabicLetters).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
-        //    .Must(HaveContentAfterAt).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
-        //    .Must(EndWithLetter).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace());
+        RuleFor(x => x.Email)
+            .EmailAddress().WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
+            .Must(NotContainArabicLetters).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
+            .Must(HaveContentAfterAt).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
+            .Must(EndWithLetter).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace());
 
-        //RuleFor(x => x.NationalId)
-        //  .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+        RuleFor(x => x.NationalId)
+          .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
         RuleFor(x => x.Password)
             .Matches(x => x.ConfirmPassword)

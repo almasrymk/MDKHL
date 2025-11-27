@@ -128,8 +128,8 @@ public class CustomerPackagesAppService :
     }
 
     ///<inheritdoc/>
-    [RemoteService(IsEnabled =false)]
-    public  async Task<Result<PaymentCheckoutRequestDto>> AssignPackageToCustomerAsync(int packageId, string ArabicPlateNumber, string EnglishPlateNumber)
+    [RemoteService(IsEnabled = false)]
+    public async Task<Result<PaymentCheckoutRequestDto>> AssignPackageToCustomerAsync(int packageId, string ArabicPlateNumber, string EnglishPlateNumber)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -163,9 +163,9 @@ public class CustomerPackagesAppService :
                 );
                 return await UpdateCustomerPackageAsync(customerPackage);
             }
-            var result= await InsertCustomerPackageAsync(customerPackage);
+            var result = await InsertCustomerPackageAsync(customerPackage);
             var packageDto = ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(result);
-            var paymentRqDto= RequestToPaymentCheckout(packageDto);
+            var paymentRqDto = RequestToPaymentCheckout(packageDto);
             return Result.Success(paymentRqDto);
 
         }
@@ -289,13 +289,13 @@ public class CustomerPackagesAppService :
 
     public async Task<DateTime> GetExpireyDateForPackageSubscripedByCustomerInSpecificOrganization(int OrgId, Guid CustomerId, int PackageId)
     {
-         using (_dataFilter.Disable<IMultiTenant>())
-         {
-             var query =await _repository.GetQueryableAsync();
-             query = query.Where(p => p.OrganizationId == OrgId && p.CustomerId == CustomerId && p.PackageId == PackageId);
-             var result =await AsyncExecuter.FirstOrDefaultAsync(query);
-             return result.ExpiryDate;
-         }
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(p => p.OrganizationId == OrgId && p.CustomerId == CustomerId && p.PackageId == PackageId);
+            var result = await AsyncExecuter.FirstOrDefaultAsync(query);
+            return result.ExpiryDate;
+        }
     }
 
     ///<inheritdoc/>
@@ -342,8 +342,8 @@ public class CustomerPackagesAppService :
         await InsertCustomerPackageAsync(new CustomerPackage
         {
             CustomerId = CustomerId,
-            OrganizationId = org?.Id,
-            TenantId = org?.TenantId,
+            OrganizationId = org.Id,
+            TenantId = org.TenantId,
         });
 
     }
@@ -658,9 +658,9 @@ public class CustomerPackagesAppService :
         await _repository.UpdateAsync(customerPackage, true);
 
     }
-    private  PaymentCheckoutRequestDto RequestToPaymentCheckout(CustomerPackageDto customerPackageDto)
+    private PaymentCheckoutRequestDto RequestToPaymentCheckout(CustomerPackageDto customerPackageDto)
     {
-        return  new PaymentCheckoutRequestDto
+        return new PaymentCheckoutRequestDto
         {
             OrganizationId = customerPackageDto!.OrganizationId,
             PaymentCategory = PaymentCategory.Package,
@@ -671,7 +671,7 @@ public class CustomerPackagesAppService :
             CustomerId = customerPackageDto.CustomerId,
             ArPlateNumber = customerPackageDto.ArPlateNumber,
             EnPlateNumber = customerPackageDto.EnPlateNumber,
-        };  
+        };
 
     }
 

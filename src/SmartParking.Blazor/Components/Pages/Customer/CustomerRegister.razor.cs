@@ -106,16 +106,13 @@ public partial class CustomerRegister
     /// <param name="brandId"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    private async Task SelectBrand(int? brandId)
+    private async Task SelectBrand(int brandId)
     {
         createUpdateVehicle.VehicleBrandId = brandId;
-        var resultVehicleModel = await VehicleModelAppService.GetModelsByBrandAsync(brandId ?? 0);
-        if (resultVehicleModel != null)
-        {
-            VehicleModels = resultVehicleModel.Value;
-            if (VehicleModels.Count < 0)
-                throw new Exception(L["Model"] + " " + L["NotSelected"]);
-        }
+        var resultVehicleModel = await VehicleModelAppService.GetModelsByBrandAsync(brandId);
+        VehicleModels = resultVehicleModel.Value;
+        if (VehicleModels.Count < 0)
+            throw new Exception(L["Model"] + " " + L["NotSelected"]);
     }
 
     /// <summary>
@@ -142,7 +139,6 @@ public partial class CustomerRegister
                 {
                     CustomerId = Customer.Id;
                     SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}  {createUpdateCustomerDto.FullName}", Severity.Success);
-                    createUpdateVehicle = new CreateUpdateVehicleDto { CustomerId = CustomerId };
                     showVehicle = true;
                 }
             }

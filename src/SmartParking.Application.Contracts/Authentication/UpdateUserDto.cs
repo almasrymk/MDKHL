@@ -13,6 +13,7 @@ namespace SmartParking.Authentication;
 
 public class UpdateUserDto
 {
+    [Required]
     [DynamicStringLength(typeof(IdentityUserConsts), nameof(IdentityUserConsts.MaxUserNameLength))]
     public string UserName { get; set; }
     [Required]
@@ -34,7 +35,9 @@ public class UpdateUserDto
     public Guid RoleId { get; set; }
     public string ConcurrencyStamp { get; set; }
     public bool ISNoRole { get; set; }
+    [Required]
     public IdentificationTypes IdentificationTypes { get; set; }
+    [Required]
     public string NationalId { get; set; }
     public bool IsCustomer { get; set; }
     public UserTypeCategory? UserTypeCategory { get; set; }

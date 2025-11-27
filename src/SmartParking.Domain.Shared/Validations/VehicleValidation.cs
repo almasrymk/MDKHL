@@ -14,7 +14,7 @@ public static class VehicleValidation
 
     public static string ValidateYear(string year)
     {
-        if (!string.IsNullOrWhiteSpace(year) && int.Parse(year) > DateTime.Now.Year)
+        if (int.Parse(year) > DateTime.Now.Year)
         {
             return LocalizationHelper.GetLocalizedString("NotValidYear");
         }

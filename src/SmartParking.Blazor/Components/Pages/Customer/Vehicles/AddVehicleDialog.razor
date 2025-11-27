@@ -52,6 +52,7 @@
                                    Label="@L["LicenceType"]"
                                    Placeholder=@L["Choose"]
                                    HelperText=@L["Helper Text"]
+                                   Required="true"
                                    Clearable="_clearable">
                             @foreach (var licenceType in LicenceTypes)
                             {
@@ -73,6 +74,7 @@
                                    Label="@L["VehicleBrand"]"
                                    Placeholder=@L["Choose"]
                                    HelperText=@L["Helper Text"]
+                                   Required="true"
                                    Clearable="_clearable"
                                    ValueChanged="SelectBrand">
                             @foreach (var vehiclebrand in VehicleBrands)
@@ -96,6 +98,7 @@
                                    Label="@L["VehicleModel"]"
                                    Placeholder=@L["Choose"]
                                    HelperText=@L["Helper Text"]
+                                   Required="true"
                                    Clearable="_clearable">
                             @foreach (var vehiclemodel in VehicleModels)
                             {
@@ -113,7 +116,7 @@
                     </MudItem>
 
                     <MudItem sm="6" md="6">
-                        <MudTextField T="string" Validation="VehicleValidation.ValidateYear" InputType="InputType.Text" MaxLength="4" Label="@L["ModelYear"]" @bind-Value="createUpdateVehicle.ModelYear" Placeholder="@L["Type Here"]" />
+                        <MudTextField Required="true" T="string" Validation="VehicleValidation.ValidateYear" InputType="InputType.Text" MaxLength="4" Label="@L["ModelYear"]" @bind-Value="createUpdateVehicle.ModelYear" Placeholder="@L["Type Here"]" />
                     </MudItem>
 
                     <MudItem sm="6" md="6">

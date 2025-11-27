@@ -13,11 +13,11 @@ namespace SmartParking.Vehicles
     {
         public int Id { get; set; }
         public Guid CustomerId { get; set; }
-        public int? VehicleModelId { get; set; }
-        public int? VehicleBrandId { get; set; }
-        public int? PlateColorId { get; set; }
-        public int? LicenceTypeId { get; set; }
-        public string? ModelYear { get; set; }
+        public int VehicleModelId { get; set; }
+        public int VehicleBrandId { get; set; }
+        public int PlateColorId { get; set; }
+        public int LicenceTypeId { get; set; }
+        public string ModelYear { get; set; }
         public string BrandArabicName { get; set; }
         public string ModelArabicName { get; set; }
         public string LicenceArabicName { get; set; }
