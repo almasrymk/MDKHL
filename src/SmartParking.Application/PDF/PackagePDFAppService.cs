@@ -44,7 +44,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
         AddVatAndTicket(doc, data);
         AddOrganizationSection(doc, data, true);
         AddSummarySection(doc, data, true);
-        //AddQrAndTotalsSection(doc, data, true);
+        AddQrAndTotalsSection(doc, data, true);
     }
 
     protected override void BuildEnglishLayout(Document doc, PackagePdfData data)
@@ -55,7 +55,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
         AddVatAndTicket(doc, data);
         AddOrganizationSection(doc, data, false);
         AddSummarySection(doc, data, false);
-        //AddQrAndTotalsSection(doc, data, false);
+        AddQrAndTotalsSection(doc, data, false);
     }
 
     // -----------------------------
