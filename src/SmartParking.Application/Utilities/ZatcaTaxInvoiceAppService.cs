@@ -73,6 +73,8 @@ namespace SmartParking.Utilities
         /// <returns></returns>
         private InvoiceRequestDto CreateInvoiceRequestDto(decimal Amount, decimal Discount, Payment payment, CustomerDto customer, OrganizationDto oragnization)
         {
+            Amount = Math.Round(Amount, 2);
+            Discount = Math.Round(Discount, 2);
             var vat = Math.Round(Amount * (decimal)0.15, 2);
             var NetAmount = Amount + vat - Discount;
 
@@ -192,7 +194,7 @@ namespace SmartParking.Utilities
                 var customerPackage = await _customerPackageRepository.GetAsync(payment.CustomerPackageId.Value);
                 if (customerPackage != null)
                 {
-                    Amount = customerPackage.PriceOfPackage??0;
+                    Amount = customerPackage.PriceOfPackage ?? 0;
                     Discount = customerPackage.Discount;
                 }
             }
