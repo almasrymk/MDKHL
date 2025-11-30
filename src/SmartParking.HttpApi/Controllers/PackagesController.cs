@@ -47,7 +47,7 @@ public class PackagesController : ControllerBase
         var paymentReq = await _customerPackagesApp.AssignPackageToCustomerAsync(packageId,ArabicNumber,EnglishPlateNumber);
         if (paymentReq.Errors.Any())
             return Result.Error(paymentReq.Errors.FirstOrDefault()!);
-        var result=await _paymentAppService.CreateCheckoutPackagePaymentWebAsync(paymentReq);
+        var result=await _paymentAppService.CreateCheckoutPackagePaymentWebAsync(paymentReq.Value);
         return Result.Success(result!);
     } 
     
