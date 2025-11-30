@@ -814,15 +814,6 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>⃁</Value>
-                      <Style>
-                        <FontFamily>Segoe UI</FontFamily>
-                        <FontWeight>Normal</FontWeight>
-                        <Format>0.00'ج.م.‏';(0.00'ج.م.‏')</Format>
-                        <Language>ar-SA</Language>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
                       <Value xml:space="preserve"> </Value>
                       <Style>
                         <FontFamily>Segoe UI</FontFamily>
@@ -870,15 +861,6 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>⃁</Value>
-                      <Style>
-                        <FontFamily>Segoe UI</FontFamily>
-                        <FontWeight>Normal</FontWeight>
-                        <Format>0.00'ج.م.‏';(0.00'ج.م.‏')</Format>
-                        <Language>ar-SA</Language>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
                       <Value xml:space="preserve"> </Value>
                       <Style>
                         <FontFamily>Segoe UI</FontFamily>
@@ -925,25 +907,6 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>⃁</Value>
-                      <Style>
-                        <FontFamily>Segoe UI</FontFamily>
-                        <FontWeight>Normal</FontWeight>
-                        <Format>0.00'ج.م.‏';(0.00'ج.م.‏')</Format>
-                        <Language>ar-SA</Language>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
-                      <Value xml:space="preserve"> </Value>
-                      <Style>
-                        <FontFamily>Segoe UI</FontFamily>
-                        <FontSize>8pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                        <Format>0.00'ج.م.‏';(0.00'ج.م.‏')</Format>
-                        <Language>ar-SA</Language>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
                       <Value>=First(Fields!TotalIncludeVAT.Value, "DataSet1")</Value>
                       <Style>
                         <FontFamily>Segoe UI</FontFamily>
@@ -980,7 +943,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>: المجموع </Value>
+                      <Value>: المجموع (ريال) </Value>
                       <Style>
                         <FontFamily>Segoe UI</FontFamily>
                         <FontSize>8pt</FontSize>
@@ -997,7 +960,7 @@
               <Top>4.16446in</Top>
               <Left>2.30093in</Left>
               <Height>0.25in</Height>
-              <Width>0.6875in</Width>
+              <Width>0.92812in</Width>
               <ZIndex>22</ZIndex>
               <Style>
                 <Border>
@@ -1054,7 +1017,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>: الاجمالى </Value>
+                      <Value>: الاجمالى (ريال)</Value>
                       <Style>
                         <FontFamily>Segoe UI</FontFamily>
                         <FontSize>8pt</FontSize>
@@ -1071,7 +1034,7 @@
               <Top>4.94224in</Top>
               <Left>2.30093in</Left>
               <Height>0.25in</Height>
-              <Width>0.6875in</Width>
+              <Width>0.92812in</Width>
               <ZIndex>24</ZIndex>
               <Style>
                 <Border>
@@ -1236,25 +1199,6 @@
               <Paragraphs>
                 <Paragraph>
                   <TextRuns>
-                    <TextRun>
-                      <Value>⃁</Value>
-                      <Style>
-                        <FontFamily>Segoe UI</FontFamily>
-                        <FontWeight>Normal</FontWeight>
-                        <Format>0.00'ج.م.‏';(0.00'ج.م.‏')</Format>
-                        <Language>ar-SA</Language>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
-                      <Value xml:space="preserve"> </Value>
-                      <Style>
-                        <FontFamily>Segoe UI</FontFamily>
-                        <FontSize>8pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                        <Format>0.00'ج.م.‏';(0.00'ج.م.‏')</Format>
-                        <Language>ar-SA</Language>
-                      </Style>
-                    </TextRun>
                     <TextRun>
                       <Value>=First(Fields!Discount.Value, "DataSet1")</Value>
                       <Style>
