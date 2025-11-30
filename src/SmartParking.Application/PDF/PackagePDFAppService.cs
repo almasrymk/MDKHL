@@ -190,12 +190,10 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
         var loc = data.Localization;
 
         AddSummaryRow(table, loc.TotalPreVAT, pkg.PriceOfPackage!.Value.ToString("F2"), Font, isArabic, currency, doc);
-        AddSummaryRow(table, $"{loc.Vats}", pkg.Vat.ToString("F2"), Font, isArabic, currency, doc);
         if ((pkg.PriceOfPackage.Value + pkg.Vat) != data.Payment.Amount)
             AddSummaryRow(table, $"{loc.Discount}", pkg.Discount.ToString("F2"), Font, isArabic, currency, doc);
+        AddSummaryRow(table, $"{loc.Vats}", pkg.Vat.ToString("F2"), Font, isArabic, currency, doc);
         AddSummaryRow(table, loc.TotalIncludeVAT, data.Payment.Amount.ToString("F2"), Font, isArabic, currency, doc);
-
-
         return table;
     }
     public async Task<Stream> CreatePdf(PaymentGetResponseDto payment, string PageSize)

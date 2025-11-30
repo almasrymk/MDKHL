@@ -52,7 +52,7 @@ public class VehiclesAppService :
 
     #region Public Methods
     /// <inheritdoc/>
- 
+
     public override async Task<VehicleDto> CreateAsync(CreateUpdateVehicleDto input)
     {
         input.CreatorId = _currentUser.Id;

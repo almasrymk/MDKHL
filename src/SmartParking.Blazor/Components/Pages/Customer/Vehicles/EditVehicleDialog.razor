@@ -33,13 +33,13 @@
                         <MudTextField T="string" Validation="VehicleValidation.ValidateArabicLetters" InputType="InputType.Text" Immediate="true" Label="@L["ArPlateLetters"]" OnBlur="HandleKeyUpLettersArabic" @bind-Value="Vehicle.ArPlateLetters" MaxLength="3" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudTextField T="string" Validation="VehicleValidation.ValidateArabicNumber" Immediate="true" OnBlur="HandleKeyUpArabic" InputType="InputType.Text" Label="@L["ArPlateNumber"]"  @bind-Value="Vehicle.ArPlateNumber" MaxLength="4" Placeholder="@L["Type Here"]" />
+                        <MudTextField T="string" Validation="VehicleValidation.ValidateArabicNumber" Immediate="true" OnBlur="HandleKeyUpArabic" InputType="InputType.Text" Label="@L["ArPlateNumber"]" @bind-Value="Vehicle.ArPlateNumber" MaxLength="4" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudTextField T="string" Validation="VehicleValidation.ValidateEnglishLetter" Immediate="true" OnBlur="HandleKeyUpLettersEnglish" InputType="InputType.Text" Label="@L["EnPlateLetters"]"  @bind-Value="Vehicle.EnPlateLetters" MaxLength="3" Placeholder="@L["Type Here"]" />
+                        <MudTextField T="string" Validation="VehicleValidation.ValidateEnglishLetter" Immediate="true" OnBlur="HandleKeyUpLettersEnglish" InputType="InputType.Text" Label="@L["EnPlateLetters"]" @bind-Value="Vehicle.EnPlateLetters" MaxLength="3" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudTextField T="string" Validation="VehicleValidation.ValidateNumber" InputType="InputType.Text" Immediate="true" Label="@L["EnPlateNumber"]" OnBlur="HandleKeyUpEnglish"  @bind-Value="Vehicle.EnPlateNumber" MaxLength="4" Placeholder="@L["Type Here"]" />
+                        <MudTextField T="string" Validation="VehicleValidation.ValidateNumber" InputType="InputType.Text" Immediate="true" Label="@L["EnPlateNumber"]" OnBlur="HandleKeyUpEnglish" @bind-Value="Vehicle.EnPlateNumber" MaxLength="4" Placeholder="@L["Type Here"]" />
                     </MudItem>
                     <MudItem sm="6" md="6">
                         <MudSelect @bind-Value="@Vehicle.LicenceTypeId"
@@ -49,7 +49,7 @@
                                    HelperText=@L["Helper Text"]
                                    Required="true"
                                    Clearable="_clearable">
-                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var licenceType in LicenceTypes)
                             {
 
@@ -72,9 +72,8 @@
                                    Placeholder=@L["Choose"]
                                    HelperText=@L["Helper Text"]
                                    Required="true"
-                                   Clearable="_clearable"
-                                   >
-                                 <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                                   Clearable="_clearable">
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
                             @foreach (var vehiclebrand in VehicleBrands)
                             {
 
@@ -121,7 +120,7 @@
                     </MudItem>
 
                     <MudItem sm="6" md="6">
-                        <MudTextField Label="@L["CompanyName"]" Disabled="Vehicle.BelongToCompany==false" T="string" InputType="InputType.Text" @bind-Value="Vehicle.CompanyName" Placeholder="@L["Type Here"]" />
+                        <MudTextField Label="@L["CompanyName"]" Disabled="Vehicle.BelongToCompany == false" T="string" InputType="InputType.Text" @bind-Value="Vehicle.CompanyName" Placeholder="@L["Type Here"]" />
                     </MudItem>
 
                     <MudItem sm="6" md="6">
@@ -132,16 +131,15 @@
 
         </DialogContent>
         <DialogActions>
-    <DialogActionComponent 
-        ButtonOneColor="MudBlazor.Color.Dark" 
-        ButtonTwoColor="MudBlazor.Color.Primary" 
-        ButtonOneLabel="@L["Back"]" 
-        ButtonTwoLabel="@L["Save"]" 
-        ButtonOneClick="CancelEdit" 
-        ButtonTwoClick="SubmitEdit" 
-        ButtonOneVariant="MudBlazor.Variant.Filled" 
-        ButtonTwoVariant="MudBlazor.Variant.Filled" />
-</DialogActions>
+            <DialogActionComponent ButtonOneColor="MudBlazor.Color.Dark"
+                                   ButtonTwoColor="MudBlazor.Color.Primary"
+                                   ButtonOneLabel="@L["Back"]"
+                                   ButtonTwoLabel="@L["Save"]"
+                                   ButtonOneClick="CancelEdit"
+                                   ButtonTwoClick="SubmitEdit"
+                                   ButtonOneVariant="MudBlazor.Variant.Filled"
+                                   ButtonTwoVariant="MudBlazor.Variant.Filled" />
+        </DialogActions>
     </MudDialog>
 </div>
 

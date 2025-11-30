@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Validations;
 
-public static class VehicleValidation 
+public static class VehicleValidation
 {
 
     public static string ValidateYear(string year)
@@ -35,9 +35,9 @@ public static class VehicleValidation
             return LocalizationHelper.GetLocalizedString("OnlyArabicLettersAllowed");
         }
 
-        return null; 
+        return null;
     }
-    
+
     public static string ValidateArabicNumber(string value)
     {
         if (string.IsNullOrEmpty(value))
@@ -52,9 +52,9 @@ public static class VehicleValidation
             return LocalizationHelper.GetLocalizedString("OnlyArabicNumberAllowed");
         }
 
-        return null; 
+        return null;
     }
- 
+
     public static string ValidateEnglishLetter(string value)
     {
         if (string.IsNullOrEmpty(value))
@@ -69,29 +69,29 @@ public static class VehicleValidation
             return LocalizationHelper.GetLocalizedString("OnlyEnglishLettersAllowed");
         }
 
-        return null; 
+        return null;
     }
-    
+
     public static string ValidateNumber(string value)
     {
         if (string.IsNullOrEmpty(value))
         {
-            return null; 
+            return null;
         }
 
-       
+
         var arabicLetterPattern = @"^[0-9\u0660-\u0669]+$";
         if (!System.Text.RegularExpressions.Regex.IsMatch(value, arabicLetterPattern))
         {
             return LocalizationHelper.GetLocalizedString("OnlyEnglishNumberAllowed");
         }
 
-        return null; 
+        return null;
     }
-    public static (string,string) HandleKeyUpLetters(string plateLetters)
+    public static (string, string) HandleKeyUpLetters(string plateLetters)
     {
         if (plateLetters == "")
-            return ("","");
+            return ("", "");
         string ArPlateLetters = "";
         string EnPlateLetters = "";
         if (plateLetters.All(c => c >= '\u0600' && c <= '\u06FF'))
@@ -116,7 +116,7 @@ public static class VehicleValidation
         }
         else
         {
-           throw new Exception (LocalizationHelper.GetLocalizedString("MixedInvalid"));
+            throw new Exception(LocalizationHelper.GetLocalizedString("MixedInvalid"));
         }
         return (EnPlateLetters, ArPlateLetters);
 
@@ -177,26 +177,26 @@ public static class VehicleValidation
         return new string(resultText.Reverse().ToArray());
     }
 
-    public static (string,string) HandleKeyUp(string e)
+    public static (string, string) HandleKeyUp(string e)
     {
         string EnglishNumbers = "";
         string ArabicNumbers = "";
         if (e.All(c => c >= '٠' && c <= '٩'))
         {
             ArabicNumbers = e;
-            EnglishNumbers=MapToEnglishNumerals(e);
-      
+            EnglishNumbers = MapToEnglishNumerals(e);
+
         }
         else if (e.All(c => (c >= '0' && c <= '9')))
         {
             EnglishNumbers = e;
-            ArabicNumbers=MapToArabicNumerals(e);
+            ArabicNumbers = MapToArabicNumerals(e);
         }
         else
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("MixedInvalid"));
         }
-        return(EnglishNumbers, ArabicNumbers);
+        return (EnglishNumbers, ArabicNumbers);
 
     }
 
@@ -234,13 +234,13 @@ public static class VehicleValidation
         return arabicNUmbers;
     }
 
-        private static string MapToEnglishNumerals(string arabicNumber)
+    private static string MapToEnglishNumerals(string arabicNumber)
+    {
+        if (arabicNumber == "")
         {
-           if (arabicNumber == "")
-           {
-               return "";
-           }
-           var arabicToEnglishMap = new Dictionary<char, string>
+            return "";
+        }
+        var arabicToEnglishMap = new Dictionary<char, string>
             {
                { '٠',"0" },
                {'١',"1"},
@@ -253,19 +253,19 @@ public static class VehicleValidation
                { '٨' ,"8"},
                { '٩',"9" }
            };
-           string englishNUmbers = "";
-           foreach (var character in arabicNumber)
-           {
+        string englishNUmbers = "";
+        foreach (var character in arabicNumber)
+        {
 
-               if (character < '٠' || character > '٩')
-               {
-                   throw new Exception(LocalizationHelper.GetLocalizedString("OnlyArabicNumberAllowed"));
+            if (character < '٠' || character > '٩')
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("OnlyArabicNumberAllowed"));
 
-               }
-               englishNUmbers += arabicToEnglishMap[character];
-           }
-           return englishNUmbers;
+            }
+            englishNUmbers += arabicToEnglishMap[character];
         }
+        return englishNUmbers;
+    }
     public static bool CheckPlateNumberCriteria(string ArabicPlateNumber, string EnglishPlateNumber)
     {
         string arabicLetterPattern = @"[\u0600-\u06FF]";

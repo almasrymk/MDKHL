@@ -189,7 +189,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         if (CheckIfLoggedOutFromMobile)
             return await CheckoutFromMobileSequence(exitTransaction, organization, _entryTransaction, _categoryHasChanged, _customer);
         //Check if doesn't pass organization free minutes.
-        int _totalHours = _calculationsEndPointAppService.CalculateTime(_entryTransaction.AccurateTime, exitTransaction.AccurateTime.Value, organization.FreeMinutes);
+        int _totalHours = _calculationsEndPointAppService.CalculateTime(_entryTransaction.AccurateTime.Value, exitTransaction.AccurateTime.Value, organization.FreeMinutes);
         if (_totalHours * 60 <= organization.FreeMinutes && organization.FreeMinutes != 0)
         {
             return await ExitsInFreeMinutesPeriod(exitTransaction, _entryTransaction.Id);
@@ -213,7 +213,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
 
     private async Task<CreateUpdateInvoiceDto> CreateInvoice(CreateUpdateGarageTransactionDto exitTransaction, GarageTransactionDto _entryTransaction, CustomerDto? _customer, int _totalHours, decimal _customerInvoicePrice, GarageTransactionDto _createdExitGarageTransaction)
     {
-        CreateUpdateInvoiceDto _initialInvoice = await _garageTransactionUtilityAppService.InitiateInvoice(_entryTransaction.AccurateTime, exitTransaction, _totalHours, _customerInvoicePrice, true, _customer);
+        CreateUpdateInvoiceDto _initialInvoice = await _garageTransactionUtilityAppService.InitiateInvoice(_entryTransaction.AccurateTime.Value, exitTransaction, _totalHours, _customerInvoicePrice, true, _customer);
         _initialInvoice.EntranceTime = _entryTransaction.AccurateTime;
         _initialInvoice.GarageTransactionExitId = _createdExitGarageTransaction.Id;
         _initialInvoice.ExitTransactionImage = _createdExitGarageTransaction.VehiclePicture;
@@ -246,7 +246,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         }
         else
         {
-            _customerInvoicePrice = _calculationsEndPointAppService.CalculateInvoiceCases(_entryTransaction.AccurateTime, _totalHours, exitTransaction.AccurateTime.Value, organization);
+            _customerInvoicePrice = _calculationsEndPointAppService.CalculateInvoiceCases(_entryTransaction.AccurateTime.Value, _totalHours, exitTransaction.AccurateTime.Value, organization);
             //update slots depends on category
             await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(_entryTransaction.GarageId, hasFreeSlots, CustomerCategoryStatus.Customer);
         }

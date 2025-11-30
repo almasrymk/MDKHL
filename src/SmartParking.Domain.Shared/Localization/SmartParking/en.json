@@ -861,6 +861,16 @@
     "Permission:EditCountCurrnetCapicity": "Edit count currnet capicity",
     "CountOfDays": "Count of days in the package",
     "PriceOfPackage2": "Total package price",
-    "PriceOfPackagePerDay": "Package price per day"
+    "PriceOfPackagePerDay": "Package price per day",
+    "TimeMustBeEntered": "Time must be entered",
+    "FreeOpenGate": "Open the free gate",
+    "AllowFreeOpenGate": "Allowing the gate to open freely",
+    "Allow": "Allow",
+    "SelectGate": "Choose the gate",
+    "GateName": "Gate Name",
+    "Gate": "Gate",
+    "Permission:AllowFreeOpenGate": "Allow free open gate",
+    "Multiple": "Multiple"
+
   }
 }

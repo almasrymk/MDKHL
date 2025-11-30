@@ -35,7 +35,7 @@ using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace SmartParking.CustomerPackages;
 //[Authorize]
-public class CustomerPackagesAppService:
+public class CustomerPackagesAppService :
      CrudAppService<
         CustomerPackage,
         CustomerPackageDto,
@@ -70,7 +70,7 @@ public class CustomerPackagesAppService:
     #region public methods
     ///<inheritdoc/>
 
-    public async Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int OrganizationID,string PlateNumber,DateTime ExitTransaction)
+    public async Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int OrganizationID, string PlateNumber, DateTime ExitTransaction)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -80,12 +80,12 @@ public class CustomerPackagesAppService:
 
             if (customerPackageDto == null)
             {
-                return null; 
+                return null;
             }
 
             return customerPackageDto;
         }
-        
+
     }
     public async Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(int OrganizationID, string PlateNumber, DateTime ExitTransaction)
     {
@@ -113,7 +113,7 @@ public class CustomerPackagesAppService:
         }
     }
     ///<inheritdoc/>
-    public  async Task<Result<List<CustomerPackageDto>>> GetPackageByCustomer()
+    public async Task<Result<List<CustomerPackageDto>>> GetPackageByCustomer()
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -128,8 +128,8 @@ public class CustomerPackagesAppService:
     }
 
     ///<inheritdoc/>
-    [RemoteService(IsEnabled =false)]
-    public  async Task<Result<PaymentCheckoutRequestDto>> AssignPackageToCustomerAsync(int packageId, string ArabicPlateNumber, string EnglishPlateNumber)
+    [RemoteService(IsEnabled = false)]
+    public async Task<Result<PaymentCheckoutRequestDto>> AssignPackageToCustomerAsync(int packageId, string ArabicPlateNumber, string EnglishPlateNumber)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -151,9 +151,10 @@ public class CustomerPackagesAppService:
             }
 
 
-            var customerPackage = CreateCustomerMobilePackage(package,customer.Id, ArabicPlateNumber , EnglishPlateNumber);
+            var customerPackage = CreateCustomerMobilePackage(package, customer.Id, ArabicPlateNumber, EnglishPlateNumber);
             var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
             customerPackage.QRCodePath = await HandleQRCode(new CustomerPackageDto { OrganizationId = package.OrganizationId, PackageId = packageId, ArPlateNumber = ArabicPlateNumber, EnPlateNumber = EnglishPlateNumber }, customer, customerPackage);
+            CustomerPackage result = null;
             if (existingPackage != null)
             {
                 ObjectHelper.TrySetProperty(
@@ -161,18 +162,19 @@ public class CustomerPackagesAppService:
                     x => x.Id,
                     () => existingPackage.Id
                 );
-                return await UpdateCustomerPackageAsync(customerPackage);
+                result = await UpdateCustomerPackageAsync(customerPackage);
             }
-            var result= await InsertCustomerPackageAsync(customerPackage);
+            if(result == null)
+                result = await InsertCustomerPackageAsync(customerPackage);
             var packageDto = ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(result);
-            var paymentRqDto= RequestToPaymentCheckout(packageDto);
+            var paymentRqDto = RequestToPaymentCheckout(packageDto);
             return Result.Success(paymentRqDto);
 
         }
 
     }
     ///<inheritdoc/>
-    public async Task<int> AssignPackageToCustomerWebAsync(int? packageId,CustomerPackageDto customerPackageDto)
+    public async Task<int> AssignPackageToCustomerWebAsync(int? packageId, CustomerPackageDto customerPackageDto)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -240,12 +242,12 @@ public class CustomerPackagesAppService:
             return code;
         }
     }
-    private async Task <bool> IsCodeUnique(string Code)
+    private async Task<bool> IsCodeUnique(string Code)
     {
-        return await _repository.AnyAsync(cp=>cp.PackageCode == Code);
+        return await _repository.AnyAsync(cp => cp.PackageCode == Code);
     }
 
-    private static string GeneratePackageCode(string PayemntCode , string EnglishName)
+    private static string GeneratePackageCode(string PayemntCode, string EnglishName)
     {
         var random = new Random();
         int customerCount = random.Next(1, 10000);
@@ -281,26 +283,26 @@ public class CustomerPackagesAppService:
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("UpgradeSubscriptionValidationUser"));
             }
-            
+
         }
-    }    
+    }
 
     ///<inheritdoc/>
 
     public async Task<DateTime> GetExpireyDateForPackageSubscripedByCustomerInSpecificOrganization(int OrgId, Guid CustomerId, int PackageId)
     {
-         using (_dataFilter.Disable<IMultiTenant>())
-         {
-             var query =await _repository.GetQueryableAsync();
-             query = query.Where(p => p.OrganizationId == OrgId && p.CustomerId == CustomerId && p.PackageId == PackageId);
-             var result =await AsyncExecuter.FirstOrDefaultAsync(query);
-             return result.ExpiryDate;
-         }
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(p => p.OrganizationId == OrgId && p.CustomerId == CustomerId && p.PackageId == PackageId);
+            var result = await AsyncExecuter.FirstOrDefaultAsync(query);
+            return result.ExpiryDate;
+        }
     }
 
     ///<inheritdoc/>
 
-    public async Task<PagedResultDto<CustomerPackageDto>> GetListPackagesByCustomerMdkl(Guid customerId,PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<CustomerPackageDto>> GetListPackagesByCustomerMdkl(Guid customerId, PagedAndSortedResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -339,17 +341,18 @@ public class CustomerPackagesAppService:
     public async Task AddDefaultPackageToCustomerAsync(Guid CustomerId)
     {
         var org = await _organizationsApp.GetOrganizationForCurrentTenatAsync();
-        await InsertCustomerPackageAsync(new CustomerPackage{
-            CustomerId= CustomerId,
-            OrganizationId= org.Id,
-            TenantId= org.TenantId,
+        await InsertCustomerPackageAsync(new CustomerPackage
+        {
+            CustomerId = CustomerId,
+            OrganizationId = org.Id,
+            TenantId = org.TenantId,
         });
 
     }
 
     public override async Task<CustomerPackageDto> GetAsync(int id)
     {
-        using(_dataFilter.Disable<IMultiTenant>())
+        using (_dataFilter.Disable<IMultiTenant>())
         {
             return await base.GetAsync(id);
 
@@ -551,10 +554,10 @@ public class CustomerPackagesAppService:
     /// A task that represents the asynchronous operation.
     /// The task result contains a <see cref="Result"/> indicating success or failure.
     /// </returns>
-    private async Task<Result> UpdateCustomerPackageAsync(CustomerPackage customerPackage)
+    private async Task<Result<CustomerPackage>> UpdateCustomerPackageAsync(CustomerPackage customerPackage)
     {
         var updatedPackage = await _repository.UpdateAsync(customerPackage, true);
-        return updatedPackage != null ? Result.Success() : Result.Error("Can't assign package to customer");
+        return updatedPackage != null ? Result.Success(updatedPackage) : Result.Error("Can't assign package to customer");
     }
     /// <summary>
     /// Inserts a new customer package into the database.
@@ -602,12 +605,12 @@ public class CustomerPackagesAppService:
             TenantId = customerPackageDto.TenantId,
             ArPlateNumber = customerPackageDto.ArPlateNumber,
             EnPlateNumber = customerPackageDto.EnPlateNumber,
-            Vat=customerPackageDto.Vat,
-            Discount=customerPackageDto.Discount,
+            Vat = customerPackageDto.Vat,
+            Discount = customerPackageDto.Discount,
 
         };
     }
-    private static CustomerPackage CreateCustomerMobilePackage(Package PackageDto , Guid CustomerId, string arPlateNumber , string enPlateNumber)
+    private static CustomerPackage CreateCustomerMobilePackage(Package PackageDto, Guid CustomerId, string arPlateNumber, string enPlateNumber)
     {
         return new CustomerPackage
         {
@@ -655,11 +658,11 @@ public class CustomerPackagesAppService:
         }
         ClearPackageDetails(customerPackage);
         await _repository.UpdateAsync(customerPackage, true);
-        
+
     }
-    private  PaymentCheckoutRequestDto RequestToPaymentCheckout(CustomerPackageDto customerPackageDto)
+    private PaymentCheckoutRequestDto RequestToPaymentCheckout(CustomerPackageDto customerPackageDto)
     {
-        return  new PaymentCheckoutRequestDto
+        return new PaymentCheckoutRequestDto
         {
             OrganizationId = customerPackageDto!.OrganizationId,
             PaymentCategory = PaymentCategory.Package,
@@ -670,7 +673,7 @@ public class CustomerPackagesAppService:
             CustomerId = customerPackageDto.CustomerId,
             ArPlateNumber = customerPackageDto.ArPlateNumber,
             EnPlateNumber = customerPackageDto.EnPlateNumber,
-        };  
+        };
 
     }
 

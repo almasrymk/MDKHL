@@ -241,7 +241,7 @@
     "Apply": "تطبق",
     "Summary": "ملخص",
     "DueValue": "القيمة المستحقة",
-    "VAT": "القيمة المضافة",
+    "VAT": "الضريبة",
     "Total": "المجموع",
     "CONFIRM": "تاكيد",
     "CANCEL": "إلغاء",
@@ -891,7 +891,16 @@
     "Permission:EditCountCurrnetCapicity": "تعديل عدد اماكن الركن المشغولة حاليا",
     "CountOfDays": "عدد ايام الباقة",
     "PriceOfPackage2": "إجمالى سعر الباقة",
-    "PriceOfPackagePerDay": "سعر الباقة باليوم"
+    "PriceOfPackagePerDay": "سعر الباقة باليوم",
+    "TimeMustBeEntered": "يجب ادخال الوقت",
+    "FreeOpenGate": "فتح البوابة الحر",
+    "AllowFreeOpenGate": "السماح بفتح البوابة الحر",
+    "Allow": "مسموح",
+    "SelectGate": "اختار البوابه",
+    "GateName": "اسم البوابه",
+    "Gate": "البوابه",
+    "Permission:AllowFreeOpenGate": "السماح بفتح البوابة الحر",
+    "Multiple": "متعدد"
   }
-  
+
 }

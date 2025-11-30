@@ -21,7 +21,7 @@ public class RegisterUserDtoValidator : AbstractValidator<RegisterInputDto>
         RuleFor(x => x.Name)
         .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
-     
+
         RuleFor(x => x.Email)
             .EmailAddress().WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
             .Must(NotContainArabicLetters).WithMessage(LocalizationHelper.GetLocalizedString("WrongEmail")).When(e => !e.Email.IsNullOrWhiteSpace())
@@ -35,12 +35,12 @@ public class RegisterUserDtoValidator : AbstractValidator<RegisterInputDto>
             .Matches(x => x.ConfirmPassword)
             .WithMessage(LocalizationHelper.GetLocalizedString("WrongPassword"));
         RuleFor(x => x.ConfirmPassword).Matches(x => x.Password).WithMessage("Repeat Password" + LocalizationHelper.GetLocalizedString("WrongPassword"));
-        
+
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
             .Matches(ConstantValidations.WhatsAppNumber)
             .WithMessage(LocalizationHelper.GetLocalizedString("PhoneValidation"));
-        
+
         RuleFor(x => x.IdentificationTypes).Must(value => Enum.IsDefined(typeof(Enums.IdentificationTypes), value))
              .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 

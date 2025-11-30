@@ -149,8 +149,9 @@
                             <MudDatePicker Label="@L["StartDate"]" DateChanged="OnActivationDateChanged"
                                            PickerVariant="PickerVariant.Dialog"
                                            ShowToolbar="false"
-                                           Date="ActivationDate"                                                                                  
+                                           Date="ActivationDate"
                                            Required="true"
+                                           MinDate="new DateTime(DateTime.Now.Year ,DateTime.Now.Month , DateTime.Now.Day)"
                                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
                         <MudItem sm="6">
@@ -159,6 +160,7 @@
                                            ShowToolbar="false"
                                            Date="DectivationDate"
                                            Required="true"
+                                           MinDate="ActivationDate==null?new DateTime(DateTime.Now.Year ,DateTime.Now.Month , DateTime.Now.Day).AddDays(1):ActivationDate.Value.AddDays(1)"
                                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
                         </MudItem>
                         <MudItem sm="4">
