@@ -195,7 +195,7 @@
       <Width>3.31361in</Width>
       <Page>
         <PageHeader>
-          <Height>5.36064in</Height>
+          <Height>5.21481in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -656,7 +656,7 @@
               <rd:DefaultName>OrganizationAddress</rd:DefaultName>
               <Top>2.69223in</Top>
               <Left>0.11445in</Left>
-              <Height>0.49827in</Height>
+              <Height>0.37327in</Height>
               <Width>2.3484in</Width>
               <ZIndex>13</ZIndex>
               <Style>
@@ -779,7 +779,7 @@
             </Textbox>
             <Rectangle Name="Rectangle1">
               <KeepTogether>true</KeepTogether>
-              <Top>3.24952in</Top>
+              <Top>3.12452in</Top>
               <Left>0.00688in</Left>
               <Height>0.84251in</Height>
               <Width>3.29632in</Width>
@@ -796,7 +796,7 @@
               <Value>=First(Fields!ImgQr.Value, "DataSet1")</Value>
               <MIMEType>image/png</MIMEType>
               <Sizing>Fit</Sizing>
-              <Top>10.76737cm</Top>
+              <Top>10.44987cm</Top>
               <Left>0.31718cm</Left>
               <Height>0.80209in</Height>
               <Width>0.87625in</Width>
@@ -859,7 +859,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>TotalPreVAT</rd:DefaultName>
-              <Top>4.17661in</Top>
+              <Top>4.05161in</Top>
               <Left>1.1921in</Left>
               <Height>0.25in</Height>
               <Width>1in</Width>
@@ -913,7 +913,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Vats</rd:DefaultName>
-              <Top>4.4405in</Top>
+              <Top>4.3155in</Top>
               <Left>1.1921in</Left>
               <Height>0.25in</Height>
               <Width>1in</Width>
@@ -977,7 +977,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>TotalIncludeVAT</rd:DefaultName>
-              <Top>4.99606in</Top>
+              <Top>4.87106in</Top>
               <Left>1.1921in</Left>
               <Height>0.25in</Height>
               <Width>1in</Width>
@@ -1014,7 +1014,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>4.17661in</Top>
+              <Top>4.05161in</Top>
               <Left>2.22341in</Left>
               <Height>0.25in</Height>
               <Width>0.73604in</Width>
@@ -1051,7 +1051,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>4.4405in</Top>
+              <Top>4.3155in</Top>
               <Left>2.22341in</Left>
               <Height>0.25in</Height>
               <Width>0.93396in</Width>
@@ -1088,7 +1088,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>4.99606in</Top>
+              <Top>4.87106in</Top>
               <Left>2.22341in</Left>
               <Height>0.25in</Height>
               <Width>0.73604in</Width>
@@ -1125,7 +1125,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>3.34848in</Top>
+              <Top>3.22348in</Top>
               <Left>1.96404in</Left>
               <Height>0.25in</Height>
               <Width>0.80208in</Width>
@@ -1162,7 +1162,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>3.34848in</Top>
+              <Top>3.22348in</Top>
               <Left>0.47446in</Left>
               <Height>0.25in</Height>
               <Width>0.80208in</Width>
@@ -1199,7 +1199,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Subscription</rd:DefaultName>
-              <Top>3.73786in</Top>
+              <Top>3.61286in</Top>
               <Left>1.82279in</Left>
               <Height>0.25in</Height>
               <Width>1.14125in</Width>
@@ -1235,7 +1235,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Duration</rd:DefaultName>
-              <Top>3.73786in</Top>
+              <Top>3.61286in</Top>
               <Left>0.27654in</Left>
               <Height>0.25in</Height>
               <Width>1.235in</Width>
@@ -1290,7 +1290,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Discount</rd:DefaultName>
-              <Top>4.71828in</Top>
+              <Top>4.59328in</Top>
               <Left>1.1921in</Left>
               <Height>0.25in</Height>
               <Width>1in</Width>
@@ -1326,7 +1326,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>4.71828in</Top>
+              <Top>4.59328in</Top>
               <Left>2.22341in</Left>
               <Height>0.25in</Height>
               <Width>0.6875in</Width>
@@ -1353,10 +1353,6 @@
         <PageWidth>3.4in</PageWidth>
         <InteractiveHeight>11.69291in</InteractiveHeight>
         <InteractiveWidth>3.4in</InteractiveWidth>
-        <LeftMargin>0.1in</LeftMargin>
-        <RightMargin>0.1in</RightMargin>
-        <TopMargin>0.1in</TopMargin>
-        <BottomMargin>0.1in</BottomMargin>
         <ColumnSpacing>0.05118in</ColumnSpacing>
         <Style />
       </Page>

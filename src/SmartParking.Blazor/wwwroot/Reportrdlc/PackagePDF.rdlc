@@ -195,7 +195,7 @@
       <Width>3.33779in</Width>
       <Page>
         <PageHeader>
-          <Height>5.2478in</Height>
+          <Height>5.38322in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -958,7 +958,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>TotalIncludeVAT</rd:DefaultName>
-              <Top>4.70613in</Top>
+              <Top>4.94224in</Top>
               <Left>1.26962in</Left>
               <Height>0.25in</Height>
               <Width>1in</Width>
@@ -1068,7 +1068,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>4.70613in</Top>
+              <Top>4.94224in</Top>
               <Left>2.30093in</Left>
               <Height>0.25in</Height>
               <Width>0.6875in</Width>
@@ -1224,6 +1224,98 @@
                 <Border>
                   <Style>None</Style>
                 </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="Discount">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>⃁</Value>
+                      <Style>
+                        <FontFamily>Segoe UI</FontFamily>
+                        <FontWeight>Normal</FontWeight>
+                        <Format>0.00'ج.م.‏';(0.00'ج.م.‏')</Format>
+                        <Language>ar-SA</Language>
+                      </Style>
+                    </TextRun>
+                    <TextRun>
+                      <Value xml:space="preserve"> </Value>
+                      <Style>
+                        <FontFamily>Segoe UI</FontFamily>
+                        <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                        <Format>0.00'ج.م.‏';(0.00'ج.م.‏')</Format>
+                        <Language>ar-SA</Language>
+                      </Style>
+                    </TextRun>
+                    <TextRun>
+                      <Value>=First(Fields!Discount.Value, "DataSet1")</Value>
+                      <Style>
+                        <FontFamily>Segoe UI</FontFamily>
+                        <FontSize>9pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Right</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Discount</rd:DefaultName>
+              <Top>4.70613in</Top>
+              <Left>1.26962in</Left>
+              <Height>0.25in</Height>
+              <Width>1in</Width>
+              <ZIndex>29</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="Textbox12">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>: الخصم </Value>
+                      <Style>
+                        <FontFamily>Segoe UI</FontFamily>
+                        <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Left</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox3</rd:DefaultName>
+              <Top>4.70613in</Top>
+              <Left>2.30093in</Left>
+              <Height>0.25in</Height>
+              <Width>0.6875in</Width>
+              <ZIndex>30</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <VerticalAlign>Middle</VerticalAlign>
                 <PaddingLeft>2pt</PaddingLeft>
                 <PaddingRight>2pt</PaddingRight>
                 <PaddingTop>2pt</PaddingTop>

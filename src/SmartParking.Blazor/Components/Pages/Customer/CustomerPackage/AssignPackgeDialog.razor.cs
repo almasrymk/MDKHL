@@ -76,7 +76,7 @@ partial class AssignPackgeDialog
     /// </summary>
     private async Task SubmitEdit()
     {
-        var package= selectedPackageDto.FirstOrDefault();
+        var package = selectedPackageDto.FirstOrDefault();
         if (CustomerPackage.CustomerCategory != Customercategory.ToString() && !IsCustom)
         {
             SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("Package")} , " +
@@ -84,42 +84,50 @@ partial class AssignPackgeDialog
             $"{LocalizationHelper.GetLocalizedString("NotSameType")} ", Severity.Error);
             return;
         }
-
-       
-            var vehicle = await VehiclesAppService.GetAsync(VehicleId);
-            if (CustomerPackage.CustomerCategory == CustomerCategoryStatus.Customer.ToString())
+        if (IsCustom)
+        {
+            if (startTime == null || endTime == null)
             {
-                await CustomerPackagesAppService.CheckSubscriptionCustomersLimitsAsync(CustomerPackage.OrganizationId);
+                SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("Time")} , " +
+                $"{LocalizationHelper.GetLocalizedString("TimeMustBeEntered")} ", Severity.Error);
+                return;
             }
+        }
 
-            _customerPackageDto.ArPlateNumber = vehicle.ArPlateNumber;
-            _customerPackageDto.EnPlateNumber = vehicle.EnPlateNumber;
-            _customerPackageDto.CustomerId = Customer.Id;
-            _customerPackageDto.CustomerCategory = Customercategory;
+        var vehicle = await VehiclesAppService.GetAsync(VehicleId);
+        if (CustomerPackage.CustomerCategory == CustomerCategoryStatus.Customer.ToString())
+        {
+            await CustomerPackagesAppService.CheckSubscriptionCustomersLimitsAsync(CustomerPackage.OrganizationId);
+        }
+
+        _customerPackageDto.ArPlateNumber = vehicle.ArPlateNumber;
+        _customerPackageDto.EnPlateNumber = vehicle.EnPlateNumber;
+        _customerPackageDto.CustomerId = Customer.Id;
+        _customerPackageDto.CustomerCategory = Customercategory;
 
 
 
         // Handle custom package assignment
         if (IsCustom)
         {
-                //Method  to Check Is Custom Varaiable
-                 CheckIsCustomProperties(_customerPackageDto);
-                _customerPackageDto.publishedOfPackage = true;
-                _customerPackageDto.ActivationDateOfPackage = ActivationDate.HasValue && startTime.HasValue
-                                                            ? ActivationDate.Value.Date + startTime.Value
-                                                            : ActivationDate.Value.Date;
-                _customerPackageDto.ExpiryDate = DectivationDate.HasValue && endTime.HasValue
-                                                ? DectivationDate.Value.Date + endTime.Value
-                                                : DectivationDate.Value.Date;
-                _customerPackageDto.IsCustomPackage = true;
-                _customerPackageDto.DurationOfPackage = DectivationDate.Value.DayOfYear - ActivationDate.Value.DayOfYear;
-                CustomerPackage.Id = default;
-                _customerPackageDto.PackageArabicName = AlertMessages.AlertMessages.PackageNameAr;
-                _customerPackageDto.PackageEnglishName = AlertMessages.AlertMessages.PackageNameEn;
-                _customerPackageDto.PublishFromOfPackage = startTime.HasValue ? TimeOnly.FromTimeSpan(startTime.Value) : null;
-                _customerPackageDto.PublishToOfPackage = endTime.HasValue ? TimeOnly.FromTimeSpan(endTime.Value) : null;
-                if(ActivationDate == DectivationDate &&endTime.Value  <= startTime.Value)
-                    throw new Exception(LocalizationHelper.GetLocalizedString("EndTimeShouldBeGreaterThanStartTime"));
+            //Method  to Check Is Custom Varaiable
+            CheckIsCustomProperties(_customerPackageDto);
+            _customerPackageDto.publishedOfPackage = true;
+            _customerPackageDto.ActivationDateOfPackage = ActivationDate.HasValue && startTime.HasValue
+                                                        ? ActivationDate.Value.Date + startTime.Value
+                                                        : ActivationDate.Value.Date;
+            _customerPackageDto.ExpiryDate = DectivationDate.HasValue && endTime.HasValue
+                                            ? DectivationDate.Value.Date + endTime.Value
+                                            : DectivationDate.Value.Date;
+            _customerPackageDto.IsCustomPackage = true;
+            _customerPackageDto.DurationOfPackage = DectivationDate.Value.DayOfYear - ActivationDate.Value.DayOfYear;
+            CustomerPackage.Id = default;
+            _customerPackageDto.PackageArabicName = AlertMessages.AlertMessages.PackageNameAr;
+            _customerPackageDto.PackageEnglishName = AlertMessages.AlertMessages.PackageNameEn;
+            _customerPackageDto.PublishFromOfPackage = startTime.HasValue ? TimeOnly.FromTimeSpan(startTime.Value) : null;
+            _customerPackageDto.PublishToOfPackage = endTime.HasValue ? TimeOnly.FromTimeSpan(endTime.Value) : null;
+            if (ActivationDate == DectivationDate && endTime.Value <= startTime.Value)
+                throw new Exception(LocalizationHelper.GetLocalizedString("EndTimeShouldBeGreaterThanStartTime"));
         }
         else
         {
@@ -128,8 +136,8 @@ partial class AssignPackgeDialog
             _customerPackageDto.PackageArabicName = package.ArabicName;
             _customerPackageDto.PackageEnglishName = package.EnglishName;
             _customerPackageDto.ExpiryDate = DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute);
-             _customerPackageDto.PublishFromOfPackage = package.PublishFrom;
-             _customerPackageDto.PublishToOfPackage = package.PublishTo;
+            _customerPackageDto.PublishFromOfPackage = package.PublishFrom;
+            _customerPackageDto.PublishToOfPackage = package.PublishTo;
             _customerPackageDto.ActivationDateOfPackage = DateTime.Now;
             _customerPackageDto.DectivationDateOfPackage = package.DectivationDate;
             _customerPackageDto.DescriptionOfPackage = package.Description;
@@ -153,7 +161,7 @@ partial class AssignPackgeDialog
         preAssignState.Customer = Customer;
 
         Navigation.NavigateTo("/prepayment");
-      
+
     }
     private string ValidateEndTime(TimeSpan? value)
     {
@@ -182,7 +190,7 @@ partial class AssignPackgeDialog
         selectedPackageDto.Clear();
         selectedPackageDto.Add(Packages.Find(x => x.Id == value));
         CustomerPackage = Packages.Find(x => x.Id == value);
-        
+
     }
 
     private void CheckIsCustomProperties(CustomerPackageDto customerPackageDto)
@@ -197,11 +205,17 @@ partial class AssignPackgeDialog
         }
         if (startTime == null)
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("StartTime") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("StartTime")} , " +
+          $"{LocalizationHelper.GetLocalizedString("EmptyValidation")} " +
+          $"{LocalizationHelper.GetLocalizedString("TimeMustBeEntered")} ", Severity.Error);
+            //throw new Exception(LocalizationHelper.GetLocalizedString("StartTime") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
         }
         if (endTime == null)
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("EndTime") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
+            SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("EndTime")} , " +
+                    $"{LocalizationHelper.GetLocalizedString("EmptyValidation")} " +
+                    $"{LocalizationHelper.GetLocalizedString("TimeMustBeEntered")} ", Severity.Error);
+            //throw new Exception(LocalizationHelper.GetLocalizedString("StartTime") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
         }
         if (customerPackageDto.PriceOfPackage == null)
         {
@@ -212,11 +226,13 @@ partial class AssignPackgeDialog
     private void OnActivationDateChanged(DateTime? newDate)
     {
         ActivationDate = newDate;
+        if (ActivationDate > DectivationDate)
+            DectivationDate = ActivationDate.Value.AddDays(1);
         OnDateChanged();
     }
 
     private void OnDectivationDateChanged(DateTime? newDate)
-    {       
+    {
         DectivationDate = newDate;
         OnDateChanged();
     }
@@ -252,11 +268,11 @@ partial class AssignPackgeDialog
 
     private void OnDateChanged()
     {
-        _customerPackageDto.CountOfDays = 0;       
+        _customerPackageDto.CountOfDays = 0;
         if (ActivationDate != null && DectivationDate != null)
         {
-            _customerPackageDto.CountOfDays = (decimal)DectivationDate.Value.Subtract(ActivationDate.Value).TotalDays + 1;
-            if(_customerPackageDto.PriceOfPackagePerDay > 0 )
+            _customerPackageDto.CountOfDays = (decimal)DectivationDate.Value.Subtract(ActivationDate.Value).TotalDays;
+            if (_customerPackageDto.PriceOfPackagePerDay > 0)
             {
                 _customerPackageDto.PriceOfPackage = _customerPackageDto.PriceOfPackagePerDay * _customerPackageDto.CountOfDays;
             }
