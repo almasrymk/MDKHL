@@ -154,6 +154,7 @@ public class CustomerPackagesAppService :
             var customerPackage = CreateCustomerMobilePackage(package, customer.Id, ArabicPlateNumber, EnglishPlateNumber);
             var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
             customerPackage.QRCodePath = await HandleQRCode(new CustomerPackageDto { OrganizationId = package.OrganizationId, PackageId = packageId, ArPlateNumber = ArabicPlateNumber, EnPlateNumber = EnglishPlateNumber }, customer, customerPackage);
+            CustomerPackage result = null;
             if (existingPackage != null)
             {
                 ObjectHelper.TrySetProperty(
@@ -161,9 +162,10 @@ public class CustomerPackagesAppService :
                     x => x.Id,
                     () => existingPackage.Id
                 );
-                return await UpdateCustomerPackageAsync(customerPackage);
+                result = await UpdateCustomerPackageAsync(customerPackage);
             }
-            var result = await InsertCustomerPackageAsync(customerPackage);
+            if(result == null)
+                result = await InsertCustomerPackageAsync(customerPackage);
             var packageDto = ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(result);
             var paymentRqDto = RequestToPaymentCheckout(packageDto);
             return Result.Success(paymentRqDto);
@@ -552,10 +554,10 @@ public class CustomerPackagesAppService :
     /// A task that represents the asynchronous operation.
     /// The task result contains a <see cref="Result"/> indicating success or failure.
     /// </returns>
-    private async Task<Result> UpdateCustomerPackageAsync(CustomerPackage customerPackage)
+    private async Task<Result<CustomerPackage>> UpdateCustomerPackageAsync(CustomerPackage customerPackage)
     {
         var updatedPackage = await _repository.UpdateAsync(customerPackage, true);
-        return updatedPackage != null ? Result.Success() : Result.Error("Can't assign package to customer");
+        return updatedPackage != null ? Result.Success(updatedPackage) : Result.Error("Can't assign package to customer");
     }
     /// <summary>
     /// Inserts a new customer package into the database.

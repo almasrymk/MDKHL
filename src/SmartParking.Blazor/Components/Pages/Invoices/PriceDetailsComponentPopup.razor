@@ -6,32 +6,32 @@
     <div class="d-flex flex-row">
         <p>
             <strong>@L["TotalPreVAT"]:</strong>
-            @((MarkupString)$"{Price} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
+            @((MarkupString)$"{Amount} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
         </p>
     </div>
+    @if (Discount!="0")
+    {
+        <div class="d-flex flex-row">
+            <p >
+                <strong>@L["Discount"]:</strong>
+                @((MarkupString)$"{Discount} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
+            </p>
+        </div>
+    }
 
     <div class="d-flex flex-row">
         <p>
             <strong>@L["VAT"] 15%:</strong>
-            @((MarkupString)$"{Math.Round((Price * 0.15m), 2)} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
+            @((MarkupString)$"{Vat} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
         </p>
     </div>
 
-    <div class="d-flex flex-row">
-        <p style="@(HasDiscount ? "text-decoration: line-through;" : "")">
-            <strong>@L["TotalIncludeVAT"]:</strong>
-            @((MarkupString)$"{Math.Round((Price + (Price * 0.15m)), 2)} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
-        </p>
-    </div>
-
-    @if (HasDiscount)
-    {
-        <div class="d-flex flex-row">
-            <p>
-                <strong>@L["After"] @L["Discount"]:</strong>
-                @((MarkupString)$"{PaymentPrice} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
-            </p>
-        </div>
-    }
+     <div class="d-flex flex-row">
+         <p>
+            <strong>@L["Total"] :</strong>
+             @((MarkupString)$"{Total} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")
+         </p>
+     </div>
+    
 
 </div>

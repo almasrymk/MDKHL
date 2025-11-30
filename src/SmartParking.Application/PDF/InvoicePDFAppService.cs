@@ -4,6 +4,8 @@ using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
 using Microsoft.Reporting.NETCore;
+using Polly.Caching;
+using SmartParking.Entities.Discounts;
 using SmartParking.Payments;
 using SmartParking.QRCode;
 using SmartParking.Utilities;
@@ -190,13 +192,15 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         var inv = data.Data;
         var loc = data.Localization;
 
-        AddSummaryRow(table, loc.TotalPreVAT, inv.InvoicePrice.ToString("F2"), Font, isArabic, currency, doc);
-        var vat = Math.Round(inv.InvoicePrice * 0.15m, 2).ToString("F2");
+        AddSummaryRow(table, loc.TotalPreVAT, data.Payment.Invoice.InvoicePrice.ToString("F2"), Font, isArabic, currency, doc);
+        if (data.Payment.Invoice?.Discount != default)
+            AddSummaryRow(table, $"{loc.Discount}", data.Payment.Invoice?.Discount.ToString("F2"), Font, isArabic, currency, doc);
+        var vat = data.Payment.Invoice?.InvoicePrice is decimal price &&
+            data.Payment.Invoice?.Discount is decimal discount &&
+            (price - discount) != 0
+                ? Math.Round((price - discount) * 0.15m, 2).ToString("F2")
+                : "0.0";
         AddSummaryRow(table, $"{loc.Vats}", vat, Font, isArabic, currency, doc);
-        var tprice = Math.Round((inv.InvoicePrice + (inv.InvoicePrice * 0.15m)), 2);
-
-        if (tprice != data.Payment.Amount)
-            AddSummaryRow(table, $"{loc.Discount}", (tprice - data.Payment.Amount).ToString("F2"), Font, isArabic, currency, doc);
         AddSummaryRow(table, loc.TotalIncludeVAT, data.Payment.Amount.ToString("F2"), Font, isArabic, currency, doc);
 
         return table;

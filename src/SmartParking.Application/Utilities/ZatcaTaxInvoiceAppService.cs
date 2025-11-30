@@ -194,7 +194,7 @@ namespace SmartParking.Utilities
                 var customerPackage = await _customerPackageRepository.GetAsync(payment.CustomerPackageId.Value);
                 if (customerPackage != null)
                 {
-                    Amount = customerPackage.PriceOfPackage??0;
+                    Amount = customerPackage.PriceOfPackage ?? 0;
                     Discount = customerPackage.Discount;
                 }
             }

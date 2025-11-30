@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using SmartParking.CustomerPackages;
+using SmartParking.Entities.Discounts;
 using SmartParking.Invoices;
 using SmartParking.Packages;
 
@@ -20,6 +21,10 @@ public partial class InvoiceDetailsViewDialog
     public string imagepath { get; set; }
     [Parameter] public string OrganizationPicture { get; set; }
     [Parameter] public string QRCode { get; set; }
+    [Parameter] public string Amount { get; set; }
+    [Parameter] public string Vat { get; set; }
+    [Parameter] public string Discount { get; set; }
+    [Parameter] public string Total { get; set; }
     public decimal price { get; set; }
     public string title { get; set; }
     public string description { get; set; }
