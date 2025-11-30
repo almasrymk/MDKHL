@@ -282,7 +282,8 @@ public abstract class BasePDFGeneratorAppService<DTO>
         row["OrganizationAddress"] = dt.Organization.Address;
         row["Subscription"] = dt.Localization.Hours;
         row["Duration"] = $"{dt.Data.TotalHours}{dt.Localization.Hours}";
-        row["Vats"] = Math.Round(dt.Data.InvoicePrice * 0.15m, 2).ToString("F2");
+        row["TotalPreVAT"] = dt.Data.InvoicePrice.ToString("F2");
+        row["Vats"] = dt.Data.Vat.ToString("F2");
         row["Discount"] = dt.Data.Discount.ToString("F2");
         row["TotalIncludeVAT"] = dt.Payment.Amount.ToString("F2");
         row["ExitTime"] = dt.Data.InvoiceTime;
