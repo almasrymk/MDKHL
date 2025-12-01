@@ -23,6 +23,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
 
     private readonly ILocalizationFactoryAppService _localizationAppService;
     private readonly IQRCodeAppService _qrCodeAppService;
+    private readonly PdfSettings _pdfOpt;
 
 
 
@@ -31,6 +32,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
 
         _localizationAppService = localizationAppService;
         _qrCodeAppService = qrCodeAppService;
+        _pdfOpt = pdfOptions.Value;
     }
     // -----------------------------
     // IMAGES HEADER SECTION
@@ -56,7 +58,10 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         var table = new Table(UnitValue.CreatePercentArray(new float[] { 2, 2, 1, 2, 2 }))
             .UseAllAvailableWidth()
             .SetBorder(Border.NO_BORDER);
-        var fontsize = (int)(10 * scale);
+        var fontsize = (int)(_pdfOpt.fontSize * scale);
+        //var sz = (int)(12 * scale);
+        //Console.WriteLine(fontsize);
+        //Console.WriteLine(fontsize == sz);
 
         var inv = data.Data;
         var loc = data.Localization;
@@ -128,7 +133,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
     public void AddQrAndTotalsSection(Document doc, InvoicePdfData data, bool isArabic)
     {
         var container = new Table(2).UseAllAvailableWidth().SetMarginTop(20 * ScaleFactor(doc)).SetBorder(Border.NO_BORDER);
-        var qr = CreateImage(data.Localization.QRCodePath, isArabic ? HorizontalAlignment.LEFT : HorizontalAlignment.RIGHT, doc, 120);
+        var qr = CreateImage(data.Localization.QRCodePath, isArabic ? HorizontalAlignment.LEFT : HorizontalAlignment.RIGHT, doc, 153);
         var qrTable = new Table(1).UseAllAvailableWidth().SetBorder(Border.NO_BORDER)
             .AddCell(new Cell().SetBorder(Border.NO_BORDER).Add(qr));
 
@@ -236,10 +241,6 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
 
         return Build(pdfData, PageSize);
 
-        //if (PageSize == "thermal7cm")
-        //    return Buildrdlc(pdfData);
-        //else
-        //    return Build(pdfData, PageSize);
     }
 
     protected override void BuildArabicLayout(Document doc, InvoicePdfData data)
