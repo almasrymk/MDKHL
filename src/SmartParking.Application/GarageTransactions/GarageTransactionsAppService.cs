@@ -361,7 +361,7 @@ public class GarageTransactionsAppService :
                         GarageArabicName = garageTransaction.Garage.NameAr,
                         OrganizationEnglishName = garageTransaction.Organization.EnglishName,
                         OrganizationArabicName = garageTransaction.Organization.ArabicName,
-                        ArabicName = (v1 == null) ? (v2 == null) ? "NotCustomer" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                        ArabicName = ( v1 == null) ? (v2 == null) ? "NotCustomer" : v2.Customer.ArabicName : v1.Customer.ArabicName,
                         TicketId = garageTransaction.TicketId,
                         SnapTime = garageTransaction.SnapTime,
                         CustomerCategory = garageTransaction.CustomerCategory,
