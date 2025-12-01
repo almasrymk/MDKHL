@@ -37,12 +37,12 @@ namespace SmartParking.PDF;
 
 public abstract class BasePDFGeneratorAppService<DTO>
 {
-    private readonly PdfSettings _pdfSettings;
+    protected PdfSettings _pdfSettings { get;  set; }
     protected PdfFont Font { get; private set; }
     protected CultureInfo Culture => CultureInfo.CurrentCulture;
     protected string CultureName => CultureInfo.CurrentCulture.Name;
 
-    protected BasePDFGeneratorAppService(IOptions<PdfSettings> pdfOptions)
+    public BasePDFGeneratorAppService(IOptions<PdfSettings> pdfOptions)
     {
         _pdfSettings = pdfOptions.Value;
     }
@@ -90,9 +90,14 @@ public abstract class BasePDFGeneratorAppService<DTO>
         var writer = new PdfWriter(stream);
         var pdf = new PdfDocument(writer);
         var document = new Document(pdf, GetPageSize(PageSize));
-        if (GetPageSize(PageSize).Equals(new PageSize(7 * 28.346f, 100 * 28.346f)))
+       
+        if (PageSize.ToLower() == "thermal7cm")
         {
             document.SetMargins(_pdfSettings.Margins.Top, _pdfSettings.Margins.Right, _pdfSettings.Margins.Bottom, _pdfSettings.Margins.Left);
+            _pdfSettings.fontSize = 15;
+        }
+        else {
+            _pdfSettings.fontSize = 12;
         }
         try
         {
