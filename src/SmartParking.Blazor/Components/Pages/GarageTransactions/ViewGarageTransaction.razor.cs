@@ -59,7 +59,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
                 var Camera = await CamerasAppService.GetAsync(GarageTransaction.CameraId.Value);
                 cameraCode = Camera.DeviceId;
             }
-            else
+            else if(GarageTransaction.DispenserId != null)
             {
                 var Dispenser = await DispenserAppService.GetAsync(GarageTransaction.DispenserId.Value);
                 cameraCode = Dispenser.DeviceId;
