@@ -3,6 +3,7 @@ using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using Microsoft.Extensions.Options;
 using SmartParking.Payments;
 using SmartParking.QRCode;
 using SmartParking.Utilities;
@@ -19,15 +20,20 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
 
     private readonly ILocalizationFactoryAppService _localizationFactoryAppService;
     private readonly IQRCodeAppService _qrCodeAppService;
+    private readonly PdfSettings _pdfOpt;
+
 
 
     public PackagePDFAppService(
         ILocalizationFactoryAppService localizationFactoryAppService,
-        IQRCodeAppService qrCodeAppService)
+        IQRCodeAppService qrCodeAppService,
+        IOptions<PdfSettings> pdfOptions) : base(pdfOptions)
     {
 
         _localizationFactoryAppService = localizationFactoryAppService;
         _qrCodeAppService = qrCodeAppService;
+        _pdfOpt = pdfOptions.Value;
+
     }
 
     // -----------------------------
@@ -79,9 +85,8 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
             .UseAllAvailableWidth()
             .SetBorder(Border.NO_BORDER);
 
-        var fontsize = (int)(10 * scale);
-        if (fontsize < 4)
-            fontsize = 4;
+
+        var fontsize = (int)(_pdfOpt.fontSize * scale);
 
         var pkg = data.Data;
         var loc = data.Localization;
@@ -159,7 +164,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
     {
         var container = new Table(2).UseAllAvailableWidth().SetMarginTop(20 * ScaleFactor(doc)).SetBorder(Border.NO_BORDER);
         var qr = CreateImage(Path.Combine(PathHelper.WwwRoot, data.Localization.QRCodePath),
-            isArabic ? HorizontalAlignment.LEFT : HorizontalAlignment.RIGHT, doc, 120);
+            isArabic ? HorizontalAlignment.LEFT : HorizontalAlignment.RIGHT, doc, 153);
 
         var qrTable = new Table(1).UseAllAvailableWidth().SetBorder(Border.NO_BORDER)
             .AddCell(new Cell().SetBorder(Border.NO_BORDER).Add(qr));
@@ -218,9 +223,9 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
             Localization = localization
         };
 
-        if (PageSize == "thermal7cm")
-            return Buildrdlc(data);
-        else
+        //if (PageSize == "thermal7cm")
+        //    return Buildrdlc(data);
+        //else
             return Build(data, PageSize);
     }
 

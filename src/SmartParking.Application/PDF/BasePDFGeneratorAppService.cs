@@ -37,13 +37,18 @@ namespace SmartParking.PDF;
 
 public abstract class BasePDFGeneratorAppService<DTO>
 {
-    private readonly PdfSettings _pdfSettings;
+    protected PdfSettings _pdfSettings { get;  set; }
     protected PdfFont Font { get; private set; }
     protected CultureInfo Culture => CultureInfo.CurrentCulture;
     protected string CultureName => CultureInfo.CurrentCulture.Name;
 
+    public BasePDFGeneratorAppService(IOptions<PdfSettings> pdfOptions)
+    {
+        _pdfSettings = pdfOptions.Value;
+    }
     public virtual void ImagesSection(Document doc, string OrganizationPicture)
     {
+        
         float scale = ScaleFactor(doc);
         var table = new Table(3).UseAllAvailableWidth();
 
@@ -85,6 +90,15 @@ public abstract class BasePDFGeneratorAppService<DTO>
         var writer = new PdfWriter(stream);
         var pdf = new PdfDocument(writer);
         var document = new Document(pdf, GetPageSize(PageSize));
+       
+        if (PageSize.ToLower() == "thermal7cm")
+        {
+            document.SetMargins(_pdfSettings.Margins.Top, _pdfSettings.Margins.Right, _pdfSettings.Margins.Bottom, _pdfSettings.Margins.Left);
+            _pdfSettings.fontSize = 15;
+        }
+        else {
+            _pdfSettings.fontSize = 12;
+        }
         try
         {
             InitializeFont();
@@ -239,20 +253,20 @@ public abstract class BasePDFGeneratorAppService<DTO>
 
         byte[] ImgOrgBytes = File.ReadAllBytes(ImgOrg);
 
-        var QRCodePath = Path.Combine(
-              PathHelper.WwwRoot,
-              "QRCodeImage\\image",
-              Path.GetFileName(dt.Localization.QRCodePath));
+        //var QRCodePath = Path.Combine(
+        //      PathHelper.WwwRoot,
+        //      "QRCodeImage\\image",
+        //      Path.GetFileName(dt.Localization.QRCodePath));
 
-        byte[] ImgQrBytes = File.ReadAllBytes(QRCodePath);
+        //byte[] ImgQrBytes = File.ReadAllBytes(QRCodePath);
 
-        byte[] curr = File.ReadAllBytes(PathHelper.imageDirectoryPdf);
+        //byte[] curr = File.ReadAllBytes(PathHelper.imageDirectoryPdf);
 
         // Example dataset
         System.Data.DataTable table = new System.Data.DataTable("InvoicerdlcData");
         table.Columns.Add("ImgMadkhal", typeof(byte[]));
         table.Columns.Add("ImgOrg", typeof(byte[]));
-        table.Columns.Add("ImgQr", typeof(byte[]));
+        //table.Columns.Add("ImgQr", typeof(byte[]));
         table.Columns.Add("Title1", typeof(string));
         table.Columns.Add("SimplifiedTaxInvoice", typeof(string));
         table.Columns.Add("PaymentNumber", typeof(string));
@@ -272,7 +286,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
         var row = table.NewRow();
         row["ImgMadkhal"] = ImgMadkhalBytes;
         row["ImgOrg"] = ImgOrgBytes;
-        row["ImgQr"] = ImgQrBytes;
+        //row["ImgQr"] = ImgQrBytes;
         row["Title1"] = $"{dt.Data.InvoiceId.ToString()} : {dt.Localization.InvoiceNumber}";
         row["SimplifiedTaxInvoice"] = "***" + dt.Localization.SimplifiedTaxInvoice + "***";
         row["PaymentNumber"] = $"{dt.Payment.PaymentNumber} : {dt.Localization.InvoiceNumberView}";
