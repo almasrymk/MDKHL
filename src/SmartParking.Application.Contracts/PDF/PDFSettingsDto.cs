@@ -10,6 +10,7 @@ public class PdfSettings
 {
     public string PaperSize { get; set; } = "A4";
     public PdfMargins Margins { get; set; } = new();
+    public int fontSize { get; set; } = 12;
 }
 
 public class PdfMargins

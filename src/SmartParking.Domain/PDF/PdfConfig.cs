@@ -10,5 +10,6 @@ namespace SmartParking.PDF
     {
         public string PaperSize { get; set; }
         public MarginConfig Margins { get; set; }
+        public int FontSize { get; set; }
     }
 }
