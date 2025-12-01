@@ -73,6 +73,7 @@ public class GarageTransactionsAppService :
                             orderby garageTransaction.Garage.NameEn
                             select new GarageTransactionDto
                             {
+                                Id = garageTransaction.Id,
                                 PlateNumber = garageTransaction.PlateNumber,
                                 AccurateTime = garageTransaction.AccurateTime,
                                 CameraType = garageTransaction.CameraType,
@@ -80,7 +81,7 @@ public class GarageTransactionsAppService :
                                 GarageArabicName = garageTransaction.Garage.NameAr,
                                 OrganizationEnglishName = garageTransaction.Organization.EnglishName,
                                 OrganizationArabicName = garageTransaction.Organization.ArabicName,
-                                ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                                ArabicName = (v1 == null) ? (v2 == null) ? "NotCustomer" : v2.Customer.ArabicName : v1.Customer.ArabicName,
                                 TicketId = garageTransaction.TicketId,
                                 SnapTime = garageTransaction.SnapTime,
                                 CustomerCategory = garageTransaction.CustomerCategory,
@@ -129,6 +130,7 @@ public class GarageTransactionsAppService :
                         orderby garageTransaction.Garage.NameEn
                         select new GarageTransactionDto
                         {
+                            Id = garageTransaction.Id,
                             PlateNumber = garageTransaction.PlateNumber,
                             AccurateTime = garageTransaction.AccurateTime,
                             CameraType = garageTransaction.CameraType,
@@ -136,7 +138,7 @@ public class GarageTransactionsAppService :
                             GarageArabicName = garageTransaction.Garage.NameAr,
                             OrganizationEnglishName = garageTransaction.Organization.EnglishName,
                             OrganizationArabicName = garageTransaction.Organization.ArabicName,
-                            ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                            ArabicName = (v1 == null) ? (v2 == null) ? "NotCustomer" : v2.Customer.ArabicName : v1.Customer.ArabicName,
                             TicketId = garageTransaction.TicketId,
                             SnapTime = garageTransaction.SnapTime,
                             CustomerCategory = garageTransaction.CustomerCategory,
@@ -351,6 +353,7 @@ public class GarageTransactionsAppService :
                     orderby garageTransaction.Garage.NameEn
                     select new GarageTransactionDto
                     {
+                        Id = garageTransaction.Id,
                         PlateNumber = garageTransaction.PlateNumber,
                         AccurateTime = garageTransaction.AccurateTime,
                         CameraType = garageTransaction.CameraType,
@@ -358,7 +361,7 @@ public class GarageTransactionsAppService :
                         GarageArabicName = garageTransaction.Garage.NameAr,
                         OrganizationEnglishName = garageTransaction.Organization.EnglishName,
                         OrganizationArabicName = garageTransaction.Organization.ArabicName,
-                        ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                        ArabicName = (v1 == null) ? (v2 == null) ? "NotCustomer" : v2.Customer.ArabicName : v1.Customer.ArabicName,
                         TicketId = garageTransaction.TicketId,
                         SnapTime = garageTransaction.SnapTime,
                         CustomerCategory = garageTransaction.CustomerCategory,
