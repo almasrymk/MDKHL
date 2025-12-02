@@ -3,6 +3,9 @@ using Microsoft.Extensions.Logging;
 using SmartParking.BarrierAppService;
 using SmartParking.DispenserEndPoint;
 using SmartParking.Events;
+using SmartParking.GarageTransactionEndPoints.Factory;
+using SmartParking.GarageTransactions;
+using SmartParking.GarageTransactions.Factory;
 using SmartParking.KeeperShifts;
 using SmartParking.PDF;
 using SmartParking.Utilities;
@@ -50,6 +53,9 @@ public class SmartParkingApplicationModule : AbpModule
         context.Services.AddScoped<InvoicePDFAppService>();
         context.Services.AddScoped<PackagePDFAppService>();
         context.Services.AddScoped<IPdfGeneratorFactoryAppService, PdfGeneratorFactoryAppService>();
+        context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsCameraActionsAppService>();
+        context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsDispenserActionsAppService>();
+        context.Services.AddScoped<IGarageTransactionsActionsFactoryAppService, GarageTransactionsActionsFactoryAppService>();
 
 
         context.Services.AddTransient<WebSocketHeartbeatWorker>();

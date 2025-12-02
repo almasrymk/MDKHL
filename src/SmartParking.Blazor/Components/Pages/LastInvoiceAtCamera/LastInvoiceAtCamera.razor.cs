@@ -60,15 +60,17 @@ public partial class LastInvoiceAtCamera
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
             await Task.Delay(500);
             await OpenGate();
-            await JSRuntime.InvokeAsync<object>("open", $"/payments/view/{payment.PaymentId}", "_blank");
+            await JSRuntime.InvokeVoidAsync("eval", $"window.open('/payments/view/{payment.PaymentId}', '_blank');");
+
+            // await JSRuntime.InvokeAsync<object>("open", $"/payments/view/{payment.PaymentId}", "_blank");
 
         }
         else
         {
             await OpenGate();
-            Refresh();
-
         }
+        Refresh();
+
     }
     private async Task OpenGate()
     {
@@ -96,11 +98,19 @@ public partial class LastInvoiceAtCamera
     }
     private async Task Cancel()
     {
-        var ExitTransctionId = Invoice.GarageTransactionExitId;
-        await InvoiceAppService.DeleteAsync(Invoice.Id);
-        await GarageTransactionAppService.DeleteAsync(ExitTransctionId);
-        SnackBar.ShowSnackbar(Snackbar, @L["Done"] + " " + @L["Delete"] + " " + @L["Invoice"], MudBlazor.Severity.Success);
-        await Task.Delay(1000);
+        try
+        {
+            var ExitTransctionId = Invoice.GarageTransactionExitId;
+            await InvoiceAppService.DeleteAsync(Invoice.Id);
+            await GarageTransactionAppService.DeleteAsync(ExitTransctionId);
+            SnackBar.ShowSnackbar(Snackbar, @L["Done"] + " " + @L["Delete"] + " " + @L["Invoice"], MudBlazor.Severity.Success);
+            await Task.Delay(1000);
+        }
+        catch(Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, ex.Message, MudBlazor.Severity.Error);
+
+        }
         Refresh();
     }
 

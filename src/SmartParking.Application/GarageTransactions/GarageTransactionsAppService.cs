@@ -1,15 +1,9 @@
-﻿
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using SmartParking.Entities.Analysis;
-using SmartParking.Entities.Cameras.Watchers;
-using SmartParking.Entities.Customers;
+﻿using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
-using SmartParking.Entities.Invoices;
-using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.Filters;
+using SmartParking.GarageTransactions.Factory;
 using SmartParking.Localization;
 using SmartParking.Results;
 using System;
@@ -18,14 +12,11 @@ using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
-using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.Users;
 
 namespace SmartParking.GarageTransactions;
 
@@ -34,26 +25,19 @@ public class GarageTransactionsAppService :
      CrudAppService<GarageTransaction, GarageTransactionDto, int, PagedAndSortedResultRequestDto, CreateUpdateGarageTransactionDto>, IGarageTransactionsAppService
 {
     private readonly IRepository<GarageTransaction, int> _repository;
-    private readonly IRepository<Garage, int> _garageRepository;
-    private readonly IRepository<Organization, int> _OrganizationRepository;
     private readonly IRepository<Customer, Guid> _CustomerRepository;
     private readonly IRepository<Vehicle, int> _VehicleRepository;
-    private readonly IRepository<Camera, int> _CameraRepository;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IDataFilter _dataFilter;
-    private readonly ICurrentUser _currentUser;
+    private readonly IGarageTransactionsActionsFactoryAppService _actionsFactoryService;
 
-    public GarageTransactionsAppService(IRepository<GarageTransaction, int> repository, IDataFilter dataFilter, ICurrentUser currentUser, IRepository<Garage, int> garagerepository, IRepository<Organization, int> organizationRepository, IRepository<Camera, int> cameraRepository, IHttpContextAccessor httpContextAccessor, IRepository<Customer, Guid> customerRepository, IRepository<Vehicle, int> vehicleRepository) : base(repository)
+
+    public GarageTransactionsAppService(IRepository<GarageTransaction, int> repository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IRepository<Vehicle, int> vehicleRepository, IGarageTransactionsActionsFactoryAppService actionsFactoryService) : base(repository)
     {
         _repository = repository;
         _dataFilter = dataFilter;
-        _currentUser = currentUser;
-        _garageRepository = garagerepository;
-        _OrganizationRepository = organizationRepository;
-        _CameraRepository = cameraRepository;
-        _httpContextAccessor = httpContextAccessor;
         _VehicleRepository = vehicleRepository;
         _CustomerRepository = customerRepository;
+        _actionsFactoryService = actionsFactoryService;
     }
     #region public methods
     public async Task<PagedResultDto<GarageTransactionDto>> GetAllListAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
@@ -333,9 +317,11 @@ public class GarageTransactionsAppService :
         }
         if (transactionDto.CameraType == WatcherType.Exit)
         {
-            await UnMappingEntryTransactionForDeletedExit(transactionDto.PlateNumber);
+            await _actionsFactoryService.UnMappingEntryTransactionForDeletedExit(transactionDto);
         }
         await base.DeleteAsync(id);
+        await CurrentUnitOfWork.SaveChangesAsync();
+
     }
     /// <inheritdoc/>
     public async Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)

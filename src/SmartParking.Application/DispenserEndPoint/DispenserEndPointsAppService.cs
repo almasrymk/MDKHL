@@ -143,7 +143,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             var _garageTransactionDto = InitiateCreateGarageTransactionDtoForExit(request, _dispenser);
 
             var input = ObjectMapper.Map<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>(_garageTransactionDto);
-            if (_garageTransactionDto.PlateNumber == null && _garageTransactionDto.TicketId == null)
+            if (string.IsNullOrEmpty(_garageTransactionDto.TicketId))
             {
                 return NOtFoundPlateOrTicketHandler(request.CarNum);
             }
