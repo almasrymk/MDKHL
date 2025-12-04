@@ -53,7 +53,8 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
         var _entryGarageTransactionDto = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
         var createdExitGarageTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(_entryGarageTransactionDto);
         var lstCheckout = _entryGarageTransactionDto.CheckoutMobile.HasValue ? _entryGarageTransactionDto.CheckoutMobile.Value : DateTime.MinValue;
-        if (!(_entryGarageTransactionDto.IsIn && _entryGarageTransactionDto.IsPending == false && _entryGarageTransactionDto.CanCheckout == true))
+
+        if ((_entryGarageTransactionDto.IsIn && _entryGarageTransactionDto.IsPending == false && _entryGarageTransactionDto.CanCheckout == true))
         {
             throw new Exception("Transaction Already Checked-Out");
         }
@@ -82,7 +83,7 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
 
         }
         var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(exitTransaction.OrganizationID, exitTransaction.PlateNumber, exitTransaction.AccurateTime.Value);
-        var _price = _calculationsEndPointAppService.CalculationForRegisteredCustomer(entranceTime, exitTransaction.AccurateTime.Value, organization, packageDto, totalHours);
+        var _price = _calculationsEndPointAppService.CalculationForRegisteredCustomer(exitTransaction.AccurateTime.Value,entranceTime, organization, packageDto, totalHours);
         CreateUpdateInvoiceDto newInvoice = await _garageTransactionUtilityAppService.InitiateInvoice(entranceTime, exitTransaction, totalHours, _price, packageDto is not null,customer);
         newInvoice.EntranceTime = entranceTime;
         return newInvoice;
