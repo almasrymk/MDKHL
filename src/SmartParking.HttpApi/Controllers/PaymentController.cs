@@ -43,11 +43,11 @@ public class PaymentController : ControllerBase
         return await _paymentAppService.GetInvoicePaymentDetailsAsync(oragnizationId, CustomerId, PaymentId);
     }
 
-    [HttpGet("GetPackagePayementDetails/{oragnizationId}/{CustomerId}/{PaymentId}")]
+    [HttpGet("GetPackagePayementDetails/{PaymentId}")]
     [Authorize]
-    public async Task<Result<PayementPackageDto>> GetPackagePaymentDetails(int oragnizationId, Guid CustomerId, Guid PaymentId)
+    public async Task<Result<PaymentPackageDto>> GetPackagePaymentDetails(Guid PaymentId)
     {
-        return await _paymentAppService.GetPackagePaymentDetailsAsync(oragnizationId, CustomerId, PaymentId);
+        return await _paymentAppService.GetPackagePaymentDetailsAsync(PaymentId);
     }
 
 }

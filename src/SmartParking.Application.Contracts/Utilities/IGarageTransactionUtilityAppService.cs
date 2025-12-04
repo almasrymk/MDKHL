@@ -23,14 +23,13 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task<string> FindEntranceImage(string? plateNumber, string ticketId,int OrganiztionId);
     Task<GarageTransactionDto> CheckIfCheckoutFromMobilePLate(string plateNumber);
     Task<GarageTransactionDto> CheckIfCheckoutFromMobileTicket(string ticketNumber);
-    Task<GarageTransaction> GetTransactionById(int garagetransactionId);
+    Task<GarageTransactionDto> GetTransactionById(int garagetransactionId);
     Task CloseEntryTransaction(string? plateNumber , string ticketId , int entryTransactionId);
     Task CloseCheckoutMobileTransaction(string? plateNumber , int entryTransactionId);
     Task UpdateEntryTransactionCheckouFromMobile(int entryGarageTransactionId);
-    Task<Guid> GetCurrentCustomerId();
+    Task<CustomerDto> GetCurrentCustomer();
     Task<CustomerDto> GetCustomer(Guid customerId);
     Task<TransactionOrganizationDto> GetOrganization(int OrganizationID);
-    Task<CreateUpdateGarageTransactionDto> InitiateExitGarageTransactionForMobileCheckout(string PlateNumber, string EntryPicture, int OrganizationId, int GarageId, int CameraId, Guid TenantId);
-    Task<CreateUpdateGarageTransactionDto> InitiateExitGarageTransactionForMobileCheckout(string PlateNumber, string EntryPicture, int OrganizationId, int GarageId, string LaneNO, string TicketId ,  Guid TenantId);
+    Task<CreateUpdateGarageTransactionDto> InitiateExitGarageTransactionForMobileCheckout(GarageTransactionDto garageTransactionDto);
     Task<CreateUpdateInvoiceDto> InitiateInvoice(DateTime entranceTime, CreateUpdateGarageTransactionDto exitTransaction, int totalHours, decimal price, bool isPackage, CustomerDto customer = null);
 }

@@ -39,11 +39,10 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
     ///<inheritdoc/>
     public async Task<Result<CreateUpdateInvoiceDto>> PreCheckout(int entryTransactionId)
     {
-        var customerId = await _garageTransactionUtilityAppService.GetCurrentCustomerId();
-        var Customer = await _garageTransactionUtilityAppService.GetCustomer(customerId);
+        var customer = await _garageTransactionUtilityAppService.GetCurrentCustomer();
         var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
-        var createdExitGarageTransaction =await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction.PlateNumber,entryGarageTransaction.VehiclePicture,entryGarageTransaction.OrganizationID,entryGarageTransaction.GarageId,entryGarageTransaction.CameraId.Value,entryGarageTransaction.TenantId!.Value);
-        var invoice = await PreCheckoutFlow(entryGarageTransaction.AccurateTime.Value, createdExitGarageTransaction, Customer);
+        var createdExitGarageTransaction =await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction);
+        var invoice = await PreCheckoutFlow(entryGarageTransaction.AccurateTime.Value, createdExitGarageTransaction, customer);
         return invoice;
 
     }
@@ -51,11 +50,10 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
     public async Task<Result<InvoiceDto>> Checkout(int entryTransactionId)
     {
 
-        var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
-        var createdExitGarageTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction.PlateNumber, entryGarageTransaction.VehiclePicture, entryGarageTransaction.OrganizationID, entryGarageTransaction.GarageId, entryGarageTransaction.CameraId.Value, entryGarageTransaction.TenantId!.Value);
-        var lstCheckout = entryGarageTransaction.CheckoutMobile.HasValue ? entryGarageTransaction.CheckoutMobile.Value : DateTime.MinValue;
-        var _garageTransactionDto = ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(entryGarageTransaction);
-        if (!(_garageTransactionDto.IsIn && _garageTransactionDto.IsPending == false && _garageTransactionDto.CanCheckout == true))
+        var _entryGarageTransactionDto = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
+        var createdExitGarageTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(_entryGarageTransactionDto);
+        var lstCheckout = _entryGarageTransactionDto.CheckoutMobile.HasValue ? _entryGarageTransactionDto.CheckoutMobile.Value : DateTime.MinValue;
+        if (!(_entryGarageTransactionDto.IsIn && _entryGarageTransactionDto.IsPending == false && _entryGarageTransactionDto.CanCheckout == true))
         {
             throw new Exception("Transaction Already Checked-Out");
         }
@@ -85,7 +83,7 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
         }
         var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(exitTransaction.OrganizationID, exitTransaction.PlateNumber, exitTransaction.AccurateTime.Value);
         var _price = _calculationsEndPointAppService.CalculationForRegisteredCustomer(entranceTime, exitTransaction.AccurateTime.Value, organization, packageDto, totalHours);
-        CreateUpdateInvoiceDto newInvoice = await _garageTransactionUtilityAppService.InitiateInvoice(entranceTime, exitTransaction, totalHours, _price, true,customer);
+        CreateUpdateInvoiceDto newInvoice = await _garageTransactionUtilityAppService.InitiateInvoice(entranceTime, exitTransaction, totalHours, _price, packageDto is not null,customer);
         newInvoice.EntranceTime = entranceTime;
         return newInvoice;
     }

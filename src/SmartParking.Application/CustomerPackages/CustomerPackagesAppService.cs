@@ -632,6 +632,7 @@ public class CustomerPackagesAppService :
             TenantId = PackageDto.TenantId,
             ArPlateNumber = arPlateNumber,
             EnPlateNumber = enPlateNumber,
+            Vat = Math.Round(0.15m * PackageDto.Price, 2),
 
         };
     }

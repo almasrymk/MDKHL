@@ -200,7 +200,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         //Save Exit Transaction
         var _createdExitGarageTransaction = await _garageTransactionsAppService.CreateAsync(exitTransaction);
         //creating invoice
-        CreateUpdateInvoiceDto _initialInvoice = await CreateInvoice(exitTransaction, _entryTransaction, _customer, _totalHours, _customerInvoicePrice, _createdExitGarageTransaction);
+        CreateUpdateInvoiceDto _initialInvoice = await CreateInvoice(exitTransaction, _entryTransaction, _customer, _totalHours, _customerInvoicePrice, _createdExitGarageTransaction, _packageDto is not null);
         //Opens Gate Depends On Invoice Price
         _requestToGate = _initialInvoice.InvoicePrice <= 0;
         //Close and Map Entry Transactions
@@ -211,9 +211,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         return _requestToGate;
     }
 
-    private async Task<CreateUpdateInvoiceDto> CreateInvoice(CreateUpdateGarageTransactionDto exitTransaction, GarageTransactionDto _entryTransaction, CustomerDto? _customer, int _totalHours, decimal _customerInvoicePrice, GarageTransactionDto _createdExitGarageTransaction)
+    private async Task<CreateUpdateInvoiceDto> CreateInvoice(CreateUpdateGarageTransactionDto exitTransaction, GarageTransactionDto _entryTransaction, CustomerDto? _customer, int _totalHours, decimal _customerInvoicePrice, GarageTransactionDto _createdExitGarageTransaction ,bool IsPackage)
     {
-        CreateUpdateInvoiceDto _initialInvoice = await _garageTransactionUtilityAppService.InitiateInvoice(_entryTransaction.AccurateTime.Value, exitTransaction, _totalHours, _customerInvoicePrice, true, _customer);
+        CreateUpdateInvoiceDto _initialInvoice = await _garageTransactionUtilityAppService.InitiateInvoice(_entryTransaction.AccurateTime.Value, exitTransaction, _totalHours, _customerInvoicePrice, IsPackage, _customer);
         _initialInvoice.EntranceTime = _entryTransaction.AccurateTime;
         _initialInvoice.GarageTransactionExitId = _createdExitGarageTransaction.Id;
         _initialInvoice.ExitTransactionImage = _createdExitGarageTransaction.VehiclePicture;
