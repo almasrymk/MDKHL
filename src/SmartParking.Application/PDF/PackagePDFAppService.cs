@@ -67,7 +67,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
     // -----------------------------
     public void AddHeaderSection(Document doc, PackagePdfData data)
     {
-        doc.Add(CreateCenteredParagraph($"{data.Localization.PackageNumberView.ArabicWithFontGlyphsToPDF()}", 20, true, doc));
+        doc.Add(CreateCenteredParagraph($"{data.Localization.PackageNumberView.ArabicWithFontGlyphsToPDF()}", _pdfOpt.fontSize, true, doc));
     }
 
     public void AddSubHeader(Document doc, PackagePdfData data)
@@ -75,7 +75,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
         var text = CultureName == "ar"
             ? $"***{data.Localization.SimplifiedTaxInvoice.ArabicWithFontGlyphsToPDF()}***"
             : $"***{data.Localization.SimplifiedTaxInvoice}***";
-        doc.Add(CreateCenteredParagraph(text, 13, true, doc));
+        doc.Add(CreateCenteredParagraph(text, _pdfOpt.fontSize, true, doc));
     }
 
     public void AddOrganizationSection(Document doc, PackagePdfData data, bool isArabic)
@@ -188,7 +188,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
     public Table BuildTotalsTable(PackagePdfData data, bool isArabic, Document doc)
     {
         var table = new Table(1).UseAllAvailableWidth().SetBorder(Border.NO_BORDER);
-        var currency = CreateImage(PathHelper.CurrencyIcon, HorizontalAlignment.LEFT, doc, 10);
+        var currency = CreateImage(PathHelper.CurrencyIcon, HorizontalAlignment.LEFT, doc, _pdfOpt.fontSize);
         var pkg = data.Data;
         var loc = data.Localization;
 
@@ -242,7 +242,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
         var currencyImg = CreateImage(PathHelper.CurrencyIcon, HorizontalAlignment.LEFT, doc, 10);
         var p = new Paragraph()
             .SetFont(Font)
-            .SetFontSize(13 * ScaleFactor(doc))
+            .SetFontSize(_pdfOpt.fontSize * ScaleFactor(doc))
             .SetTextAlignment(TextAlignment.CENTER);
 
         if (CultureName == "ar")
