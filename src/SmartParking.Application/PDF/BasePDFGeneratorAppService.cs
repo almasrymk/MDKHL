@@ -94,10 +94,10 @@ public abstract class BasePDFGeneratorAppService<DTO>
         if (PageSize.ToLower() == "thermal7cm")
         {
             document.SetMargins(_pdfSettings.Margins.Top, _pdfSettings.Margins.Right, _pdfSettings.Margins.Bottom, _pdfSettings.Margins.Left);
-            _pdfSettings.fontSize = 15;
+            _pdfSettings.fontSize = 25;
         }
         else {
-            _pdfSettings.fontSize = 12;
+            _pdfSettings.fontSize = 18;
         }
         try
         {
@@ -352,7 +352,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
      Document? doc = null)
     {
         float scale = doc != null ? ScaleFactor(doc) : 1f;
-        float fontSize = (float)Math.Round(14 * scale);
+        float fontSize = (float)Math.Round(_pdfSettings.fontSize * scale);
         if (fontSize < 5)
             fontSize = 5;
         if (isArabic)
@@ -396,14 +396,14 @@ public abstract class BasePDFGeneratorAppService<DTO>
     protected void AddSummaryRow(Table table, string label, string value, PdfFont font, bool isArabic, Image currency, Document doc, int colspan = 1)
     {
         var scale = ScaleFactor(doc);
-        var fontSize = (int)Math.Round(12 * scale);
+        var fontSize = (int)Math.Round(_pdfSettings.fontSize * scale);
         if (fontSize < 4)
             fontSize = 4;
         var paragraph = new Paragraph().SetFont(font).SetFontSize(fontSize);
         if (isArabic)
-            paragraph.Add(currency).Add($" {value} ").Add(new Text($": {label.ArabicWithFontGlyphsToPDF()}"));
+            paragraph.Add(currency).Add($" {value} ").Add(new Text($": {label.ArabicWithFontGlyphsToPDF()}").SimulateBold());
         else
-            paragraph.Add(new Text($"{label}: ")).Add(new Text($"{value} ")).Add(currency);
+            paragraph.Add(new Text($"{label}: ").SimulateBold()).Add(new Text($"{value} ")).Add(currency);
 
         table.AddCell(new Cell(1, colspan)
             .SetBorder(Border.NO_BORDER)
