@@ -34,7 +34,7 @@ public class GarageTransactionController : ControllerBase
     [Authorize]
     public async Task<Result<List<GarageTransactionDto>>> GetCustomerTransactionsInOrganization(int OrganizationId)
     {
-       return await _garageTransactionsAppService.GetCustomerTransactionsInOrganization(OrganizationId);
+       return await _garageTransactionsAppService.GetCustomerCarsInOrganization(OrganizationId);
 
     }
 

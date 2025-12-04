@@ -38,11 +38,6 @@ public class InvoicesAppService : ApplicationService, IInvoicesAppService
     {
         try
         {
-            // Check if the user is authenticated
-            //if (!_currentUser.IsInRole("admin"))
-            //{
-            //    return Result<VehicleDto>.Error("User is not authenticated");
-            //}
             var mappedInvoice = ObjectMapper.Map<CreateUpdateInvoiceDto, Invoice>(input);
 
             var invoice = await _invoiceRepoistory.InsertAsync(mappedInvoice, autoSave: true);
