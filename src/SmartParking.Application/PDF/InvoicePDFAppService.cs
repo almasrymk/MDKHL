@@ -41,7 +41,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
     public void AddHeaderSection(Document doc, InvoicePdfData data)
     {
         var txt = $"{data.Data.InvoiceId.ToString().ArabicWithFontGlyphsToPDF()} : {data.Localization.InvoiceNumber.ArabicWithFontGlyphsToPDF()}";
-        doc.Add(CreateCenteredParagraph(txt, 20, true, doc));
+        doc.Add(CreateCenteredParagraph(txt, _pdfOpt.fontSize, true, doc));
     }
 
     public void AddSubHeader(Document doc, InvoicePdfData data)
@@ -49,13 +49,16 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         var text = CultureName == "ar"
             ? $"***{data.Localization.SimplifiedTaxInvoice.ArabicWithFontGlyphsToPDF()}***"
             : $"***{data.Localization.SimplifiedTaxInvoice}***";
-        doc.Add(CreateCenteredParagraph(text, 13, true, doc));
+        doc.Add(CreateCenteredParagraph(text, _pdfOpt.fontSize, true, doc));
     }
 
     public void AddOrganizationSection(Document doc, InvoicePdfData data, bool isArabic)
     {
         float scale = ScaleFactor(doc);
-        var table = new Table(UnitValue.CreatePercentArray(new float[] { 2, 2, 1, 2, 2 }))
+        //var table = new Table(UnitValue.CreatePercentArray(new float[] { 5, 3, 0.25f, 6, 3 }))
+        //    .UseAllAvailableWidth()
+        //    .SetBorder(Border.NO_BORDER);
+        var table = new Table(UnitValue.CreatePercentArray(new float[] { 9,4}))
             .UseAllAvailableWidth()
             .SetBorder(Border.NO_BORDER);
         var fontsize = (int)(_pdfOpt.fontSize * scale);
@@ -71,20 +74,20 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         {
             AddArabicCell(table, pay.CashierName.ArabicWithFontGlyphsToPDF(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.CashierNo.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            AddArabicEmptyCell(table);
+            //AddArabicEmptyCell(table);
             AddArabicCell(table, inv.OrganizationArabicName.ArabicWithFontGlyphsToPDF(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.OrganizationName.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
 
             AddArabicCell(table, inv.PlateNumber, Font, fontsize);
             AddArabicLabelCell(table, $":{loc.PlateNumber.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            AddArabicEmptyCell(table);
+            //AddArabicEmptyCell(table);
             AddArabicCell(table, inv.OrganizationAddress.ArabicWithFontGlyphsToPDF(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.OrganizationAddress.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
 
-            for (int i = 0; i < 5; i++) AddArabicEmptyCell(table);
+            //for (int i = 0; i < 5; i++) AddArabicEmptyCell(table);
             AddArabicCell(table, inv.InvoiceTime.ToString(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.ExitTime.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            AddArabicEmptyCell(table);
+            //AddArabicEmptyCell(table);
             AddArabicCell(table, inv.EntranceTime.ToString(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.EntranceTime.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
 
@@ -117,7 +120,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
     public void AddPaymentHeader(Document doc, InvoicePdfData data)
     {
         var currencyImg = CreateImage(PathHelper.CurrencyIcon, HorizontalAlignment.LEFT, doc, 10);
-        var p = new Paragraph().SetFont(Font).SetFontSize(13).SetTextAlignment(TextAlignment.CENTER);
+        var p = new Paragraph().SetFont(Font).SetFontSize(_pdfOpt.fontSize).SetTextAlignment(TextAlignment.CENTER);
 
         if (CultureName == "ar")
             p.Add(currencyImg).Add(" ").Add(new Text(data.Payment.Amount.ToString()))
@@ -137,12 +140,13 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         var qrTable = new Table(1).UseAllAvailableWidth().SetBorder(Border.NO_BORDER)
             .AddCell(new Cell().SetBorder(Border.NO_BORDER).Add(qr));
 
-        var totals = BuildTotalsTable(data, isArabic, doc);
+        var totals = BuildTotalsTable(data, isArabic, doc).SetFontSize(_pdfOpt.fontSize);
 
         if (isArabic)
         {
             container.AddCell(new Cell().SetBorder(Border.NO_BORDER).Add(qrTable));
             container.AddCell(new Cell().SetBorder(Border.NO_BORDER).Add(totals));
+            //AddArabicCell(container, data.Data.InvoicePrice.ToString(), Font, _pdfOpt.fontSize);
         }
         else
         {
@@ -180,14 +184,14 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         var vatText = CultureName == "ar"
                ? $"{data.Payment.PaymentNumber.ArabicWithFontGlyphsToPDF()}:{data.Localization.InvoiceNumberView.ArabicWithFontGlyphsToPDF()}"
                : $"{data.Localization.InvoiceNumberView}: {data.Payment.PaymentNumber}";
-        doc.Add(CreateCenteredParagraph(vatText, 13, true, doc));
+        doc.Add(CreateCenteredParagraph(vatText, _pdfOpt.fontSize, true, doc));
 
         if (data.Data.TicketId != null)
         {
             var tText = CultureName == "ar"
                 ? $"{data.Data.TicketId.ArabicWithFontGlyphsToPDF()}:{data.Localization.TicketId.ArabicWithFontGlyphsToPDF()}"
                 : $"{data.Localization.TicketId}: {data.Data.TicketId}";
-            doc.Add(CreateCenteredParagraph(tText, 13, true, doc));
+            doc.Add(CreateCenteredParagraph(tText, _pdfOpt.fontSize, true, doc));
         }
     }
 
@@ -198,6 +202,8 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         var inv = data.Data;
         var loc = data.Localization;
 
+
+        //var priceLabel = new Paragraph(loc.TotalPreVAT).SetFontSize(_pdfOpt.fontSize);
         AddSummaryRow(table, loc.TotalPreVAT, data.Payment.Invoice.InvoicePrice.ToString("F2"), Font, isArabic, currency, doc);
         if (data.Payment.Invoice?.Discount != default)
             AddSummaryRow(table, $"{loc.Discount}", data.Payment.Invoice?.Discount.ToString("F2"), Font, isArabic, currency, doc);
