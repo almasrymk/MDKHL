@@ -17,32 +17,7 @@ namespace SmartParking.CustomerPackages
         CreateUpdateCustomerPackageDto
         >
     {
-        /// <summary>
-        /// Retrieves the active customer package for a specific organization and vehicle plate number, 
-        /// based on the provided exit transaction date.
-        /// </summary>
-        /// <param name="OrganizationID">The ID of the organization.</param>
-        /// <param name="PackageCode"> Package Code Of Package.</param>
-        /// <param name="ExitTransaction">The exit time of the garage transaction.</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation. 
-        /// The task result contains the active <see cref="CustomerPackageDto"/> if one is found.
-        /// </returns>
-        Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(int OrganizationID, string PackageCode, DateTime ExitTransaction);
-        
-        /// <summary>
-        /// Retrieves the active customer package for a specific organization and vehicle plate number, 
-        /// based on the provided exit transaction date.
-        /// </summary>
-        /// <param name="OrganizationID">The ID of the organization.</param>
-        /// <param name="PlateNumber"> Plate Number for car.</param>
-        /// <param name="ExitTransaction">The exit time of the garage transaction.</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation. 
-        /// The task result contains the active <see cref="CustomerPackageDto"/> if one is found.
-        /// </returns>
-        Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int OrganizationID, string PlateNumber, DateTime ExitTransaction);
-        Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(int OrganizationID, string PlateNumber, DateTime ExitTransaction);
+
 
         /// <summary>
         /// Retrieves a list of all packages currently assigned to the authenticated customer.
