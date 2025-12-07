@@ -480,6 +480,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
 
     protected void AddArabicLabelCell(Table table, string label, PdfFont font, int fontSize = 9, int rowSpan = 1, int colSpan = 1)
     {
+
         table.AddCell(new Cell(rowSpan, colSpan)
             .SetBorder(Border.NO_BORDER)
              .SetPadding(0)
@@ -487,6 +488,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
             .SetFont(font)
             .SetFontSize(fontSize)
             .SetTextAlignment(TextAlignment.RIGHT)
+            .SetBaseDirection(BaseDirection.LEFT_TO_RIGHT)
             .Add(new Paragraph(label).SimulateBold()));
     }
 
