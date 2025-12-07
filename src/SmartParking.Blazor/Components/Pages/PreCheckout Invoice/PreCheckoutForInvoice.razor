@@ -70,10 +70,15 @@
         </div>
     </MudItem>
 
-    <PreInvoiceSummaryComponent ComponentSize="5"
-    InvoicePrice="@Invoice?.InvoicePrice"
-    IsPaid="@(Invoice?.InvoiceType == InvoiceType.Paid)"
-    Cancel="Cancel"
-    PayInvoice="PayInvoice" />
+    <PriceSummaryComponent OnValueSelected="HandleAddDiscount"
+                           OnSelectPaymentMethod="OnSelectPaymentMethod"
+                           ComponentSize="5"
+                           ConfirmSize="12"
+                           Cancel="Cancel"
+                           HasConfirmPermission="true"
+                           InvoicePrice="@(Invoice?.InvoicePrice??0)"
+                           PayInvoice="PayInvoice"
+                           PaymentMethod="PaymentMethod"
+                           ShowOpenGate="false" />
 
 </MudGrid>

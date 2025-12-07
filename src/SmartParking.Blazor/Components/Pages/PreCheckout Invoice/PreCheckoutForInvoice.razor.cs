@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.CustomerPackages;
 using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
@@ -18,8 +19,18 @@ public partial class PreCheckoutForInvoice
     public int Id { get; set; }
     private bool NoInvoice => Invoice == null || string.IsNullOrEmpty(Invoice?.PlateNumber);
     public decimal Discount { get; set; } = default;
+    public decimal InvoicePrice { get; set; } = default;
     private PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;
+    private Task HandleAddDiscount(decimal selected)
+    {
+        Invoice.Discount = selected;
+        Invoice.InvoicePrice = InvoicePrice;
 
+        return Task.CompletedTask;
+
+    }
+
+    private void OnSelectPaymentMethod(PaymentMethod selected) => PaymentMethod = selected;
     private void Cancel()
     {
         Navigation.NavigateTo("/garagetransactions");
@@ -63,5 +74,6 @@ public partial class PreCheckoutForInvoice
     {
         GarageTransactionDto = await GarageTransactionAppService.GetAsync(GarageTransactionId);
         Invoice = await keeperTransactionsAppService.PreCheckout(GarageTransactionId);
+        InvoicePrice = Invoice.InvoicePrice;
     }
 }
