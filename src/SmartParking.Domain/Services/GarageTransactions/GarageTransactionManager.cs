@@ -165,8 +165,7 @@ public class GarageTransactionManager : DomainService
     public async Task UpdateEntryTransactionCheckouFromMobile(int entryGarageTransactionId)
     {
         var entryGarageTransaction = await GetTransactionById(entryGarageTransactionId);
-        entryGarageTransaction.CheckoutMobile = DateTime.Now;
-        entryGarageTransaction.IsPending = true;
+        entryGarageTransaction.IsPending = false;
         entryGarageTransaction.CanCheckout = false;
         await _repository.UpdateAsync(entryGarageTransaction, true);
     }
