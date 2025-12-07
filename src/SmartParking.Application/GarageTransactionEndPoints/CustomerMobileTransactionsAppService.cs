@@ -1,17 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.Cutomers;
-using SmartParking.Entities.Customers;
-using SmartParking.Entities.GarageTransactions;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SmartParking.GarageTransactionEndPoints;
@@ -23,15 +19,15 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
     private readonly ICalculationsEndPointsAppService _calculationsEndPointAppService;
     private readonly IGarageTransactionUtilityAppService _garageTransactionUtilityAppService;
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
-    private readonly ICustomerPackagesAppService _customerPackagesAppService;
+    private readonly ICustomerPackageHandlerAppService _customerPackagesHandlerAppService;
 
-    public CustomerMobileTransactionsAppService(IGarageTransactionUtilityAppService garageTransactionUtilityAppService, ICalculationsEndPointsAppService calculationsEndPointAppService, IInvoiceAppService invoiceAppService, IGarageTransactionsAppService garageTransactionsAppService, ICustomerPackagesAppService customerPackagesAppService)
+    public CustomerMobileTransactionsAppService(IGarageTransactionUtilityAppService garageTransactionUtilityAppService, ICalculationsEndPointsAppService calculationsEndPointAppService, IInvoiceAppService invoiceAppService, IGarageTransactionsAppService garageTransactionsAppService, ICustomerPackageHandlerAppService customerPackagesHandlerAppService)
     {
         _garageTransactionUtilityAppService = garageTransactionUtilityAppService;
         _calculationsEndPointAppService = calculationsEndPointAppService;
         _invoiceAppService = invoiceAppService;
         _garageTransactionsAppService = garageTransactionsAppService;
-        _customerPackagesAppService = customerPackagesAppService;
+        _customerPackagesHandlerAppService = customerPackagesHandlerAppService;
     }
 
     #region public methods for customer transactions
@@ -39,8 +35,13 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
     ///<inheritdoc/>
     public async Task<Result<CreateUpdateInvoiceDto>> PreCheckout(int entryTransactionId)
     {
+
         var customer = await _garageTransactionUtilityAppService.GetCurrentCustomer();
         var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
+        if (entryGarageTransaction.CanCheckout == false)
+        {
+                throw new Exception("You have to wait Grace Period");
+        }
         var createdExitGarageTransaction =await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction);
         var invoice = await PreCheckoutFlow(entryGarageTransaction.AccurateTime.Value, createdExitGarageTransaction, customer);
         return invoice;
@@ -52,11 +53,12 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
 
         var _entryGarageTransactionDto = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
         var createdExitGarageTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(_entryGarageTransactionDto);
-        var lstCheckout = _entryGarageTransactionDto.CheckoutMobile.HasValue ? _entryGarageTransactionDto.CheckoutMobile.Value : DateTime.MinValue;
-
-        if ((_entryGarageTransactionDto.IsIn && _entryGarageTransactionDto.IsPending == false && _entryGarageTransactionDto.CanCheckout == true))
+        if ( _entryGarageTransactionDto.CanCheckout == false)
         {
-            throw new Exception("Transaction Already Checked-Out");
+            if(_entryGarageTransactionDto.IsIn==false)
+                throw new Exception("Transaction Already Checked-Out");
+            else
+                throw new Exception("You have to wait Grace Period");
         }
         var invoice = await PreCheckout(entryTransactionId);
         await _garageTransactionUtilityAppService.UpdateEntryTransactionCheckouFromMobile(entryTransactionId);
@@ -82,7 +84,7 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
             return await _garageTransactionUtilityAppService.InitiateInvoice(entranceTime, exitTransaction, totalHours, 0, false,customer);
 
         }
-        var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(exitTransaction.OrganizationID, exitTransaction.PlateNumber, exitTransaction.AccurateTime.Value);
+        var packageDto = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(new GarageTransactionDto { OrganizationID = exitTransaction.OrganizationID, PlateNumber = exitTransaction.PlateNumber, TicketId = exitTransaction.TicketId, AccurateTime = exitTransaction.AccurateTime });
         var _price = _calculationsEndPointAppService.CalculationForRegisteredCustomer(exitTransaction.AccurateTime.Value,entranceTime, organization, packageDto, totalHours);
         CreateUpdateInvoiceDto newInvoice = await _garageTransactionUtilityAppService.InitiateInvoice(entranceTime, exitTransaction, totalHours, _price, packageDto is not null,customer);
         newInvoice.EntranceTime = entranceTime;

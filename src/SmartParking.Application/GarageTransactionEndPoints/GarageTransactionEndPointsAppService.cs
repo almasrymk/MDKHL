@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.Cameras;
 using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Enums;
@@ -26,13 +27,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private readonly IUnLinkedTransactionAppService _unlinkedGarageTransactionsAppService;
     private readonly IGarageTransactionUtilityAppService _garageTransactionUtilityAppService;
     private readonly ILogger<GarageTransactionEndPointsAppService> _logger;
-    private readonly ICustomerPackagesAppService _customerPackagesAppService;
+    private readonly ICustomerPackageHandlerAppService _customerPackagesHandlerAppService;
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly ICalculationsEndPointsAppService _calculationsEndPointAppService;
     public GarageTransactionEndPointsAppService(
         IGarageTransactionsAppService garageTransactionsAppService,
         ILogger<GarageTransactionEndPointsAppService> logger,
-        ICustomerPackagesAppService customerPackagesAppService,
+        ICustomerPackageHandlerAppService customerPackagesHandlerAppService,
         IInvoiceAppService invoiceAppService,
        ICalculationsEndPointsAppService calculationsEndPointAppService,
        IUnLinkedTransactionAppService unlinkedGarageTransactionsAppService,
@@ -40,7 +41,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         _garageTransactionsAppService = garageTransactionsAppService;
         _logger = logger;
-        _customerPackagesAppService = customerPackagesAppService;
+        _customerPackagesHandlerAppService = customerPackagesHandlerAppService;
         _invoiceAppService = invoiceAppService;
         _calculationsEndPointAppService = calculationsEndPointAppService;
         _unlinkedGarageTransactionsAppService = unlinkedGarageTransactionsAppService;
@@ -73,7 +74,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         //Initiate a CreateUpdateGarageTransaction .
         CreateUpdateGarageTransactionDto GarageTransaction = InitiateCreateGarageTransactionDto(input, camera);
         //Get Package for that plate number
-        var packageDto =await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(organization.Id, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value);
+        var packageDto =await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(new GarageTransactionDto { OrganizationID= GarageTransaction.OrganizationID , AccurateTime= GarageTransaction.AccurateTime, PlateNumber= GarageTransaction.PlateNumber , TicketId= GarageTransaction.TicketId });
         //Detect Camera Type Sends Request.
         
         try
@@ -450,6 +451,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             CameraType = camera.CameraType,
             IsIn = camera.CameraType == WatcherType.Exit ? false : true,
             IsMapped = camera.CameraType == WatcherType.Entry ? false : true,
+            CanCheckout = camera.CameraType == WatcherType.Entry ? true : false,
+            IsPending=false
 
         };
     }
