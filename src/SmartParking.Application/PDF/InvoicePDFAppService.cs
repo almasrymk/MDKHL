@@ -57,9 +57,11 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         float scale = ScaleFactor(doc);
         var table = new Table(UnitValue.CreatePercentArray(new float[] { 4, 4, 0.11f, 4, 4 }))
             .UseAllAvailableWidth()
+            .SetMarginRight(7)
             .SetBorder(Border.NO_BORDER);
         var addressSection = new Table(UnitValue.CreatePercentArray(new float[] { 12,3 }))
             .UseAllAvailableWidth()
+            .SetMarginRight(7)
             .SetBorder(Border.NO_BORDER);
 
         var fontsize = (int)(_pdfOpt.fontSize * scale);
