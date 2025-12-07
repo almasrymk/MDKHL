@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
 using SmartParking.Results;
 using System;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace SmartParking.Controllers;
 
