@@ -55,16 +55,14 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
     public void AddOrganizationSection(Document doc, InvoicePdfData data, bool isArabic)
     {
         float scale = ScaleFactor(doc);
-        //var table = new Table(UnitValue.CreatePercentArray(new float[] { 5, 3, 0.25f, 6, 3 }))
-        //    .UseAllAvailableWidth()
-        //    .SetBorder(Border.NO_BORDER);
-        var table = new Table(UnitValue.CreatePercentArray(new float[] { 9,4}))
+        var table = new Table(UnitValue.CreatePercentArray(new float[] { 4, 4, 0.11f, 4, 4 }))
             .UseAllAvailableWidth()
             .SetBorder(Border.NO_BORDER);
+        var addressSection = new Table(UnitValue.CreatePercentArray(new float[] { 12,3 }))
+            .UseAllAvailableWidth()
+            .SetBorder(Border.NO_BORDER);
+
         var fontsize = (int)(_pdfOpt.fontSize * scale);
-        //var sz = (int)(12 * scale);
-        //Console.WriteLine(fontsize);
-        //Console.WriteLine(fontsize == sz);
 
         var inv = data.Data;
         var loc = data.Localization;
@@ -74,22 +72,20 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         {
             AddArabicCell(table, pay.CashierName.ArabicWithFontGlyphsToPDF(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.CashierNo.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            //AddArabicEmptyCell(table);
+            AddArabicEmptyCell(table);
             AddArabicCell(table, inv.OrganizationArabicName.ArabicWithFontGlyphsToPDF(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.OrganizationName.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
 
-            AddArabicCell(table, inv.PlateNumber, Font, fontsize);
-            AddArabicLabelCell(table, $":{loc.PlateNumber.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            //AddArabicEmptyCell(table);
-            AddArabicCell(table, inv.OrganizationAddress.ArabicWithFontGlyphsToPDF(), Font, fontsize);
-            AddArabicLabelCell(table, $":{loc.OrganizationAddress.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-
-            //for (int i = 0; i < 5; i++) AddArabicEmptyCell(table);
             AddArabicCell(table, inv.InvoiceTime.ToString(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.ExitTime.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            //AddArabicEmptyCell(table);
+            AddArabicEmptyCell(table);
             AddArabicCell(table, inv.EntranceTime.ToString(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.EntranceTime.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
+
+            AddArabicCell(addressSection, inv.PlateNumber, Font, fontsize);
+            AddArabicLabelCell(addressSection, $":{loc.PlateNumber.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
+            AddArabicCell(addressSection, inv.OrganizationAddress.ArabicWithFontGlyphsToPDF(), Font, fontsize);
+            AddArabicLabelCell(addressSection, $":{loc.OrganizationAddress.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
 
         }
         else
@@ -116,6 +112,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
         }
 
         doc.Add(table);
+        doc.Add(addressSection);
     }
     public void AddPaymentHeader(Document doc, InvoicePdfData data)
     {
