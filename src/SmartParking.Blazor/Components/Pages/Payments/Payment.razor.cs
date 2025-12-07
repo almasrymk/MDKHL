@@ -248,8 +248,8 @@ public partial class Payment
             }
             else 
             {
-                amount = Math.Round(item.Invoice.InvoicePrice,2).ToString();
-                discountValue = Math.Round(item.Invoice.Discount,2).ToString();
+                amount = Math.Round(item.Invoice!.InvoicePrice,2).ToString();
+                discountValue = Math.Round(item.Invoice!.Discount,2).ToString();
 
                 decimal price = item.Invoice?.InvoicePrice ?? 0;
                 decimal discount = item.Invoice?.Discount ?? 0;

@@ -67,7 +67,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
     // -----------------------------
     public void AddHeaderSection(Document doc, PackagePdfData data)
     {
-        doc.Add(CreateCenteredParagraph($"{data.Localization.PackageNumberView.ArabicWithFontGlyphsToPDF()}", 20, true, doc));
+        doc.Add(CreateCenteredParagraph($"{data.Localization.PackageNumberView.ArabicWithFontGlyphsToPDF()}", _pdfOpt.fontSize, true, doc));
     }
 
     public void AddSubHeader(Document doc, PackagePdfData data)
@@ -75,14 +75,19 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
         var text = CultureName == "ar"
             ? $"***{data.Localization.SimplifiedTaxInvoice.ArabicWithFontGlyphsToPDF()}***"
             : $"***{data.Localization.SimplifiedTaxInvoice}***";
-        doc.Add(CreateCenteredParagraph(text, 13, true, doc));
+        doc.Add(CreateCenteredParagraph(text, _pdfOpt.fontSize, true, doc));
     }
 
     public void AddOrganizationSection(Document doc, PackagePdfData data, bool isArabic)
     {
         float scale = ScaleFactor(doc);
-        var table = new Table(UnitValue.CreatePercentArray(6))
+        var table = new Table(UnitValue.CreatePercentArray(new float[] { 4, 4, 0.11f, 4, 4 }))
             .UseAllAvailableWidth()
+            .SetMarginRight(7)
+            .SetBorder(Border.NO_BORDER);
+        var addressSection = new Table(UnitValue.CreatePercentArray(new float[] { 12, 3 }))
+            .UseAllAvailableWidth()
+            .SetMarginRight(7)
             .SetBorder(Border.NO_BORDER);
 
 
@@ -95,22 +100,23 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
 
         if (isArabic)
         {
-            AddArabicCell(table, pay.CashierName.ArabicWithFontGlyphsToPDF(), Font, fontsize, 1, 2);
+            AddArabicCell(table, pay.CashierName.ArabicWithFontGlyphsToPDF(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.CashierNo.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            AddArabicCell(table, org.ArabicName.ArabicWithFontGlyphsToPDF(), Font, fontsize, 1, 2);
+            AddArabicEmptyCell(table);
+            AddArabicCell(table, org.ArabicName.ArabicWithFontGlyphsToPDF(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.OrganizationName.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            AddArabicEmptyCell(table, 1, 6);
-            AddArabicCell(table, pkg.ExpiryDate.ToString(), Font, fontsize, 1, 2);
+
+            AddArabicCell(table, pkg.ExpiryDate.ToString(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.ExpirationDate.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            AddArabicCell(table, pkg.ActivationDateOfPackage!.Value.ToString(), Font, fontsize, 1, 2);
+            AddArabicEmptyCell(table);
+            AddArabicCell(table, pkg.ActivationDateOfPackage!.Value.ToString(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.SubscriptionDate.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            AddArabicEmptyCell(table, 1, 6);
-            AddArabicEmptyCell(table, 1, 3);
-            AddArabicCell(table, pkg.EnPlateNumber.ArabicWithFontGlyphsToPDF(), Font, fontsize, 1, 2);
-            AddArabicLabelCell(table, $":{loc.PlateNumber.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            AddArabicEmptyCell(table, 1, 6);
-            AddArabicCell(table, org.Address.ArabicWithFontGlyphsToPDF(), Font, fontsize, 1, 5);
-            AddArabicLabelCell(table, $":{loc.OrganizationAddress.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
+            
+            
+            AddArabicCell(addressSection, pkg.EnPlateNumber.ArabicWithFontGlyphsToPDF(), Font, fontsize);
+            AddArabicLabelCell(addressSection, $":{loc.PlateNumber.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
+            AddArabicCell(addressSection, org.Address.ArabicWithFontGlyphsToPDF(), Font, fontsize);
+            AddArabicLabelCell(addressSection, $":{loc.OrganizationAddress.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
         }
         else
         {
@@ -135,6 +141,8 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
         }
 
         doc.Add(table);
+        doc.Add(addressSection);
+
     }
     public void AddSummarySection(Document doc, PackagePdfData data, bool isArabic)
     {
@@ -188,7 +196,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
     public Table BuildTotalsTable(PackagePdfData data, bool isArabic, Document doc)
     {
         var table = new Table(1).UseAllAvailableWidth().SetBorder(Border.NO_BORDER);
-        var currency = CreateImage(PathHelper.CurrencyIcon, HorizontalAlignment.LEFT, doc, 10);
+        var currency = CreateImage(PathHelper.CurrencyIcon, HorizontalAlignment.LEFT, doc, _pdfOpt.fontSize);
         var pkg = data.Data;
         var loc = data.Localization;
 
@@ -242,7 +250,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
         var currencyImg = CreateImage(PathHelper.CurrencyIcon, HorizontalAlignment.LEFT, doc, 10);
         var p = new Paragraph()
             .SetFont(Font)
-            .SetFontSize(13 * ScaleFactor(doc))
+            .SetFontSize(_pdfOpt.fontSize * ScaleFactor(doc))
             .SetTextAlignment(TextAlignment.CENTER);
 
         if (CultureName == "ar")
