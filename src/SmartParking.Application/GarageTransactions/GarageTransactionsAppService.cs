@@ -409,19 +409,24 @@ public class GarageTransactionsAppService :
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var customerPackagesQuery = await _customerPackageRepository.GetQueryableAsync();
+            var vehicleQuery = await _VehicleRepository.GetQueryableAsync();
+            
             customerPackagesQuery = customerPackagesQuery.Where(x => x.CustomerId == customerId && x.OrganizationId==organizationId);
+            vehicleQuery = vehicleQuery.Where(x => x.CustomerId == customerId );
+
             var garageTransactionsQuery = await _repository.GetQueryableAsync();
             garageTransactionsQuery = garageTransactionsQuery
-            .Where(gt => gt.OrganizationID == organizationId && gt.IsIn==true)
-            .Where(gt =>
-                customerPackagesQuery.Any(cp =>
-                    cp.ArPlateNumber == gt.PlateNumber ||
-                    cp.EnPlateNumber == gt.PlateNumber ||
-                    (
-                           cp.PackageCode != null &&
-                           gt.TicketId != null &&
-                           cp.PackageCode == gt.TicketId
-                     )));
+            .Where(gt => gt.OrganizationID == organizationId && gt.IsIn == true)
+             .Where(gt =>
+                    customerPackagesQuery.Any(cp =>
+                        cp.ArPlateNumber == gt.PlateNumber ||
+                        cp.EnPlateNumber == gt.PlateNumber ||
+                        (cp.PackageCode != null && gt.TicketId != null && cp.PackageCode == gt.TicketId)
+                    )
+                    ||
+                    vehicleQuery.Any(v =>
+                        v.ArPlateNumber == gt.PlateNumber ||
+                        v.EnPlateNumber == gt.PlateNumber)).Distinct();
             var transactions = await AsyncExecuter.ToListAsync(garageTransactionsQuery);
             var transactionsDtos = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(transactions);
             return Result.Success(transactionsDtos);
@@ -485,22 +490,6 @@ public class GarageTransactionsAppService :
 
         return queryable;
     }
-
-
-    private async Task UnMappingEntryTransactionForDeletedExit(string plateNumber)
-    {
-        var query = await _repository.GetQueryableAsync();
-
-        var latestTransaction = query
-                .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == false && gt.IsMapped == true)
-                .OrderByDescending(gt => gt.AccurateTime)
-                .FirstOrDefault();
-        latestTransaction.IsIn = true;
-        latestTransaction.IsMapped = false;
-        await CurrentUnitOfWork.SaveChangesAsync();
-    }
-
-
     private void CreateBase64Image(ref string base64Image)
     {
         if (!base64Image.Contains(","))

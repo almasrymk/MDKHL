@@ -287,14 +287,6 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
          .ForPath(d => d.OrganizationEnglishName, s => s.MapFrom(o => o.Organization.EnglishName))
          .ForPath(d => d.GarageArabicName, s => s.MapFrom(o => o.Garage.NameAr))
          .ForPath(d => d.GarageEnglishName, s => s.MapFrom(o => o.Garage.NameEn))
-         .ForMember(d => d.RemainingTime,
-            src =>
-            {
-            src.PreCondition(o => o.CheckoutMobile.HasValue);
-            src.MapFrom(o => CalculateRemainingTimeWithGrace(o.CheckoutMobile, o.Organization.Graceperiod));
-            })
-        .ForMember(d => d.IsPending, s => s.MapFrom(o => o.CheckoutMobile.HasValue && o.RemainingTime.HasValue && o.RemainingTime.Value > DateTime.MinValue?true:false))
-        
         .ReverseMap();
 
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>().ReverseMap();        
@@ -393,22 +385,6 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateDiscountDto, Discount>();
 
     }
-    private DateTime CalculateRemainingTimeWithGrace(DateTime? checkoutMobile, int gracePeriod)
-    {
-        if (IfPassGracePeriod(checkoutMobile, gracePeriod))
-        {
-            return DateTime.MinValue;
-        }
-        return CalculateRemainingTime(checkoutMobile, gracePeriod);
-    }
-    private bool IfPassGracePeriod(DateTime? CheckoutMobile , int Graceperiod)
-    {
-        return (CheckoutMobile.Value.AddMinutes(Graceperiod) - DateTime.Now.AddHours(1)).Minutes < 0?true:false;
-    }
 
-    private DateTime CalculateRemainingTime(DateTime? MobileCheckout,int Graceperiod)
-    {
-        return DateTime.Now.Add(MobileCheckout.Value.AddMinutes(Graceperiod * 1.0) - DateTime.Now);
-    }
 }
 

@@ -337,11 +337,15 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             SnapTime = DateTime.Now,
             TenantId = garageTransactionDto.TenantId,
             IsIn = true,
+            IsPending = true,
+            IsMapped=false,
+            CanCheckout = false,
             CheckoutMobile = DateTime.Now,
             VehiclePicture = garageTransactionDto.VehiclePicture,
             CameraType = WatcherType.Exit,
             LaneNO = garageTransactionDto.LaneNO,
             TicketId = garageTransactionDto.TicketId,
+
         };
     }
 

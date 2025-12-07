@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Authentication;
 using SmartParking.CustomerCategories;
-using SmartParking.Entities;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.EnumDescriptions;
@@ -16,7 +13,6 @@ using SmartParking.Results;
 using SmartParking.Subscriptions;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text.RegularExpressions;
@@ -31,7 +27,6 @@ using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectExtending;
 using Volo.Abp.TenantManagement;
-using Volo.Abp.Validation;
 
 namespace SmartParking.Organizations;
 
