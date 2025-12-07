@@ -9,13 +9,14 @@ using Microsoft.OpenApi.Models;
 using MudBlazor;
 using MudBlazor.Services;
 using OpenIddict.Validation.AspNetCore;
-using SmartParking.BarrierAppService;
 using SmartParking.Blazor.Components;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.State;
 using SmartParking.Blazor.Filters;
 using SmartParking.Blazor.Menus;
 using SmartParking.Blazor.MultiTenants;
+using SmartParking.CustomerPackages.CustomerPackageTransaction;
+using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.GarageTransactionEndPoints.Factory;
 using SmartParking.GarageTransactions;
@@ -24,7 +25,6 @@ using SmartParking.Localization;
 using SmartParking.MultiTenancy;
 using SmartParking.OpenGate;
 using SmartParking.OpeningGate;
-using SmartParking.Organizations;
 using SmartParking.PDF;
 using SmartParking.Results;
 using StackExchange.Profiling;
@@ -158,11 +158,10 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.AddScoped<PreAssignPackageState>();
         context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsCameraActionsAppService>();
         context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsDispenserActionsAppService>();
+        context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, CameraTransactionActionsAppService>();
+        context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, DispenserTransactionActionsAppService>();
         context.Services.AddScoped<IGarageTransactionsActionsFactoryAppService, GarageTransactionsActionsFactoryAppService>();
-
-
-
-
+        context.Services.AddScoped<ICustomerPackageHandlerAppService, CustomerPackageHandlerAppService>();
 
 
         // Define the supported cultures
