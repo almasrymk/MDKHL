@@ -343,6 +343,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 Amount= result.Value.InvoicePrice,
                 PaymentCategory=PaymentCategory.PaymentParking,
                 PaymentMethod= payCustomerInvoiceDto.Method,
+                TenantId=result.Value.TenantId.Value,
+                
             });
         }
     }
@@ -391,6 +393,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             PaymentNumber = paymentCheckoutRequest.PaymentNumber,
             ArPlateNumber = paymentCheckoutRequest.ArPlateNumber,
             EnPlateNumber = paymentCheckoutRequest.EnPlateNumber,
+            TenantId = CurrentTenant.Id.HasValue ?CurrentTenant.Id.Value :paymentCheckoutRequest.TenantId  ,
             
         };
 

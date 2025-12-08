@@ -24,8 +24,8 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task<GarageTransactionDto> CheckIfCheckoutFromMobilePLate(string plateNumber);
     Task<GarageTransactionDto> CheckIfCheckoutFromMobileTicket(string ticketNumber);
     Task<GarageTransaction> GetTransactionById(int garagetransactionId);
-    Task CloseEntryTransaction(string? plateNumber , string ticketId , int entryTransactionId);
-    Task CloseCheckoutMobileTransaction(string? plateNumber , int entryTransactionId);
+    Task CloseEntryTransaction(string? plateNumber , string ticketId);
+    Task CloseCheckoutMobileTransaction(string? plateNumber);
     Task UpdateEntryTransactionCheckouFromMobile(int entryGarageTransactionId);
     Task<Guid> GetCurrentCustomerId();
     Task<CustomerDto> GetCustomer(Guid customerId);

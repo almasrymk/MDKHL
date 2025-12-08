@@ -192,7 +192,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         int _totalHours = _calculationsEndPointAppService.CalculateTime(_entryTransaction.AccurateTime.Value, exitTransaction.AccurateTime.Value, organization.FreeMinutes);
         if (_totalHours * 60 <= organization.FreeMinutes && organization.FreeMinutes != 0)
         {
-            return await ExitsInFreeMinutesPeriod(exitTransaction, _entryTransaction.Id);
+            return await ExitsInFreeMinutesPeriod(exitTransaction);
         }
         //Getting garage
         //processing calculations depends on transaction belongs to customer or not.
@@ -204,7 +204,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         //Opens Gate Depends On Invoice Price
         _requestToGate = _initialInvoice.InvoicePrice <= 0;
         //Close and Map Entry Transactions
-        await _garageTransactionUtilityAppService.CloseEntryTransaction(exitTransaction.PlateNumber, exitTransaction.TicketId, _entryTransaction.Id);
+        await _garageTransactionUtilityAppService.CloseEntryTransaction(exitTransaction.PlateNumber, exitTransaction.TicketId);
 
         await CurrentUnitOfWork.SaveChangesAsync();
         _logger.LogInformation($"{DateTime.Now} ====> Get Response {_requestToGate}");
@@ -283,11 +283,11 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     /// </summary>
     /// <param name="exitTransaction">exit transaction dto</param>
     /// <returns>true</returns>
-    private async Task<bool> ExitsInFreeMinutesPeriod(CreateUpdateGarageTransactionDto exitTransaction , int entryTransactionId)
+    private async Task<bool> ExitsInFreeMinutesPeriod(CreateUpdateGarageTransactionDto exitTransaction )
     {
         await _garageTransactionsAppService.CreateAsync(exitTransaction);
         _logger.LogInformation($"{DateTime.Now} ====> Close Entry : {exitTransaction.PlateNumber}");
-        await _garageTransactionUtilityAppService.CloseEntryTransaction(exitTransaction.PlateNumber, exitTransaction.TicketId , entryTransactionId);
+        await _garageTransactionUtilityAppService.CloseEntryTransaction(exitTransaction.PlateNumber, exitTransaction.TicketId );
         _logger.LogInformation($"{DateTime.Now} ====> PlateNumber  : {exitTransaction.PlateNumber}");
         _logger.LogInformation($"{DateTime.Now} ====> Get Response true | In Free minutes period");
         return await Task.FromResult(true);
@@ -332,7 +332,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             await ChangeCategoryForEntryTransaction(entryTransaction);
         }
         var _lastInvoiceForPlateNumber = await _invoiceAppService.GetLatestInvoiceForCustomerInOrganizationGarage(exitTransaction.PlateNumber, exitTransaction.OrganizationID, exitTransaction.GarageId);
-        await _garageTransactionUtilityAppService.CloseCheckoutMobileTransaction(exitTransaction.PlateNumber , entryTransaction.Id);
+        await _garageTransactionUtilityAppService.CloseCheckoutMobileTransaction(exitTransaction.PlateNumber);
         _logger.LogInformation($"{DateTime.Now} ====> Customer ID : {customer?.Id}");
         _logger.LogInformation($"{DateTime.Now} ====> PlateNumber  : {exitTransaction.PlateNumber}");
         var PassGraceTime = await CheckIfPassGracePeriod(exitTransaction.AccurateTime.Value, _lastInvoiceForPlateNumber.Value.InvoiceTime, organization.Graceperiod);

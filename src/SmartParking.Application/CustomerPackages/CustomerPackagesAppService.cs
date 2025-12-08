@@ -167,7 +167,7 @@ public class CustomerPackagesAppService :
             if(result == null)
                 result = await InsertCustomerPackageAsync(customerPackage);
             var packageDto = ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(result);
-            var paymentRqDto = RequestToPaymentCheckout(packageDto);
+            var paymentRqDto = RequestToPaymentCheckout(packageDto, package.TenantId.Value);
             return Result.Success(paymentRqDto);
 
         }
@@ -660,7 +660,7 @@ public class CustomerPackagesAppService :
         await _repository.UpdateAsync(customerPackage, true);
 
     }
-    private PaymentCheckoutRequestDto RequestToPaymentCheckout(CustomerPackageDto customerPackageDto)
+    private PaymentCheckoutRequestDto RequestToPaymentCheckout(CustomerPackageDto customerPackageDto,Guid TenantId=default)
     {
         return new PaymentCheckoutRequestDto
         {
@@ -673,6 +673,7 @@ public class CustomerPackagesAppService :
             CustomerId = customerPackageDto.CustomerId,
             ArPlateNumber = customerPackageDto.ArPlateNumber,
             EnPlateNumber = customerPackageDto.EnPlateNumber,
+            TenantId = TenantId,
         };
 
     }

@@ -108,14 +108,14 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         return await _vehicleManager.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(plateNumber);
     }
 
-    public async Task CloseCheckoutMobileTransaction(string? plateNumber, int entryTransactionId)
+    public async Task CloseCheckoutMobileTransaction(string? plateNumber)
     {
-        await _garageTransactionManager.CloseCheckoutMobileTransaction(plateNumber, entryTransactionId);
+        await _garageTransactionManager.CloseCheckoutMobileTransaction(plateNumber);
     }
 
-    public async Task CloseEntryTransaction(string? plateNumber,string TicketId , int entryTransactionId)
+    public async Task CloseEntryTransaction(string? plateNumber,string TicketId )
     {
-         await _garageTransactionManager.CloseEntryTransaction(plateNumber, TicketId, entryTransactionId);  
+         await _garageTransactionManager.CloseEntryTransaction(plateNumber, TicketId);  
     }
 
     public async Task<string> FindEntranceImage(string? plateNumber , string ticketId,int OrganiztionId)

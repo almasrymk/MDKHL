@@ -13,6 +13,7 @@ public class PaymentCheckoutRequestDto
     public decimal Amount { get; set; }
     public int OrganizationId { get; set; }
     public Guid? CustomerId { get; set; }
+    public Guid TenantId { get; set; }
     public string? PaymentName { get; set; }
     public string PaymentNumber { get; set; }
     public string? EnPlateNumber { get; set; }

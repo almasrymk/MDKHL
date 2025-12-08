@@ -33,36 +33,36 @@ public class GarageTransactionManager : DomainService
             return latestTransaction;
         }
     }
-    public async Task CloseCheckoutMobileTransaction(string? plateNumber, int entryTransactionId)
+    public async Task CloseCheckoutMobileTransaction(string? plateNumber)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
             query.Where(gt => gt.CameraType == WatcherType.Exit);
-            await SaveClosedEntryTransaction(plateNumber, query, entryTransactionId);
+            await SaveClosedEntryTransaction(plateNumber, query);
         }
     }
 
-    public async Task CloseEntryTransaction(string? plateNumber, string TicketId, int entryTransactionId)
+    public async Task CloseEntryTransaction(string? plateNumber, string TicketId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
             if (!string.IsNullOrEmpty(TicketId))
             {
-                await EntryTicketTransactions(TicketId, query, entryTransactionId);
+                await EntryTicketTransactions(TicketId, query);
                 return;
             }
-            await SaveClosedEntryTransaction(plateNumber, query, entryTransactionId);
+            await SaveClosedEntryTransaction(plateNumber, query);
         }
     }
 
-    private async Task EntryTicketTransactions(string? TicketNumber, IQueryable<GarageTransaction> query, int entryTransactionId)
+    private async Task EntryTicketTransactions(string? TicketNumber, IQueryable<GarageTransaction> query)
     {
         if (TicketNumber == null)
             return ;
         var latestTransactions= query
-                .Where(gt => gt.TicketId == TicketNumber && gt.Id == entryTransactionId && gt.IsIn == true)
+                .Where(gt => gt.TicketId == TicketNumber && gt.IsIn == true)
                 .OrderByDescending(gt => gt.AccurateTime)
                 .ToList();
         latestTransactions.ForEach(gt =>
@@ -77,12 +77,12 @@ public class GarageTransactionManager : DomainService
 
 
 
-    private async Task SaveClosedEntryTransaction(string? plateNumber, IQueryable<GarageTransaction> query, int entryTransactionId)
+    private async Task SaveClosedEntryTransaction(string? plateNumber, IQueryable<GarageTransaction> query)
     {
         if (plateNumber == null)
             return ;
         var latestTransactions = query
-                .Where(gt => gt.PlateNumber == plateNumber && gt.Id == entryTransactionId && gt.IsIn == true)
+                .Where(gt => gt.PlateNumber == plateNumber  && gt.IsIn == true)
                 .OrderByDescending(gt => gt.AccurateTime)
                 .ToList();
         latestTransactions.ForEach(gt =>
