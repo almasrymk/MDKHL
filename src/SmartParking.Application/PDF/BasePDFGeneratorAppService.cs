@@ -55,16 +55,22 @@ public abstract class BasePDFGeneratorAppService<DTO>
 
         }
 
-        float leftW = leftLogo.GetImageWidth();
-        float rightW = rightLogo.GetImageWidth();
+        float maxWidth = 180;  // target width for BOTH images
+        float maxHeight = 180; // target height for BOTH images
 
-        float targetW = Math.Max(leftW, rightW); // Force both to match the larger width
+        // ---- LEFT IMAGE ----
+        float leftOriginalW = leftLogo.GetImageWidth();
+        float leftOriginalH = leftLogo.GetImageHeight();
 
-        float leftScaleFactor = targetW / leftW;
-        float rightScaleFactor = targetW / rightW;
+        float leftScale = Math.Min(maxWidth / leftOriginalW, maxHeight / leftOriginalH);
+        leftLogo.Scale(leftScale, leftScale);
 
-        leftLogo.Scale(leftScaleFactor, leftScaleFactor);
-        rightLogo.Scale(rightScaleFactor, rightScaleFactor);
+        // ---- RIGHT IMAGE ----
+        float rightOriginalW = rightLogo.GetImageWidth();
+        float rightOriginalH = rightLogo.GetImageHeight();
+
+        float rightScale = Math.Min(maxWidth / rightOriginalW, maxHeight / rightOriginalH);
+        rightLogo.Scale(rightScale, rightScale);
 
         table.AddCell(new Cell().Add(leftLogo)
             .SetBorder(Border.NO_BORDER)
@@ -93,7 +99,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
             _pdfSettings.fontSize = 25;
         }
         else {
-            _pdfSettings.fontSize = 15;
+            _pdfSettings.fontSize = 12;
         }
         try
         {
