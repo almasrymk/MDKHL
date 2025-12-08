@@ -1,15 +1,11 @@
-﻿
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using SmartParking.Entities.Analysis;
-using SmartParking.Entities.Cameras.Watchers;
+﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
-using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.Filters;
+using SmartParking.GarageTransactions.Factory;
 using SmartParking.Localization;
 using SmartParking.Results;
 using System;
@@ -18,14 +14,11 @@ using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
-using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.Users;
 
 namespace SmartParking.GarageTransactions;
 
@@ -34,26 +27,22 @@ public class GarageTransactionsAppService :
      CrudAppService<GarageTransaction, GarageTransactionDto, int, PagedAndSortedResultRequestDto, CreateUpdateGarageTransactionDto>, IGarageTransactionsAppService
 {
     private readonly IRepository<GarageTransaction, int> _repository;
-    private readonly IRepository<Garage, int> _garageRepository;
-    private readonly IRepository<Organization, int> _OrganizationRepository;
     private readonly IRepository<Customer, Guid> _CustomerRepository;
     private readonly IRepository<Vehicle, int> _VehicleRepository;
-    private readonly IRepository<Camera, int> _CameraRepository;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IDataFilter _dataFilter;
-    private readonly ICurrentUser _currentUser;
+    private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
 
-    public GarageTransactionsAppService(IRepository<GarageTransaction, int> repository, IDataFilter dataFilter, ICurrentUser currentUser, IRepository<Garage, int> garagerepository, IRepository<Organization, int> organizationRepository, IRepository<Camera, int> cameraRepository, IHttpContextAccessor httpContextAccessor, IRepository<Customer, Guid> customerRepository, IRepository<Vehicle, int> vehicleRepository) : base(repository)
+    private readonly IDataFilter _dataFilter;
+    private readonly IGarageTransactionsActionsFactoryAppService _actionsFactoryService;
+
+
+    public GarageTransactionsAppService(IRepository<GarageTransaction, int> repository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IRepository<Vehicle, int> vehicleRepository, IGarageTransactionsActionsFactoryAppService actionsFactoryService, IRepository<CustomerPackage, int> customerPackageRepository) : base(repository)
     {
         _repository = repository;
         _dataFilter = dataFilter;
-        _currentUser = currentUser;
-        _garageRepository = garagerepository;
-        _OrganizationRepository = organizationRepository;
-        _CameraRepository = cameraRepository;
-        _httpContextAccessor = httpContextAccessor;
         _VehicleRepository = vehicleRepository;
         _CustomerRepository = customerRepository;
+        _actionsFactoryService = actionsFactoryService;
+        _customerPackageRepository = customerPackageRepository;
     }
     #region public methods
     public async Task<PagedResultDto<GarageTransactionDto>> GetAllListAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
@@ -73,6 +62,7 @@ public class GarageTransactionsAppService :
                             orderby garageTransaction.Garage.NameEn
                             select new GarageTransactionDto
                             {
+                                Id = garageTransaction.Id,
                                 PlateNumber = garageTransaction.PlateNumber,
                                 AccurateTime = garageTransaction.AccurateTime,
                                 CameraType = garageTransaction.CameraType,
@@ -80,7 +70,7 @@ public class GarageTransactionsAppService :
                                 GarageArabicName = garageTransaction.Garage.NameAr,
                                 OrganizationEnglishName = garageTransaction.Organization.EnglishName,
                                 OrganizationArabicName = garageTransaction.Organization.ArabicName,
-                                ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                                ArabicName = (v1 == null) ? (v2 == null) ? "NotCustomer" : v2.Customer.ArabicName : v1.Customer.ArabicName,
                                 TicketId = garageTransaction.TicketId,
                                 SnapTime = garageTransaction.SnapTime,
                                 CustomerCategory = garageTransaction.CustomerCategory,
@@ -129,6 +119,7 @@ public class GarageTransactionsAppService :
                         orderby garageTransaction.Garage.NameEn
                         select new GarageTransactionDto
                         {
+                            Id = garageTransaction.Id,
                             PlateNumber = garageTransaction.PlateNumber,
                             AccurateTime = garageTransaction.AccurateTime,
                             CameraType = garageTransaction.CameraType,
@@ -136,7 +127,7 @@ public class GarageTransactionsAppService :
                             GarageArabicName = garageTransaction.Garage.NameAr,
                             OrganizationEnglishName = garageTransaction.Organization.EnglishName,
                             OrganizationArabicName = garageTransaction.Organization.ArabicName,
-                            ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                            ArabicName = (v1 == null) ? (v2 == null) ? "NotCustomer" : v2.Customer.ArabicName : v1.Customer.ArabicName,
                             TicketId = garageTransaction.TicketId,
                             SnapTime = garageTransaction.SnapTime,
                             CustomerCategory = garageTransaction.CustomerCategory,
@@ -331,9 +322,11 @@ public class GarageTransactionsAppService :
         }
         if (transactionDto.CameraType == WatcherType.Exit)
         {
-            await UnMappingEntryTransactionForDeletedExit(transactionDto.PlateNumber);
+            await _actionsFactoryService.UnMappingEntryTransactionForDeletedExit(transactionDto);
         }
         await base.DeleteAsync(id);
+        await CurrentUnitOfWork.SaveChangesAsync();
+
     }
     /// <inheritdoc/>
     public async Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
@@ -351,6 +344,7 @@ public class GarageTransactionsAppService :
                     orderby garageTransaction.Garage.NameEn
                     select new GarageTransactionDto
                     {
+                        Id = garageTransaction.Id,
                         PlateNumber = garageTransaction.PlateNumber,
                         AccurateTime = garageTransaction.AccurateTime,
                         CameraType = garageTransaction.CameraType,
@@ -358,7 +352,7 @@ public class GarageTransactionsAppService :
                         GarageArabicName = garageTransaction.Garage.NameAr,
                         OrganizationEnglishName = garageTransaction.Organization.EnglishName,
                         OrganizationArabicName = garageTransaction.Organization.ArabicName,
-                        ArabicName = (v1 == null) ? (v2 == null) ? "غير معرف" : v2.Customer.ArabicName : v1.Customer.ArabicName,
+                        ArabicName = ( v1 == null) ? (v2 == null) ? "NotCustomer" : v2.Customer.ArabicName : v1.Customer.ArabicName,
                         TicketId = garageTransaction.TicketId,
                         SnapTime = garageTransaction.SnapTime,
                         CustomerCategory = garageTransaction.CustomerCategory,
@@ -368,9 +362,7 @@ public class GarageTransactionsAppService :
         queryable = ApplySearch(input, queryable);
 
         if (!input.Sorting.IsNullOrEmpty())
-        {
-            // Determine if the sorting should be ascending or descending
-            if (input.Sorting.Contains("DESC"))
+        {            if (input.Sorting.Contains("DESC"))
             {
                 var sorting = input.Sorting.Split(' ').ToList();
                 queryable = queryable.OrderBy(sorting[0] + " descending");
@@ -388,59 +380,54 @@ public class GarageTransactionsAppService :
                 .Skip(input.SkipCount)
                 .Take(input.MaxResultCount)
         );
-
-        // Map entities to DTOs
-        //var transactionDtos = ObjectMapper.Map<List<GarageTransactionAnalysis>, List<GarageTransactionDto>>(items);
-
-        // Return paged result
         return new PagedResultDto<GarageTransactionDto>(totalCount, items);
     }
 
     // Function to convert base64 string to image and save it
     public string SaveBase64Image(CreateUpdateGarageTransactionDto input)
     {
-
         string base64Image = input.VehiclePicture;
         try
         {
-
-            var imageFormat = "jpg"; // Adjust formats as needed
-                                     // CheckBase64(ref base64Image, ref imageFormat);
+            var imageFormat = "jpg"; 
             CreateBase64Image(ref base64Image);
             var imageBytes = Convert.FromBase64String(base64Image);
-
             var imageDirectoryPath = CreateImageDirectory(input);
-
-
-
-
-            // Generate a unique name for the image
             string fileName = $"{Guid.NewGuid()}.{imageFormat}";
             string fullPath = Path.Combine(imageDirectoryPath, fileName);
-
-            // Save the image to the specified path
             File.WriteAllBytes(fullPath, imageBytes);
-
-            // Return the relative path for storing in the database
             return $"/GarageTransactionsImages/{input.OrganizationID}/{input.GarageId}/{input.CameraId}/{fileName}";
         }
         catch (Exception ex)
         {
             return null;
-            // throw new UserFriendlyException("An error occurred while saving the image", ex);
         }
     }
-    public async Task<Result<List<GarageTransactionDto>>> GetCustomerTransactionsInOrganization(int organizationId)
+    public async Task<Result<List<GarageTransactionDto>>> GetCustomerCarsInOrganization(int organizationId)
     {
         var customerId = await GetCurrentCustomerId();
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var query = await _VehicleRepository.GetQueryableAsync();
-            query = query.Where(x => x.CustomerId == customerId);
-            var garageTransactionQuery = await _repository.GetQueryableAsync();
-            garageTransactionQuery = garageTransactionQuery.Where(GT => GT.OrganizationID == organizationId && GT.IsIn == true);
-            garageTransactionQuery = garageTransactionQuery.Where(GT => query.Any(vehicle => vehicle.ArPlateNumber == GT.PlateNumber || vehicle.EnPlateNumber == GT.PlateNumber));
-            var transactions = await AsyncExecuter.ToListAsync(garageTransactionQuery);
+            var customerPackagesQuery = await _customerPackageRepository.GetQueryableAsync();
+            var vehicleQuery = await _VehicleRepository.GetQueryableAsync();
+            
+            customerPackagesQuery = customerPackagesQuery.Where(x => x.CustomerId == customerId && x.OrganizationId==organizationId);
+            vehicleQuery = vehicleQuery.Where(x => x.CustomerId == customerId );
+
+            var garageTransactionsQuery = await _repository.GetQueryableAsync();
+            garageTransactionsQuery = garageTransactionsQuery
+            .Where(gt => gt.OrganizationID == organizationId && gt.IsIn == true)
+             .Where(gt =>
+                    customerPackagesQuery.Any(cp =>
+                        cp.ArPlateNumber == gt.PlateNumber ||
+                        cp.EnPlateNumber == gt.PlateNumber ||
+                        (cp.PackageCode != null && gt.TicketId != null && cp.PackageCode == gt.TicketId)
+                    )
+                    ||
+                    vehicleQuery.Any(v =>
+                        v.ArPlateNumber == gt.PlateNumber ||
+                        v.EnPlateNumber == gt.PlateNumber)).Distinct();
+            var transactions = await AsyncExecuter.ToListAsync(garageTransactionsQuery);
             var transactionsDtos = ObjectMapper.Map<List<GarageTransaction>, List<GarageTransactionDto>>(transactions);
             return Result.Success(transactionsDtos);
 
@@ -503,22 +490,6 @@ public class GarageTransactionsAppService :
 
         return queryable;
     }
-
-
-    private async Task UnMappingEntryTransactionForDeletedExit(string plateNumber)
-    {
-        var query = await _repository.GetQueryableAsync();
-
-        var latestTransaction = query
-                .Where(gt => gt.PlateNumber == plateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == false && gt.IsMapped == true)
-                .OrderByDescending(gt => gt.AccurateTime)
-                .FirstOrDefault();
-        latestTransaction.IsIn = true;
-        latestTransaction.IsMapped = false;
-        await CurrentUnitOfWork.SaveChangesAsync();
-    }
-
-
     private void CreateBase64Image(ref string base64Image)
     {
         if (!base64Image.Contains(","))

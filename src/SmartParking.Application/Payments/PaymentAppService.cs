@@ -277,30 +277,38 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         }
     }
 
-    public async Task<Result<PayementPackageDto>> GetPackagePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId)
+    public async Task<Result<PaymentPackageDto>> GetPackagePaymentDetailsAsync(Guid PayemntId)
     {
 
         using (dataFilter.Disable<IMultiTenant>())
         {
-            var payement = await _repository.GetAsync(x => x.Id == PayemntId && x.OrganizationId == OrganizationId && x.CustomerId == CustomerId);
-            var org = await organizationsAppService.GetAsync(OrganizationId);
-            var customerquery = await _customerRepo.GetQueryableAsync();
-            customerquery = customerquery.Include(cust => cust.IdentityUser);
-            var customer = await AsyncExecuter.FirstAsync(customerquery);
-
-            var package = await _packageRepo.GetAsync(x => x.Id == payement.PackageId);
-            var packagedto = new PayementPackageDto()
+            var payement = await _repository.GetAsync(x => x.Id == PayemntId);
+            if (payement is null || payement.CustomerPackage is null)
+                return Result.Success(new PaymentPackageDto());
+            var packagedto = new PaymentPackageDto()
             {
-                OrganizationAddress = org.Address,
-                OrganizationArabicName = org.ArabicName,
-                OrganizationEnglishName = org.EnglishName,
-                CustomerArabicName = customer.ArabicName,
-                CustomerEnglishName = customer.IdentityUser.Name,
-                PayementTime = payement.CreationTime,
-                Price = package.Price,
-                Description = package.Description,
+                OrganizationAddress = payement.CustomerPackage!.Organization.Address,
+                OrganizationArabicName = payement.CustomerPackage!.Organization.ArabicName,
+                OrganizationEnglishName = payement.CustomerPackage!.Organization.EnglishName,
+                CustomerArabicName = payement.Customers.ArabicName,
+                CustomerEnglishName = payement.Customers.IdentityUser.Name,
+                PaymentTime = payement.CreationTime,
+                TotalAmount = payement.Amount,
+                Price = payement.CustomerPackage!.PriceOfPackage.Value,
+                Discount = payement.CustomerPackage!.Discount,
+                Vat = payement.CustomerPackage!.Vat,
+                Description = payement.CustomerPackage.DescriptionOfPackage,
+                ActivationDate = DateOnly.FromDateTime(payement.CustomerPackage.ActivationDateOfPackage.Value),
+                ActivationTime = TimeOnly.FromDateTime(payement.CustomerPackage.ActivationDateOfPackage.Value) ,
+                PackageCode = payement.CustomerPackage.PackageCode,
+                QRCodePath=payement.CustomerPackage.QRCodePath,
+                ArabicName=payement.CustomerPackage.PackageArabicName,
+                EnglishName=payement.CustomerPackage.PackageEnglishName,
+                ArPlateNumber=payement.EnPlateNumber,
+                EnPlateNumber=payement.ArPlateNumber,
+                
             };
-            return Result<PayementPackageDto>.Success(packagedto, "Package Details Retrieved Succesuffuly");
+            return Result<PaymentPackageDto>.Success(packagedto, "Package Details Retrieved Succesuffuly");
         }
     }
 

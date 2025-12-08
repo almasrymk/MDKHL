@@ -27,10 +27,9 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task CloseEntryTransaction(string? plateNumber , string ticketId);
     Task CloseCheckoutMobileTransaction(string? plateNumber);
     Task UpdateEntryTransactionCheckouFromMobile(int entryGarageTransactionId);
-    Task<Guid> GetCurrentCustomerId();
+    Task<CustomerDto> GetCurrentCustomer();
     Task<CustomerDto> GetCustomer(Guid customerId);
     Task<TransactionOrganizationDto> GetOrganization(int OrganizationID);
-    Task<CreateUpdateGarageTransactionDto> InitiateExitGarageTransactionForMobileCheckout(string PlateNumber, string EntryPicture, int OrganizationId, int GarageId, int CameraId, Guid TenantId);
-    Task<CreateUpdateGarageTransactionDto> InitiateExitGarageTransactionForMobileCheckout(string PlateNumber, string EntryPicture, int OrganizationId, int GarageId, string LaneNO, string TicketId ,  Guid TenantId);
+    Task<CreateUpdateGarageTransactionDto> InitiateExitGarageTransactionForMobileCheckout(GarageTransactionDto garageTransactionDto);
     Task<CreateUpdateInvoiceDto> InitiateInvoice(DateTime entranceTime, CreateUpdateGarageTransactionDto exitTransaction, int totalHours, decimal price, bool isPackage, CustomerDto customer = null);
 }

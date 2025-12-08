@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using iText.Svg.Renderers.Path.Impl;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SmartParking.Cameras;
 using SmartParking.Cutomers;
@@ -239,9 +240,11 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         return await _garageUtilityAppService.GetGarageByIdAsync(garageId);
     }
    
-    public async Task<GarageTransaction> GetTransactionById(int garagetransactionId)
+    public async Task<GarageTransactionDto> GetTransactionById(int garagetransactionId)
     {
-         return await _garageTransactionManager.GetTransactionById(garagetransactionId);
+         var garageTransactionDto= await _garageTransactionManager.GetTransactionById(garagetransactionId);
+        return ObjectMapper.Map<GarageTransaction,GarageTransactionDto>(garageTransactionDto);
+
     }
     public async Task<bool> ReserverSlotsOfGarageDependsOnCategoryAsync(int garageId, bool hasFreeSlots ,  CustomerCategoryStatus customer)
     {
@@ -253,13 +256,13 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     {
         await _garageTransactionManager.UpdateEntryTransactionCheckouFromMobile(entryGarageTransactionId);
     }
-    public async Task<Guid> GetCurrentCustomerId()
+    public async Task<CustomerDto> GetCurrentCustomer()
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var customer = await _customerRepoistory.GetQueryableAsync();
-            var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).FirstOrDefault();
-            return customerId;
+            var customerQuery = await _customerRepoistory.GetQueryableAsync();
+            var customer = customerQuery.Where(s => s.IdentityUserId == CurrentUser.Id).FirstOrDefault();
+            return ObjectMapper.Map<Customer,CustomerDto>(customer!);
         }
     }
     public async Task<CustomerDto> GetCustomer(Guid customerId)
@@ -322,42 +325,30 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
 
     }
     [RemoteService(false)]
-    public async Task<CreateUpdateGarageTransactionDto> InitiateExitGarageTransactionForMobileCheckout(string PlateNumber , string EntryPicture , int OrganizationId , int GarageId,int CameraId , Guid TenantId)
+    public async Task<CreateUpdateGarageTransactionDto> InitiateExitGarageTransactionForMobileCheckout(GarageTransactionDto garageTransactionDto)
     {
         return new CreateUpdateGarageTransactionDto
         {
             AccurateTime = DateTime.Now,
-            PlateNumber = PlateNumber,
-            GarageId = GarageId,
-            OrganizationID = OrganizationId,
-            CameraId = CameraId,
+            PlateNumber = garageTransactionDto.PlateNumber,
+            GarageId = garageTransactionDto.GarageId,
+            OrganizationID = garageTransactionDto.OrganizationID,
+            CameraId = garageTransactionDto.CameraId,
             SnapTime = DateTime.Now,
-            TenantId = TenantId,
+            TenantId = garageTransactionDto.TenantId,
             IsIn = true,
+            IsPending = true,
+            IsMapped=false,
+            CanCheckout = false,
             CheckoutMobile = DateTime.Now,
-            VehiclePicture = EntryPicture,
-            CameraType = WatcherType.Exit
+            VehiclePicture = garageTransactionDto.VehiclePicture,
+            CameraType = WatcherType.Exit,
+            LaneNO = garageTransactionDto.LaneNO,
+            TicketId = garageTransactionDto.TicketId,
+
         };
     }
-    [RemoteService(false)]
-    public async Task<CreateUpdateGarageTransactionDto> InitiateExitGarageTransactionForMobileCheckout(string PlateNumber, string EntryPicture, int OrganizationId, int GarageId, string  LaneNO,string TicketId,  Guid TenantId)
-    {
-        return new CreateUpdateGarageTransactionDto
-        {
-            AccurateTime = DateTime.Now,
-            PlateNumber = PlateNumber,
-            GarageId = GarageId,
-            OrganizationID = OrganizationId,
-            LaneNO = LaneNO,
-            TicketId = TicketId , 
-            SnapTime = DateTime.Now,
-            TenantId = TenantId,
-            IsIn = true,
-            CheckoutMobile = DateTime.Now,
-            VehiclePicture = EntryPicture,
-            CameraType = WatcherType.Exit
-        };
-    }
+
     [RemoteService(false)]
     public async Task<CreateUpdateInvoiceDto> InitiateInvoice(DateTime entranceTime, CreateUpdateGarageTransactionDto exitTransaction, int totalHours, decimal price, bool isPackage , CustomerDto customer = null)
     {

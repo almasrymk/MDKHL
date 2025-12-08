@@ -278,7 +278,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
                     }
                 }
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], item.PlateNumber));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Customer"], item.ArabicName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Customer"], _localizer[$"{item.ArabicName ?? "NotCustomer"}"]));
 				rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["AccurateTime"], item.AccurateTime.ToString()));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["CameraType"],_localizer[$"{item.CameraType.ToString()}"]));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["TicketId"],item.TicketId));

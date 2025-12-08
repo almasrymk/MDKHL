@@ -218,6 +218,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             throw new Exception(LocalizationHelper.GetLocalizedString("Invoice") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
         await base.DeleteAsync(id);
+        await CurrentUnitOfWork.SaveChangesAsync();
     }
     /// <inheritdoc/>
     public async Task<Result<string>> GetInvoiceQRCodeForOrganization(int invoiceId)

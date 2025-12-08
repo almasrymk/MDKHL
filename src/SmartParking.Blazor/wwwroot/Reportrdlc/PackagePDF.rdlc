@@ -814,15 +814,6 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>⃁</Value>
-                      <Style>
-                        <FontFamily>Segoe UI</FontFamily>
-                        <FontWeight>Normal</FontWeight>
-                        <Format>0.00'ج.م.‏';(0.00'ج.م.‏')</Format>
-                        <Language>ar-SA</Language>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
                       <Value xml:space="preserve"> </Value>
                       <Style>
                         <FontFamily>Segoe UI</FontFamily>
@@ -870,15 +861,6 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>⃁</Value>
-                      <Style>
-                        <FontFamily>Segoe UI</FontFamily>
-                        <FontWeight>Normal</FontWeight>
-                        <Format>0.00'ج.م.‏';(0.00'ج.م.‏')</Format>
-                        <Language>ar-SA</Language>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
                       <Value xml:space="preserve"> </Value>
                       <Style>
                         <FontFamily>Segoe UI</FontFamily>
@@ -903,7 +885,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Vats</rd:DefaultName>
-              <Top>4.42835in</Top>
+              <Top>4.70613in</Top>
               <Left>1.26962in</Left>
               <Height>0.25in</Height>
               <Width>1in</Width>
@@ -925,25 +907,6 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>⃁</Value>
-                      <Style>
-                        <FontFamily>Segoe UI</FontFamily>
-                        <FontWeight>Normal</FontWeight>
-                        <Format>0.00'ج.م.‏';(0.00'ج.م.‏')</Format>
-                        <Language>ar-SA</Language>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
-                      <Value xml:space="preserve"> </Value>
-                      <Style>
-                        <FontFamily>Segoe UI</FontFamily>
-                        <FontSize>8pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                        <Format>0.00'ج.م.‏';(0.00'ج.م.‏')</Format>
-                        <Language>ar-SA</Language>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
                       <Value>=First(Fields!TotalIncludeVAT.Value, "DataSet1")</Value>
                       <Style>
                         <FontFamily>Segoe UI</FontFamily>
@@ -958,7 +921,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>TotalIncludeVAT</rd:DefaultName>
-              <Top>4.94224in</Top>
+              <Top>4.97002in</Top>
               <Left>1.26962in</Left>
               <Height>0.25in</Height>
               <Width>1in</Width>
@@ -980,7 +943,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>: المجموع </Value>
+                      <Value>: المجموع (ريال) </Value>
                       <Style>
                         <FontFamily>Segoe UI</FontFamily>
                         <FontSize>8pt</FontSize>
@@ -997,7 +960,7 @@
               <Top>4.16446in</Top>
               <Left>2.30093in</Left>
               <Height>0.25in</Height>
-              <Width>0.6875in</Width>
+              <Width>0.92812in</Width>
               <ZIndex>22</ZIndex>
               <Style>
                 <Border>
@@ -1031,7 +994,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>4.42835in</Top>
+              <Top>4.70613in</Top>
               <Left>2.30093in</Left>
               <Height>0.25in</Height>
               <Width>0.92813in</Width>
@@ -1054,7 +1017,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>: الاجمالى </Value>
+                      <Value>: الاجمالى (ريال)</Value>
                       <Style>
                         <FontFamily>Segoe UI</FontFamily>
                         <FontSize>8pt</FontSize>
@@ -1068,10 +1031,10 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>4.94224in</Top>
+              <Top>4.97002in</Top>
               <Left>2.30093in</Left>
               <Height>0.25in</Height>
-              <Width>0.6875in</Width>
+              <Width>0.92812in</Width>
               <ZIndex>24</ZIndex>
               <Style>
                 <Border>
@@ -1237,25 +1200,6 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>⃁</Value>
-                      <Style>
-                        <FontFamily>Segoe UI</FontFamily>
-                        <FontWeight>Normal</FontWeight>
-                        <Format>0.00'ج.م.‏';(0.00'ج.م.‏')</Format>
-                        <Language>ar-SA</Language>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
-                      <Value xml:space="preserve"> </Value>
-                      <Style>
-                        <FontFamily>Segoe UI</FontFamily>
-                        <FontSize>8pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                        <Format>0.00'ج.م.‏';(0.00'ج.م.‏')</Format>
-                        <Language>ar-SA</Language>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
                       <Value>=First(Fields!Discount.Value, "DataSet1")</Value>
                       <Style>
                         <FontFamily>Segoe UI</FontFamily>
@@ -1270,7 +1214,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Discount</rd:DefaultName>
-              <Top>4.70613in</Top>
+              <Top>4.44224in</Top>
               <Left>1.26962in</Left>
               <Height>0.25in</Height>
               <Width>1in</Width>
@@ -1306,7 +1250,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox3</rd:DefaultName>
-              <Top>4.70613in</Top>
+              <Top>4.44224in</Top>
               <Left>2.30093in</Left>
               <Height>0.25in</Height>
               <Width>0.6875in</Width>

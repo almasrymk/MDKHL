@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.Cameras;
 using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Enums;
@@ -26,13 +27,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private readonly IUnLinkedTransactionAppService _unlinkedGarageTransactionsAppService;
     private readonly IGarageTransactionUtilityAppService _garageTransactionUtilityAppService;
     private readonly ILogger<GarageTransactionEndPointsAppService> _logger;
-    private readonly ICustomerPackagesAppService _customerPackagesAppService;
+    private readonly ICustomerPackageHandlerAppService _customerPackagesHandlerAppService;
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly ICalculationsEndPointsAppService _calculationsEndPointAppService;
     public GarageTransactionEndPointsAppService(
         IGarageTransactionsAppService garageTransactionsAppService,
         ILogger<GarageTransactionEndPointsAppService> logger,
-        ICustomerPackagesAppService customerPackagesAppService,
+        ICustomerPackageHandlerAppService customerPackagesHandlerAppService,
         IInvoiceAppService invoiceAppService,
        ICalculationsEndPointsAppService calculationsEndPointAppService,
        IUnLinkedTransactionAppService unlinkedGarageTransactionsAppService,
@@ -40,7 +41,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     {
         _garageTransactionsAppService = garageTransactionsAppService;
         _logger = logger;
-        _customerPackagesAppService = customerPackagesAppService;
+        _customerPackagesHandlerAppService = customerPackagesHandlerAppService;
         _invoiceAppService = invoiceAppService;
         _calculationsEndPointAppService = calculationsEndPointAppService;
         _unlinkedGarageTransactionsAppService = unlinkedGarageTransactionsAppService;
@@ -73,7 +74,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         //Initiate a CreateUpdateGarageTransaction .
         CreateUpdateGarageTransactionDto GarageTransaction = InitiateCreateGarageTransactionDto(input, camera);
         //Get Package for that plate number
-        var packageDto =await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(organization.Id, GarageTransaction.PlateNumber, GarageTransaction.AccurateTime.Value);
+        var packageDto =await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(new GarageTransactionDto { OrganizationID= GarageTransaction.OrganizationID , AccurateTime= GarageTransaction.AccurateTime, PlateNumber= GarageTransaction.PlateNumber , TicketId= GarageTransaction.TicketId });
         //Detect Camera Type Sends Request.
         
         try
@@ -200,7 +201,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         //Save Exit Transaction
         var _createdExitGarageTransaction = await _garageTransactionsAppService.CreateAsync(exitTransaction);
         //creating invoice
-        CreateUpdateInvoiceDto _initialInvoice = await CreateInvoice(exitTransaction, _entryTransaction, _customer, _totalHours, _customerInvoicePrice, _createdExitGarageTransaction);
+        CreateUpdateInvoiceDto _initialInvoice = await CreateInvoice(exitTransaction, _entryTransaction, _customer, _totalHours, _customerInvoicePrice, _createdExitGarageTransaction, _packageDto is not null);
         //Opens Gate Depends On Invoice Price
         _requestToGate = _initialInvoice.InvoicePrice <= 0;
         //Close and Map Entry Transactions
@@ -211,9 +212,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         return _requestToGate;
     }
 
-    private async Task<CreateUpdateInvoiceDto> CreateInvoice(CreateUpdateGarageTransactionDto exitTransaction, GarageTransactionDto _entryTransaction, CustomerDto? _customer, int _totalHours, decimal _customerInvoicePrice, GarageTransactionDto _createdExitGarageTransaction)
+    private async Task<CreateUpdateInvoiceDto> CreateInvoice(CreateUpdateGarageTransactionDto exitTransaction, GarageTransactionDto _entryTransaction, CustomerDto? _customer, int _totalHours, decimal _customerInvoicePrice, GarageTransactionDto _createdExitGarageTransaction ,bool IsPackage)
     {
-        CreateUpdateInvoiceDto _initialInvoice = await _garageTransactionUtilityAppService.InitiateInvoice(_entryTransaction.AccurateTime.Value, exitTransaction, _totalHours, _customerInvoicePrice, true, _customer);
+        CreateUpdateInvoiceDto _initialInvoice = await _garageTransactionUtilityAppService.InitiateInvoice(_entryTransaction.AccurateTime.Value, exitTransaction, _totalHours, _customerInvoicePrice, IsPackage, _customer);
         _initialInvoice.EntranceTime = _entryTransaction.AccurateTime;
         _initialInvoice.GarageTransactionExitId = _createdExitGarageTransaction.Id;
         _initialInvoice.ExitTransactionImage = _createdExitGarageTransaction.VehiclePicture;
@@ -450,6 +451,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             CameraType = camera.CameraType,
             IsIn = camera.CameraType == WatcherType.Exit ? false : true,
             IsMapped = camera.CameraType == WatcherType.Entry ? false : true,
+            CanCheckout = camera.CameraType == WatcherType.Entry ? true : false,
+            IsPending=false
 
         };
     }

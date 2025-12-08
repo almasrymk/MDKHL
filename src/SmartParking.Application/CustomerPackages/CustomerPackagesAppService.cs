@@ -68,50 +68,7 @@ public class CustomerPackagesAppService :
         _pDFGeneratorAppService = pDFGeneratorAppService;
     }
     #region public methods
-    ///<inheritdoc/>
 
-    public async Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(int OrganizationID, string PlateNumber, DateTime ExitTransaction)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var query = await _repository.GetQueryableAsync();
-            query = query.Where(x => x.OrganizationId == OrganizationID && (x.EnPlateNumber == PlateNumber || x.ArPlateNumber == PlateNumber) && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= ExitTransaction && ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null)));
-            CustomerPackageTransactionDto? customerPackageDto = await GetOneActivePackageUsingProjection(query);
-
-            if (customerPackageDto == null)
-            {
-                return null;
-            }
-
-            return customerPackageDto;
-        }
-
-    }
-    public async Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(int OrganizationID, string PlateNumber, DateTime ExitTransaction)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var query = await _repository.GetQueryableAsync();
-            query = query.Where(x => x.OrganizationId == OrganizationID && (x.EnPlateNumber == PlateNumber || x.ArPlateNumber == PlateNumber) && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= ExitTransaction && ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null)));
-            CustomerPackageTransactionDto? customerPackageDto = await GetOneActivePackageUsingProjection(query);
-            return customerPackageDto;
-        }
-
-    }
-
-
-    ///<inheritdoc/>
-
-    public async Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(int OrganizationID, string PackageCode, DateTime ExitTransaction)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var query = await _repository.GetQueryableAsync();
-            query = query.Where(x => x.OrganizationId == OrganizationID && (x.PackageCode == PackageCode) && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= ExitTransaction && ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null)));
-            CustomerPackageTransactionDto? customerPackageDto = await GetOneActivePackageUsingProjection(query);
-            return customerPackageDto;
-        }
-    }
     ///<inheritdoc/>
     public async Task<Result<List<CustomerPackageDto>>> GetPackageByCustomer()
     {
@@ -246,6 +203,18 @@ public class CustomerPackagesAppService :
     {
         return await _repository.AnyAsync(cp => cp.PackageCode == Code);
     }
+    private async Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(int OrganizationID, string PlateNumber, DateTime ExitTransaction)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(x => x.OrganizationId == OrganizationID && (x.EnPlateNumber == PlateNumber || x.ArPlateNumber == PlateNumber) && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= ExitTransaction && ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null)));
+            var customerPackageDto = await AsyncExecuter.FirstOrDefaultAsync(query);
+            return ObjectMapper.Map<CustomerPackage, CustomerPackageTransactionDto>(customerPackageDto);
+        }
+
+    }
+
 
     private static string GeneratePackageCode(string PayemntCode, string EnglishName)
     {
@@ -261,7 +230,7 @@ public class CustomerPackagesAppService :
 
     private async Task CheckPackageDuplication(CustomerPackageDto customerPackageDto)
     {
-        var activePackage = await GetOneActiveCustomerPackageByOrganizationIdAndPlateNumber(customerPackageDto.OrganizationId, customerPackageDto.EnPlateNumber, DateTime.Now);
+        var activePackage = await GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(customerPackageDto.OrganizationId, customerPackageDto.EnPlateNumber, DateTime.Now);
         if (activePackage != null)
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("CannotAssignTwoPackageToSameVehicle"));
@@ -445,11 +414,7 @@ public class CustomerPackagesAppService :
         customerPackage.IsCustomPackage = false;
         customerPackage.CustomerPackageStatus = CustomerPackageStatus.InActive;
     }
-    private async Task<CustomerPackageTransactionDto?> GetOneActivePackageUsingProjection(IQueryable<CustomerPackage> query)
-    {
-        var customerPackageDto = await AsyncExecuter.FirstOrDefaultAsync(query);
-        return ObjectMapper.Map<CustomerPackage, CustomerPackageTransactionDto>(customerPackageDto);
-    }
+ 
 
     /// <summary>
     /// Retrieves the subscription entity associated with a given organization.
@@ -632,6 +597,7 @@ public class CustomerPackagesAppService :
             TenantId = PackageDto.TenantId,
             ArPlateNumber = arPlateNumber,
             EnPlateNumber = enPlateNumber,
+            Vat = Math.Round(0.15m * PackageDto.Price, 2),
 
         };
     }

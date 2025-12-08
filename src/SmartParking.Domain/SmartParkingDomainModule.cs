@@ -1,8 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SmartParking.MultiTenancy;
+using SmartParking.Services.GarageTransactions;
+using System.Threading.Tasks;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.BackgroundJobs;
+using Volo.Abp.BackgroundWorkers;
 using Volo.Abp.Emailing;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
@@ -42,6 +45,7 @@ public class SmartParkingDomainModule : AbpModule
 
         });
 
+
         Configure<AbpMultiTenancyOptions>(options =>
         {
             options.IsEnabled = MultiTenancyConsts.IsEnabled;
@@ -50,5 +54,19 @@ public class SmartParkingDomainModule : AbpModule
 #if DEBUG
         context.Services.Replace(ServiceDescriptor.Singleton<IEmailSender, NullEmailSender>());
 #endif
+    }
+    public override Task ConfigureServicesAsync(ServiceConfigurationContext context)
+    {
+        context.Services.AddScoped<GarageTransactionsBackgroundWorker>();
+
+        return base.ConfigureServicesAsync(context);
+    }
+    public override void OnApplicationInitialization(Volo.Abp.ApplicationInitializationContext context)
+    {
+        var backgroundWorkerManager = context.ServiceProvider.GetRequiredService<IBackgroundWorkerManager>();
+
+        var worker = context.ServiceProvider.GetRequiredService<GarageTransactionsBackgroundWorker>();
+        backgroundWorkerManager.AddAsync(worker);
+        base.OnApplicationInitialization(context);
     }
 }

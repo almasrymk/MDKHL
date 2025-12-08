@@ -18,7 +18,7 @@ public interface IPaymentAppService : ICrudAppService<PaymentDto, Guid, PagedAnd
     Task<PaymentCheckoutDto?> CreateCheckoutPackagePaymentWebAsync(PaymentCheckoutRequestDto paymentCheckoutRequest);
     Task<PaymentDto> GetPaymentStatus(string input, string entityId,string ArabicPlateNumber , string EnglishPlateNumber);
 
-    Task<Result<PayementPackageDto>> GetPackagePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId);
+    Task<Result<PaymentPackageDto>> GetPackagePaymentDetailsAsync(Guid PayemntId);
     Task<Result<InvoiceDto>> GetInvoicePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId);
 
     Task<Result<PaymentCheckoutDto>> PayCustomerInvoiceAsync(PayCustomerInvoiceDto payCustomerInvoiceDto);

@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.CalculationsEndpoint;
-using SmartParking.CustomerPackages;
-using SmartParking.Entities.Customers;
-using SmartParking.Entities.GarageTransactions;
-using SmartParking.Enums;
+using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.OpeningGate;
@@ -11,9 +8,6 @@ using SmartParking.Organizations;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SmartParking.GarageTransactionEndPoints;
@@ -25,17 +19,17 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
     private readonly ICalculationsEndPointsAppService _calculationsEndPointAppService;
     private readonly IGarageTransactionUtilityAppService _garageTransactionUtilityAppService;
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
-    private readonly ICustomerPackagesAppService _customerPackagesAppService;
+    private readonly ICustomerPackageHandlerAppService _customerPackagesHandlerAppService;
     private readonly IOrganizationsAppService _organizationAppService;
     private readonly IOpenGateFactoryService _openGateFactoryAppService;
 
-    public KeeperTransactionsAppService(IInvoiceAppService invoiceAppService, ICalculationsEndPointsAppService calculationsEndPointAppService, IGarageTransactionUtilityAppService garageTransactionUtilityAppService, IGarageTransactionsAppService garageTransactionsAppService, ICustomerPackagesAppService customerPackagesAppService, IOrganizationsAppService organizationAppService, IOpenGateFactoryService openGateAppService)
+    public KeeperTransactionsAppService(IInvoiceAppService invoiceAppService, ICalculationsEndPointsAppService calculationsEndPointAppService, IGarageTransactionUtilityAppService garageTransactionUtilityAppService, IGarageTransactionsAppService garageTransactionsAppService, ICustomerPackageHandlerAppService customerPackagesHandlerAppService, IOrganizationsAppService organizationAppService, IOpenGateFactoryService openGateAppService)
     {
         _invoiceAppService = invoiceAppService;
         _calculationsEndPointAppService = calculationsEndPointAppService;
         _garageTransactionUtilityAppService = garageTransactionUtilityAppService;
         _garageTransactionsAppService = garageTransactionsAppService;
-        _customerPackagesAppService = customerPackagesAppService;
+        _customerPackagesHandlerAppService = customerPackagesHandlerAppService;
         _organizationAppService = organizationAppService;
         _openGateFactoryAppService = openGateAppService;
     }
@@ -46,28 +40,20 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
     ///<inheritdoc/>
     public async Task<Result<InvoiceDto>> Checkout(int entryTransactionId)
     {
-        var createdExitTransaction = new CreateUpdateGarageTransactionDto();
         var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
         var invoice = await PreCheckout(entryTransactionId);
-        var lstCheckout = entryGarageTransaction.CheckoutMobile.HasValue ? entryGarageTransaction.CheckoutMobile.Value : DateTime.MinValue;
-        var _garageTransactionDto = ObjectMapper.Map<GarageTransaction, GarageTransactionDto>(entryGarageTransaction);
-        if (!(_garageTransactionDto.IsIn && _garageTransactionDto.IsPending == false && _garageTransactionDto.CanCheckout == true))
+        if (entryGarageTransaction.CanCheckout == false)
         {
-            throw new Exception("Transaction Already Checked-Out");
+            if (entryGarageTransaction.IsIn == false)
+                throw new Exception("Transaction Already Checked-Out");
+            else
+                throw new Exception("You have to wait Grace Period");
         }
-        if (entryGarageTransaction.CameraId == null)
-        {
-             createdExitTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction.PlateNumber, entryGarageTransaction.VehiclePicture, entryGarageTransaction.OrganizationID, entryGarageTransaction.GarageId, entryGarageTransaction.LaneNO, entryGarageTransaction.TicketId, entryGarageTransaction.TenantId!.Value);
-        }
-        else
-        {
-             createdExitTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction.PlateNumber, entryGarageTransaction.VehiclePicture, entryGarageTransaction.OrganizationID, entryGarageTransaction.GarageId, entryGarageTransaction.CameraId.Value, entryGarageTransaction.TenantId!.Value);
-        }
+        var createdExitTransaction =await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction);
         await _garageTransactionUtilityAppService.UpdateEntryTransactionCheckouFromMobile(entryTransactionId);
         var garageTransaction = await _garageTransactionsAppService.CreateAsync(createdExitTransaction);
         invoice.Value.GarageTransactionExitId = garageTransaction.Id;
         return await _invoiceAppService.CreateAsync(invoice.Value);
-
     }
 
     public async Task<bool> OpenGate(int transactionId)
@@ -82,18 +68,14 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
     public async Task<Result<CreateUpdateInvoiceDto>> PreCheckout(int entryTransactionId)
     {
         var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
-        var createdExitGarageTransaction = new CreateUpdateGarageTransactionDto();
-        if (entryGarageTransaction.CameraId == null)
+        if (entryGarageTransaction.CanCheckout == false)
         {
-            createdExitGarageTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction.PlateNumber, entryGarageTransaction.VehiclePicture, entryGarageTransaction.OrganizationID, entryGarageTransaction.GarageId, entryGarageTransaction.LaneNO , entryGarageTransaction.TicketId, entryGarageTransaction.TenantId!.Value);
+            throw new Exception("You have to wait Grace Period");
         }
-        else
-        {
-            createdExitGarageTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction.PlateNumber, entryGarageTransaction.VehiclePicture, entryGarageTransaction.OrganizationID, entryGarageTransaction.GarageId, entryGarageTransaction.CameraId.Value, entryGarageTransaction.TenantId!.Value);
-        }
+        var createdExitGarageTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction);
         var organization = await _garageTransactionUtilityAppService.GetOrganization(createdExitGarageTransaction.OrganizationID);
         int totalHours = _calculationsEndPointAppService.CalculateTime(entryGarageTransaction.AccurateTime.Value, (DateTime)createdExitGarageTransaction.AccurateTime, organization.FreeMinutes);
-        var customerPackageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(createdExitGarageTransaction.OrganizationID, createdExitGarageTransaction.PlateNumber, createdExitGarageTransaction.AccurateTime.Value);
+        var customerPackageDto = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(new GarageTransactionDto { OrganizationID = createdExitGarageTransaction.OrganizationID, AccurateTime = createdExitGarageTransaction.AccurateTime, PlateNumber = createdExitGarageTransaction.PlateNumber, TicketId = createdExitGarageTransaction.TicketId });
         if (customerPackageDto == null)
         {
             decimal price =  _calculationsEndPointAppService.CalculateInvoiceCases(entryGarageTransaction.AccurateTime.Value, totalHours, createdExitGarageTransaction.AccurateTime.Value, organization);

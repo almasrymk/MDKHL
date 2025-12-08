@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SmartParking.BarrierAppService;
 using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.DispenserEndPoint;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Organizations;
@@ -23,18 +24,18 @@ public class PackageCodeEndPointAppService : SmartParkingAppService, IPackageCod
     private readonly IGarageTransactionEndPointsAppService _garageTransactionEndPointsAppService;
     private readonly IGarageTransactionUtilityAppService _garageTransactionUtilityAppService;
     private readonly IBarrierAppService _barrierAppService;
-    private readonly ICustomerPackagesAppService _customerPackagesAppService;
+    private readonly ICustomerPackageHandlerAppService _customerPackagesHandlerAppService;
     private readonly IRepository<Dispenser, int> _dispenserRepository;
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly ILogger<DispenserEndPointsAppService> _logger;
     private readonly IUnLinkedTransactionAppService _unlinkedGarageTransactionsAppService;
 
-    public PackageCodeEndPointAppService(IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IGarageTransactionUtilityAppService garageTransactionUtilityAppService, IBarrierAppService barrierAppService, ICustomerPackagesAppService customerPackagesAppService, IRepository<Dispenser, int> dispenserRepository, IRepository<Organization, int> organizationRepository, ILogger<DispenserEndPointsAppService> logger, IUnLinkedTransactionAppService unlinkedGarageTransactionsAppService)
+    public PackageCodeEndPointAppService(IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IGarageTransactionUtilityAppService garageTransactionUtilityAppService, IBarrierAppService barrierAppService, ICustomerPackageHandlerAppService customerPackagesHandlerAppService, IRepository<Dispenser, int> dispenserRepository, IRepository<Organization, int> organizationRepository, ILogger<DispenserEndPointsAppService> logger, IUnLinkedTransactionAppService unlinkedGarageTransactionsAppService)
     {
         _garageTransactionEndPointsAppService = garageTransactionEndPointsAppService;
         _garageTransactionUtilityAppService = garageTransactionUtilityAppService;
         _barrierAppService = barrierAppService;
-        _customerPackagesAppService = customerPackagesAppService;
+        _customerPackagesHandlerAppService = customerPackagesHandlerAppService;
         _dispenserRepository = dispenserRepository;
         _organizationRepository = organizationRepository;
         _logger = logger;
@@ -65,7 +66,7 @@ public class PackageCodeEndPointAppService : SmartParkingAppService, IPackageCod
                 return false;
             }
             var _garageTransactionDto = InitalizeCreateUpdateGarageTransactionDto(packageCodeEntry, _dispenser);
-            var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(_organization.Id, packageCodeEntry.PackageCode, _garageTransactionDto.AccurateTime.Value);
+            var packageDto = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(new GarageTransactionDto { OrganizationID = _garageTransactionDto.OrganizationID, PlateNumber = _garageTransactionDto.PlateNumber, TicketId = _garageTransactionDto.TicketId, AccurateTime = _garageTransactionDto.AccurateTime });
             var result = await _garageTransactionEndPointsAppService.HandleEntrance(unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _organization.DispenserTransaction, _organization.CameraTransaction, _garageTransactionDto, packageDto);
             if(result)
             {
@@ -104,7 +105,7 @@ public class PackageCodeEndPointAppService : SmartParkingAppService, IPackageCod
             _logger.LogInformation($"Organization is found");
             var _garageTransactionDto = InitalizeCreateUpdateGarageTransactionDto(packageCodeExit, _dispenser);
             var input = ObjectMapper.Map<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>(_garageTransactionDto);
-            var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(_organization.Id, packageCodeExit.PackageCode, _garageTransactionDto.AccurateTime.Value);
+            var packageDto = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(new GarageTransactionDto { OrganizationID = _garageTransactionDto.OrganizationID, PlateNumber = _garageTransactionDto.PlateNumber, TicketId = _garageTransactionDto.TicketId, AccurateTime = _garageTransactionDto.AccurateTime });
             var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization, input, packageDto);
             if(result)
             {
