@@ -70,6 +70,18 @@ public abstract class BasePDFGeneratorAppService<DTO>
             leftLogo = CreateImage(PathHelper.imageDirectoryPdf, HorizontalAlignment.LEFT, doc, 180);
 
         }
+
+        float leftW = leftLogo.GetImageWidth();
+        float rightW = rightLogo.GetImageWidth();
+
+        float targetW = Math.Max(leftW, rightW); // Force both to match the larger width
+
+        float leftScaleFactor = targetW / leftW;
+        float rightScaleFactor = targetW / rightW;
+
+        leftLogo.Scale(leftScaleFactor, leftScaleFactor);
+        rightLogo.Scale(rightScaleFactor, rightScaleFactor);
+
         table.AddCell(new Cell().Add(leftLogo)
             .SetBorder(Border.NO_BORDER)
             .SetVerticalAlignment(VerticalAlignment.MIDDLE)
