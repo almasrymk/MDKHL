@@ -23,7 +23,7 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task<string> FindEntranceImage(string? plateNumber, string ticketId,int OrganiztionId);
     Task<GarageTransactionDto> CheckIfCheckoutFromMobilePLate(string plateNumber);
     Task<GarageTransactionDto> CheckIfCheckoutFromMobileTicket(string ticketNumber);
-    Task<GarageTransaction> GetTransactionById(int garagetransactionId);
+    Task<GarageTransactionDto> GetTransactionById(int garagetransactionId);
     Task CloseEntryTransaction(string? plateNumber , string ticketId);
     Task CloseCheckoutMobileTransaction(string? plateNumber);
     Task UpdateEntryTransactionCheckouFromMobile(int entryGarageTransactionId);

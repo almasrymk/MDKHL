@@ -409,6 +409,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
                 .FirstOrDefaultAsync();
         return latestTransaction;
     }
+
 }
 
 
