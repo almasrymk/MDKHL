@@ -180,10 +180,6 @@ public class OtpAppService : ApplicationService, IOtpAppService
             await SendSms(phonenumber, "رمز التحقق لنظام مدخل الخاص بشركة رواد المدينة هو" + otp);
             // Update the user with OTP in the database
             await _userRepository.UpdateAsync(user);
-
-            // Update the user with OTP in the database
-            await _userRepository.UpdateAsync(user);
-
             return Result.Success(otp);
         }
     }
