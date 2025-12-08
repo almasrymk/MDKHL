@@ -8,5 +8,5 @@ namespace SmartParking.Repositories;
 
 public interface IGarageTransactionWorkerRepository
 {
-    Task UpdateTransactionsAsync(int GracePeriod);
+    Task UpdateTransactionsAsync(int GracePeriod, int organizationId);
 }

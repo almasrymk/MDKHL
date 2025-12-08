@@ -18,7 +18,7 @@ public class GarageTransactionWorkerRepository : EfCoreRepository<SmartParkingDb
     {
     }
 
-    public async Task UpdateTransactionsAsync(int GracePeriod)
+    public async Task UpdateTransactionsAsync(int GracePeriod,int organizationId)
     {
 
         var dbContext = await GetDbContextAsync();
@@ -26,7 +26,7 @@ public class GarageTransactionWorkerRepository : EfCoreRepository<SmartParkingDb
         var threeDaysAgo = now.AddDays(-3);
          await dbContext.GarageTransactions
          .Where(t => t.CheckoutMobile != null &&
-                     t.CreationTime >= threeDaysAgo)
+                     t.CreationTime >= threeDaysAgo && t.OrganizationID==organizationId)
          .ExecuteUpdateAsync(setters => setters
              .SetProperty(
                  t => t.RemainingTime,

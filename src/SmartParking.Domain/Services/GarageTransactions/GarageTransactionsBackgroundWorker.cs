@@ -56,7 +56,7 @@ public class GarageTransactionsBackgroundWorker : AsyncPeriodicBackgroundWorkerB
                     {
                         try
                         {
-                            await service.UpdateTransactionsAsync(organization.Graceperiod);
+                            await service.UpdateTransactionsAsync(organization.Graceperiod,organization.Id);
                             _logger.LogInformation("Successfully updated transactions for organization: {Name}",
                                 organization.EnglishName);
                         }
