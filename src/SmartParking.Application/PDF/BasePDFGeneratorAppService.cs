@@ -93,7 +93,7 @@ public abstract class BasePDFGeneratorAppService<DTO>
             _pdfSettings.fontSize = 25;
         }
         else {
-            _pdfSettings.fontSize = 18;
+            _pdfSettings.fontSize = 15;
         }
         try
         {
