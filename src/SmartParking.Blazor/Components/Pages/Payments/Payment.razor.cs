@@ -246,7 +246,7 @@ public partial class Payment
                 vatValue = item.CustomerPackage.Vat.ToString();
                 discountValue = item.CustomerPackage.Discount.ToString();
             }
-            else 
+            else if (item.Invoice is not null)
             {
                 amount = Math.Round(item.Invoice!.InvoicePrice,2).ToString();
                 discountValue = Math.Round(item.Invoice!.Discount,2).ToString();
@@ -258,6 +258,10 @@ public partial class Payment
                 vatValue = baseAmount > 0
                     ? Math.Round((baseAmount) * 0.15m, 2).ToString()
                     : "0.0";
+            }
+            else
+            {
+                amount = vatValue = discountValue = "0.0";
             }
             var IconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Amount"]}", $"{amount} {IconHtml}"));

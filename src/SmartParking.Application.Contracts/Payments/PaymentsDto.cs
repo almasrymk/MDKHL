@@ -36,7 +36,7 @@ public class PaymentDto
     public string OrganizationEnglishName { get; set; }
     public decimal AmountWithoutDiscount { get; set; }
     public Guid? TenantId { get; set; }
-    public Invoice Invoice { get; set; }
+    public Invoice? Invoice { get; set; }
 
     public string CashierName { get; set; }
     public bool IsSentZatca { get; set; } = false;

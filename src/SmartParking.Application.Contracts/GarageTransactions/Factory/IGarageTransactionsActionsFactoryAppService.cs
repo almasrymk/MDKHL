@@ -13,4 +13,10 @@ public interface IGarageTransactionsActionsFactoryAppService
     /// </summary>
     /// <param name="garageTransactionDto">entry transaction</param>
     Task UnMappingEntryTransactionForDeletedExit(GarageTransactionDto garageTransactionDto);
+    /// <summary>
+    /// method used to get if transaction mapped from mobile.
+    /// </summary>
+    /// <param name="garageTransactionDto">exit transaction</param>
+    /// <returns>boolean</returns>
+    Task<GarageTransactionDto> CheckIfCheckoutFromMobile(GarageTransactionDto garageTransactionDto);
 }
