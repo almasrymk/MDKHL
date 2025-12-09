@@ -8,6 +8,7 @@ using SmartParking.Cutomers;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Enums;
 using SmartParking.GarageTransactions;
+using SmartParking.GarageTransactions.Factory;
 using SmartParking.Invoices;
 using SmartParking.Organizations;
 using SmartParking.Results;
@@ -30,6 +31,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private readonly ICustomerPackageHandlerAppService _customerPackagesHandlerAppService;
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly ICalculationsEndPointsAppService _calculationsEndPointAppService;
+    private readonly IGarageTransactionsActionsFactoryAppService _garageTransactionActionsHandler;
     public GarageTransactionEndPointsAppService(
         IGarageTransactionsAppService garageTransactionsAppService,
         ILogger<GarageTransactionEndPointsAppService> logger,
@@ -37,7 +39,8 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         IInvoiceAppService invoiceAppService,
        ICalculationsEndPointsAppService calculationsEndPointAppService,
        IUnLinkedTransactionAppService unlinkedGarageTransactionsAppService,
-       IGarageTransactionUtilityAppService garageTransactionUtilityAppService)
+       IGarageTransactionUtilityAppService garageTransactionUtilityAppService,
+       IGarageTransactionsActionsFactoryAppService garageTransactionActionsHandler)
     {
         _garageTransactionsAppService = garageTransactionsAppService;
         _logger = logger;
@@ -46,6 +49,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         _calculationsEndPointAppService = calculationsEndPointAppService;
         _unlinkedGarageTransactionsAppService = unlinkedGarageTransactionsAppService;
         _garageTransactionUtilityAppService = garageTransactionUtilityAppService;
+        _garageTransactionActionsHandler = garageTransactionActionsHandler;
     }
     #region public methods web methods
     public async Task<bool> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)
@@ -186,9 +190,9 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         bool _categoryHasChanged = await GetCategory(exitTransaction, _entryTransaction);
         var _customer = _customerId is not null ? await _garageTransactionUtilityAppService.GetCustomer(Guid.Parse(_customerId)) : null;
         //Check if that transaction has been checked out before.
-        var CheckIfLoggedOutFromMobile = await IfLoggedOutFromMobile(exitTransaction.PlateNumber,exitTransaction.TicketId);
-        if (CheckIfLoggedOutFromMobile)
-            return await CheckoutFromMobileSequence(exitTransaction, organization, _entryTransaction, _categoryHasChanged, _customer);
+        var CheckedOutTransaction = await _garageTransactionActionsHandler.CheckIfCheckoutFromMobile(new GarageTransactionDto {PlateNumber=exitTransaction.PlateNumber , TicketId=exitTransaction.TicketId });
+        if (CheckedOutTransaction != null)
+            return await CheckoutFromMobileSequence(exitTransaction, organization, CheckedOutTransaction, _categoryHasChanged, _customer);
         //Check if doesn't pass organization free minutes.
         int _totalHours = _calculationsEndPointAppService.CalculateTime(_entryTransaction.AccurateTime.Value, exitTransaction.AccurateTime.Value, organization.FreeMinutes);
         if (_totalHours * 60 <= organization.FreeMinutes && organization.FreeMinutes != 0)
@@ -295,26 +299,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     }
     #endregion
     #region private methods to handle checkout from mobile
-    /// <summary>
-    /// Method used to detect if customer has checked out from mobile
-    /// </summary>
-    /// <param name="plateNumber">plate number of vehicle</param>
-    /// <returns>true if passed false if no</returns>
-    private async Task<bool> IfLoggedOutFromMobile(string plateNumber , string ticketId )
-    {
-        GarageTransactionDto _transaction;
-        if (!string.IsNullOrEmpty(ticketId))
-        {
-            _transaction = await _garageTransactionUtilityAppService.CheckIfCheckoutFromMobileTicket(ticketId);
-        }
-        else
-        {
-            _transaction = await _garageTransactionUtilityAppService.CheckIfCheckoutFromMobilePLate(plateNumber);
 
-        }
-        return _transaction != null ;
-
-    }
     /// <summary>
     /// Method used to handle flow of mobile checked out
     /// Method used check of grace defined in organization configuration 

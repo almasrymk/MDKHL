@@ -344,7 +344,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             {
                 throw new Exception (result.Errors.FirstOrDefault());
             }
-            return await CreateCheckoutPaymentAsync(new PaymentCheckoutRequestDto
+            var paymentResult = await CreateCheckoutPaymentAsync(new PaymentCheckoutRequestDto
             {
                 InvoiceId = payCustomerInvoiceDto.InvoiceId,
                 OrganizationId = result.Value.OrganizationId,
@@ -354,6 +354,9 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 TenantId=result.Value.TenantId.Value,
                 
             });
+            await UpdateInvoiceStatusAsync(payCustomerInvoiceDto.InvoiceId, paymentResult.PaymentNumber);
+            return paymentResult;
+
         }
     }
 

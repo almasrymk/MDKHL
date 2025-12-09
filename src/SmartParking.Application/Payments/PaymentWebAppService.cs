@@ -127,27 +127,28 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         {
             var query = await _paymentRepository.GetQueryableAsync();
             query = query.Where(pay => pay.TenantId == currentOrganization.TenantId);
-            var customerQuery = await _customerRepository.GetQueryableAsync();
+
+            var customerQuery = (await _customerRepository.GetQueryableAsync())
+                                .Include(x => x.IdentityUser);
+
             var organizationQuery = await _organizationRepository.GetQueryableAsync();
             var userQuery = await _myUserRepository.GetQueryableAsync();
             var customerPackageQuery = await _customerPackageRepository.GetQueryableAsync();
 
-            customerQuery = customerQuery.Include(x => x.IdentityUser);
-
-            var result =
-                from payment in query
+            var result =from payment in query
                 join organization in organizationQuery on payment.OrganizationId equals organization.Id
-                join user in userQuery on payment.CreatorId equals user.Id
-                join customer in customerQuery on payment.CustomerId equals customer.Id into customerList
+                join u in userQuery on payment.CreatorId equals u.Id into userList
+                from user in userList.DefaultIfEmpty()
+                join cust in customerQuery on payment.CustomerId equals cust.Id into customerList
                 from customer in customerList.DefaultIfEmpty()
-                join customerPackage in customerPackageQuery on payment.CustomerPackageId equals customerPackage.Id into packageList
+                join pkg in customerPackageQuery on payment.CustomerPackageId equals pkg.Id into packageList
                 from package in packageList.DefaultIfEmpty()
                 select new PaymentDto()
                 {
                     Amount = payment.Amount,
                     CheckoutId = payment.CheckoutId,
                     CreationTime = payment.CreationTime.ToString(),
-                    TicketId = payment!.Invoice!.TicketId,
+                    TicketId = payment!.Invoice !=null ? payment!.Invoice!.TicketId:null,
                     Currency = payment.Currency,
                     CustomerId = payment.CustomerId,
                     Id = payment.Id,
@@ -161,10 +162,12 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                     PaymentNumber = payment.PaymentNumber,
                     PlateNumber = payment.EnPlateNumber,
                     TenantId = payment.TenantId,
-                    Customers = customer,
+                    Customers = customer??null,
                     CustomerPackage = package ?? null,
                     Invoice = payment!.Invoice ?? null,
-                    CashierName = user.Name,
+                    CashierName =
+                    user != null ? user.Name :
+                    (customer != null && customer.IdentityUser != null ? customer.IdentityUser.Name : "System"),
                     StatusZatca = organization.StatusZatca,
                     IsSentZatca = payment.IsSentZatca,
                     ErrorMessagesZatca = payment.ErrorMessagesZatca
@@ -416,27 +419,27 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 
     private static IQueryable<PaymentDto> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<PaymentDto> queryable)
     {
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
-            queryable = queryable.Where(or =>
-                or.Amount.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.PaymentMethod.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.PaymentStatus.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.PaymentCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Currency.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Customers.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Customers.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Customers.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Invoice.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Invoice.Id.ToString().Contains(input.SearchingTerm) ||
-                or.CashierName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.CheckoutId!.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Invoice!.TicketId!.ToLower().Contains(input.SearchingTerm.ToLower())
-            );
-        }
-        return queryable;
+        if (string.IsNullOrWhiteSpace(input.SearchingTerm))
+            return queryable;
+
+        var term = input.SearchingTerm.ToLower();
+
+        return queryable.Where(or =>
+            or.Amount.ToString().Contains(term) ||
+            or.PaymentMethod.ToString().ToLower().Contains(term) ||
+            or.PaymentStatus.ToString().ToLower().Contains(term) ||
+            or.PaymentCategory.ToString().ToLower().Contains(term) ||
+            (or.Currency ?? "").ToLower().Contains(term) ||
+            (or.Customers.ArabicName ?? "").ToLower().Contains(term) ||
+            (or.Customers.IdentityUser.UserName ?? "").ToLower().Contains(term) ||
+            (or.Customers.IdentityUser.Name ?? "").ToLower().Contains(term) ||
+            or.Customers.CustomerCategory.ToString().ToLower().Contains(term) == true ||
+            (or.PaymentNumber ?? "").ToLower().Contains(term) ||
+            (or.Invoice.PlateNumber ?? "").ToLower().Contains(term) ||
+            or.Invoice.Id.ToString().Contains(term) == true ||
+            (or.CashierName ?? "").ToLower().Contains(term) ||
+            (or.CheckoutId ?? "").ToLower().Contains(term) ||
+            (or.Invoice.TicketId ?? "").ToLower().Contains(term));
     }
 
     private static IQueryable<PaymentDto> ApplySearchMdkhl(PagedAndSortedAndSearchResultRequestDto input, IQueryable<PaymentDto> queryable)

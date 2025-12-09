@@ -17,11 +17,20 @@ public class GarageTransactionsActionsFactoryAppService : IGarageTransactionsAct
         _services = services;
     }
 
+    public async Task<GarageTransactionDto> CheckIfCheckoutFromMobile(GarageTransactionDto garageTransactionDto)
+    {
+        var service = GetConsumerService(garageTransactionDto);
+        var result= await service.CheckIfCheckoutFromMobile(garageTransactionDto);
+        return result;
+
+    }
+
     public async Task UnMappingEntryTransactionForDeletedExit(GarageTransactionDto garageTransactionDto)
     {
         var service = GetConsumerService(garageTransactionDto);
         await service.UnMappingEntryTransactionForDeletedExit(garageTransactionDto);
     }
+
 
     private IGarageTransactionActionsAppService GetConsumerService(GarageTransactionDto garageTransactionDto)
     {
