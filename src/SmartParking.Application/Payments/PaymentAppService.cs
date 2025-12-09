@@ -348,7 +348,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             {
                 InvoiceId = payCustomerInvoiceDto.InvoiceId,
                 OrganizationId = result.Value.OrganizationId,
-                Amount= result.Value.InvoicePrice,
+                Amount= PaymentUtilityCalculationts.GetPriceForPayment(result.Value.InvoicePrice, result.Value.Discount),
                 PaymentCategory=PaymentCategory.PaymentParking,
                 PaymentMethod= payCustomerInvoiceDto.Method,
                 TenantId=result.Value.TenantId.Value,

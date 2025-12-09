@@ -639,6 +639,7 @@ public class CustomerPackagesAppService :
             ArPlateNumber = customerPackageDto.ArPlateNumber,
             EnPlateNumber = customerPackageDto.EnPlateNumber,
             TenantId = TenantId,
+           
         };
 
     }

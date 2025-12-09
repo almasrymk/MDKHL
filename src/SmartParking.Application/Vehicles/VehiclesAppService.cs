@@ -1,14 +1,13 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using SmartParking.Cutomers;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Validations;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -189,6 +188,19 @@ public class VehiclesAppService :
             numbers = plate;
         }
     }
+    public async Task<Guid?> GetCustomerRelatedToVehicle(string PlateNumber)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var vehicle = await _repository.FirstOrDefaultAsync(_ =>
+                _.ArPlateNumber == PlateNumber || _.EnPlateNumber == PlateNumber);
+            if (vehicle != null) {
+                return vehicle.CustomerId;
+            }
+            return null;
+        }
+
+    }
 
     #endregion
 
@@ -253,6 +265,8 @@ public class VehiclesAppService :
             input.PlateColorId = licenceType.PlateColorId;
         }
     }
+
+ 
 
     #endregion
 }
