@@ -67,4 +67,11 @@ public class PackagesController : ControllerBase
     {
        return await _customerPackagesApp.GetAsync(packageId);
     }
+
+    [HttpGet("paymentsbyorganization")]
+    [Authorize]
+    public async Task<Result<List<PaymentPackageDto>>> GetAllPaymentPackages([FromQuery]int organizationId)
+    {
+        return await _paymentAppService.GetAllCustomerPackgePaymentsAsync(organizationId);
+    }
 }
