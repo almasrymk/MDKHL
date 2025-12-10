@@ -360,6 +360,21 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         }
     }
 
+    public async Task<Result<List<PaymentPackageDto>>> GetAllCustomerPackgePaymentsAsync(int organizationId)
+    {
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var customer = await _customerRepo.GetQueryableAsync();
+            var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).SingleOrDefault();
+            var payments = await _repository.GetQueryableAsync();
+            var result =await payments.Where(p => p.OrganizationId == organizationId && p.CustomerId == customerId && p.CustomerPackageId != null)
+                .ToListAsync();
+                
+            var paymentPackageDtos = ObjectMapper.Map<List<Payment>, List<PaymentPackageDto>>(result);
+            return Result<List<PaymentPackageDto>>.Success(paymentPackageDtos, "Payments Retrieved Successfully");
+        }
+    }
+
     private async Task<Result<Invoice>> GetInvoiceByIdAsync(int invoiceId)
     {
         var invoice = await _invoiceRepo.FirstOrDefaultAsync(inv => inv.Id == invoiceId);
