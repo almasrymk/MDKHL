@@ -3,6 +3,7 @@ using SmartParking.Invoices;
 using SmartParking.Packages;
 using SmartParking.Results;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -24,5 +25,7 @@ public interface IPaymentAppService : ICrudAppService<PaymentDto, Guid, PagedAnd
     Task<Result<PaymentCheckoutDto>> PayCustomerInvoiceAsync(PayCustomerInvoiceDto payCustomerInvoiceDto);
 
     Task<bool> ResendZatca(Guid Id);
+
+    Task<Result<List<PaymentPackageDto>>> GetAllCustomerPackgePaymentsAsync(int organizationId);
 
 }
