@@ -3,8 +3,8 @@
 namespace SmartParking.Packages;
 
 public class PaymentPackageDto
-{ 
-
+{
+    public Guid PaymentId { get; set; }
     public string ArabicName { get; set; }
     public string EnglishName { get; set; }
     public string Description { get; set; }
