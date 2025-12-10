@@ -384,6 +384,30 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Discount, DiscountDto>();
         CreateMap<CreateUpdateDiscountDto, Discount>();
 
+        CreateMap<Payment, PaymentPackageDto>()
+        .ForMember(d => d.ArabicName, o => o.MapFrom(s => s.CustomerPackage.PackageArabicName))
+        .ForMember(d => d.EnglishName, o => o.MapFrom(s => s.CustomerPackage.PackageEnglishName))
+        .ForMember(d => d.Description, o => o.MapFrom(s => s.CustomerPackage.DescriptionOfPackage))
+        .ForMember(d => d.PaymentTime, o => o.MapFrom(s => s.CreationTime))
+        .ForMember(d => d.OrganizationArabicName, o => o.MapFrom(s => s.CustomerPackage.Organization.ArabicName))
+        .ForMember(d => d.OrganizationEnglishName, o => o.MapFrom(s => s.CustomerPackage.Organization.EnglishName))
+        .ForMember(d => d.OrganizationAddress, o => o.MapFrom(s => s.CustomerPackage.Organization.Address))
+        .ForMember(d => d.CustomerArabicName, o => o.MapFrom(s => s.Customers.ArabicName))
+        .ForMember(d => d.CustomerEnglishName, o => o.MapFrom(s => s.Customers.IdentityUser.Name))
+        .ForMember(d => d.ArPlateNumber, o => o.MapFrom(s => s.ArPlateNumber))
+        .ForMember(d => d.EnPlateNumber, o => o.MapFrom(s => s.EnPlateNumber))
+        .ForMember(d => d.ExpiryDateOfPackage, o => o.MapFrom(s => DateOnly.FromDateTime(s.CustomerPackage.ExpiryDate)))
+        .ForMember(d => d.ExpiryTimeOfPackage, o => o.MapFrom(s => TimeOnly.FromDateTime(s.CustomerPackage.ExpiryDate)))
+        .ForMember(d => d.ActivationDate, o => o.MapFrom(s => DateOnly.FromDateTime(s.CustomerPackage.ActivationDateOfPackage.Value)))
+        .ForMember(d => d.ActivationTime, o => o.MapFrom(s => TimeOnly.FromDateTime(s.CustomerPackage.ActivationDateOfPackage.Value)))
+        .ForMember(d => d.PackageCode, o => o.MapFrom(s => s.CustomerPackage.PackageCode))
+        .ForMember(d => d.QRCodePath, o => o.MapFrom(s => s.QrCodeInvoice))
+        .ForMember(d => d.TotalAmount, o => o.MapFrom(s => s.Amount))
+        .ForMember(d => d.Price, o => o.MapFrom(s => s.CustomerPackage.PriceOfPackage))
+        .ForMember(d => d.Discount, o => o.MapFrom(s => s.CustomerPackage.Discount))
+        .ForMember(d => d.Vat, o => o.MapFrom(s => s.CustomerPackage.Vat));
+
+
     }
 
 }
