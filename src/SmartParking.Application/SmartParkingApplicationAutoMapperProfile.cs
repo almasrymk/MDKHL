@@ -57,6 +57,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Volo.Abp.Identity;
+using Volo.Abp.ObjectMapping;
 
 namespace SmartParking;
 
@@ -405,7 +406,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         .ForMember(d => d.TotalAmount, o => o.MapFrom(s => s.Amount))
         .ForMember(d => d.Price, o => o.MapFrom(s => s.CustomerPackage.PriceOfPackage))
         .ForMember(d => d.Discount, o => o.MapFrom(s => s.CustomerPackage.Discount))
-        .ForMember(d => d.Vat, o => o.MapFrom(s => s.CustomerPackage.Vat));
+        .ForMember(d => d.Vat, o => o.MapFrom(s => s.CustomerPackage.Vat))
+        .ForMember(d => d.PaymentId, o => o.MapFrom(s => s.Id));
 
 
     }
