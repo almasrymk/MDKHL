@@ -7,6 +7,7 @@ using SmartParking.Entities.Analysis;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Discounts;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Payments;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Payments;
@@ -1127,6 +1128,55 @@ public static class CreateTableHelper
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Day"), payment.Day));
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Month"), payment.Month));
 
+            tableData.Rows.Add(rowDef);
+        }
+        await Task.Yield();
+        return tableData;
+    }
+
+    public static async Task<TableData> CreateDataTableForTransactions(List<CancelGarageTransactionAnalysis> transactions)
+    {
+        var tableData = new TableData()
+        {
+            Name = LocalizationHelper.GetLocalizedString("CancelGarageTransactionAnalysis"),
+            ShowHeader = true
+        };
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CashierName"), Name = "CashierName", IsFilterable = true, PropertyName = "CashierName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Shift"), Name = "Shift", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "ShiftArabicName", IsFilterable = true });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerName"), Name = "CustomerName", IsFilterable = true, PropertyName = "CustomerNameAr", IsSortable = true, TypeFilter = TypeFilter.Text });
+        }
+        else
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Shift"), Name = "Shift", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "ShiftEnglishName", IsFilterable = true });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CustomerName"), Name = "CustomerName", IsFilterable = true, PropertyName = "CustomerNameEn", IsSortable = true, TypeFilter = TypeFilter.Text });
+        }
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Date"), Name = "Date", TypeFilter = TypeFilter.DateOnly, IsSortable = true, PropertyName = "TransactionDate", IsFilterable = true, TypeOfColumn = typeof(DateOnly) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Time"), Name = "Time", TypeFilter = TypeFilter.Time, IsSortable = true, PropertyName = "TransactionTime", IsFilterable = true, TypeOfColumn = typeof(TimeOnly) });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PlateNumber"), Name = "PlateNumber", IsFilterable = true, PropertyName = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Price"), Name = "Price", IsFilterable = true, PropertyName = "Price", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("Duration"), Name = "Duration", IsFilterable = true, PropertyName = "Duration", IsSortable = true, TypeFilter = TypeFilter.Number });
+        
+        foreach (var transaction in transactions)
+        {
+            var rowDef = new RowDef();
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CashierName"), transaction.CashierName));
+            if (CultureInfo.CurrentCulture.Name == "ar")
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Shift"), transaction.ShiftArabicName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), transaction.CustomerNameAr ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Shift"), transaction.ShiftEnglishName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CustomerName"), transaction.CustomerNameEn ?? LocalizationHelper.GetLocalizedString("NotCustomer")));
+            }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Date"), transaction.TransactionDate.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Time"), transaction.TransactionTime.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PlateNumber"), transaction.PlateNumber));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Price"), transaction.Price.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Duration"), transaction.Duration.ToString()));
             tableData.Rows.Add(rowDef);
         }
         await Task.Yield();

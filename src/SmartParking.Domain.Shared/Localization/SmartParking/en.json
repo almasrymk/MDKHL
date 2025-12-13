@@ -870,7 +870,7 @@
     "GateName": "Gate Name",
     "Gate": "Gate",
     "Permission:AllowFreeOpenGate": "Allow free open gate",
-    "Multiple": "Multiple"
-
+    "Multiple": "Multiple",
+    "CancelGarageTransactionReport": "Cancelled Transactions"
   }
 }

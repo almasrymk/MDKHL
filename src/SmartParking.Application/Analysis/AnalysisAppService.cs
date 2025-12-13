@@ -1216,4 +1216,18 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         }
        
     }
+    public async Task<PagedResultDto<CancelGarageTransactionAnalysis>> ReportCanceledGarageTransactionsAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
+    {
+        using (_datafilter.Disable<IMultiTenant>())
+        {
+            var filterExpression = BuildExpression<CancelGarageTransactionAnalysis>.BuildFilterExpression(input.filters);
+            var result = await _garageTransactionAnalysis.GetCanceledGarageTransactionsAnalysisReportAsync(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
+
+            return new PagedResultDto<CancelGarageTransactionAnalysis>
+            {
+                TotalCount = result.Count(),
+                Items = result.Skip(input.SkipCount).Take(input.MaxResultCount).ToList(),
+            };
+        }
+    }
 }

@@ -900,7 +900,8 @@
     "GateName": "اسم البوابه",
     "Gate": "البوابه",
     "Permission:AllowFreeOpenGate": "السماح بفتح البوابة الحر",
-    "Multiple": "متعدد"
+    "Multiple": "متعدد",
+    "CancelGarageTransactionReport": "الحركات الملغاة"
   }
 
 }

@@ -274,4 +274,11 @@ public interface IAnalysisAppService : IApplicationService
     /// <returns>A task that represents the asynchronous operation, containing the <see cref="PagedResultDto{CustomerAnalysis}"/> result.</returns>
     Task<PagedResultDto<CustomerAnalysis>> ReportBeneficiariesDetailsAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
 
+    /// <summary>
+    /// Asynchronously retrieves a paged list of canceled garage transaction analyses, optionally filtered by tenant.
+    /// </summary>
+    /// <param name="input">The paging, sorting, and filtering criteria to apply when retrieving canceled garage transactions.</param>
+    /// <param name="tenantId">The unique identifier of the tenant to filter results by. If null, results are not filtered by tenant.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a paged list of canceled garage transaction analyses matching the specified criteria.</returns>
+    Task<PagedResultDto<CancelGarageTransactionAnalysis>> ReportCanceledGarageTransactionsAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
 }

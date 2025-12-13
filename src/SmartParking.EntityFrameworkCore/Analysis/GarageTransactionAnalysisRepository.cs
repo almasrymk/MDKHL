@@ -4,6 +4,7 @@ using SmartParking.Entities;
 using SmartParking.Entities.Analysis;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
+using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Vehicles;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Enums;
@@ -16,6 +17,7 @@ using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -347,6 +349,51 @@ public class GarageTransactionAnalysisRepository
        
     }
 
-    
-   
+    public async Task<List<CancelGarageTransactionAnalysis>> GetCanceledGarageTransactionsAnalysisReportAsync(Guid? tenantId, int skipCount, int maxResultCount, string sorting, Expression<Func<CancelGarageTransactionAnalysis, bool>> filterRequests)
+    {
+        using (_dataFilter.Disable<ISoftDelete>())
+        {
+            var dbContext = await GetDbContextAsync();
+            var query =
+                    from garageTransaction in dbContext.GarageTransactions
+                    where garageTransaction.IsDeleted == true
+                          && (tenantId == null || garageTransaction.TenantId == tenantId)
+                    join invoice in dbContext.Invoices
+                        on garageTransaction.Id equals invoice.GarageTransactionExitId
+                    join user in dbContext.Users
+                        on garageTransaction.DeleterId equals user.Id
+                    join shift in dbContext.Shifts
+                        on 1 equals 1 into shiftJoin
+                                from shift in shiftJoin
+                                    .Where(s =>
+                                        s.StartDate <= DateOnly.FromDateTime(garageTransaction.DeletionTime!.Value) &&
+                                        s.EndDate >= DateOnly.FromDateTime(garageTransaction.DeletionTime.Value) &&
+                                        s.StartTime <= TimeOnly.FromDateTime(garageTransaction.DeletionTime.Value) &&
+                                        s.EndTime >= TimeOnly.FromDateTime(garageTransaction.DeletionTime.Value))
+                                    .DefaultIfEmpty()
+                    select new CancelGarageTransactionAnalysis
+                    {
+                        CashierName = user.Name,
+
+                        CustomerNameAr = invoice.CustomerArName,
+                        CustomerNameEn = invoice.CustomerEnName,
+
+                        ShiftArabicName = shift.ArabicName,
+                        ShiftEnglishName = shift.EnglishName,
+
+                        TransactionTime = TimeOnly.FromDateTime(garageTransaction.AccurateTime!.Value),
+                        TransactionDate = DateOnly.FromDateTime(garageTransaction.AccurateTime!.Value),
+
+                        PlateNumber = garageTransaction.PlateNumber,
+                        Duration = invoice.TotalHours,
+                        Price = invoice.InvoicePrice
+                    };
+            query = query.Where(filterRequests);
+            query = query.OrderBy(sorting);
+            var total = query.Count();
+            //query = query.Skip(skipCount).Take(maxResultCount);
+            return await query.ToListAsync() ;
+        }
+
+    }
 }
