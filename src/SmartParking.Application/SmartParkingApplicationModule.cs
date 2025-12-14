@@ -48,7 +48,7 @@ public class SmartParkingApplicationModule : AbpModule
         context.Services.AddTransient<IDispenserEndPointsAppService, DispenserEndPointsAppService>();
         context.Services.AddSingleton<KeeperShiftSingletonService>();
         context.Services.AddSingleton<IWebSocketConnectionManager, WebSocketConnectionManager>();
-        context.Services.AddScoped<IHandlerService, HandlerService>();
+        context.Services.AddSingleton<IHandlerService, HandlerService>();
         context.Services.AddScoped<ILocalizationFactoryAppService, InvoiceLocalizationAppService>();
         context.Services.AddScoped<InvoicePDFAppService>();
         context.Services.AddScoped<PackagePDFAppService>();
