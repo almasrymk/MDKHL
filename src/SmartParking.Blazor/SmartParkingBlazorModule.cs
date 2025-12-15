@@ -27,6 +27,7 @@ using SmartParking.OpenGate;
 using SmartParking.OpeningGate;
 using SmartParking.PDF;
 using SmartParking.Results;
+using SmartParking.WebSockets;
 using StackExchange.Profiling;
 using System.Globalization;
 using System.Text;
