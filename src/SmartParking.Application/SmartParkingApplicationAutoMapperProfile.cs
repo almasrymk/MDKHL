@@ -407,7 +407,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         .ForMember(d => d.Price, o => o.MapFrom(s => s.CustomerPackage.PriceOfPackage))
         .ForMember(d => d.Discount, o => o.MapFrom(s => s.CustomerPackage.Discount))
         .ForMember(d => d.Vat, o => o.MapFrom(s => s.CustomerPackage.Vat))
-        .ForMember(d => d.PaymentId, o => o.MapFrom(s => s.Id));
+        .ForMember(d => d.PaymentId, o => o.MapFrom(s => s.Id))
+        .ForMember(d => d.PaymentNumber, o => o.MapFrom(s => s.PaymentNumber));
 
 
     }

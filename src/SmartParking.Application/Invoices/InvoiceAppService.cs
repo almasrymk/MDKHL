@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using QRCoder;
+using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
@@ -34,8 +35,9 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     private readonly IQRCodeAppService _qrCodeAppService;
     private readonly IInvoiceUtilityAppService _invoiceUtility;
     private readonly IRepository<Payment, Guid> _paymentRepository;
+    private readonly IRepository<GarageTransaction, int> _garageTransactionRepository;
 
-    public InvoiceAppService(IRepository<Invoice, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationsRepository, IInvoiceUtilityAppService invoiceUtility, IRepository<Payment, Guid> paymentRepository, IQRCodeAppService qrCodeAppService)
+    public InvoiceAppService(IRepository<Invoice, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationsRepository, IInvoiceUtilityAppService invoiceUtility, IRepository<Payment, Guid> paymentRepository, IQRCodeAppService qrCodeAppService, IRepository<GarageTransaction, int> garageTransactionRepository)
     : base(repository)
     {
         _dataFilter = dataFilter;
@@ -44,6 +46,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         _invoiceUtility = invoiceUtility;
         _paymentRepository = paymentRepository;
         _qrCodeAppService = qrCodeAppService;
+        _garageTransactionRepository = garageTransactionRepository;
     }
     #region public methods 
     /// <inheritdoc/>
@@ -365,8 +368,35 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     public async Task<InvoiceDto?> GetLatestInvoiceForOrganization()
     {
         var query = await _invoiceRepository.GetQueryableAsync();
-        query = query.Where(x => x.InvoiceType == InvoiceType.UnPaid && x.InvoicePrice > 0);
+        query = query.Where(x => x.InvoiceType == InvoiceType.UnPaid
+        && x.InvoicePrice > 0);
+
         query = query.OrderByDescending(x => x.CreationTime);
+
+
+        var invoice = await query.FirstOrDefaultAsync();
+        if (invoice == null)
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("VehicleNotFoundAtGate"));
+        }
+        return ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
+    }
+
+    public async Task<InvoiceDto?> GetLatestInvoiceForOrganizationByWatcher(int watcherId)
+    {
+        var invoiceQuery = await _invoiceRepository.GetQueryableAsync();
+        var garageTransactionQuery = await _garageTransactionRepository.GetQueryableAsync();
+
+        var query =
+            from Invoice in invoiceQuery
+            join gt in garageTransactionQuery
+                on Invoice.GarageTransactionExitId equals gt.Id
+            where Invoice.InvoiceType == InvoiceType.UnPaid
+                  && Invoice.InvoicePrice > 0
+                  && (gt.CameraId == watcherId || gt.DispenserId == watcherId)
+            orderby Invoice.CreationTime descending
+            select Invoice;
+
         var invoice = await query.FirstOrDefaultAsync();
         if (invoice == null)
         {
@@ -408,6 +438,12 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
                 throw new Exception(result);
             }
         }
+    }
+
+    public async Task QrCodeForInvoicePage()
+    {
+        string qrText = " ";
+        _qrCodeAppService.CreateQRCOdeImageAsync(qrText);
     }
     #endregion
     #region private methods

@@ -5,6 +5,7 @@ namespace SmartParking.Packages;
 public class PaymentPackageDto
 {
     public Guid PaymentId { get; set; }
+    public string PaymentNumber { get; set; }
     public string ArabicName { get; set; }
     public string EnglishName { get; set; }
     public string Description { get; set; }
@@ -26,6 +27,5 @@ public class PaymentPackageDto
     public decimal Price { get; set; }
     public decimal Discount { get; set; }
     public decimal Vat { get; set; }
-
 
 }

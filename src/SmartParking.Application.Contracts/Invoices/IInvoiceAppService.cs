@@ -104,6 +104,12 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     Task<InvoiceDto?> GetLatestInvoiceForOrganization();
 
     /// <summary>
+    /// Asynchronously retrieves the latest invoice for an organization by the WatcherId.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation, containing the latest <see cref="InvoiceDto"/> for the organization, or <c>null</c> if no invoices exist.</returns>
+    Task<InvoiceDto?> GetLatestInvoiceForOrganizationByWatcher(int watcherId);
+
+    /// <summary>
     /// Asynchronously updates the discount for a specified invoice.
     /// </summary>
     /// <param name="invoiceId">The identifier of the invoice to update the discount for.</param>
