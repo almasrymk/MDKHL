@@ -1,6 +1,7 @@
 ﻿using Castle.Core.Resource;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Customers;
@@ -43,6 +44,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     private readonly HttpClient _httpClient;
     private readonly IInvoiceUtilityAppService _invoiceUtility;
     private readonly IZatcaTaxInvoiceAppService _zatcaTaxInvoiceAppService;
+    private readonly IOptions<PaymentAppService> _options;
     private const string EntityId = "8ac7a4ca9244f53c01924741733e0327";
     private const string Currency = "SAR";
     private const string PaymentType = "DB";
@@ -64,7 +66,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         IOrganizationsAppService _organizationsAppService,
         HttpClient httpClient,
         IInvoiceUtilityAppService invoiceUtility,
-         IZatcaTaxInvoiceAppService zatcaTaxInvoiceAppService)
+         IZatcaTaxInvoiceAppService zatcaTaxInvoiceAppService,
+         IOptions<PaymentAppService> options)
     : base(repository)
     {
 
@@ -78,6 +81,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         _httpClient = httpClient;
         _invoiceUtility = invoiceUtility;
         _zatcaTaxInvoiceAppService = zatcaTaxInvoiceAppService;
+        _options = options;
     }
 
 
@@ -287,6 +291,10 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 return Result.Success(new PaymentPackageDto());
             var packagedto = new PaymentPackageDto()
             {
+                PaymentId = PayemntId,
+                ExpiryDateOfPackage = DateOnly.FromDateTime(payement.CustomerPackage.ExpiryDate),
+                ExpiryTimeOfPackage = TimeOnly.FromDateTime(payement.CustomerPackage.ExpiryDate),
+                PaymentNumber = payement.PaymentNumber,
                 OrganizationAddress = payement.CustomerPackage!.Organization.Address,
                 OrganizationArabicName = payement.CustomerPackage!.Organization.ArabicName,
                 OrganizationEnglishName = payement.CustomerPackage!.Organization.EnglishName,
@@ -469,7 +477,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     private async Task<string> HyperPayPayment(PaymentCheckoutRequestDto paymentCheckoutRequest, string entityId)
     {
         var content = new StringContent(
-          $"entityId={entityId}&amount={paymentCheckoutRequest.Amount}&currency={Currency}&paymentType={PaymentType}",
+          $"entityId={entityId}&amount={paymentCheckoutRequest.Amount}&currency={Currency}&testMode=EXTERNAL&paymentType={PaymentType}",
           Encoding.ASCII,
           "application/x-www-form-urlencoded"
       );
