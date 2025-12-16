@@ -1,0 +1,37 @@
+﻿<MudCard Elevation="3">
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">Payment Method</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudRadioGroup @bind-Value="SelectedPaymentMethod" >
+            
+            <MudGrid Justify="Justify.SpaceBetween"  Class="pa-2 my-1" Style="@(SelectedPaymentMethod == "Mada" ? "border: 2px solid var(--mud-palette-primary); border-radius: 4px;" : "border: 1px solid #ddd; border-radius: 4px;")">
+                <MudItem xs="8">
+                    <MudRadio T="string" Value="@("Mada")" Color="MudBlazor.Color.Primary" Dense="true">Mada Card</MudRadio>
+                </MudItem>
+                <MudItem xs="4" Class="text-right">
+                    <MudImage Src="images/mada.png" Alt="Mada Logo" Width="50" /> 
+                </MudItem>
+            </MudGrid>
+
+            <MudGrid Justify="Justify.SpaceBetween"  Class="pa-2 my-1" Style="@(SelectedPaymentMethod == "ApplePay" ? "border: 2px solid var(--mud-palette-primary); border-radius: 4px;" : "border: 1px solid #ddd; border-radius: 4px;")">
+                <MudItem xs="8">
+                    <MudRadio T="string" Value="@("ApplePay")" Color="MudBlazor.Color.Primary" Dense="true">Apple Pay</MudRadio>
+                </MudItem>
+                <MudItem xs="4" Class="text-right">
+                    <MudImage Src="images/applepay.png" Alt="Apple Pay Logo" Width="40" />
+                </MudItem>
+            </MudGrid>
+
+        </MudRadioGroup>
+        
+        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Size="MudBlazor.Size.Large" FullWidth="true" Class="mt-4">
+            Checkout
+        </MudButton>
+        
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public string SelectedPaymentMethod { get; set; } = "Mada";
+}

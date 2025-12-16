@@ -1,0 +1,39 @@
+﻿<MudPaper Class="d-flex flex-column justify-center pa-4 custom-card" Elevation="0">
+
+    <MudText Typo="Typo.body1" Class="mb-3 text-start w-100">
+        @TopText
+    </MudText>
+
+    <MudButton Variant="Variant.Filled"
+               Color="MudBlazor.Color.Primary"
+               FullWidth="true"
+               Class="mb-2 w-75 mx-auto"
+               OnClick="@Button1Action">
+        @Button1Text
+    </MudButton>
+
+    <MudButton Variant="Variant.Text"
+               Class="custom-button w-75 mx-auto"
+               OnClick="@Button2Action">
+        @Button2Text
+    </MudButton>
+
+</MudPaper>
+
+
+@code {
+    [Parameter] public string TopText { get; set; } = "Share Invoice";
+
+    [Parameter] public string Button1Text { get; set; } = "Send to Email";
+    [Parameter] public EventCallback Button1Action { get; set; }
+
+    [Parameter] public string Button2Text { get; set; } = "Send to WhatsApp";
+    [Parameter] public EventCallback Button2Action { get; set; }
+}
+<style>
+    .custom-button {
+        border: 0.8px solid #B9F8CF;
+        background-color: #F0FDF4;
+    }
+
+</style>

@@ -1,0 +1,129 @@
+﻿<MudPaper Class="pa-4 custom-card" Elevation="0">
+
+    <MudText Class="mb-2" Typo="Typo.h6">@Title</MudText>
+
+    <MudGrid Spacing="3" Class="mb-3">
+
+        <MudItem xs="12" sm="6">
+            <div class="info-row">
+                <div class="icon-box left-icon">
+                    <MudIcon Icon="@LeftIcon" />
+                </div>
+                <div>
+                    <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">
+                        @LeftTitle
+                    </MudText>
+                    <MudText Typo="Typo.body1" >
+                        @LeftSubtitle
+                    </MudText>
+                </div>
+            </div>
+        </MudItem>
+
+        <!-- Right Info -->
+        <MudItem xs="12" sm="6">
+            <div class="info-row">
+                <div class="icon-box right-icon">
+                    <MudIcon Icon="@RightIcon" />
+                </div>
+                <div>
+                    <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">
+                        @RightTitle
+                    </MudText>
+                    <MudText Typo="Typo.body1">
+                        @RightSubtitle
+                    </MudText>
+                </div>
+            </div>
+        </MudItem>
+
+    </MudGrid>
+
+    <!-- Divider -->
+    <MudDivider Class="my-3" />
+
+    <!-- Bottom Row -->
+    <MudGrid Spacing="3">
+
+        <!-- Left Texts -->
+        <MudItem xs="12" sm="6">
+            <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">
+                @BottomLeftText1
+            </MudText>
+            <MudText Typo="Typo.body1">
+                @BottomLeftText2
+            </MudText>
+        </MudItem>
+
+        <!-- Bottom Icon (NOW SAME BEHAVIOR) -->
+        <MudItem xs="12" sm="6">
+            <div class="info-row">
+                <div class="icon-box bottom-icon">
+                    <MudIcon Icon="@BottomIcon" />
+                </div>
+                <div>
+                    <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">
+                        @BottomIconText1
+                    </MudText>
+                    <MudText Typo="Typo.body1">
+                        @BottomIconText2
+                    </MudText>
+                </div>
+            </div>
+        </MudItem>
+
+    </MudGrid>
+
+</MudPaper>
+
+
+    @code {
+        [Parameter] public string Title { get; set; } = "Payment Summary";
+
+    [Parameter] public string LeftIcon { get; set; } =Icons.Material.Filled.CalendarToday;
+    [Parameter] public string LeftTitle { get; set; } = "Entry Date";
+    [Parameter] public string LeftSubtitle { get; set; } = "December 15, 2024 - 09:30 AM";
+
+    [Parameter] public string RightIcon { get; set; } = @Icons.Material.Filled.CalendarToday;
+    [Parameter] public string RightTitle { get; set; } = "Checkout Date";
+    [Parameter] public string RightSubtitle { get; set; } = "December 15, 2024 - 12:55 PM";
+
+    [Parameter] public string BottomLeftText1 { get; set; } = "Item Type";
+    [Parameter] public string BottomLeftText2 { get; set; } = "Hour";
+
+    [Parameter] public string BottomIcon { get; set; } =Icons.Material.Filled.AccessTime;
+    [Parameter] public string BottomIconText1 { get; set; } = "Duration";
+        [Parameter] public string BottomIconText2 { get; set; } = "3 Hours";
+    }
+    <style>
+    .info-row {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .icon-box {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+    }
+
+    .left-icon {
+        background-color: #DCFCE7; 
+        color: #00A63E;
+    }
+
+    .right-icon {
+        background-color: #FFE2E2;
+        color: #E7000B;
+    }
+
+    .bottom-icon {
+        background-color: #DBEAFE;
+        color: #155DFC;
+    }
+
+    </style>

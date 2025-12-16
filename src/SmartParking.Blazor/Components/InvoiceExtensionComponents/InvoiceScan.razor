@@ -1,0 +1,17 @@
+﻿<MudPaper Elevation="0" Class="pa-2 custom-card">
+    <MudGrid>
+        <MudItem xs="12" sm="10">
+            <MudTextField T="string" Placeholder="Search plate number"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          FullWidth="true"
+                          Variant="Variant.Outlined" />
+        </MudItem>
+
+        <MudItem xs="12" sm="2" Class="mt-1">
+            <MudButton StartIcon="@Icons.Material.Filled.QrCodeScanner" Variant="Variant.Filled" Color="MudBlazor.Color.Secondary" FullWidth="true">
+                Scan
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
