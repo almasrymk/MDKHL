@@ -2,36 +2,38 @@
     <MudCardHeader>
         <MudText Typo="Typo.h6">Payment Summary</MudText>
     </MudCardHeader>
+
     <MudCardContent>
         <MudGrid>
             <MudItem xs="12" Class="d-flex justify-space-between">
-                <MudText Typo="Typo.body1">Amount</MudText>
-                <MudText Typo="Typo.body1">@Amount.ToString("F2") SAR</MudText>
+                <MudText>Amount</MudText>
+                <MudText>@Amount.ToString("F2") SAR</MudText>
             </MudItem>
 
             <MudItem xs="12" Class="d-flex justify-space-between">
-                <MudText Typo="Typo.body1">VAT (@VATRate%)</MudText>
-                <MudText Typo="Typo.body1">@VATAmount.ToString("F2") SAR</MudText>
+                <MudText>VAT (@VATRate%)</MudText>
+                <MudText>@VATAmount.ToString("F2") SAR</MudText>
             </MudItem>
 
             <MudDivider Class="my-1" />
 
             <MudItem xs="12" Class="d-flex justify-space-between">
-                <MudText Typo="Typo.body1">Total</MudText>
-                <MudText Typo="Typo.body1">@TotalAmount.ToString("F2") SAR</MudText>
+                <MudText>Total</MudText>
+                <MudText>@TotalAmount.ToString("F2") SAR</MudText>
             </MudItem>
         </MudGrid>
 
         <MudDivider Class="my-3" />
 
         <MudText Typo="Typo.h6">Payment Method</MudText>
-        <MudRadioGroup @bind-Value="SelectedPaymentMethod">
-            <MudPaper Class="@PaymentClass("Mada")" Elevation="0">
+
+        <MudRadioGroup T="string"
+                       Value="SelectedPaymentMethod"
+                       ValueChanged="OnPaymentChanged">
+            <MudPaper Class="@PaymentClass("Mada")">
                 <MudGrid Justify="Justify.SpaceBetween" Class="pa-2">
                     <MudItem xs="8">
-                        <MudRadio T="string" Value="@("Mada")" Dense="true">
-                            Mada Card
-                        </MudRadio>
+                        <MudRadio Value="@("Mada")">Mada Card</MudRadio>
                     </MudItem>
                     <MudItem xs="4" Class="text-right">
                         <MudImage Src="images/mada.png" Width="50" />
@@ -39,12 +41,10 @@
                 </MudGrid>
             </MudPaper>
 
-            <MudPaper Class="@PaymentClass("ApplePay")" Elevation="0">
+            <MudPaper Class="@PaymentClass("ApplePay")">
                 <MudGrid Justify="Justify.SpaceBetween" Class="pa-2">
                     <MudItem xs="8">
-                        <MudRadio T="string" Value="@("ApplePay")" Dense="true">
-                            Apple Pay
-                        </MudRadio>
+                        <MudRadio Value="@("ApplePay")">Apple Pay</MudRadio>
                     </MudItem>
                     <MudItem xs="4" Class="text-right">
                         <MudImage Src="images/applepay.png" Width="40" />
@@ -53,7 +53,11 @@
             </MudPaper>
         </MudRadioGroup>
 
-        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Size="MudBlazor.Size.Large" FullWidth="true" Class="mt-4">
+        <MudButton FullWidth
+                   Color="MudBlazor.Color.Primary"
+                   Size="MudBlazor.Size.Large"
+                   Class="mt-4"
+                   OnClick="OnCheckout">
             Checkout
         </MudButton>
     </MudCardContent>
@@ -64,9 +68,19 @@
     [Parameter] public int VATRate { get; set; }
     [Parameter] public double VATAmount { get; set; }
     [Parameter] public double TotalAmount { get; set; }
-    [Parameter] public string SelectedPaymentMethod { get; set; } = "Mada";
+    [Parameter] public string SelectedPaymentMethod { get; set; }
+    [Parameter] public EventCallback<string> SelectedPaymentMethodChanged { get; set; }
+    [Parameter] public EventCallback OnCheckout { get; set; }
+
+    private async Task OnPaymentChanged(string value)
+    {
+        SelectedPaymentMethod = value;
+        await SelectedPaymentMethodChanged.InvokeAsync(value);
+    }
+
     private string PaymentClass(string method)
-       => $"payment-option {(SelectedPaymentMethod == method ? "payment-option--selected" : "")}";
+        => $"payment-option {(SelectedPaymentMethod == method ? "payment-option--selected" : "")}";
+
 }
 <style>
     .payment-option {

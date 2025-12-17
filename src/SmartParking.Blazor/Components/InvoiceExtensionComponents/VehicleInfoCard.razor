@@ -31,7 +31,7 @@
                 <MudText Typo="Typo.caption">@CountryName</MudText>
             </div>
 
-            <div class="d-flex flex-column align-center text-center"
+            @* <div class="d-flex flex-column align-center text-center"
                  style="min-width: 50px;">
                 <div style="
                     background-color:@LogoBgColor;
@@ -45,7 +45,7 @@
                     <MudImage Src="@BrandLogoUrl" Alt="Logo" Style="max-width:80%; max-height:80%; object-fit:contain;" />
                 </div>
                 <MudText Typo="Typo.caption">@BrandName</MudText>
-            </div>
+            </div> *@
 
         </div>
     </MudCardContent>
@@ -55,9 +55,9 @@
     [Parameter] public string PlateText { get; set; } = "XYZ 999";
     [Parameter] public string PlateCountry { get; set; } = "KSA";
     [Parameter] public string FlagBgColor { get; set; } = "linear-gradient(135deg, #00A63E 0%, #008236 100%)";
-    [Parameter] public string LogoBgColor { get; set; } = "#5C5C5C33";
+    // [Parameter] public string LogoBgColor { get; set; } = "#5C5C5C33";
     [Parameter] public string CountryFlagUrl { get; set; }
-    [Parameter] public string BrandLogoUrl { get; set; }
-    [Parameter] public string BrandName { get; set; }
+    // [Parameter] public string BrandLogoUrl { get; set; }
+    // [Parameter] public string BrandName { get; set; }
     [Parameter] public string CountryName { get; set; } = "Saudi Arabia";
 }
