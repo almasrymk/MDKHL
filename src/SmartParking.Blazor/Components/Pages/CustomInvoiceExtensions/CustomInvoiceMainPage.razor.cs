@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
+using SmartParking.Enums;
+using SmartParking.Payments;
 
 namespace SmartParking.Blazor.Components.Pages.CustomInvoiceExtensions
 {
@@ -18,39 +20,60 @@ namespace SmartParking.Blazor.Components.Pages.CustomInvoiceExtensions
         public string PlateNumber { get; set; }
         public double InvoiceAmount { get; set; }
         public int VatRate { get; set; }
-        private string PaymentMethod { get; set; } = "Mada";
+        private string paymentMethod { get; set; } = "Mada";
 
         protected override async Task OnInitializedAsync()
         {
-            var invoice = await invoiceAppService
+            try
+            {
+                var invoice = await invoiceAppService
                 .GetLatestInvoiceForOrganizationByWatcher(WatcherCode);
-            InvoiceNumber = invoice.InvoiceId.ToString();
-            InvoiceDate = invoice.InvoiceTime!.Value;
-            InvoicePrice = (double)invoice.InvoicePrice;
-            Vat = (double)invoice.Vat;
+                InvoiceNumber = invoice.InvoiceId.ToString();
+                InvoiceDate = invoice.InvoiceTime!.Value;
+                InvoicePrice = (double)invoice.InvoicePrice;
+                Vat = (double)invoice.Vat;
 
-            var duration = invoice.InvoiceTime.Value - invoice.EntranceTime.Value;
-            Duration = $"{(int)duration.TotalHours} hours {duration.Minutes} minutes";
+                var duration = invoice.InvoiceTime.Value - invoice.EntranceTime.Value;
+                Duration = $"{(int)duration.TotalHours} hours {duration.Minutes} minutes";
 
-            CheckIn = invoice.EntranceTime.Value;
-            Checkout = invoice.InvoiceTime.Value;
+                CheckIn = invoice.EntranceTime.Value;
+                Checkout = invoice.InvoiceTime.Value;
 
-            EntryPicture = invoice.EntryTransactionImage;
-            ExitPicture = invoice.ExitTransactionImage;
-            PlateNumber = invoice.PlateNumber;
+                EntryPicture = invoice.EntryTransactionImage;
+                ExitPicture = invoice.ExitTransactionImage;
+                PlateNumber = invoice.PlateNumber;
 
-            InvoiceAmount = InvoicePrice - Vat;
-            VatRate = (int)(Vat / InvoicePrice * 100);
+                InvoiceAmount = InvoicePrice + Vat;
+                VatRate = (int)(Vat / InvoicePrice * 100);
+            }
+            catch (Exception ex)
+            {
+                navigationManager.NavigateTo("/", true);
+            }
+
         }
 
         private void OnPaymentMethodChanged(string method)
         {
-            PaymentMethod = method;
+            paymentMethod = method;
         }
 
         private async Task HandleCheckout()
         {
-      
+            var dto = new PayCustomerInvoiceDto
+            {
+                InvoiceId = int.Parse(InvoiceNumber),
+                Method = Enum.TryParse<PaymentMethod>(paymentMethod, true, out var methodEnum) ? methodEnum : PaymentMethod.MADA
+            };
+            try
+            {
+                await paymentAppService.PayCustomerInvoiceAsync(dto);
+
+            }
+            catch (Exception ex)
+            {
+                navigationManager.NavigateTo("/",true);
+            }
         }
     }
 }
