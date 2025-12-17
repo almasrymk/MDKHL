@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using QRCoder;
+using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
@@ -14,11 +14,9 @@ using SmartParking.Utilities;
 using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
@@ -36,8 +34,18 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     private readonly IInvoiceUtilityAppService _invoiceUtility;
     private readonly IRepository<Payment, Guid> _paymentRepository;
     private readonly IRepository<GarageTransaction, int> _garageTransactionRepository;
+    private readonly IRepository<Dispenser, int> _dispenserRepository;
 
-    public InvoiceAppService(IRepository<Invoice, int> repository, IDataFilter dataFilter, IRepository<Organization, int> organizationsRepository, IInvoiceUtilityAppService invoiceUtility, IRepository<Payment, Guid> paymentRepository, IQRCodeAppService qrCodeAppService, IRepository<GarageTransaction, int> garageTransactionRepository)
+    private string LastInvoicePageUrl = "https://localhost:44322/checkout-extension/";
+
+    public InvoiceAppService(IRepository<Invoice, int> repository, 
+        IDataFilter dataFilter, 
+        IRepository<Organization, int> organizationsRepository, 
+        IInvoiceUtilityAppService invoiceUtility, 
+        IRepository<Payment, Guid> paymentRepository, 
+        IQRCodeAppService qrCodeAppService, 
+        IRepository<GarageTransaction, int> garageTransactionRepository,
+        IRepository<Dispenser, int> dispenserRepository)
     : base(repository)
     {
         _dataFilter = dataFilter;
@@ -47,6 +55,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         _paymentRepository = paymentRepository;
         _qrCodeAppService = qrCodeAppService;
         _garageTransactionRepository = garageTransactionRepository;
+        _dispenserRepository = dispenserRepository;
     }
     #region public methods 
     /// <inheritdoc/>
@@ -382,18 +391,20 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         return ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
     }
 
-    public async Task<InvoiceDto?> GetLatestInvoiceForOrganizationByWatcher(int watcherId)
+    public async Task<InvoiceDto?> GetLatestInvoiceForOrganizationByWatcher(string watcherCode)
     {
         var invoiceQuery = await _invoiceRepository.GetQueryableAsync();
         var garageTransactionQuery = await _garageTransactionRepository.GetQueryableAsync();
-
+        var dispenser = await _dispenserRepository.GetQueryableAsync();
         var query =
             from Invoice in invoiceQuery
             join gt in garageTransactionQuery
                 on Invoice.GarageTransactionExitId equals gt.Id
+            join d in dispenser
+                on gt.DispenserId equals d.Id into dispenserJoin from d in dispenserJoin.DefaultIfEmpty()
             where Invoice.InvoiceType == InvoiceType.UnPaid
                   && Invoice.InvoicePrice > 0
-                  && (gt.CameraId == watcherId || gt.DispenserId == watcherId)
+                  && (gt.Camera.DeviceId == watcherCode || d.DeviceId == watcherCode)
             orderby Invoice.CreationTime descending
             select Invoice;
 
@@ -440,9 +451,9 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         }
     }
 
-    public async Task QrCodeForInvoicePage()
+    public async Task QrCodeForInvoicePage(string watcherCode)
     {
-        string qrText = " ";
+        string qrText = $"{LastInvoicePageUrl}{watcherCode}";
         _qrCodeAppService.CreateQRCOdeImageAsync(qrText);
     }
     #endregion
