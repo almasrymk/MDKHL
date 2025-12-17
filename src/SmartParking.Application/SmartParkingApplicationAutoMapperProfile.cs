@@ -203,7 +203,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<CreateUpdatePackageDto, Package>()
             .ForMember(dest => dest.DectivationDate , opt => opt.MapFrom (src => src.DeactivationDate));
-           
+
 
 
         CreateMap<Invoice, InvoiceDto>()
@@ -219,8 +219,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d => d.OrganizationId, o => o.MapFrom(s => s.OrganizationId))
             .ForMember(d => d.GarageTransactionExitId, o => o.MapFrom(s => s.GarageTransactionExitId))
             .ForMember(d => d.TicketId, o => o.MapFrom(s => s.TicketId))
-            .ForMember(d => d.Vat, o => o.MapFrom(s => Math.Round((s.InvoicePrice-s.Discount) * 0.15m, 2)))
-            .ForMember(d => d.CustomerEnName, o => o.MapFrom(s => s.CustomerEnName)).ReverseMap();   
+            .ForMember(d => d.Vat, o => o.MapFrom(s => Math.Round((s.InvoicePrice - s.Discount) * 0.15m, 2)))
+            .ForMember(d => d.CustomerEnName, o => o.MapFrom(s => s.CustomerEnName)).ReverseMap()
+            .ForMember(d => d.InvoiceNumber, o => o.MapFrom(s => s.InvoiceNumber));
         
         CreateMap<Invoice, InvoiceMobileDto>()
             .ForMember(d => d.GarageEnglishName, o => o.MapFrom(s => s.Garage.NameEn))
