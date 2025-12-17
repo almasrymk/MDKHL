@@ -390,31 +390,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         }
         return ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
     }
-
-    public async Task<InvoiceDto?> GetLatestInvoiceForOrganizationByWatcher(string watcherCode)
-    {
-        var invoiceQuery = await _invoiceRepository.GetQueryableAsync();
-        var garageTransactionQuery = await _garageTransactionRepository.GetQueryableAsync();
-        var dispenser = await _dispenserRepository.GetQueryableAsync();
-        var query =
-            from Invoice in invoiceQuery
-            join gt in garageTransactionQuery
-                on Invoice.GarageTransactionExitId equals gt.Id
-            join d in dispenser
-                on gt.DispenserId equals d.Id into dispenserJoin from d in dispenserJoin.DefaultIfEmpty()
-            where Invoice.InvoiceType == InvoiceType.UnPaid
-                  && Invoice.InvoicePrice > 0
-                  && (gt.Camera.DeviceId == watcherCode || d.DeviceId == watcherCode)
-            orderby Invoice.CreationTime descending
-            select Invoice;
-
-        var invoice = await query.FirstOrDefaultAsync();
-        if (invoice == null)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("VehicleNotFoundAtGate"));
-        }
-        return ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
-    }
+    
     /// <inheritdoc/>
 
     public async Task<PagedResultDto<InvoiceDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
