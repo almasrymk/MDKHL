@@ -32,8 +32,7 @@
                 <VehicleInfoCard PlateText="@PlateNumber"
                                  PlateCountry="KSA"
                                  CountryFlagUrl="images/sa.png"
-                                 BrandLogoUrl="images/cherry.png"
-                                 BrandName="Chery" />
+                                  />
             </MudStack>
         </MudItem>
 
@@ -41,7 +40,10 @@
             <PaymentSummaryCard Amount="@InvoiceAmount"
                                 VATRate="@VatRate"
                                 VATAmount="@Vat"
-                                TotalAmount="@InvoicePrice" />
+                                TotalAmount="@InvoicePrice"
+                                SelectedPaymentMethod="@PaymentMethod"
+                                SelectedPaymentMethodChanged="OnPaymentMethodChanged"
+                                OnCheckout="HandleCheckout" />
         </MudItem>
     </MudGrid>
 </MudContainer>
