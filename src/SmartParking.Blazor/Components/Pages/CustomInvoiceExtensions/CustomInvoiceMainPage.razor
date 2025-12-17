@@ -2,8 +2,11 @@
 @using SmartParking.Blazor.Components.InvoiceExtensionComponents
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Invoices
+@using SmartParking.Payments
 @layout CustomLayout
-@inject IInvoiceAppService invoiceAppService
+@inject IPublicInvoiceAppService invoiceAppService
+@inject IPaymentAppService paymentAppService
+@inject NavigationManager navigationManager
 @attribute [AllowAnonymous]
 
 <MudContainer MaxWidth="MaxWidth.False" Class="pa-2">
@@ -22,6 +25,7 @@
                                     InvoiceDate="@InvoiceDate"
                                     AmountPaid="@InvoicePrice"
                                     VATAmount="@Vat"
+                                    PaymentMethod="@paymentMethod"
                                     Duration="@Duration"
                                     CheckInTime="@CheckIn"
                                     CheckOutTime="@Checkout" />
@@ -37,11 +41,11 @@
         </MudItem>
 
         <MudItem xs="12" md="4">
-            <PaymentSummaryCard Amount="@InvoiceAmount"
+            <PaymentSummaryCard Amount="@InvoicePrice"
                                 VATRate="@VatRate"
                                 VATAmount="@Vat"
-                                TotalAmount="@InvoicePrice"
-                                SelectedPaymentMethod="@PaymentMethod"
+                                TotalAmount="@InvoiceAmount"
+                                SelectedPaymentMethod="@paymentMethod"
                                 SelectedPaymentMethodChanged="OnPaymentMethodChanged"
                                 OnCheckout="HandleCheckout" />
         </MudItem>
