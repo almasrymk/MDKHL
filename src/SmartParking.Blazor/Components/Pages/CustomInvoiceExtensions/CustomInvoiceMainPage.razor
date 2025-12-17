@@ -1,7 +1,9 @@
-﻿@page "/checkout-extension"
+﻿@page "/checkout-extension/{WatcherCode}"
 @using SmartParking.Blazor.Components.InvoiceExtensionComponents
 @using SmartParking.Blazor.Components.Shared
+@using SmartParking.Invoices
 @layout CustomLayout
+@inject IInvoiceAppService invoiceAppService
 @attribute [AllowAnonymous]
 
 <MudContainer MaxWidth="MaxWidth.False" Class="pa-2">
@@ -16,18 +18,18 @@
             <MudStack Spacing="3">
                 <InvoiceScan />
 
-                <InvoiceDetailsCard InvoiceNo="#7788"
-                                    InvoiceDate="@(new DateTime(2024, 12, 15))"
-                                    AmountPaid="40"
-                                    VATAmount="22.50"
-                                    Duration="3 hours 25 minutes"
-                                    CheckInTime="@(new DateTime(2024, 12, 15, 9, 30, 0))"
-                                    CheckOutTime="@(new DateTime(2024, 12, 15, 12, 55, 0))" />
+                <InvoiceDetailsCard InvoiceNo="@InvoiceNumber"
+                                    InvoiceDate="@InvoiceDate"
+                                    AmountPaid="@InvoicePrice"
+                                    VATAmount="@Vat"
+                                    Duration="@Duration"
+                                    CheckInTime="@CheckIn"
+                                    CheckOutTime="@Checkout" />
 
-                <VehicleImagesCard EntryPictureUrl="images/vehicle-image.png"
-                                   ExitPictureUrl="images/vehicle-image.png" />
+                <VehicleImagesCard EntryPictureUrl="@EntryPicture"
+                                   ExitPictureUrl="@ExitPicture" />
 
-                <VehicleInfoCard PlateText="ABC 1234"
+                <VehicleInfoCard PlateText="@PlateNumber"
                                  PlateCountry="KSA"
                                  CountryFlagUrl="images/sa.png"
                                  BrandLogoUrl="images/cherry.png"
@@ -36,10 +38,10 @@
         </MudItem>
 
         <MudItem xs="12" md="4">
-            <PaymentSummaryCard Amount="150.00"
-                                VATRate="15"
-                                VATAmount="22.50"
-                                TotalAmount="172.50" />
+            <PaymentSummaryCard Amount="@InvoiceAmount"
+                                VATRate="@VatRate"
+                                VATAmount="@Vat"
+                                TotalAmount="@InvoicePrice" />
         </MudItem>
     </MudGrid>
 </MudContainer>
