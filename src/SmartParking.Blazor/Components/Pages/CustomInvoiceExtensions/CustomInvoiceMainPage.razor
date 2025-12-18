@@ -1,12 +1,17 @@
 ﻿@page "/checkout-extension/{WatcherCode}"
 @using SmartParking.Blazor.Components.InvoiceExtensionComponents
 @using SmartParking.Blazor.Components.Shared
+@using SmartParking.Entities.Cameras.Watchers
 @using SmartParking.Invoices
 @using SmartParking.Payments
+@using SmartParking.Watchers
+@using Volo.Abp.Domain.Repositories
 @layout CustomLayout
 @inject IPublicInvoiceAppService invoiceAppService
+@inject IInvoiceAppService Invoive
 @inject IPaymentAppService paymentAppService
 @inject NavigationManager navigationManager
+@inject IWatcherAppService watcherAppService
 @attribute [AllowAnonymous]
 
 <MudContainer MaxWidth="MaxWidth.False" Class="pa-2">
@@ -19,7 +24,7 @@
     <MudGrid Spacing="4">
         <MudItem xs="12" md="8">
             <MudStack Spacing="3">
-                <InvoiceScan />
+                <InvoiceScan  OnButtonTriggered="OnSearch" OnSearchTextChanged="OnSearchValueChanged"/>
 
                 <InvoiceDetailsCard InvoiceNo="@InvoiceNumber"
                                     InvoiceDate="@InvoiceDate"
