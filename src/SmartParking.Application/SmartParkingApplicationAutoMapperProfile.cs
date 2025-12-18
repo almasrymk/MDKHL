@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.Build.Framework;
-using SmartParking.Analysis;
 using SmartParking.Authentication;
 using SmartParking.Cameras;
 using SmartParking.Cameras.Watchers.Dispensers;
@@ -8,7 +6,6 @@ using SmartParking.CustomerCategories;
 using SmartParking.CustomerPackages;
 using SmartParking.Cutomers;
 using SmartParking.DailyShifts;
-using SmartParking.DefaultPackages;
 using SmartParking.Discounts;
 using SmartParking.DispenserEndPoint;
 using SmartParking.Entities.Authentication;
@@ -25,13 +22,11 @@ using SmartParking.Entities.Shifts;
 using SmartParking.Entities.StateManagements;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Vehicles;
-using SmartParking.Enums;
 using SmartParking.Garages;
 using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.KeeperShifts;
-using SmartParking.Localization;
 using SmartParking.Lookups.CameraBrands;
 using SmartParking.Lookups.CameraMainType;
 using SmartParking.Lookups.CameraModel;
@@ -47,7 +42,6 @@ using SmartParking.OrganizationsGarages;
 using SmartParking.PackageCodeEndPoint;
 using SmartParking.Packages;
 using SmartParking.Payments;
-using SmartParking.Results;
 using SmartParking.Shifts;
 using SmartParking.StateManagements;
 using SmartParking.Subscriptions;
@@ -57,7 +51,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Volo.Abp.Identity;
-using Volo.Abp.ObjectMapping;
 
 namespace SmartParking;
 
@@ -217,6 +210,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d => d.CustomerArName, o => o.MapFrom(s => s.CustomerArName))
             .ForMember(d => d.InvoiceId, o => o.MapFrom(s => s.Id))
             .ForMember(d => d.OrganizationId, o => o.MapFrom(s => s.OrganizationId))
+            .ForMember(d => d.TenantId, o => o.MapFrom(s => s.TenantId))
             .ForMember(d => d.GarageTransactionExitId, o => o.MapFrom(s => s.GarageTransactionExitId))
             .ForMember(d => d.TicketId, o => o.MapFrom(s => s.TicketId))
             .ForMember(d => d.Vat, o => o.MapFrom(s => Math.Round((s.InvoicePrice-s.Discount) * 0.15m, 2)))
@@ -231,6 +225,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d => d.OrganizationTIN, o => o.MapFrom(s => s.Organization.TaxIdentificationNumber))
             .ForMember(d => d.InvoiceType, o => o.MapFrom(s => s.InvoiceType.ToString()))
             .ForMember(d => d.CustomerArName, o => o.MapFrom(s => s.CustomerArName))
+            .ForMember(d => d.TenantId, o => o.MapFrom(s => s.TenantId))
             .ForMember(d => d.InvoiceId, o => o.MapFrom(s => s.Id))
             .ForMember(d => d.OrganizationId, o => o.MapFrom(s => s.OrganizationId))
             .ForMember(d => d.GarageTransactionExitId, o => o.MapFrom(s => s.GarageTransactionExitId))

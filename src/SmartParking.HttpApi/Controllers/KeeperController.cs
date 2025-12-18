@@ -2,14 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
 using SmartParking.Discounts;
-using SmartParking.Entities.Invoices;
 using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Invoices;
 using SmartParking.Mobile.Keepers;
-using SmartParking.MobileInvoices;
-using SmartParking.Payments;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
@@ -19,7 +16,6 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
-using UserDataDto = SmartParking.Mobile.Keepers.UserDataDto;
 
 namespace SmartParking.Controllers;
 
