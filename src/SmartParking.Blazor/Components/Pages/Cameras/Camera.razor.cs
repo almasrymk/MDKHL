@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.JSInterop;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Cameras;
+using SmartParking.Invoices;
 using SmartParking.Localization;
 using SmartParking.Permissions.CameraPermissions;
 using System.Globalization;
@@ -30,6 +32,7 @@ public partial class Camera
     private string ValueOfMenue = "";
     private TableData itemData = new TableData();
     private string termSearch;
+    private bool IsExit = false;
     private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
@@ -314,4 +317,5 @@ public partial class Camera
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
     }
+
 }

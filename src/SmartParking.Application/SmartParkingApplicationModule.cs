@@ -9,6 +9,7 @@ using SmartParking.GarageTransactions.Factory;
 using SmartParking.KeeperShifts;
 using SmartParking.PDF;
 using SmartParking.Utilities;
+using SmartParking.Watchers;
 using SmartParking.WebSockets;
 using System;
 using Volo.Abp;
@@ -56,7 +57,7 @@ public class SmartParkingApplicationModule : AbpModule
         context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsCameraActionsAppService>();
         context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsDispenserActionsAppService>();
         context.Services.AddScoped<IGarageTransactionsActionsFactoryAppService, GarageTransactionsActionsFactoryAppService>();
-
+        context.Services.AddScoped<IWatcherAppService, WatcherAppService>();
 
         context.Services.AddTransient<WebSocketHeartbeatWorker>();
         Configure<AbpAutoMapperOptions>(options =>

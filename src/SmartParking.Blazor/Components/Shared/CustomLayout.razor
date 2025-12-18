@@ -1,0 +1,167 @@
+﻿@inherits LayoutComponentBase
+@using MudBlazor
+
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudThemeProvider Theme="SPCustomTheme" />
+<MudPopoverProvider />
+
+<div class="public-layout">
+
+    <header class="public-header">
+        <MudPaper Elevation="3" Class="public-header-paper">
+            <MudGrid Justify="Justify.Center">
+                <MudItem xs="12" Class="text-center">
+                    <MudImage Src="images/logo/footer-image-logo.png"
+                              Alt="Logo"
+                              Height="70" />
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    </header>
+
+    <main style="flex-grow:1; overflow-y:auto; display:flex; justify-content:center;">
+        <div style="width:90%;">
+            @Body
+        </div>
+    </main>
+
+    <footer class="public-footer">
+        <MudGrid Spacing="3">
+            <MudItem xs="12" sm="6">
+                <MudImage Src="images/logo/footer-image-logo.png"
+                          Height="100"
+                          Class="footer-logo" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6" Class="align-self-center">
+                <MudGrid Justify="Justify.FlexEnd"
+                         Spacing="2"
+                         Class="text-sm-end text-center">
+                    <MudItem>
+                        <MudIcon Icon="@Icons.Custom.Brands.Instagram" />
+                    </MudItem>
+                    <MudItem>
+                        <MudIcon Icon="@Icons.Custom.Brands.Twitter" />
+                    </MudItem>
+                    <MudItem>
+                        <MudIcon Icon="@Icons.Custom.Brands.LinkedIn" />
+                    </MudItem>
+                    <MudItem>
+                        <MudIcon Icon="@Icons.Custom.Brands.Facebook" />
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+        </MudGrid>
+
+        <MudDivider Class="my-4" />
+
+        <MudGrid Spacing="3">
+            <MudItem xs="12">
+                <div class="d-flex align-center flex-wrap" style="gap: 8px;">
+                    <MudText Typo="Typo.body2" Class="mud-text-white">
+                        © 2024 Copyright TOT. All rights reserved.
+                    </MudText>
+
+                    <MudText Typo="Typo.body2" Class="d-none d-sm-block mud-text-white">
+                        &bullet;
+                    </MudText>
+
+                    <MudLink Color="MudBlazor.Color.Inherit" Typo="Typo.body2">
+                        Privacy Policy
+                    </MudLink>
+
+                    <MudText Typo="Typo.body2" Class="mud-text-white">
+                    </MudText>
+
+                    <MudLink Color="MudBlazor.Color.Inherit" Typo="Typo.body2">
+                        Terms of Use
+                    </MudLink>
+                </div>
+            </MudItem>
+        </MudGrid>
+    </footer>
+
+</div>
+<style>
+    .public-layout {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: #f7f7f7;
+    }
+
+    .public-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        padding: 8px;
+    }
+
+    .public-header-paper {
+        background: white;
+        border-radius: 16px;
+        padding: 8px;
+        max-width: 90%;
+        margin: auto;
+    }
+
+    .public-footer {
+        background: #0B2233;
+        color: white;
+        padding: 32px 16px;
+    }
+
+        .public-footer .mud-icon-root {
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+    .footer-logo img {
+        object-fit: contain;
+    }
+
+    .mud-input.mud-input-outlined .mud-input-outlined-border {
+        display: flex;
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        left: 0px;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0%;
+        height: 80%;
+        text-align: start;
+        pointer-events: none;
+        border-radius: 12px !important;
+        border-color: var(--mud-palette-lines-inputs);
+        border-width: 1px;
+        border-style: solid;
+        transition: border-width, border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .custom-card {
+        box-shadow: 0px 1px 3px 0px #0000001A, 0px 1px 2px -1px #0000001A;
+        border-radius: 14px;
+    }
+</style>
+
+        @code
+        {
+
+                MudTheme SPCustomTheme = new MudTheme()
+                {
+                    PaletteLight = new PaletteLight()
+                    {
+                        Primary = "#0D5480",
+                        Secondary = "#21A5BC",
+                        Tertiary = "#6A7282",
+                        GrayLight = "#F2F2F2",
+                        GrayDark = "#434341",
+                        WarningLighten = "#CE3333",
+                        Success = "#28BA24",
+                        White = "FFFFFF"
+                    },
+                };
+        }

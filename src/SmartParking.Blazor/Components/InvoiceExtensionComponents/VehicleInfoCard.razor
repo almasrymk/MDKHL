@@ -1,0 +1,63 @@
+﻿<MudCard Elevation="0" Class="custom-card">
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">Vehicle Information</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        <div class="d-flex align-center justify-start" style="gap: 8px; overflow-x: auto; flex-wrap: nowrap;">
+
+            <div class="d-flex flex-column align-center justify-center pa-2"
+                 style="background: linear-gradient(90deg, #21A5BC 0%, #1F87A4 35.84%, #1E7D9C 47.62%, #1D7192 62.34%, #1B5279 100%);
+                        color: white;
+                        border-radius: 8px;
+                        min-width: 100px;
+                        padding: 8px;">
+                <MudText Typo="Typo.body2" Class="text-center">@PlateCountry</MudText>
+                <MudText Typo="Typo.h6" Class="font-weight-bold text-center" Style="word-break: break-word;">@PlateText</MudText>
+            </div>
+
+            <div class="d-flex flex-column align-center text-center"
+                 style="min-width: 50px;">
+                <div style="
+                    background:@FlagBgColor;
+                    width:50px;
+                    height:50px;
+                    border-radius:50%;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    overflow:hidden;">
+                    <MudImage Src="@CountryFlagUrl" Alt="Flag" Style="max-width:40%; max-height:40%; object-fit:contain;" />
+                </div>
+                <MudText Typo="Typo.caption">@CountryName</MudText>
+            </div>
+
+            @* <div class="d-flex flex-column align-center text-center"
+                 style="min-width: 50px;">
+                <div style="
+                    background-color:@LogoBgColor;
+                    width:50px;
+                    height:50px;
+                    border-radius:50%;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    overflow:hidden;">
+                    <MudImage Src="@BrandLogoUrl" Alt="Logo" Style="max-width:80%; max-height:80%; object-fit:contain;" />
+                </div>
+                <MudText Typo="Typo.caption">@BrandName</MudText>
+            </div> *@
+
+        </div>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public string PlateText { get; set; } = "XYZ 999";
+    [Parameter] public string PlateCountry { get; set; } = "KSA";
+    [Parameter] public string FlagBgColor { get; set; } = "linear-gradient(135deg, #00A63E 0%, #008236 100%)";
+    // [Parameter] public string LogoBgColor { get; set; } = "#5C5C5C33";
+    [Parameter] public string CountryFlagUrl { get; set; }
+    // [Parameter] public string BrandLogoUrl { get; set; }
+    // [Parameter] public string BrandName { get; set; }
+    [Parameter] public string CountryName { get; set; } = "Saudi Arabia";
+}
