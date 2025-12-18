@@ -112,5 +112,14 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     /// <returns>A task representing the asynchronous operation.</returns>
     Task UpdateDiscountForInvoice(int invoiceId, decimal discount);
 
+    /// <summary>
+    /// Creates a QR code for the invoice page based on the provided watcher code.
+    /// </summary>
+    /// <param name="watcherCode"></param>
+    /// <returns></returns>
+    Task<string> QrCodeForInvoicePage(string watcherCode,string domain);
+
+
+
 
 }
