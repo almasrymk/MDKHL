@@ -5,12 +5,14 @@
                           Adornment="Adornment.Start"
                           AdornmentIcon="@Icons.Material.Filled.Search"
                           FullWidth="true"
-                          Variant="Variant.Outlined" />
+                          Variant="Variant.Outlined" 
+                          ValueChanged="OnSearchTextChanged"
+                           />
         </MudItem>
 
         <MudItem xs="12" sm="2" Class="mt-1">
-            <MudButton StartIcon="@Icons.Material.Filled.QrCodeScanner" Variant="Variant.Filled" Color="MudBlazor.Color.Secondary" FullWidth="true">
-                Scan
+            <MudButton OnClick="OnButtonTriggered"  StartIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="MudBlazor.Color.Secondary" FullWidth="true">
+                Search
             </MudButton>
         </MudItem>
     </MudGrid>
