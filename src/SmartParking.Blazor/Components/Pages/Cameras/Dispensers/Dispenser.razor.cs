@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.JSInterop;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Cameras;
 using SmartParking.Cameras.Watchers.Dispensers;
+using SmartParking.CustomerPackages;
 using SmartParking.Localization;
 using SmartParking.Permissions.CameraPermissions;
 using SmartParking.Permissions.DispenserPermissions;
@@ -283,4 +285,6 @@ public partial class Dispenser
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
         }
     }
+
+    
 }

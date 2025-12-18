@@ -2,6 +2,7 @@
 @using AutoMapper
 @using Microsoft.Extensions.Localization
 @using SmartParking.Cameras.Watchers.Dispensers
+@using SmartParking.Invoices
 @using SmartParking.Localization
 @using SmartParking.Organizations
 @using Volo.Abp.Application.Dtos
@@ -14,9 +15,12 @@
 @inject NavigationManager Navigation
 @inject ICurrentTenant CurrentTenant
 @inject IMapper _mapper
+@inject IInvoiceAppService InvoiceAppService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager _navigationManager
 @inherits AbpCrudPageBase<IDispenserAppService, DispenserDto, int, PagedAndSortedResultRequestDto, CreateUpdateDispenserDto>
 
 <PageTitle>@L["Dispensers"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Dispensers"]</MudText>
 
-<SPDataGrid PageName=@L["Dispensers"] Data="@itemData" Menus="@MenuDatas" ShowAdd="HasCreatePermission" ShowMenue="!CurrentTenant.Id.HasValue" ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete"></SPDataGrid>
+<SPDataGrid PageName=@L["Dispensers"] Data="@itemData" Menus="@MenuDatas" ShowAdd="HasCreatePermission" ShowMenue="!CurrentTenant.Id.HasValue" ShowEdit="HasUpdatePermission" ShowDelete="HasDeletePermission" TotalItemsInTable="TotalItem" OnClickRowEdit="OnClickRowEdit" OnClickRowView="OnClickRowView" OnPageChanged="FetchTableData" OnSearching="FetchTableData" OnAdd="@(() => OpenDialogAsync(_backdropClick))" OnClickRowDelete="OnClickRowDelete" ></SPDataGrid>
