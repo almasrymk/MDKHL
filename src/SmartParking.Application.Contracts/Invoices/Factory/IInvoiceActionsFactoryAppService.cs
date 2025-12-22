@@ -1,4 +1,5 @@
-﻿using SmartParking.GarageTransactions;
+﻿using SmartParking.Entities.Cameras.Watchers;
+using SmartParking.GarageTransactions;
 using System.Threading.Tasks;
 
 namespace SmartParking.Invoices.Factory;
@@ -12,5 +13,7 @@ public interface IInvoiceActionsFactoryAppService
     /// <returns>A task that represents the asynchronous operation. The task result contains an <see cref="InvoiceDto"/>
     /// representing the matching invoice, or <c>null</c> if no invoice is found.</returns>
     Task<InvoiceDto> Search(InvoiceSearchDto invoiceSearchDto);
+
+    Task<Watcher> GetWatcherByCodeAsync(InvoiceSearchDto invoiceSearchDto, string watcherCode);
 
 }
