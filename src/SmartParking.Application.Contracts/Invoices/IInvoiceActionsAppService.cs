@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using SmartParking.Entities.Cameras.Watchers;
+using System.Threading.Tasks;
 
 namespace SmartParking.Invoices;
 
@@ -19,4 +20,12 @@ public interface IInvoiceActionsAppService
     /// <returns><see langword="true"/> if the handler can process the specified search criteria; otherwise, <see
     /// langword="false"/>.</returns>
     bool CanHandle(InvoiceSearchDto invoiceSearchDto);
+
+    /// <summary>
+    /// get a watcher by it's code
+    /// </summary>
+    /// <param name="watcherCode"></param>
+    /// <returns>>A task that represents the asynchronous operation. The task result contains an <see cref="Watcher"/>
+    /// representing the matching Watcher, or <c>null</c> if no watcher is found.</returns>
+    Task<Watcher> GetWatcherByCodeAsync(string watcherCode);
 }
