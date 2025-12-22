@@ -15,7 +15,7 @@ using SmartParking.Permissions.Reports;
 
 namespace SmartParking.Blazor.Components.Pages.Reports;
 
-public partial class CancelGarageTransactionReport
+public partial class CancelledGarageTransactionReport
 {
     public int CurrentPage { get; set; } = 1;
     public int RowPerPage { get; set; } = 10;
@@ -28,7 +28,7 @@ public partial class CancelGarageTransactionReport
     private List<MudMenuData> MenuDatas = new List<MudMenuData>();
     public string ColumnVisibility { get; private set; }
     public bool IsEnter { get; set; }
-    public CancelGarageTransactionReport(IStringLocalizer<SmartParkingResource> localizer)
+    public CancelledGarageTransactionReport(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
 
@@ -85,7 +85,7 @@ public partial class CancelGarageTransactionReport
         if (paged.IsExport)
         {
             itemDataIsExport.Columns = itemData.Columns;
-            itemData = await CreateTableHelper.CreateDataTableForTransactions(Transactions.Items.ToList());
+            itemData = await CreateTableHelper.CreateDataTableForCanselledTransactions(Transactions.Items.ToList());
             itemData.Columns = itemDataIsExport.Columns;
         }
         else if (!ColumnVisibility.IsNullOrWhiteSpace() && (IsEnter && paged.IsExport == false))
@@ -94,7 +94,7 @@ public partial class CancelGarageTransactionReport
         }
         else
         {
-            itemData = await CreateTableHelper.CreateDataTableForTransactions(Transactions.Items.ToList());
+            itemData = await CreateTableHelper.CreateDataTableForCanselledTransactions(Transactions.Items.ToList());
             IsEnter = true;
         }
 

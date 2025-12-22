@@ -142,6 +142,8 @@
                              <MudNavLink Href="/keepertransactionsreport" Icon="@Icons.Material.Filled.CompareArrows">@L["KeeperTransactions"]</MudNavLink>
                              <MudNavLink Href="/beneficiariesvehiclesreport" Icon="@Icons.Material.Filled.CarCrash">@L["BeneficiariesVehiclesReport"]</MudNavLink>
                              <MudNavLink Href="/beneficiariesdetailsreport" Icon="@Icons.Material.Filled.Group">@L["BeneficiariesDetailsReports"]</MudNavLink>
+                             <MudNavLink Href="/cancelledgaragetransactionreport" Icon="@Icons.Material.Filled.AssignmentReturned">@L["CancelledGarageTransactionReport"]</MudNavLink>
+                             <MudNavLink Href="/qrtransactionreport" Icon="@Icons.Material.Filled.QrCode2">@L["QRTransactionReport"]</MudNavLink>
                          }
                          @* <MudNavLink Href="/garagesreport" Icon="@Icons.Material.Filled.Garage">@L["Garages"] @L["Reports"]</MudNavLink> *@
                          @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager).Result || currenttenant.Id is null)
@@ -161,7 +163,6 @@
                              <MudNavLink Href="/paymentscustomerreports" Icon="@Icons.Material.Filled.AttachMoney">@L["CustomerAndPaymentReport"]</MudNavLink>
                              <MudNavLink Href="/discount/report" Icon="@Icons.Material.Filled.Discount">@L["DiscountsReport"]</MudNavLink>
                          }
-                            <MudNavLink Href="/cancelgaragetransactionreport" Icon="@Icons.Material.Filled.AssignmentReturned">@L["CancelGarageTransactionReport"]</MudNavLink>
 
                      </MudNavGroup>
                  }

@@ -5,9 +5,11 @@ using SmartParking.Entities.Analysis;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
+using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Enums;
+using SmartParking.Migrations;
 using SmartParking.Repositories;
 using SmartParking.Results;
 using System;
@@ -21,6 +23,7 @@ using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Volo.Abp.TenantManagement;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static Volo.Abp.Identity.Settings.IdentitySettingNames;
@@ -362,6 +365,14 @@ public class GarageTransactionAnalysisRepository
                         on garageTransaction.Id equals invoice.GarageTransactionExitId
                     join user in dbContext.Users
                         on garageTransaction.DeleterId equals user.Id
+                    join vehicle in dbContext.Vehicles
+                        on garageTransaction.PlateNumber equals vehicle.EnPlateNumber
+                        into vehicleJoin1
+                    from v1 in vehicleJoin1.DefaultIfEmpty()
+                    join vehicle2 in dbContext.Vehicles
+                        on garageTransaction.PlateNumber equals vehicle2.ArPlateNumber
+                        into vehicleJoin2
+                    from v2 in vehicleJoin2.DefaultIfEmpty()
                     join shift in dbContext.Shifts
                         on 1 equals 1 into shiftJoin
                                 from shift in shiftJoin
@@ -375,8 +386,8 @@ public class GarageTransactionAnalysisRepository
                     {
                         CashierName = user.Name,
 
-                        CustomerNameAr = invoice.CustomerArName,
-                        CustomerNameEn = invoice.CustomerEnName,
+                        CustomerNameAr = invoice.CustomerArName != "غير معرف"? invoice.CustomerArName : (v1!=null)?v1.Customer.ArabicName: (v2 != null) ? v2.Customer.ArabicName : "غير معرف",
+                        CustomerNameEn = invoice.CustomerEnName != "unknown" ? invoice.CustomerEnName : (v1 != null) ? v1.Customer.IdentityUser.Name : (v2 != null) ? v2.Customer.IdentityUser.Name : "unknown",
 
                         ShiftArabicName = shift.ArabicName,
                         ShiftEnglishName = shift.EnglishName,
@@ -390,10 +401,57 @@ public class GarageTransactionAnalysisRepository
                     };
             query = query.Where(filterRequests);
             query = query.OrderBy(sorting);
-            var total = query.Count();
+            //var total = query.Count();
             //query = query.Skip(skipCount).Take(maxResultCount);
             return await query.ToListAsync() ;
         }
 
+    }
+
+    public async Task<PagedResult<QRTransactionAnalysis>> GetQRTransactionAnalysesAsync(Guid? tenantId, int skipCount, int maxResultCount, string sorting, Expression<Func<QRTransactionAnalysis, bool>> filterRequests)
+    {
+        using (_dataFilter.Disable<ISoftDelete>())
+        {
+            var dbContext = await GetDbContextAsync();
+            var query =
+                from garageTransaction in dbContext.GarageTransactions
+                where
+                    (tenantId == null || garageTransaction.TenantId == tenantId)
+                    && garageTransaction.TicketId != null
+                    && garageTransaction.IsDeleted == false
+                join customerpackages in dbContext.CustomerPackages
+                    on garageTransaction.TicketId equals customerpackages.PackageCode
+                select new QRTransactionAnalysis
+                {
+                    PlateNumber = garageTransaction.PlateNumber,
+                    TransactionDate = DateOnly.FromDateTime(garageTransaction.AccurateTime!.Value),
+                    TransactionTime = TimeOnly.FromDateTime(garageTransaction.AccurateTime.Value),
+
+                    IsCarBelongToPackage =(customerpackages.ArPlateNumber == garageTransaction.PlateNumber 
+                                           || customerpackages.EnPlateNumber == garageTransaction.PlateNumber ) ? YesNoEnum.Yes : YesNoEnum.No,
+
+                    PackageCode = garageTransaction.TicketId,
+                    PackagePlateNumberAr = customerpackages.ArPlateNumber,
+                    PackagePlateNumberEn = customerpackages.EnPlateNumber,
+                    CustomerNameAr = customerpackages.Customer.ArabicName,
+                    CustomerNameEn = customerpackages.Customer.IdentityUser.Name,
+                    CustomerPackageStatus = customerpackages.IsDeleted ? CustomerPackageStatus.Deleted :
+                                                garageTransaction.AccurateTime < customerpackages.ActivationDateOfPackage ? CustomerPackageStatus.InActive :
+                                                    garageTransaction.AccurateTime < customerpackages.ExpiryDate ? CustomerPackageStatus.Active : CustomerPackageStatus.Expired,
+                    PackageNameAr = customerpackages.PackageArabicName,
+                    PackageNameEn = customerpackages.PackageEnglishName,
+                    CameraType = garageTransaction.CameraType
+                };
+
+            query = query.Where(filterRequests);
+            query = query.OrderBy(sorting);
+            var total = query.Count();
+            query = query.Skip(skipCount).Take(maxResultCount);
+            return new PagedResult<QRTransactionAnalysis>
+            {
+                Queryable = query,
+                PageSize = total
+            };
+        }
     }
 }

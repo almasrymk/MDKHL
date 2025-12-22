@@ -871,6 +871,13 @@
     "Gate": "Gate",
     "Permission:AllowFreeOpenGate": "Allow free open gate",
     "Multiple": "Multiple",
-    "CancelGarageTransactionReport": "Cancelled Transactions"
+    "CancelledGarageTransactionReport": "Cancelled Transactions",
+    "DurationPerHour": "Duration Per Hour",
+    "QRTransactionReport": "QR Transactions",
+    "IsCarBelongToPackage": "Car Belong To Package",
+    "PackagePlateNumberAr": "Package Plate Number{0}",
+    "PackagePlateNumberEn": "Package Plate Number{0}",
+    "PackageStatus": "Package Status",
+    "NoPackage": "No Package"
   }
 }

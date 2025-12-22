@@ -281,4 +281,16 @@ public interface IAnalysisAppService : IApplicationService
     /// <param name="tenantId">The unique identifier of the tenant to filter results by. If null, results are not filtered by tenant.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a paged list of canceled garage transaction analyses matching the specified criteria.</returns>
     Task<PagedResultDto<CancelGarageTransactionAnalysis>> ReportCanceledGarageTransactionsAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
+
+    /// <summary>
+    /// Asynchronously retrieves a paged list of QR transaction analyses based on the specified filtering, sorting, and
+    /// paging criteria.
+    /// </summary>
+    /// <param name="input">The request parameters that define paging, sorting, and filtering options for the QR transactions to be
+    /// analyzed. Cannot be null.</param>
+    /// <param name="tenantId">The unique identifier of the tenant for which to retrieve QR transaction analyses. If null, the operation
+    /// applies to all tenants accessible to the caller.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a paged result of QR transaction
+    /// analyses matching the specified criteria.</returns>
+    Task<PagedResultDto<QRTransactionAnalysis>> ReportQrTransactionsAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId);
 }

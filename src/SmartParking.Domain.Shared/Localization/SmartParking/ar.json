@@ -901,7 +901,16 @@
     "Gate": "البوابه",
     "Permission:AllowFreeOpenGate": "السماح بفتح البوابة الحر",
     "Multiple": "متعدد",
-    "CancelGarageTransactionReport": "الحركات الملغاة"
+    "CancelledGarageTransactionReport": "الحركات الملغاة",
+    "DurationPerHour": "المدة بالساعة",
+    "QRTransactionReport": "حركات رمز الاستجابة السريع",
+    "IsCarBelongToPackage": "هل السيارة ضمن الباقة؟",
+    "PackagePlateNumberAr": "رقم اللوحة للباقة {0}",
+    "PackagePlateNumberEn": "رقم اللوحة للباقة {0}",
+    "PackageStatus": "حالة الباقة",
+    "NoPackage": "لا يوجد باقة",
+    "Yes": "نعم",
+    "No": "لا"
   }
 
 }

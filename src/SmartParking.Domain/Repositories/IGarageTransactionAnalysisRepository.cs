@@ -24,5 +24,6 @@ public interface IGarageTransactionAnalysisRepository : IRepository<GarageTransa
     Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDateCustomerName(string UserName, DateTime startDate, DateTime endDate,CustomerCategoryStatus customerCategory, Guid? tenantId);
     Task<List<GarageTransactionAnalysis>> GetGarageTransactionsAnalysisDate(Guid? tenantId);
     Task<List<CancelGarageTransactionAnalysis>> GetCanceledGarageTransactionsAnalysisReportAsync(Guid? tenantId, int skipCount, int maxResultCount, string sorting, Expression<Func<CancelGarageTransactionAnalysis, bool>> filterRequests);
+    Task<PagedResult<QRTransactionAnalysis>> GetQRTransactionAnalysesAsync(Guid? tenantId, int skipCount, int maxResultCount, string sorting, Expression<Func<QRTransactionAnalysis, bool>> filterRequests);
 
 }

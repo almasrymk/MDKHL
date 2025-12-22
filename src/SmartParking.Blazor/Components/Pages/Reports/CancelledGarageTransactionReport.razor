@@ -1,4 +1,4 @@
-﻿@page "/cancelgaragetransactionreport"
+﻿@page "/cancelledgaragetransactionreport"
 @using Microsoft.Extensions.Localization
 @using SmartParking.Analysis
 @using SmartParking.Localization
@@ -13,7 +13,7 @@
 @inject IGenerateFilesAppService GenerateFilesAppService
 @inject ISnackbar Snackbar
 @inject IJSRuntime JSRuntime
-<PageTitle>@L["CancelGarageTransactionReport"]</PageTitle>
-<MudText Typo="Typo.h5" Class="mb-2">@L["CancelGarageTransactionReport"]</MudText>
+<PageTitle>@L["CancelledGarageTransactionReport"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["CancelledGarageTransactionReport"]</MudText>
 
-<SPDataGrid PageName=@($"{@L["CancelGarageTransactionReport"]}") ShowMenue="true"  Menus ="MenuDatas" Data="@itemData" OnPageChanged="FetchData" ShowFiltering ="true" OnFiltering="FetchData" TotalItemsInTable="TotalItem"></SPDataGrid>
+<SPDataGrid PageName=@($"{@L["CancelledGarageTransactionReport"]}") ShowMenue="true"  Menus ="MenuDatas" Data="@itemData" OnPageChanged="FetchData" ShowFiltering ="true" OnFiltering="FetchData" TotalItemsInTable="TotalItem"></SPDataGrid>
