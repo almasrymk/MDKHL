@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using SmartParking.Blazor.Components.Pages.Cameras;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Enums;
@@ -12,6 +13,7 @@ public partial class CustomInvoiceMainPage
 {
     [Parameter] public string WatcherCode { get; set; }
     private string SearchText { get; set; }
+    private string TicketSearchText { get; set; } = string.Empty;
     public string InvoiceNumber { get; set; }
     public DateTime InvoiceDate { get; set; }
     public double InvoicePrice { get; set; }
@@ -73,12 +75,16 @@ public partial class CustomInvoiceMainPage
         try
         {
             await paymentAppService.PayCustomerInvoiceAsync(dto);
+            snackbar.Add(L["PaymentSuccess"], Severity.Success);
+
 
         }
         catch (Exception ex)
         {
-            navigationManager.NavigateTo("/",true);
+            snackbar.Add(L["PaymentFailed"], Severity.Error);
         }
+        await Task.Delay(500);
+        navigationManager.NavigateTo("/", true);
     }
 
     private async Task PlateNumberSearch(Watcher watcher) {
@@ -107,19 +113,27 @@ public partial class CustomInvoiceMainPage
     }
     private async Task OnSearch()
     {
-        var camera = await watcherAppService.GetcameraByWatherCodeAsync(WatcherCode);
-        if (camera != null)
-        {
-            await PlateNumberSearch(camera);
-        }
-        else
-        {
-            var dispenser = await watcherAppService.GetDispenserByWatherCodeAsync(WatcherCode);
-            if (dispenser != null)
-            {
-                await PlateNumberSearch(dispenser);
-            }
-        }
+        //var camera = await watcherAppService.GetcameraByWatherCodeAsync(WatcherCode);
+        //if (camera != null)
+        //{
+        //    await PlateNumberSearch(camera);
+        //}
+        //else
+        //{
+        //    var dispenser = await watcherAppService.GetDispenserByWatherCodeAsync(WatcherCode);
+        //    if (dispenser != null)
+        //    {
+        //        await PlateNumberSearch(dispenser);
+        //    }
+        //}
+        
+
+        var dto = new InvoiceSearchDto();
+        dto.PlateNumber = SearchText;
+        dto.TicketId = TicketSearchText;
+
+        var watcher = await InvoiceActionsFactory.GetWatcherByCodeAsync(dto, WatcherCode);
+        await PlateNumberSearch(watcher);
         StateHasChanged();
     }
 

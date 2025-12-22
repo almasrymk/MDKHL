@@ -1,8 +1,11 @@
 ﻿@page "/checkout-extension/{WatcherCode}"
+@using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.InvoiceExtensionComponents
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Entities.Cameras.Watchers
 @using SmartParking.Invoices
+@using SmartParking.Invoices.Factory
+@using SmartParking.Localization
 @using SmartParking.Payments
 @using SmartParking.Watchers
 @using Volo.Abp.Domain.Repositories
@@ -12,6 +15,10 @@
 @inject IPaymentAppService paymentAppService
 @inject NavigationManager navigationManager
 @inject IWatcherAppService watcherAppService
+@inject ISnackbar snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IInvoiceActionsFactoryAppService InvoiceActionsFactory
+
 @attribute [AllowAnonymous]
 
 <MudContainer MaxWidth="MaxWidth.False" Class="pa-2">
