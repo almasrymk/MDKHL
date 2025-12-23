@@ -1,5 +1,6 @@
 ﻿
 using Abp.Application.Services;
+using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.GarageTransactions;
 using System;
 using System.Collections.Generic;
@@ -10,15 +11,25 @@ namespace SmartParking.Invoices.Factory;
 public class InvoiceActionsFactoryAppService : IInvoiceActionsFactoryAppService
 {
     private readonly IEnumerable<IInvoiceActionsAppService> _services;
-    #region public methods
-    public bool CanHandle(InvoiceSearchDto invoiceSearchDto)
+
+    public InvoiceActionsFactoryAppService(IEnumerable<IInvoiceActionsAppService> services)
     {
-        throw new System.NotImplementedException();
+        _services = services;
     }
 
-    public Task<InvoiceDto> Search(InvoiceSearchDto invoiceSearchDto)
+    #region public methods
+
+    public async Task<InvoiceDto> Search(InvoiceSearchDto invoiceSearchDto)
     {
-        throw new System.NotImplementedException();
+        var service = GetConsumerService(invoiceSearchDto);
+        return await service.Search(invoiceSearchDto);
+    }
+
+    public async Task<Watcher> GetWatcherByCodeAsync(InvoiceSearchDto invoiceSearchDto, string watcherCode)
+    {
+        var service = GetConsumerService(invoiceSearchDto);
+        var watcher = await service.GetWatcherByCodeAsync(watcherCode);
+        return watcher;
     }
     #endregion
     #region private methods
