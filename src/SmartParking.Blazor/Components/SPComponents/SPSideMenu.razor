@@ -135,31 +135,33 @@
                      <MudNavGroup Icon="@Icons.Material.Filled.Assessment" Title="@L["Reports"]">
                          @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager).Result || AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result || currenttenant.Id is null)
                          {
-                            <MudNavLink Href="/beneficiariesreport" Icon="@Icons.Material.Filled.People">@L["GarageTransactions"]</MudNavLink>
-                            <MudNavLink Href="/customerreport" Icon="@Icons.Material.Filled.Man">@L["CustomerAndTransactionReport"]</MudNavLink>
-                            <MudNavLink Href="/employeereport" Icon="@Icons.Material.Filled.Work">@L["EmployeeAndTransactionReport"]</MudNavLink>
-                            <MudNavLink Href="/visitorreport" Icon="@Icons.Material.Filled.Accessibility">@L["VisitorAndTransactionReport"]</MudNavLink>
-                            <MudNavLink Href="/keepertransactionsreport" Icon="@Icons.Material.Filled.CompareArrows">@L["KeeperTransactions"]</MudNavLink>
-                            <MudNavLink Href="/beneficiariesvehiclesreport" Icon="@Icons.Material.Filled.CarCrash">@L["BeneficiariesVehiclesReport"]</MudNavLink>
-                            <MudNavLink Href="/beneficiariesdetailsreport" Icon="@Icons.Material.Filled.Group">@L["BeneficiariesDetailsReports"]</MudNavLink>
-                         }  
+                             <MudNavLink Href="/beneficiariesreport" Icon="@Icons.Material.Filled.People">@L["GarageTransactions"]</MudNavLink>
+                             <MudNavLink Href="/customerreport" Icon="@Icons.Material.Filled.Man">@L["CustomerAndTransactionReport"]</MudNavLink>
+                             <MudNavLink Href="/employeereport" Icon="@Icons.Material.Filled.Work">@L["EmployeeAndTransactionReport"]</MudNavLink>
+                             <MudNavLink Href="/visitorreport" Icon="@Icons.Material.Filled.Accessibility">@L["VisitorAndTransactionReport"]</MudNavLink>
+                             <MudNavLink Href="/keepertransactionsreport" Icon="@Icons.Material.Filled.CompareArrows">@L["KeeperTransactions"]</MudNavLink>
+                             <MudNavLink Href="/beneficiariesvehiclesreport" Icon="@Icons.Material.Filled.CarCrash">@L["BeneficiariesVehiclesReport"]</MudNavLink>
+                             <MudNavLink Href="/beneficiariesdetailsreport" Icon="@Icons.Material.Filled.Group">@L["BeneficiariesDetailsReports"]</MudNavLink>
+                             <MudNavLink Href="/cancelledgaragetransactionreport" Icon="@Icons.Material.Filled.AssignmentReturned">@L["CancelledGarageTransactionReport"]</MudNavLink>
+                             <MudNavLink Href="/qrtransactionreport" Icon="@Icons.Material.Filled.QrCode2">@L["QRTransactionReport"]</MudNavLink>
+                         }
                          @* <MudNavLink Href="/garagesreport" Icon="@Icons.Material.Filled.Garage">@L["Garages"] @L["Reports"]</MudNavLink> *@
                          @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager).Result || currenttenant.Id is null)
                          {
-                            <MudNavLink Href="/customerpackage/reports" Icon="@Icons.Material.Filled.Subscriptions">@L["PackageSubscribers"]</MudNavLink>
-                            <MudNavLink Href="/customerspackage/reports" Icon="@Icons.Material.Filled.Subscriptions">@L["CustomerPackageReport"]</MudNavLink>
+                             <MudNavLink Href="/customerpackage/reports" Icon="@Icons.Material.Filled.Subscriptions">@L["PackageSubscribers"]</MudNavLink>
+                             <MudNavLink Href="/customerspackage/reports" Icon="@Icons.Material.Filled.Subscriptions">@L["CustomerPackageReport"]</MudNavLink>
 
                          }
 
                          @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement).Result || currenttenant.Id is null)
                          {
-                            <MudNavLink Href="/keeperpaymentsreport" Icon="@Icons.Material.Filled.MoreTime">@L["KeeperPayments"]</MudNavLink>
-                            <MudNavLink Href="/packagepayment/reports" Icon="@Icons.Material.Filled.MoneyOff">@L["PackagePaymentsData"]</MudNavLink>
-                            <MudNavLink Href="/paymentsreports" Icon="@Icons.Material.Filled.Money">@L["Payments"]</MudNavLink>
-                            <MudNavLink Href="/packagepaymentreport" Icon="@Icons.Material.Filled.Money">@L["PackagesPayments"] </MudNavLink>
-                            <MudNavLink Href="/paymentsbankreports" Icon="@Icons.Material.Filled.Payment">@L["PaymentMehtodReport"]</MudNavLink>
-                            <MudNavLink Href="/paymentscustomerreports" Icon="@Icons.Material.Filled.AttachMoney">@L["CustomerAndPaymentReport"]</MudNavLink>
-                            <MudNavLink Href="/discount/report" Icon="@Icons.Material.Filled.Discount">@L["DiscountsReport"]</MudNavLink>
+                             <MudNavLink Href="/keeperpaymentsreport" Icon="@Icons.Material.Filled.MoreTime">@L["KeeperPayments"]</MudNavLink>
+                             <MudNavLink Href="/packagepayment/reports" Icon="@Icons.Material.Filled.MoneyOff">@L["PackagePaymentsData"]</MudNavLink>
+                             <MudNavLink Href="/paymentsreports" Icon="@Icons.Material.Filled.Money">@L["Payments"]</MudNavLink>
+                             <MudNavLink Href="/packagepaymentreport" Icon="@Icons.Material.Filled.Money">@L["PackagesPayments"] </MudNavLink>
+                             <MudNavLink Href="/paymentsbankreports" Icon="@Icons.Material.Filled.Payment">@L["PaymentMehtodReport"]</MudNavLink>
+                             <MudNavLink Href="/paymentscustomerreports" Icon="@Icons.Material.Filled.AttachMoney">@L["CustomerAndPaymentReport"]</MudNavLink>
+                             <MudNavLink Href="/discount/report" Icon="@Icons.Material.Filled.Discount">@L["DiscountsReport"]</MudNavLink>
                          }
 
                      </MudNavGroup>

@@ -10,6 +10,7 @@ namespace SmartParking.Enums
     {
         Active,
         InActive,
-        Expired
+        Expired,
+        Deleted
     }
 }
