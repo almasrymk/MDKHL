@@ -98,12 +98,12 @@ public class CustomerPackagesAppService :
             if (package == null)
                 return Result.NotFound("Package not found");
 
-            if (await CustomerPackageExistsAsync(packageId, package.OrganizationId, customer.Id, ArabicPlateNumber, EnglishPlateNumber))
+            if (await CustomerPackageExistsAsync(package.OrganizationId, customer.Id, ArabicPlateNumber, EnglishPlateNumber))
             {
                 return Result.Invalid(new ValidationError
                 {
-                    ErrorCode = StatusCodes.Status400BadRequest.ToString(),
-                    ErrorMessage = "This customer has the same package"
+                    ErrorCode = StatusCodes.Status409Conflict.ToString(),
+                    ErrorMessage = LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("DuplicateValidation")
                 });
             }
 
@@ -138,7 +138,7 @@ public class CustomerPackagesAppService :
             var customer = await _customerRepository.FirstOrDefaultAsync(c => c.Id == customerPackageDto.CustomerId);
             if (customer == null)
                 throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-            if (await CustomerPackageExistsAsync(packageId, customerPackageDto.OrganizationId, customer.Id, customerPackageDto.ArPlateNumber, customerPackageDto.EnPlateNumber))
+            if (await CustomerPackageExistsAsync(customerPackageDto.OrganizationId, customer.Id, customerPackageDto.ArPlateNumber, customerPackageDto.EnPlateNumber))
             {
                 throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("DuplicateValidation")
                     + " " + LocalizationHelper.GetLocalizedString("Customer"));
@@ -484,10 +484,9 @@ public class CustomerPackagesAppService :
     /// A task that represents the asynchronous operation.
     /// The task result is true if a matching active package exists; otherwise, false.
     /// </returns>
-    private async Task<bool> CustomerPackageExistsAsync(int? packageId, int organizationId, Guid customerId, string ArabicPlateNumber, string EnglishPlateNumber)
+    private async Task<bool> CustomerPackageExistsAsync(int organizationId, Guid customerId, string ArabicPlateNumber, string EnglishPlateNumber)
     {
         var existingPackage = await _repository.AnyAsync(p =>
-            ((packageId.HasValue && p.PackageId == packageId.Value) || (!packageId.HasValue && p.IsCustomPackage && p.PackageId == null)) &&
             p.OrganizationId == organizationId &&
             p.CustomerId == customerId &&
             p.ExpiryDate >= DateTime.Today &&
@@ -640,6 +639,7 @@ public class CustomerPackagesAppService :
             ArPlateNumber = customerPackageDto.ArPlateNumber,
             EnPlateNumber = customerPackageDto.EnPlateNumber,
             TenantId = TenantId,
+           
         };
 
     }

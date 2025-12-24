@@ -69,10 +69,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             var result =
                 from payment in query
                 join organization in organizationQuery on payment.OrganizationId equals organization.Id
-                join user in userQuery on payment.CreatorId equals user.Id
-                join customer in customerQuery on payment.CustomerId equals customer.Id
-                into customerList
-                from customer in customerList.DefaultIfEmpty()
+                join user in userQuery on payment.CreatorId equals user.Id into userList from user in userList.DefaultIfEmpty()
+                join customer in customerQuery on payment.CustomerId equals customer.Id into customerList from customer in customerList.DefaultIfEmpty()
                 join customerPackage in customerPackageQuery on payment.CustomerPackageId equals customerPackage.Id into packageList
                 from package in packageList.DefaultIfEmpty()
 
@@ -98,7 +96,9 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                     TenantId = payment.TenantId,
                     Customers = customer,
                     Invoice = payment.Invoice,
-                    CashierName = user.Name,
+                    CashierName = 
+                    user != null ? user.Name :
+                    (customer != null && customer.IdentityUser != null ? customer.IdentityUser.Name : "System"),
                     StatusZatca = organization.StatusZatca,
                     PackageId = package.Id,
                     CustomerPackage = package
@@ -148,7 +148,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                     Amount = payment.Amount,
                     CheckoutId = payment.CheckoutId,
                     CreationTime = payment.CreationTime.ToString(),
-                    TicketId = payment!.Invoice !=null ? payment!.Invoice!.TicketId:null,
+                    TicketId = "" + payment!.Invoice!.TenantId,
                     Currency = payment.Currency,
                     CustomerId = payment.CustomerId,
                     Id = payment.Id,
@@ -157,20 +157,18 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                     PaymentCategory = payment.PaymentCategory,
                     PaymentMethod = payment.PaymentMethod,
                     PaymentStatus = payment.PaymentStatus,
-                    PackageId = payment.PackageId,
                     QrCodeInvoice = payment.QrCodeInvoice,
                     PaymentNumber = payment.PaymentNumber,
                     PlateNumber = payment.EnPlateNumber,
                     TenantId = payment.TenantId,
-                    Customers = customer??null,
-                    CustomerPackage = package ?? null,
-                    Invoice = payment!.Invoice ?? null,
+                    Customers = customer,
+                    Invoice = payment.Invoice,
                     CashierName =
                     user != null ? user.Name :
                     (customer != null && customer.IdentityUser != null ? customer.IdentityUser.Name : "System"),
                     StatusZatca = organization.StatusZatca,
-                    IsSentZatca = payment.IsSentZatca,
-                    ErrorMessagesZatca = payment.ErrorMessagesZatca
+                    PackageId = package.Id,
+                    CustomerPackage = package
                 };
             result = result.OrderByDescending(x => x.CreationTime);
             result = ApplySearch(input, result);
@@ -196,7 +194,10 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             paymentMap.Organization = await CheckOrganization(payment);
             paymentMap.Invoice = await CheckInvoice(payment);
             paymentMap.customerPackageDto = await CheckPackage(payment);
-            paymentMap.CashierName = await GetCashierName(payment.CreatorId);
+            if (payment.CreatorId != null)
+                paymentMap.CashierName = await GetCashierName(payment.CreatorId);
+            else
+                paymentMap.CashierName = payment.Customers.ArabicName;
             paymentMap.StatusZatca = paymentMap.Organization?.StatusZatca ?? Status.Inactive;
             return paymentMap;
         }
@@ -419,27 +420,27 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
 
     private static IQueryable<PaymentDto> ApplySearch(PagedAndSortedAndSearchResultRequestDto input, IQueryable<PaymentDto> queryable)
     {
-        if (string.IsNullOrWhiteSpace(input.SearchingTerm))
-            return queryable;
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+            queryable=queryable.Where(or =>
+                or.Amount.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.PaymentMethod.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.PaymentStatus.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.PaymentCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Currency.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Customers.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Customers.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Customers.CustomerCategory.ToString().ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Invoice.Id.ToString().Contains(input.SearchingTerm) ||
+                or.PaymentNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.PlateNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.CashierName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.CheckoutId!.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.Invoice!.TicketId!.ToLower().Contains(input.SearchingTerm.ToLower())
+            );
+        }
+        return queryable;
 
-        var term = input.SearchingTerm.ToLower();
-
-        return queryable.Where(or =>
-            or.Amount.ToString().Contains(term) ||
-            or.PaymentMethod.ToString().ToLower().Contains(term) ||
-            or.PaymentStatus.ToString().ToLower().Contains(term) ||
-            or.PaymentCategory.ToString().ToLower().Contains(term) ||
-            (or.Currency ?? "").ToLower().Contains(term) ||
-            (or.Customers.ArabicName ?? "").ToLower().Contains(term) ||
-            (or.Customers.IdentityUser.UserName ?? "").ToLower().Contains(term) ||
-            (or.Customers.IdentityUser.Name ?? "").ToLower().Contains(term) ||
-            or.Customers.CustomerCategory.ToString().ToLower().Contains(term) == true ||
-            (or.PaymentNumber ?? "").ToLower().Contains(term) ||
-            (or.Invoice.PlateNumber ?? "").ToLower().Contains(term) ||
-            or.Invoice.Id.ToString().Contains(term) == true ||
-            (or.CashierName ?? "").ToLower().Contains(term) ||
-            (or.CheckoutId ?? "").ToLower().Contains(term) ||
-            (or.Invoice.TicketId ?? "").ToLower().Contains(term));
     }
 
     private static IQueryable<PaymentDto> ApplySearchMdkhl(PagedAndSortedAndSearchResultRequestDto input, IQueryable<PaymentDto> queryable)

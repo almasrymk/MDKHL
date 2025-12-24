@@ -878,6 +878,8 @@
     "PackagePlateNumberAr": "Package Plate Number{0}",
     "PackagePlateNumberEn": "Package Plate Number{0}",
     "PackageStatus": "Package Status",
-    "NoPackage": "No Package"
+    "NoPackage": "No Package",
+    "PaymentSuccess": "Payment completed successfully",
+    "PaymentFailed": "PaymentFailed"
   }
 }

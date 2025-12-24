@@ -1,0 +1,42 @@
+﻿<MudCard Elevation="0" Class="custom-card">
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">Financial Summary</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudGrid>
+            <MudItem xs="12" Class="d-flex justify-space-between">
+                <MudText Typo="Typo.body1">Amount</MudText>
+                <MudText Typo="Typo.body1">@Amount.ToString("F2") SAR</MudText>
+            </MudItem>
+
+            <MudItem xs="12" Class="d-flex justify-space-between">
+                <MudText Typo="Typo.body1">VAT (@VATRate%)</MudText>
+                <MudText Typo="Typo.body1">@VATAmount.ToString("F2") SAR</MudText>
+            </MudItem>
+
+            <MudDivider Class="my-1" />
+
+            <MudItem xs="12" Class="d-flex justify-space-between">
+                <MudText Typo="Typo.body1">Total</MudText>
+                <MudText Typo="Typo.body1">@TotalAmount.ToString("F2") SAR</MudText>
+            </MudItem>
+        </MudGrid>
+
+        <MudDivider Class="my-3" />
+
+        <div class="d-flex flex-column align-center">
+            <MudImage Src="@QRCodeUrl" Alt="QR Code" Width="150" Height="150" />
+            <MudText Typo="Typo.body1" Class="mt-2">@QRCodeText</MudText>
+        </div>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public double Amount { get; set; }
+    [Parameter] public int VATRate { get; set; }
+    [Parameter] public double VATAmount { get; set; }
+    [Parameter] public double TotalAmount { get; set; }
+
+    [Parameter] public string QRCodeUrl { get; set; } = "images/qr.png";
+    [Parameter] public string QRCodeText { get; set; } = "Scan to pay via QR";
+}

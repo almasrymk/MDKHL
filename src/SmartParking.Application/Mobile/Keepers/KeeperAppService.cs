@@ -396,7 +396,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         using (DataFilter.Disable<IMultiTenant>())
         {
             var query = await _invoiceRepository.GetQueryableAsync();
-            query = query.Where(x => x.InvoiceType == InvoiceType.UnPaid && x.InvoicePrice > 0);
+            query = query.Where(x => x.InvoiceType == InvoiceType.UnPaid && x.InvoicePrice > 0 && x.OrganizationId==organizationId);
             query = query.OrderByDescending(x => x.CreationTime);
             var invoice = await query.FirstOrDefaultAsync();
             return ObjectMapper.Map<Invoice, InvoiceDto>(invoice); 
@@ -459,7 +459,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             CustomerId = invoice.CustomerId,
             OrganizationId = invoice.OrganizationId,
             InvoiceId = invoice.Id,
-            PaymentName = paymentMethod.ToString()
+            PaymentName = paymentMethod.ToString(),
+            TenantId=invoice.TenantId.Value
         };
         var payment = await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
         return payment;

@@ -6,9 +6,12 @@ using SmartParking.Events;
 using SmartParking.GarageTransactionEndPoints.Factory;
 using SmartParking.GarageTransactions;
 using SmartParking.GarageTransactions.Factory;
+using SmartParking.Invoices;
+using SmartParking.Invoices.Factory;
 using SmartParking.KeeperShifts;
 using SmartParking.PDF;
 using SmartParking.Utilities;
+using SmartParking.Watchers;
 using SmartParking.WebSockets;
 using System;
 using Volo.Abp;
@@ -48,7 +51,7 @@ public class SmartParkingApplicationModule : AbpModule
         context.Services.AddTransient<IDispenserEndPointsAppService, DispenserEndPointsAppService>();
         context.Services.AddSingleton<KeeperShiftSingletonService>();
         context.Services.AddSingleton<IWebSocketConnectionManager, WebSocketConnectionManager>();
-        context.Services.AddScoped<IHandlerService, HandlerService>();
+        context.Services.AddSingleton<IHandlerService, HandlerService>();
         context.Services.AddScoped<ILocalizationFactoryAppService, InvoiceLocalizationAppService>();
         context.Services.AddScoped<InvoicePDFAppService>();
         context.Services.AddScoped<PackagePDFAppService>();
@@ -56,7 +59,10 @@ public class SmartParkingApplicationModule : AbpModule
         context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsCameraActionsAppService>();
         context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsDispenserActionsAppService>();
         context.Services.AddScoped<IGarageTransactionsActionsFactoryAppService, GarageTransactionsActionsFactoryAppService>();
-
+        context.Services.AddTransient<IInvoiceActionsFactoryAppService, InvoiceActionsFactoryAppService>();
+        context.Services.AddTransient<IInvoiceActionsAppService, InvoiceCameraActionsAppService>();
+        context.Services.AddTransient<IInvoiceActionsAppService, InvoiceDispenserActionsAppService>();
+        context.Services.AddScoped<IWatcherAppService, WatcherAppService>();
 
         context.Services.AddTransient<WebSocketHeartbeatWorker>();
         Configure<AbpAutoMapperOptions>(options =>

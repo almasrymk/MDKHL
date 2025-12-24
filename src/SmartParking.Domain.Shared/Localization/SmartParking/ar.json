@@ -910,7 +910,9 @@
     "PackageStatus": "حالة الباقة",
     "NoPackage": "لا يوجد باقة",
     "Yes": "نعم",
-    "No": "لا"
+    "No": "لا",
+    "PaymentSuccess": "تم الدفع بنجاح",
+    "PaymentFailed": "فشل الدفع"
   }
 
 }

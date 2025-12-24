@@ -1,8 +1,5 @@
-﻿using SmartParking.Cameras;
+﻿using SmartParking.Cutomers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -66,7 +63,12 @@ namespace SmartParking.Vehicles
         /// <param name="plate">The vehicle plate to split.</param>
         /// <returns>A task representing the asynchronous operation, with the result being a tuple containing the numeric and letter parts of the plate.</returns>
         Task<(string numbers, string letters)> SplitPlateAsync(string plate);
-
+        /// <summary>
+        /// method used to get custome whose owns vehicle by plate number if exists
+        /// </summary>
+        /// <param name="PlateNumber">plate of vehicle</param>
+        /// <returns>CustomerId</returns>
+        Task<Guid?> GetCustomerRelatedToVehicle(string PlateNumber);
 
     }
 }

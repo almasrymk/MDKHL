@@ -5,6 +5,7 @@ using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using System;
+using Volo.Abp.Identity;
 
 namespace SmartParking.Payments;
 
@@ -44,4 +45,5 @@ public class PaymentDto
     public Status StatusZatca { get; set; }
     public int CustomerPackageId { get; set; }
     public CustomerPackage? CustomerPackage { get; set; }
+    public IdentityUser? User { get; set; }
 }

@@ -4,6 +4,7 @@ using SmartParking.BarrierAppService;
 using SmartParking.CustomerPackages;
 using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.Entities.Cameras.Watchers;
+using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.GarageTransactionEndPoints;
@@ -81,6 +82,10 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
                 return GetGateResponse(request.CarNum, false, _multipleRequests);
 
             }
+
+            packageDto = new();
+            var customerId = await _garageTransactionUtilityAppService.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(_garageTransactionDto.PlateNumber);
+            packageDto.CustomerId = customerId.HasValue ? customerId.Value : Guid.Empty;
             var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _organization.DispenserTransaction , _organization.CameraTransaction ,  _garageTransactionDto  , packageDto);
             await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = request.CarNum, laneNO = request.LaneNO, operatorType = result == false ? 2 : 5 });
             return GetGateResponse(request.CarNum, result, _otherReasons);
@@ -155,6 +160,10 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
                 return GetGateResponse(request.CarNum, false, _multipleRequests);
 
             }
+            packageDto = new();
+            var customerId = await _garageTransactionUtilityAppService.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(_garageTransactionDto.PlateNumber);
+            packageDto.CustomerId = customerId.HasValue ? customerId.Value : Guid.Empty;
+            
             var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization, input  , packageDto);
             return GetGateResponse(request.CarNum, result, _otherReasons);
         }

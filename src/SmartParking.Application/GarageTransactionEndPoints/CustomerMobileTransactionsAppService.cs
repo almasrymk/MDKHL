@@ -64,6 +64,7 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
         await _garageTransactionUtilityAppService.UpdateEntryTransactionCheckouFromMobile(entryTransactionId);
         var savedExitgarageTransaction = await _garageTransactionsAppService.CreateAsync(createdExitGarageTransaction);
         invoice.Value.GarageTransactionExitId = savedExitgarageTransaction.Id;
+        invoice.Value.ExitTransactionImage = savedExitgarageTransaction.VehiclePicture;
         return await _invoiceAppService.CreateAsync(invoice);
     }
     #endregion

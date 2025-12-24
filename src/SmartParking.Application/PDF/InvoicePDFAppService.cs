@@ -197,7 +197,7 @@ public class InvoicePDFAppService : BasePDFGeneratorAppService<InvoicePdfData>, 
     public Table BuildTotalsTable(InvoicePdfData data, bool isArabic, Document doc)
     {
         var table = new Table(1).UseAllAvailableWidth().SetBorder(Border.NO_BORDER);
-        var currency = CreateImage(PathHelper.CurrencyIcon, HorizontalAlignment.LEFT, doc, 10);
+        var currency = CreateImage(PathHelper.CurrencyIcon, HorizontalAlignment.LEFT, doc, 15);
         var inv = data.Data;
         var loc = data.Localization;
 

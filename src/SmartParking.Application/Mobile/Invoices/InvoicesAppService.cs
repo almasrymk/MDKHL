@@ -74,7 +74,9 @@ public class InvoicesAppService : ApplicationService, IInvoicesAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var queryable = await _invoiceRepoistory.GetQueryableAsync();
-            var invoices = await queryable.Where(_ => _.Customer.IdentityUserId == CurrentUser.Id).ToListAsync();
+            var invoices = await queryable.Where(_ => _.Customer.IdentityUserId == CurrentUser.Id)
+                .OrderByDescending(_ => _.CreationTime)
+                .ToListAsync();
             return ObjectMapper.Map<List<Invoice>, List<InvoiceDto>>(invoices);
         }
         

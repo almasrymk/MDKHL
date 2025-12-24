@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SmartParking.Results;
 using SmartParking.WebSockets;
 using System;
 using System.Collections.Generic;
@@ -43,5 +44,12 @@ public class WebSocketHandlerController : AbpController
         _logger.LogInformation("WebSocket connected: Org={OrganizationId}, ConnId={ConnectionId}", organizationId, organizationId.ToString());
         await _handler.ReceiveAsync(organizationId, socket);
         return new EmptyResult();
+    }
+
+    [HttpPost("find-my-car/")]
+    public async Task<Result<FindMyCarResponse>> FindMyCar(FindMyCarRequestDto request)
+    {
+        var socket = await _connectionManager.GetConnection(request.OrganizationId.ToString());
+        return await _handler.FindMyCarAsync(request.OrganizationId, "find-my-car", socket!, request.LicensePlate);
     }
 }

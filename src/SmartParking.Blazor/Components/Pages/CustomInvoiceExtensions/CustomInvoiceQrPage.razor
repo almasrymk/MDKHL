@@ -1,0 +1,36 @@
+﻿@page "/checkout-extension-detailed"
+@using SmartParking.Blazor.Components.InvoiceExtensionComponents
+@using SmartParking.Blazor.Components.Shared
+@layout CustomLayout
+@attribute [AllowAnonymous]
+
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-2">
+
+    <MudGrid Spacing="4">
+        <MudItem xs="12" md="8">
+            <MudStack Spacing="3">
+                <SimplifiedInvoice />
+
+                <PaymentDetailedCard/>
+
+                <VehicleInfoCard PlateText="ABC 1234"
+                                 PlateCountry="KSA"
+                                 CountryFlagUrl="images/sa.png"
+                                  />
+                <TimeUsage></TimeUsage>
+
+            </MudStack>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <MudStack Spacing="3">
+                <PaymentDetailedQr Amount="150.00"
+                                   VATRate="15"
+                                   VATAmount="22.50"
+                                   TotalAmount="172.50" />
+                <ActionButtonComponent />
+            </MudStack>
+        </MudItem>
+      
+    </MudGrid>
+</MudContainer>

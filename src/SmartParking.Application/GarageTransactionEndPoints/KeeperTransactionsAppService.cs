@@ -53,6 +53,7 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
         await _garageTransactionUtilityAppService.UpdateEntryTransactionCheckouFromMobile(entryTransactionId);
         var garageTransaction = await _garageTransactionsAppService.CreateAsync(createdExitTransaction);
         invoice.Value.GarageTransactionExitId = garageTransaction.Id;
+        invoice.Value.ExitTransactionImage = garageTransaction.VehiclePicture;
         return await _invoiceAppService.CreateAsync(invoice.Value);
     }
 

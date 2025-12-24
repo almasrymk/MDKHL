@@ -45,8 +45,10 @@ public class PackagesController : ControllerBase
     public async Task<Result<PaymentCheckoutDto>> AssignPackageToCustomer(int packageId,string ArabicNumber , string EnglishPlateNumber)
     {
         var paymentReq = await _customerPackagesApp.AssignPackageToCustomerAsync(packageId,ArabicNumber,EnglishPlateNumber);
-        if (paymentReq.Errors.Any())
+        if (paymentReq.Errors.Any() )
             return Result.Error(paymentReq.Errors.FirstOrDefault()!);
+        if (paymentReq.ValidationErrors.Any())
+            return Result.Invalid(paymentReq.ValidationErrors.FirstOrDefault()!);
         var result=await _paymentAppService.CreateCheckoutPackagePaymentWebAsync(paymentReq.Value);
         return Result.Success(result!);
     } 
@@ -64,5 +66,12 @@ public class PackagesController : ControllerBase
     public async Task<Result<CustomerPackageDto>> GetPackageById(int packageId)
     {
        return await _customerPackagesApp.GetAsync(packageId);
+    }
+
+    [HttpGet("paymentsbyorganization")]
+    [Authorize]
+    public async Task<Result<List<PaymentPackageDto>>> GetAllPaymentPackages([FromQuery]int organizationId)
+    {
+        return await _paymentAppService.GetAllCustomerPackgePaymentsAsync(organizationId);
     }
 }

@@ -27,6 +27,8 @@ using SmartParking.OpenGate;
 using SmartParking.OpeningGate;
 using SmartParking.PDF;
 using SmartParking.Results;
+using SmartParking.Watchers;
+using SmartParking.WebSockets;
 using StackExchange.Profiling;
 using System.Globalization;
 using System.Text;
@@ -162,6 +164,7 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, DispenserTransactionActionsAppService>();
         context.Services.AddScoped<IGarageTransactionsActionsFactoryAppService, GarageTransactionsActionsFactoryAppService>();
         context.Services.AddScoped<ICustomerPackageHandlerAppService, CustomerPackageHandlerAppService>();
+        context.Services.AddScoped<IWatcherAppService, WatcherAppService>();
 
 
         // Define the supported cultures

@@ -1,0 +1,37 @@
+﻿<MudCard Elevation="0" Class="pa-4 custom-card">
+
+    <div class="d-flex align-center" style="gap: 16px;">
+
+        <MudImage Src="@LeftImageUrl" Alt="Left Image" Style="width:70px; height:70px; object-fit:contain;" />
+
+        <div class="d-flex flex-column">
+            <MudText Typo="Typo.body2">@TopRow1Text</MudText>
+            <MudText Typo="Typo.body2">@TopRow2Text</MudText>
+        </div>
+
+        <MudImage Src="@RightImageUrl" Alt="Right Image" Style="width:70px; height:70px; object-fit:contain;" />
+
+    </div>
+
+    <MudDivider Class="my-3" />
+
+    <div class="d-flex flex-column" style="gap: 4px;">
+        <MudText Class="font-weight-bold" Typo="Typo.body1">@BottomRow1Text</MudText>
+        <div class="d-flex flex-row">
+            <MudText Typo="Typo.body2" Color="MudBlazor.Color.Tertiary">@BottomRow2Text :</MudText>
+            <MudText Typo="Typo.body2" Class="font-weight-bold">@BottomRow2Value</MudText>
+        </div>
+    </div>
+
+</MudCard>
+
+@code {
+    [Parameter] public string LeftImageUrl { get; set; } = "images/logo/footer-image-logo.png";
+    [Parameter] public string TopRow1Text { get; set; } = "Mdkhl";
+    [Parameter] public string TopRow2Text { get; set; } = "Parking System";
+    [Parameter] public string RightImageUrl { get; set; } = "images/maen.jpg";
+
+    [Parameter] public string BottomRow1Text { get; set; } = "Simplified Tax Invoice";
+    [Parameter] public string BottomRow2Text { get; set; } = "Vat Number";
+    [Parameter] public int BottomRow2Value { get; set; } = 31450003;
+}

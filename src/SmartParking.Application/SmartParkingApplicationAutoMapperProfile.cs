@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.Build.Framework;
-using SmartParking.Analysis;
 using SmartParking.Authentication;
 using SmartParking.Cameras;
 using SmartParking.Cameras.Watchers.Dispensers;
@@ -8,7 +6,6 @@ using SmartParking.CustomerCategories;
 using SmartParking.CustomerPackages;
 using SmartParking.Cutomers;
 using SmartParking.DailyShifts;
-using SmartParking.DefaultPackages;
 using SmartParking.Discounts;
 using SmartParking.DispenserEndPoint;
 using SmartParking.Entities.Authentication;
@@ -25,13 +22,11 @@ using SmartParking.Entities.Shifts;
 using SmartParking.Entities.StateManagements;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Vehicles;
-using SmartParking.Enums;
 using SmartParking.Garages;
 using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.KeeperShifts;
-using SmartParking.Localization;
 using SmartParking.Lookups.CameraBrands;
 using SmartParking.Lookups.CameraMainType;
 using SmartParking.Lookups.CameraModel;
@@ -47,7 +42,6 @@ using SmartParking.OrganizationsGarages;
 using SmartParking.PackageCodeEndPoint;
 using SmartParking.Packages;
 using SmartParking.Payments;
-using SmartParking.Results;
 using SmartParking.Shifts;
 using SmartParking.StateManagements;
 using SmartParking.Subscriptions;
@@ -202,7 +196,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<CreateUpdatePackageDto, Package>()
             .ForMember(dest => dest.DectivationDate , opt => opt.MapFrom (src => src.DeactivationDate));
-           
+
 
 
         CreateMap<Invoice, InvoiceDto>()
@@ -216,10 +210,12 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d => d.CustomerArName, o => o.MapFrom(s => s.CustomerArName))
             .ForMember(d => d.InvoiceId, o => o.MapFrom(s => s.Id))
             .ForMember(d => d.OrganizationId, o => o.MapFrom(s => s.OrganizationId))
+            .ForMember(d => d.TenantId, o => o.MapFrom(s => s.TenantId))
             .ForMember(d => d.GarageTransactionExitId, o => o.MapFrom(s => s.GarageTransactionExitId))
             .ForMember(d => d.TicketId, o => o.MapFrom(s => s.TicketId))
-            .ForMember(d => d.Vat, o => o.MapFrom(s => Math.Round((s.InvoicePrice-s.Discount) * 0.15m, 2)))
-            .ForMember(d => d.CustomerEnName, o => o.MapFrom(s => s.CustomerEnName)).ReverseMap();   
+            .ForMember(d => d.Vat, o => o.MapFrom(s => Math.Round((s.InvoicePrice - s.Discount) * 0.15m, 2)))
+            .ForMember(d => d.CustomerEnName, o => o.MapFrom(s => s.CustomerEnName)).ReverseMap()
+            .ForMember(d => d.InvoiceNumber, o => o.MapFrom(s => s.InvoiceNumber));
         
         CreateMap<Invoice, InvoiceMobileDto>()
             .ForMember(d => d.GarageEnglishName, o => o.MapFrom(s => s.Garage.NameEn))
@@ -230,6 +226,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d => d.OrganizationTIN, o => o.MapFrom(s => s.Organization.TaxIdentificationNumber))
             .ForMember(d => d.InvoiceType, o => o.MapFrom(s => s.InvoiceType.ToString()))
             .ForMember(d => d.CustomerArName, o => o.MapFrom(s => s.CustomerArName))
+            .ForMember(d => d.TenantId, o => o.MapFrom(s => s.TenantId))
             .ForMember(d => d.InvoiceId, o => o.MapFrom(s => s.Id))
             .ForMember(d => d.OrganizationId, o => o.MapFrom(s => s.OrganizationId))
             .ForMember(d => d.GarageTransactionExitId, o => o.MapFrom(s => s.GarageTransactionExitId))
@@ -383,6 +380,32 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<Discount, DiscountDto>();
         CreateMap<CreateUpdateDiscountDto, Discount>();
+
+        CreateMap<Payment, PaymentPackageDto>()
+        .ForMember(d => d.ArabicName, o => o.MapFrom(s => s.CustomerPackage.PackageArabicName))
+        .ForMember(d => d.EnglishName, o => o.MapFrom(s => s.CustomerPackage.PackageEnglishName))
+        .ForMember(d => d.Description, o => o.MapFrom(s => s.CustomerPackage.DescriptionOfPackage))
+        .ForMember(d => d.PaymentTime, o => o.MapFrom(s => s.CreationTime))
+        .ForMember(d => d.OrganizationArabicName, o => o.MapFrom(s => s.CustomerPackage.Organization.ArabicName))
+        .ForMember(d => d.OrganizationEnglishName, o => o.MapFrom(s => s.CustomerPackage.Organization.EnglishName))
+        .ForMember(d => d.OrganizationAddress, o => o.MapFrom(s => s.CustomerPackage.Organization.Address))
+        .ForMember(d => d.CustomerArabicName, o => o.MapFrom(s => s.Customers.ArabicName))
+        .ForMember(d => d.CustomerEnglishName, o => o.MapFrom(s => s.Customers.IdentityUser.Name))
+        .ForMember(d => d.ArPlateNumber, o => o.MapFrom(s => s.ArPlateNumber))
+        .ForMember(d => d.EnPlateNumber, o => o.MapFrom(s => s.EnPlateNumber))
+        .ForMember(d => d.ExpiryDateOfPackage, o => o.MapFrom(s => DateOnly.FromDateTime(s.CustomerPackage.ExpiryDate)))
+        .ForMember(d => d.ExpiryTimeOfPackage, o => o.MapFrom(s => TimeOnly.FromDateTime(s.CustomerPackage.ExpiryDate)))
+        .ForMember(d => d.ActivationDate, o => o.MapFrom(s => DateOnly.FromDateTime(s.CustomerPackage.ActivationDateOfPackage.Value)))
+        .ForMember(d => d.ActivationTime, o => o.MapFrom(s => TimeOnly.FromDateTime(s.CustomerPackage.ActivationDateOfPackage.Value)))
+        .ForMember(d => d.PackageCode, o => o.MapFrom(s => s.CustomerPackage.PackageCode))
+        .ForMember(d => d.QRCodePath, o => o.MapFrom(s => s.QrCodeInvoice))
+        .ForMember(d => d.TotalAmount, o => o.MapFrom(s => s.Amount))
+        .ForMember(d => d.Price, o => o.MapFrom(s => s.CustomerPackage.PriceOfPackage))
+        .ForMember(d => d.Discount, o => o.MapFrom(s => s.CustomerPackage.Discount))
+        .ForMember(d => d.Vat, o => o.MapFrom(s => s.CustomerPackage.Vat))
+        .ForMember(d => d.PaymentId, o => o.MapFrom(s => s.Id))
+        .ForMember(d => d.PaymentNumber, o => o.MapFrom(s => s.PaymentNumber));
+
 
     }
 

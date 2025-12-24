@@ -3,11 +3,15 @@
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Enums
 @using SmartParking.Garages
+@using SmartParking.Invoices
 @using SmartParking.Localization
 @using System.Globalization
 @using Volo.Abp.Application.Dtos
 @inject ICamerasAppService CamerasAppService
 @inject IGarageAppService GaragesAppService
+@inject IInvoiceAppService InvoiceAppService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
@@ -141,7 +145,16 @@
 				</MudGrid>
 			</MudForm>
 
-
+			@if(Camera.CameraType == WatcherType.Exit)
+			{
+				<MudIconButton OnClick="HandleDownload"
+				Icon="@Icons.Material.Filled.QrCode2"
+				Variant="Variant.Filled"
+				Color="MudBlazor.Color.Primary"
+				Size="MudBlazor.Size.Small"
+				Class="mx-1" />
+			}
+			
 
 		</DialogContent>
 		    <DialogActions>

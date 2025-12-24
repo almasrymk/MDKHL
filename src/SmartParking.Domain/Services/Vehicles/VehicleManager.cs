@@ -23,13 +23,13 @@ public  class VehicleManager : DomainService
         _logger = logger;
     }
 
-    public async Task<string> CheckPlateNumberBelongsToCustomerToGetHisIdAsync(string plateNumber)
+    public async Task<Guid?> CheckPlateNumberBelongsToCustomerToGetHisIdAsync(string plateNumber)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _vehicleRepository.GetQueryableAsync();
             query = query.Where(x => x.ArPlateNumber == plateNumber || x.EnPlateNumber == plateNumber);
-            var result = from q in query select q.CustomerId.ToString();
+            var result = from q in query select q.CustomerId;
             var customerId = await AsyncExecuter.FirstOrDefaultAsync(result);
             if (customerId == null)
             {

@@ -1,0 +1,102 @@
+﻿<MudCard Elevation="0" Class="custom-card">
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">Payment Summary</MudText>
+    </MudCardHeader>
+
+    <MudCardContent>
+        <MudGrid>
+            <MudItem xs="12" Class="d-flex justify-space-between">
+                <MudText>Amount</MudText>
+                <MudText>@Amount.ToString("F2") SAR</MudText>
+            </MudItem>
+
+            <MudItem xs="12" Class="d-flex justify-space-between">
+                <MudText>VAT (@VATRate%)</MudText>
+                <MudText>@VATAmount.ToString("F2") SAR</MudText>
+            </MudItem>
+
+            <MudDivider Class="my-1" />
+
+            <MudItem xs="12" Class="d-flex justify-space-between">
+                <MudText>Total</MudText>
+                <MudText>@TotalAmount.ToString("F2") SAR</MudText>
+            </MudItem>
+        </MudGrid>
+
+        <MudDivider Class="my-3" />
+
+        <MudText Typo="Typo.h6">Payment Method</MudText>
+
+        <MudRadioGroup T="string"
+                       Value="SelectedPaymentMethod"
+                       ValueChanged="OnPaymentChanged">
+            <MudPaper Class="@PaymentClass("Mada")">
+                <MudGrid Justify="Justify.SpaceBetween" Class="pa-2">
+                    <MudItem xs="8">
+                        <MudRadio Value="@("Mada")">Mada Card</MudRadio>
+                    </MudItem>
+                    <MudItem xs="4" Class="text-right">
+                        <MudImage Src="images/mada.png" Width="50" />
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+
+            <MudPaper Class="@PaymentClass("ApplePay")">
+                <MudGrid Justify="Justify.SpaceBetween" Class="pa-2">
+                    <MudItem xs="8">
+                        <MudRadio Value="@("ApplePay")">Apple Pay</MudRadio>
+                    </MudItem>
+                    <MudItem xs="4" Class="text-right">
+                        <MudImage Src="images/applepay.png" Width="40" />
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudRadioGroup>
+
+        <MudButton FullWidth
+                   Color="MudBlazor.Color.Primary"
+                   Size="MudBlazor.Size.Large"
+                   Variant="Variant.Filled"
+                   Class="mt-4"
+                   OnClick="OnCheckout">
+            Checkout
+        </MudButton>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public double Amount { get; set; }
+    [Parameter] public int VATRate { get; set; }
+    [Parameter] public double VATAmount { get; set; }
+    [Parameter] public double TotalAmount { get; set; }
+    [Parameter] public string SelectedPaymentMethod { get; set; }
+    [Parameter] public EventCallback<string> SelectedPaymentMethodChanged { get; set; }
+    [Parameter] public EventCallback OnCheckout { get; set; }
+
+    private async Task OnPaymentChanged(string value)
+    {
+        SelectedPaymentMethod = value;
+        await SelectedPaymentMethodChanged.InvokeAsync(value);
+    }
+
+    private string PaymentClass(string method)
+        => $"payment-option {(SelectedPaymentMethod == method ? "payment-option--selected" : "")}";
+
+}
+<style>
+    .payment-option {
+        width: 100%;
+        margin: 6px auto;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-sizing: border-box;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .payment-option--selected {
+        background-color: #e6f4ff;
+        border: 2px solid #1e88e5;
+    }
+
+
+</style>

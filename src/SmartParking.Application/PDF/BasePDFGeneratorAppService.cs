@@ -55,22 +55,31 @@ public abstract class BasePDFGeneratorAppService<DTO>
 
         }
 
-        float maxWidth = 180;  // target width for BOTH images
-        float maxHeight = 180; // target height for BOTH images
 
-        // ---- LEFT IMAGE ----
-        float leftOriginalW = leftLogo.GetImageWidth();
-        float leftOriginalH = leftLogo.GetImageHeight();
 
-        float leftScale = Math.Min(maxWidth / leftOriginalW, maxHeight / leftOriginalH);
-        leftLogo.Scale(leftScale, leftScale);
 
-        // ---- RIGHT IMAGE ----
-        float rightOriginalW = rightLogo.GetImageWidth();
-        float rightOriginalH = rightLogo.GetImageHeight();
+        float maxWidth = 150 * scale;  // target width for BOTH images
+        float maxHeight = 150 * scale; // target height for BOTH images
 
-        float rightScale = Math.Min(maxWidth / rightOriginalW, maxHeight / rightOriginalH);
-        rightLogo.Scale(rightScale, rightScale);
+        leftLogo.SetWidth(maxWidth)
+                .SetHeight(maxHeight);
+        rightLogo.SetWidth(maxWidth)
+            .SetHeight(maxHeight);
+
+
+        //// ---- LEFT IMAGE ----
+        //float leftOriginalW = leftLogo.GetImageWidth();
+        //float leftOriginalH = leftLogo.GetImageHeight();
+
+        //float leftScale = Math.Min(maxWidth / leftOriginalW, maxHeight / leftOriginalH);
+        //leftLogo.Scale(leftScale, leftScale);
+
+        //// ---- RIGHT IMAGE ----
+        //float rightOriginalW = rightLogo.GetImageWidth();
+        //float rightOriginalH = rightLogo.GetImageHeight();
+
+        //float rightScale = Math.Min(maxWidth / rightOriginalW, maxHeight / rightOriginalH);
+        //rightLogo.Scale(rightScale, rightScale);
 
         table.AddCell(new Cell().Add(leftLogo)
             .SetBorder(Border.NO_BORDER)

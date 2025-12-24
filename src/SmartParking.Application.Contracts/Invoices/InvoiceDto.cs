@@ -31,4 +31,6 @@ public class InvoiceDto : FullAuditedEntityDto<int>
     public decimal Vat { get; set; }
     public decimal Discount { get; set; }
     public string TicketId  { get; set; }
+    public Guid? TenantId { get; set; }
+
 }

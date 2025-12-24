@@ -103,6 +103,7 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     /// <returns>A task that represents the asynchronous operation, containing the latest <see cref="InvoiceDto"/> for the organization, or <c>null</c> if no invoices exist.</returns>
     Task<InvoiceDto?> GetLatestInvoiceForOrganization();
 
+    
     /// <summary>
     /// Asynchronously updates the discount for a specified invoice.
     /// </summary>
@@ -110,6 +111,15 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     /// <param name="discount">The new discount value to apply to the invoice.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task UpdateDiscountForInvoice(int invoiceId, decimal discount);
+
+    /// <summary>
+    /// Creates a QR code for the invoice page based on the provided watcher code.
+    /// </summary>
+    /// <param name="watcherCode"></param>
+    /// <returns></returns>
+    Task<string> QrCodeForInvoicePage(string watcherCode,string domain);
+
+
 
 
 }
