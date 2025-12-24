@@ -2,11 +2,14 @@
 using Org.BouncyCastle.Asn1.Ocsp;
 using SmartParking.BarrierAppService;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Enums;
 using SmartParking.Invoices;
+using SmartParking.OpeningGate;
 using SmartParking.Organizations;
 using SmartParking.Payments;
 using SmartParking.Utilities;
+using SmartParking.Watchers;
 
 namespace SmartParking.Blazor.Components.Pages.LastInvoiceAtCamera;
 
@@ -14,6 +17,8 @@ public partial class LastInvoiceAtCamera
 {
     private InvoiceDto Invoice = new InvoiceDto();
     private OrganizationDto _organization = new OrganizationDto();
+    private ICollection<Watcher> Watchers = new List<Watcher>();
+    private string? SelectedDeviceId;
     private bool NoInvoice { get; set; } = false;
     public PaymentMethod PaymentMethod { get; set; }
     public decimal Discount { get; set; } = default;
@@ -32,8 +37,11 @@ public partial class LastInvoiceAtCamera
 
     protected override async Task OnInitializedAsync()
     {
+
         try
         {
+            Watchers = await WatcherAppService.GetAllWatchersAsync();
+            
             _organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
 
             Invoice = await InvoiceAppService.GetLatestInvoiceForOrganization();
@@ -77,8 +85,19 @@ public partial class LastInvoiceAtCamera
         try
         {
             var garageTransactionDto=await GarageTransactionAppService.GetAsync(Invoice.GarageTransactionExitId);
-            var OpenGateService =await  OpenGateFactoryService.GetOpeningGateService(_organization);  
-            var result =await OpenGateService.OpenGateAsync(garageTransactionDto);
+            var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+            var OpenGateService =await OpenGateFactoryService.GetOpeningGateService(organization);
+            if (OpenGateService == null)
+            {
+                SnackBar.ShowSnackbar(Snackbar, L["NoWebSocketConnection"], MudBlazor.Severity.Error);
+                await Task.Delay(500);
+                return;
+            }
+            var result = await OpenGateService.OpenGateAsync(new OpenGateDto
+            {
+                OrganizationId = organization.Id,
+                WatcherCode = SelectedDeviceId,
+            });
             if (result == true)
             {
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L["OpenGate"]}", MudBlazor.Severity.Success);
