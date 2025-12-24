@@ -59,7 +59,6 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
 
     public async Task<bool> OpenGate(OpenGateDto openGateDto)
     {
-        //var _garageTransaction = await _garageTransactionsAppService.GetAsync(transactionId);
         var _organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
         var _openGateService =await _openGateFactoryAppService.GetOpeningGateService(_organization);
         return await _openGateService.OpenGateAsync(openGateDto);
