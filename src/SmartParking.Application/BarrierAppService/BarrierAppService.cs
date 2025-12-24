@@ -53,16 +53,12 @@ public class BarrierAppService : SmartParkingAppService, IBarrierAppService , IO
     }
     [RemoteService(IsEnabled = false)]
 
-    public async Task<bool> OpenGateAsync(GarageTransactionDto garageTransactionDto)
-    {
-        var _device = garageTransactionDto.LaneNO;
-        if (string.IsNullOrEmpty(_device)){
-            var camera = await _cameraAppService.GetAsync(garageTransactionDto.CameraId.Value);
-            _device = camera.CameraIP;
-
-
-
-        }
-        return await CallingBarrier(garageTransactionDto.OrganizationID, new BarrierRequest { carNum = garageTransactionDto.PlateNumber, laneNO = _device, operatorType = 5 });
+    public async Task<bool> OpenGateAsync(OpenGateDto openGateDto)
+    { 
+        return await CallingBarrier(openGateDto.OrganizationId, new BarrierRequest
+        {
+            laneNO = openGateDto.WatcherCode,
+            operatorType = 5
+        });
     }
 }
