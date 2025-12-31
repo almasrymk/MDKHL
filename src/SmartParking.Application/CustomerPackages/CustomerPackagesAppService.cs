@@ -9,6 +9,7 @@ using SmartParking.Entities.Customers;
 using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
+using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Organizations;
@@ -54,8 +55,17 @@ public class CustomerPackagesAppService :
     private readonly IRepository<Organization, int> _organizationsRepository;
     private readonly ICustomerPackageQRGenerator _customerPackageQRGenerator;
     private readonly ICustomerPackagePDFAppService _pDFGeneratorAppService;
+    private readonly IRepository<Vehicle, int> _vehicleRepository;
 
-    public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository, IRepository<Package> packageRepository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IOrganizationsAppService organizationsApp, IRepository<Subscription, int> subscriptionRepository, IRepository<Organization, int> organizationsRepository, ICustomerPackageQRGenerator customerPackageQRGenerator, ICustomerPackagePDFAppService pDFGeneratorAppService) : base(repository)
+    public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository,
+        IRepository<Package> packageRepository, IDataFilter dataFilter, 
+        IRepository<Customer, Guid> customerRepository, 
+        IOrganizationsAppService organizationsApp, 
+        IRepository<Subscription, int> subscriptionRepository, 
+        IRepository<Organization, int> organizationsRepository,
+        IRepository<Vehicle, int> vehicleRepository,
+        ICustomerPackageQRGenerator customerPackageQRGenerator, 
+        ICustomerPackagePDFAppService pDFGeneratorAppService) : base(repository)
     {
         _repository = repository;
         _packageRepository = packageRepository;
@@ -66,6 +76,7 @@ public class CustomerPackagesAppService :
         _organizationsRepository = organizationsRepository;
         _customerPackageQRGenerator = customerPackageQRGenerator;
         _pDFGeneratorAppService = pDFGeneratorAppService;
+        _vehicleRepository = vehicleRepository;
     }
     #region public methods
 
@@ -323,8 +334,12 @@ public class CustomerPackagesAppService :
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            return await base.GetAsync(id);
-
+            var customerPackage = await base.GetAsync(id);
+            var customerID = customerPackage.CustomerId;
+            var vehicle = await _vehicleRepository.FirstOrDefaultAsync(v => v.CustomerId == customerID);
+            customerPackage.LicenseTypeImage = vehicle?.LicenceType?.Image;
+            customerPackage.VehicleModelImage = vehicle?.VehicleModel?.Image;
+            return customerPackage;
         }
     }
     #endregion
