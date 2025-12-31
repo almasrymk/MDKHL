@@ -12,9 +12,9 @@ public class PaymentPackageDto
     public DateTime PaymentTime { get; set; }
     public string OrganizationArabicName { get; set; }
     public string OrganizationEnglishName { get; set; }
+    public string OrganizationAddress { get; set; }
     public string CustomerEnglishName { get; set; }
     public string CustomerArabicName { get; set; }
-    public string OrganizationAddress { get; set; }
     public string EnPlateNumber { get; set; }
     public string ArPlateNumber { get; set; }
     public DateOnly ExpiryDateOfPackage { get; set; }
@@ -27,5 +27,7 @@ public class PaymentPackageDto
     public decimal Price { get; set; }
     public decimal Discount { get; set; }
     public decimal Vat { get; set; }
+    public string? LicenseTypeImage { get; set; }
+    public string? VehicleModelImage { get; set; }
 
 }
