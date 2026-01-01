@@ -50,5 +50,7 @@ public class CustomerPackageDto
     public string? QRCodePath { get; set; }
     public decimal Discount { get; set; }
     public decimal Vat { get; set; }
+    public string? LicenseTypeImage { get; set; }
+    public string? VehicleModelImage { get; set; }
 
 }

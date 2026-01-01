@@ -32,5 +32,7 @@ public class InvoiceDto : FullAuditedEntityDto<int>
     public decimal Discount { get; set; }
     public string TicketId  { get; set; }
     public Guid? TenantId { get; set; }
+    public string? LicenseTypeImage { get; set; }
+    public string? VehicleModelImage { get; set; }
 
 }
