@@ -58,7 +58,8 @@ public class CustomerPackagesAppService :
     private readonly IRepository<Vehicle, int> _vehicleRepository;
 
     public CustomerPackagesAppService(IRepository<CustomerPackage, int> repository,
-        IRepository<Package> packageRepository, IDataFilter dataFilter, 
+        IRepository<Package> packageRepository, 
+        IDataFilter dataFilter, 
         IRepository<Customer, Guid> customerRepository, 
         IOrganizationsAppService organizationsApp, 
         IRepository<Subscription, int> subscriptionRepository, 
