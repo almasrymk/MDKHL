@@ -65,7 +65,7 @@ public class InvoicesAppService : ApplicationService, IInvoicesAppService
         {
             var invoice = await _invoiceRepoistory.FindAsync(id);
             var payment = await _paymentRepoistory.FirstOrDefaultAsync( x => x.InvoiceId == id);
-            var vehicle = await _vehicleRepository.FirstOrDefaultAsync(x => x.CustomerId == invoice.CustomerId);
+            var vehicle = await _vehicleRepository.FirstOrDefaultAsync(x => x.EnPlateNumber == invoice.PlateNumber);
             if (invoice == null)
                 return Result<InvoiceDto>.NotFound("There is no such an Invoice , id: 5");
             var invoiceMap = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
