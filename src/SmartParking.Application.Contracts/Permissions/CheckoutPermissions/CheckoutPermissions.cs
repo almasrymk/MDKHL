@@ -13,5 +13,6 @@ public static class CheckoutPermissions
     public const string Default = GroupName + PropertyName;
     public const string Confirm = Default + SmartParkingPermissions.ConfirmPaying;
     public const string OpenGate = Default + SmartParkingPermissions.OpenGate;
+    public const string CancelTransaction = Default + SmartParkingPermissions.CancelTransaction;
     public const string Discount = Default + SmartParkingPermissions.Discount;
 }

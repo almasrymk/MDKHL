@@ -121,17 +121,20 @@
                 @if (ShowOpenGate)
                 {
                     <MudItem xs="12" Class="d-flex justify-content-between mt-1">
+                        @if (AuthorizationService.IsGrantedAnyAsync(CheckoutPermissions.CancelTransaction).Result)
+                        {
+                            <MudItem xs="@(ConfirmSize / 2)" Class="text-center pe-1">
+                                <MudButton FullWidth="true" Variant="Variant.Filled" Color="MudBlazor.Color.Error" Disabled="NoInvoice" OnClick="Cancel">@L["Cancel"]</MudButton>
+                            </MudItem>
+                        }
+                        @if (AuthorizationService.IsGrantedAnyAsync(CheckoutPermissions.OpenGate).Result)
+                        {
 
-                        <MudItem xs="@(ConfirmSize/2)" Class="text-center pe-1">
-                            <MudButton FullWidth="true" Variant="Variant.Filled" Color="MudBlazor.Color.Error" Disabled="NoInvoice" OnClick="Cancel">@L["Cancel"]</MudButton>
-                        </MudItem>
-                     @if (AuthorizationService.IsGrantedAnyAsync(CheckoutPermissions.OpenGate).Result){
 
-
-                        <MudItem xs="@(ConfirmSize/2)" Class="text-center ps-1">
-                            <MudButton FullWidth="true" Variant="Variant.Filled" Color="MudBlazor.Color.Dark" Disabled="NoInvoice" OnClick="OpenGate">@L["OpenGate"]</MudButton>
-                        </MudItem>
-                     }
+                            <MudItem xs="@(ConfirmSize/2)" Class="text-center ps-1">
+                                <MudButton FullWidth="true" Variant="Variant.Filled" Color="MudBlazor.Color.Dark" Disabled="NoInvoice" OnClick="OpenGate">@L["OpenGate"]</MudButton>
+                            </MudItem>
+                        }
                     </MudItem>
 
                 }

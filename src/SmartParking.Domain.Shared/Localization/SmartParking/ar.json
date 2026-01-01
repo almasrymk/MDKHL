@@ -829,6 +829,7 @@
     "AmountOfVisa": "المبلغ البنكي",
     "Permission:Checkout": "الخروج",
     "Permission:OpenGate": "فتح البوابة",
+    "Permission:CancelTransaction": "إلغاء العملية",
     "Permission:PDF Export": "تصدير PDF",
     "Permission:CSV Export": "تصدير CSV",
     "Permission:Excel Export": "تصدير Excel",
