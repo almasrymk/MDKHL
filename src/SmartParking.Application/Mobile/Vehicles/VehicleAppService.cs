@@ -132,6 +132,11 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
             {
                 return Result<VehicleDto>.NotFound("vehicle not found");
             }
+            var package = vehicle.Customer.CustomerPackages.FirstOrDefault();
+            if (package != null)
+            {
+                return Result<VehicleDto>.Forbidden();
+            }
             await _vehicleRepository.HardDeleteAsync(vehicle, autoSave: true);
             var vehicleDto = ObjectMapper.Map<Vehicle, VehicleDto>(vehicle);
             return Result<VehicleDto>.Success(vehicleDto, "Vehicle Delete Succesuffuly");
