@@ -11,5 +11,5 @@ public interface IOpeningGateService
 {
     string Name { get; }
 
-    Task<bool> OpenGateAsync(GarageTransactionDto garageTransactionDto);
+    Task<bool> OpenGateAsync(OpenGateDto openGateDto);
 }

@@ -24,13 +24,18 @@ public class OpenGateFactoryService : IOpenGateFactoryService
     public async Task<IOpeningGateService> GetOpeningGateService(OrganizationDto organizationDto)
     {
         var websocket =  _websocketConnectionManager.GetConnection(organizationDto.Id.ToString());
-        var _isFound = websocket is null ? false : true;
-        IOpeningGateService service = (organizationDto.DispenserTransaction, _isFound) switch
+        if (websocket != null)
         {
-            (_,true) => _services.FirstOrDefault(ser => ser.Name.Equals("Barrier", StringComparison.OrdinalIgnoreCase))!,
-            (_,false) => _services.FirstOrDefault(ser => ser.Name.Equals("Camera", StringComparison.OrdinalIgnoreCase))!
-        };
-        return service;
+            IOpeningGateService service = (organizationDto.DispenserTransaction) switch
+            {
+                (true) => _services.FirstOrDefault(ser => ser.Name.Equals("Barrier", StringComparison.OrdinalIgnoreCase))!,
+                (false) => _services.FirstOrDefault(ser => ser.Name.Equals("Camera", StringComparison.OrdinalIgnoreCase))!
+            };
+            return service;
+
+        }
+        return null;
+
     }
 
 

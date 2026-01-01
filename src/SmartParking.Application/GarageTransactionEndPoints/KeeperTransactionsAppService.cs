@@ -57,12 +57,11 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
         return await _invoiceAppService.CreateAsync(invoice.Value);
     }
 
-    public async Task<bool> OpenGate(int transactionId)
+    public async Task<bool> OpenGate(OpenGateDto openGateDto)
     {
-        var _garageTransaction = await _garageTransactionsAppService.GetAsync(transactionId);
         var _organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
         var _openGateService =await _openGateFactoryAppService.GetOpeningGateService(_organization);
-        return await _openGateService.OpenGateAsync(_garageTransaction);
+        return await _openGateService.OpenGateAsync(openGateDto);
     }
 
     ///<inheritdoc/>

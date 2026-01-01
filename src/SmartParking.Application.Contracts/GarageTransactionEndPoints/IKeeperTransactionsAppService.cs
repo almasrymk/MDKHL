@@ -1,4 +1,5 @@
 ﻿using SmartParking.Invoices;
+using SmartParking.OpeningGate;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
@@ -26,5 +27,5 @@ public interface IKeeperTransactionsAppService : IApplicationService
     /// <returns>Pre invoice dto</returns>
     Task<Result<CreateUpdateInvoiceDto>> PreCheckout(int entryTransactionId);
 
-    Task<bool> OpenGate(int transactionId);
+    Task<bool> OpenGate(OpenGateDto openGateDto);
 }

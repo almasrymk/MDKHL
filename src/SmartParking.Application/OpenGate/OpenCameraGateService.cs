@@ -4,6 +4,7 @@ using SmartParking.Cameras;
 using SmartParking.GarageTransactions;
 using SmartParking.OpeningGate;
 using SmartParking.Utilities;
+using SmartParking.Watchers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,16 +20,21 @@ public class OpenCameraGateService : SmartParkingAppService, IOpeningGateService
     private readonly ICamerasAppService _cameraAppService;
     private readonly ILogger<OpenCameraGateService> _logger;
     private readonly HttpClient _httpClient;
+    private readonly IWatcherAppService _watcherAppService;
     public string Name => "Camera";
 
 
 
 
-    public OpenCameraGateService(ICamerasAppService cameraAppService, ILogger<OpenCameraGateService> logger, HttpClient httpClient)
+    public OpenCameraGateService(ICamerasAppService cameraAppService, 
+        ILogger<OpenCameraGateService> logger, 
+        HttpClient httpClient,
+        IWatcherAppService watcherAppService)
     {
         _cameraAppService = cameraAppService;
         _logger = logger;
         _httpClient = httpClient;
+        _watcherAppService = watcherAppService;
     }
 
     public async Task<bool> OpenGate(OpenGateRequestDto camera, string GarageUrl)
@@ -44,25 +50,24 @@ public class OpenCameraGateService : SmartParkingAppService, IOpeningGateService
     }
     [RemoteService(IsEnabled = false)]
 
-    public async Task<bool> OpenGateAsync(GarageTransactionDto garageTransactionDto)
+    public async Task<bool> OpenGateAsync(OpenGateDto openGateDto)
     {
         try
         {
 
-            var camera = await _cameraAppService.GetAsync(garageTransactionDto.CameraId.Value);
-            var openGateBody = new OpenGateRequestDto
+            var camera = await _watcherAppService.GetcameraByWatherCodeAsync(openGateDto.WatcherCode);
+            return await OpenGate(new OpenGateRequestDto
             {
                 ip = camera.CameraIP,
                 port = 80,
                 username = camera.UserName ?? "",
                 password = camera.Password ?? ""
-            };
-            return await OpenGate(openGateBody, camera.Garage.OpenGateURL);
+            }, camera.Garage.OpenGateURL);
         }
         catch(Exception ex)
         {
             _logger.LogError("Failed To call camera");
-            _logger.LogError(garageTransactionDto.ToJsonString());
+            //_logger.LogError(garageTransactionDto.ToJsonString());
             return false;
         }
     }

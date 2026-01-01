@@ -12,5 +12,6 @@ namespace SmartParking.Watchers
     {
         public Task<Camera> GetcameraByWatherCodeAsync(string watcherCode);
         public Task<Dispenser> GetDispenserByWatherCodeAsync(string watcherCode);
+        public Task<ICollection<Watcher>> GetAllWatchersAsync();
     }
 }
