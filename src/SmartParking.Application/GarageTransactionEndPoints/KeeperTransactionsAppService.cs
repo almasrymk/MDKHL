@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.GarageTransactionEndPoints;
 
-[Authorize]
+//[Authorize]
 public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTransactionsAppService
 {
     private readonly IInvoiceAppService _invoiceAppService;

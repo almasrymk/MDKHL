@@ -1,5 +1,6 @@
 ﻿using SmartParking.GarageTransactions;
 using SmartParking.GarageTransactions.Factory;
+using SmartParking.Invoices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,12 @@ public class GarageTransactionsActionsFactoryAppService : IGarageTransactionsAct
 
     }
 
+    public async Task<GarageTransactionDto> GetGarageTransaction(InvoiceSearchDto invoiceSearchDto)
+    {
+        var service = GetConsumerService(invoiceSearchDto);
+        return await service.GetGarageTransaction(invoiceSearchDto);
+    }
+
     public async Task UnMappingEntryTransactionForDeletedExit(GarageTransactionDto garageTransactionDto)
     {
         var service = GetConsumerService(garageTransactionDto);
@@ -37,6 +44,18 @@ public class GarageTransactionsActionsFactoryAppService : IGarageTransactionsAct
         foreach (var service in _services)
         {
             if (service.CanHandle(garageTransactionDto))
+            {
+                return service;
+            }
+        }
+        throw new Exception("Invalid Action!!");
+    }
+
+    private IGarageTransactionActionsAppService GetConsumerService(InvoiceSearchDto invoiceSearchDto)
+    {
+        foreach (var service in _services)
+        {
+            if (service.CanHandle(invoiceSearchDto))
             {
                 return service;
             }

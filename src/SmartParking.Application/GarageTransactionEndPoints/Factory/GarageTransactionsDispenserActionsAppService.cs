@@ -1,15 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Enums;
 using SmartParking.GarageTransactions;
+using SmartParking.Invoices;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
+using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.GarageTransactionEndPoints.Factory;
 
-public class GarageTransactionsDispenserActionsAppService : IGarageTransactionActionsAppService
+public class GarageTransactionsDispenserActionsAppService : ApplicationService ,IGarageTransactionActionsAppService
 {
     private readonly IRepository<GarageTransaction, int> _repository;
 
@@ -18,7 +24,7 @@ public class GarageTransactionsDispenserActionsAppService : IGarageTransactionAc
         _repository = repository;
     }
 
-
+    [RemoteService(false)]
     public async Task UnMappingEntryTransactionForDeletedExit(GarageTransactionDto garageTransactionDto)
     {
         var query = await _repository.GetQueryableAsync();
@@ -35,11 +41,13 @@ public class GarageTransactionsDispenserActionsAppService : IGarageTransactionAc
         latestTransaction.IsMapped = false;
     }
 
+    [RemoteService(false)]
     public bool CanHandle(GarageTransactionDto garageTransactionDto)
     {
         return !string.IsNullOrEmpty(garageTransactionDto.TicketId);
     }
 
+    [RemoteService(false)]
     public async Task<GarageTransactionDto> CheckIfCheckoutFromMobile(GarageTransactionDto key)
     {
         var query = await _repository.GetQueryableAsync();
@@ -71,5 +79,48 @@ public class GarageTransactionsDispenserActionsAppService : IGarageTransactionAc
                 })
                 .FirstOrDefaultAsync();
         return latestTransaction;
+    }
+
+    [RemoteService(false)]
+    public async Task<GarageTransactionDto> GetGarageTransaction(InvoiceSearchDto invoiceSearchDto)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            var latestTransaction = await query
+                    .Where(gt => gt.TicketId == invoiceSearchDto.TicketId && gt.IsIn == true)
+                    .OrderByDescending(gt => gt.AccurateTime)
+                    .Select(x => new GarageTransactionDto
+                    {
+                        Id = x.Id,
+                        CameraId = x.CameraId,
+                        PlateNumber = x.PlateNumber,
+                        SnapTime = (DateTime)x.SnapTime,
+                        AccurateTime = (DateTime)x.AccurateTime,
+                        OrganizationID = x.OrganizationID,
+                        GarageId = x.GarageId,
+                        VehiclePicture = x.VehiclePicture,
+                        CameraType = x.CameraType,
+                        TenantId = x.TenantId,
+                        IsIn = x.IsIn,
+                        CheckoutMobile = x.CheckoutMobile,
+                        IsMapped = x.IsMapped,
+                        RemainingTime = x.RemainingTime,
+                        IsPending = x.IsPending,
+                        CustomerCategory = x.CustomerCategory,
+                        CanCheckout = x.CanCheckout,
+                        DispenserId = x.DispenserId,
+                        LaneNO = x.LaneNO,
+                        TicketId = x.TicketId
+                    })
+                    .FirstOrDefaultAsync();
+            return latestTransaction;
+        }
+    }
+
+    [RemoteService(false)]
+    public bool CanHandle(InvoiceSearchDto invoiceSearchDto)
+    {
+        return !string.IsNullOrEmpty(invoiceSearchDto.TicketId);
     }
 }
