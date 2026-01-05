@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Invoices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,4 +20,6 @@ public interface IGarageTransactionsActionsFactoryAppService
     /// <param name="garageTransactionDto">exit transaction</param>
     /// <returns>boolean</returns>
     Task<GarageTransactionDto> CheckIfCheckoutFromMobile(GarageTransactionDto garageTransactionDto);
+
+    Task<GarageTransactionDto> GetGarageTransaction(InvoiceSearchDto invoiceSearchDto);
 }
