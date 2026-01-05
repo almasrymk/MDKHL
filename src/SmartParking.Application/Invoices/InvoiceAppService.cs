@@ -430,7 +430,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     /// <inheritdoc/>
     public async Task<string> QrCodeForInvoicePage(string watcherCode,string domain)
     {
-        string qrText = $"{domain}checkout-extension/{watcherCode}";
+        string qrText = $"{domain}checkout-extension/";
         return await _qrCodeAppService.CreateQRCOdeImageAsync(qrText);
     }
     #endregion
