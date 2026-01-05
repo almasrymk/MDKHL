@@ -1,0 +1,27 @@
+﻿using SmartParking.Enums;
+
+namespace SmartParking.Blazor.Dtos;
+
+public class CreateUpdateInvoiceUiDto
+{
+    public string InvoiceNumber { get; set; }
+    public int TotalHours { get; set; }
+    public decimal InvoicePrice { get; set; }
+    public InvoiceType InvoiceType { get; set; }
+    public int OrganizationId { get; set; }
+    public int GarageId { get; set; }
+    public string PlateNumber { get; set; }
+    public DateTime? EntranceTime { get; set; }
+    public DateTime? InvoiceTime { get; set; }
+    public string CustomerArName { get; set; }
+    public string CustomerEnName { get; set; }
+    public Guid? TenantId { get; set; }
+    public Guid? CustomerId { get; set; }
+    public bool IsPackage { get; set; }
+    public string EntryTransactionImage { get; set; }
+    public string ExitTransactionImage { get; set; }
+    public int GarageTransactionExitId { get; set; }
+    public decimal Discount { get; set; } = default;
+    public decimal Vat { get; set; } = default;
+    public string TicketId { get; set; }
+}
