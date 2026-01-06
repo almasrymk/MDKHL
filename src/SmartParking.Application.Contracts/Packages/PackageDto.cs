@@ -35,4 +35,6 @@ public class PackageDto : AuditedEntityDto<int>
     public  int SubscribersInPackages { get; set; }
 
     public Status Status { get; set; }
+    public PackageCategoryTypes PackageCategoryType { get; set; }
+
 }

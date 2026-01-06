@@ -1,9 +1,6 @@
 ﻿using Abp.Authorization;
-using Castle.Core.Resource;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Customers;
@@ -44,11 +41,9 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     private readonly IOrganizationsAppService organizationsAppService;
     private readonly IRepository<Invoice, int> _invoiceRepo;
     private readonly IRepository<Organization, int> _organizationRepository;
-    private readonly IRepository<Package, int> _packageRepo;
     private readonly HttpClient _httpClient;
     private readonly IInvoiceUtilityAppService _invoiceUtility;
     private readonly IZatcaTaxInvoiceAppService _zatcaTaxInvoiceAppService;
-    private readonly IOptions<PaymentAppService> _options;
     private readonly ILogger<PaymentAppService> _logger;
     private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
     private readonly IRepository<Vehicle, int> _vehicleRepository;
@@ -67,7 +62,6 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
     public PaymentAppService(IRepository<Payment, Guid> repository,
         IRepository<Invoice, int> invoiceRepo, 
-        IRepository<Package, int> packageRepo,
         IRepository<Customer, Guid> customerRepo, 
         IDataFilter dataFilter,
         ICustomerPackagesAppService customerPackagesAppService,
@@ -75,7 +69,6 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         HttpClient httpClient,
         IInvoiceUtilityAppService invoiceUtility,
          IZatcaTaxInvoiceAppService zatcaTaxInvoiceAppService,
-         IOptions<PaymentAppService> options,
         ILogger<PaymentAppService> logger,
         IRepository<CustomerPackage, int> customerPackageRepository,
         IRepository<Organization, int> organizationRepo,
@@ -89,11 +82,9 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         this.customerPackagesAppService = customerPackagesAppService;
         organizationsAppService = _organizationsAppService;
         _invoiceRepo = invoiceRepo;
-        _packageRepo = packageRepo;
         _httpClient = httpClient;
         _invoiceUtility = invoiceUtility;
         _zatcaTaxInvoiceAppService = zatcaTaxInvoiceAppService;
-        _options = options;
         _logger = logger;
         _customerPackageRepository = customerPackageRepository;
         _organizationRepository = organizationRepo;
