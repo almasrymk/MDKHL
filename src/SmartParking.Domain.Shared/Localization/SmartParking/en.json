@@ -880,6 +880,8 @@
     "PackageStatus": "Package Status",
     "NoPackage": "No Package",
     "PaymentSuccess": "Payment completed successfully",
-    "PaymentFailed": "PaymentFailed"
+    "PaymentFailed": "PaymentFailed",
+    "HotelInfo": "Hotel information",
+    "ClientInfo": "Client information"
   }
 }

@@ -72,15 +72,16 @@ public partial class CustomInvoiceMainPage
         {
             var paymentInvoice = await paymentAppService.PayCustomerInvoiceAsync(dto);
             snackbar.Add(L["PaymentSuccess"], Severity.Success);
-
+            await Task.Delay(1000);
+            navigationManager.NavigateTo($"/custom-invoice/details/{paymentInvoice.Value.PaymentId}");
 
         }
         catch (Exception ex)
         {
             snackbar.Add(L["PaymentFailed"], Severity.Error);
         }
-        await Task.Delay(500);
-        navigationManager.NavigateTo("/", true);
+        //await Task.Delay(500);
+        //navigationManager.NavigateTo("/", true);
     }
 
     private async Task PlateNumberSearch(Watcher watcher) {

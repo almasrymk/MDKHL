@@ -2,8 +2,9 @@
 
 public class InvoiceCheckoutUiDto
 {
+    public int? InvoiceId { get; set; }
     public string InvoiceNumber { get; set; }
-    public string TransactionNumber { get; set; }
+    public string PaymentNumber { get; set; }
     public decimal InvoicePrice { get; set; }
     public string CashierName { get; set; }
     public string BranchName { get; set; }
@@ -13,7 +14,7 @@ public class InvoiceCheckoutUiDto
     public DateTime? InvoiceTime { get; set; }
     public bool IsPackage { get; set; }
     public string QrCodeInvoice { get; set; }
-    public decimal Vat { get; set; }
+    public double Vat { get; set; }
     public decimal Discount { get; set; }
-
+    public string OrganizationPicture {  get; set; }
 }
