@@ -2005,10 +2005,13 @@ namespace SmartParking.Migrations
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("PackageCategoryType")
+                        .HasColumnType("integer");
+
                     b.Property<int>("PackageStatus")
                         .HasColumnType("integer");
 
-                    b.Property<int>("PackageTypeId")
+                    b.Property<int?>("PackageTypeId")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Price")
@@ -5031,8 +5034,7 @@ namespace SmartParking.Migrations
                     b.HasOne("SmartParking.Entities.PackageType", "PackageType")
                         .WithMany()
                         .HasForeignKey("PackageTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Organization");
 
