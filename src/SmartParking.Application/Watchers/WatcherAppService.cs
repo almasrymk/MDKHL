@@ -50,4 +50,13 @@ public class WatcherAppService : ApplicationService, IWatcherAppService
             return await _watcherRepository.GetListAsync();
         }
     }
+
+    public async Task<string> GetWatcherCodeByWatcherIdAsync(int watcherId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var watcher= await _watcherRepository.FirstOrDefaultAsync(x=>x.Id==watcherId);
+            return watcher!.DeviceId;
+        }
+    }
 }

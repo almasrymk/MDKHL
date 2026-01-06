@@ -1,19 +1,14 @@
-﻿using Castle.Core.Resource;
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol.Plugins;
 using SmartParking.CustomerPackages.QRGenerator;
-using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
-using SmartParking.Entities.Lookups.VehiclesLookups;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Organizations;
-using SmartParking.Packages;
 using SmartParking.Payments;
 using SmartParking.PDF;
 using SmartParking.Results;
@@ -29,9 +24,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.ObjectMapping;
-using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
+using Package = SmartParking.Entities.Organizations.Package;
 
 
 namespace SmartParking.CustomerPackages;
@@ -590,7 +583,7 @@ public class CustomerPackagesAppService :
 
         };
     }
-    private static CustomerPackage CreateCustomerMobilePackage(Package PackageDto, Guid CustomerId, string arPlateNumber, string enPlateNumber)
+    private static CustomerPackage CreateCustomerMobilePackage(Entities.Organizations.Package PackageDto, Guid CustomerId, string arPlateNumber, string enPlateNumber)
     {
         return new CustomerPackage
         {
@@ -598,8 +591,8 @@ public class CustomerPackagesAppService :
             CustomerId = CustomerId,
             OrganizationId = PackageDto.OrganizationId,
             ExpiryDate = DateTime.Now.AddDays(PackageDto.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(PackageDto.DurationOfPackage).Minute),
-            ActivationDateOfPackage = DateTime.Now,
-            DectivationDateOfPackage = PackageDto.DectivationDate,
+            ActivationDateOfPackage = PackageDto.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateTime.Now : PackageDto.ActivationDate,
+            DectivationDateOfPackage = PackageDto.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateTime.Now.AddDays(PackageDto.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(PackageDto.DurationOfPackage).Minute) : PackageDto.DectivationDate,
             DescriptionOfPackage = PackageDto.Description,
             DurationOfPackage = PackageDto.DurationOfPackage,
             PriceOfPackage = PackageDto.Price,

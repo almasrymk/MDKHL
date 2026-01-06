@@ -207,7 +207,7 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
             {
                 input.DeactivationDate = DateTime.Now;
             }
-            else if (packageDto.Status == Status.Inactive && input.Status == Status.Active)
+            else if (packageDto.Status == Status.Inactive && input.Status == Status.Active && packageDto.PackageCategoryType != PackageCategoryTypes.CustomPackage)
             {
                 input.ActivationDate = DateTime.Now;
             }
