@@ -1,0 +1,77 @@
+﻿@page "/custom-invoice/details"
+@* @page "/custom-invoice/details/{InvoiceId}" *@
+@using SmartParking.Blazor.Components.InvoiceExtensionComponents
+@using SmartParking.Blazor.Components.Shared
+@layout CustomLayout
+@attribute [AllowAnonymous]
+
+<MudGrid class="p-3" Spacing="3" Style="background-color:#FFFFFF">
+
+    <MudItem xs="12">
+        <InvoiceMainHeaderLogos LeftImage="images/logo/MDHKL_01.png"
+                                RightImage="images/maen.jpg"
+                                Title="رقم المرجع"
+                                SubTitle="REF-2024-001234" />
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudDivider Class="mt-3 mb-3" />
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudText Class="align-items-center mb-3" Typo="Typo.h6" Align="Align.Center">
+            فاتورة ضريبية مبسطة
+        </MudText>
+    </MudItem>
+
+    <MudItem xs="12">
+        <InvoiceDetailedPaper></InvoiceDetailedPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="6">
+    <DetailedInfoCard Title="بيانات الفندق"
+                          Row1Text="اسم الكاشير:"
+                          Row1Value="أحمد محمد"
+                          Row2Text="اسم الفرع:"
+                          Row2Value="فرع الرياض - حي الملز"
+                          Row3Text="العنوان:"
+                          Row3Value="شارع الأمير محمد بن عبدالعزيز، الرياض 12832، المملكة العربية السعودية" />
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        <DetailedInfoCard Title="بيانات العميل"
+                          Row1Text="رقم اللوحة:"
+                          Row1Value="أ ب ج 1234"
+                          Row2Text="وقت الدخول:"
+                          Row2Value="08:30 صباحاً - 05/01/2026"
+                          Row3Text="وقت الخروج:"
+                          Row3Value="02:45 مساءً - 05/01/2026" />
+    </MudItem>
+    <MudItem xs="12">
+        <SubscriptionDetailed></SubscriptionDetailed>
+    </MudItem>
+    <MudItem xs="12">
+        <InvoicePaymentStructure></InvoicePaymentStructure>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudDivider Class="mt-3 mb-3" />
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudText Class="align-items-center mb-1" Style="color:#6A7282; font-size:12px" Align="Align.Center">
+            شكراً لاستخدامكم نظام المواقف
+        </MudText>
+    </MudItem>
+</MudGrid>
+<MudItem Class="d-flex justify-content-center align-content-center align-items-center mt-4 mb-4">
+    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" EndIcon="@Icons.Material.Filled.Download">طباعة الفاتوره</MudButton>
+</MudItem>
+
+@code {
+    [Parameter] public int InvoiceId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+}

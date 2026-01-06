@@ -1,0 +1,87 @@
+﻿<MudPaper Elevation="0" Class="pa-4" >
+    <MudGrid Spacing="1">
+        
+        @* Subtotal *@
+        <MudItem xs="12" md="12" sm="12" Class="d-flex justify-content-between">
+            <MudText Typo="Typo.body1" Color="MudBlazor.Color.Default" >
+                @Label_Subtotal:
+            </MudText>
+            <MudText Typo="Typo.body1">
+                @Subtotal.ToString("N2")
+                <MudImage Src="@LeftImage"
+                        Width="14"
+                        Height="14"
+                        Class="ms-2" />
+            </MudText>           
+        </MudItem>
+        @* Discount *@
+        <MudItem xs="12" md="12" sm="12" Class="d-flex justify-content-between">
+            <MudText Typo="Typo.body1" Color="MudBlazor.Color.Success" >
+                @Label_Discount:
+            </MudText>
+            <MudText Typo="Typo.body1" Color="MudBlazor.Color.Success" >
+                @Discount.ToString("N2")
+                <MudImage Src="@LeftImage"
+                        Width="14"
+                        Height="14"
+                        Class="ms-2" />
+            </MudText>
+        </MudItem>
+
+        
+        @* VAT *@
+        <MudItem xs="12" md="12" sm="12" Class="d-flex justify-content-between">
+            <MudText Typo="Typo.body1" Color="MudBlazor.Color.Default">
+                @Label_VatRate (@(VatRate)%):
+            </MudText>
+
+            <MudText Typo="Typo.body1" >
+                @VatAmount.ToString("N2")
+                <MudImage Src="@LeftImage"
+                          Width="14"
+                          Height="14"
+                          Class="ms-2" />
+            </MudText>
+            
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudDivider Class="my-2" />
+        </MudItem>
+
+        @* Grand Total *@
+        <MudItem xs="12" md="12" sm="12" Class="d-flex justify-content-between">        
+            <MudText Typo="Typo.subtitle1" Style="font-weight: bold;">
+                @TotalGrand:
+            </MudText>
+            <MudItem Class="d-flex align-content-center align-items-center">
+                <MudText Typo="Typo.subtitle1" Style="font-weight: bold">
+                     @Total.ToString("N2")
+                </MudText>
+                <MudImage Src="@LeftImage"
+                          Width="14"
+                          Height="14"
+                          Class="ms-2" />
+            </MudItem>
+        </MudItem>
+        <MudItem xs="12" Class="d-flex justify-end mt-4">
+             <MudImage Src="@QrCodeUrl" Width="100" Height="100" Alt="QR Code" Elevation="1" Class="rounded-lg" />
+        </MudItem>
+
+    </MudGrid>
+</MudPaper>
+
+@code {
+    [Parameter] public string Label_Subtotal { get; set; } = "المجموع قبل الضريبة";
+    [Parameter] public decimal Subtotal { get; set; } = 50.00m;
+    [Parameter] public string Label_Discount { get; set; } = "الخصم";
+    [Parameter] public decimal Discount { get; set; } = 5.00m;
+    [Parameter] public string Label_VatRate { get; set; } = " ضريبة القيمة المضافة";
+    [Parameter] public double VatRate { get; set; } = 15;
+    [Parameter] public string TotalGrand { get; set; } = "المجموع الإجمالي";
+    [Parameter] public string LeftImage { get; set; } = "images/Saudi_Riyal_Symbolsvg.png";
+    [Parameter] public string QrCodeUrl { get; set; } = "path/to/qr-image.png";
+
+    private decimal VatAmount => (Subtotal - Discount) * (decimal)(VatRate / 100);
+    private decimal Total => (Subtotal - Discount) + VatAmount;
+}
