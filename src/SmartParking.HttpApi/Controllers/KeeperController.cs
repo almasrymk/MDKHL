@@ -11,6 +11,7 @@ using SmartParking.OpeningGate;
 using SmartParking.Organizations;
 using SmartParking.Results;
 using SmartParking.Utilities;
+using SmartParking.Watchers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -37,17 +38,19 @@ public class KeeperController : AbpController
     private readonly IDiscountAppService _discountAppService;
     private readonly IInvoiceUtilityAppService _invoiceUtilityAppService;
     private readonly IOrganizationsAppService _organizationAppService;
-    public KeeperController(IKeeperAppService keeperAppService, 
+    private readonly IWatcherAppService _watcherAppService;
+    public KeeperController(IKeeperAppService keeperAppService,
         IAuthenticationAppService authenticationAppService,
-        ICurrentUser currentUser, 
-        ICurrentTenant currentTenant, 
+        ICurrentUser currentUser,
+        ICurrentTenant currentTenant,
         IInvoiceAppService invoiceAppService,
         IDiscountAppService discountAppService,
-        IUsersAppService usersAppService, 
-        IInvoiceUtilityAppService invoiceUtilityAppService = null, 
+        IUsersAppService usersAppService,
+        IInvoiceUtilityAppService invoiceUtilityAppService = null,
         IGarageTransactionsAppService garageTransactionsAppService = null,
         IOrganizationsAppService organizationsAppService = null,
-        IKeeperTransactionsAppService keeperTransactionsAppService = null)
+        IKeeperTransactionsAppService keeperTransactionsAppService = null,
+        IWatcherAppService watcherAppService = null)
     {
         _keeperAppService = keeperAppService;
         _authenticationAppService = authenticationAppService;
@@ -60,6 +63,7 @@ public class KeeperController : AbpController
         _discountAppService = discountAppService;
         _keeperTransactionsAppService = keeperTransactionsAppService;
         _organizationAppService = organizationsAppService;
+        _watcherAppService = watcherAppService;
     }
 
     [HttpPost("login")]
@@ -169,16 +173,20 @@ public class KeeperController : AbpController
 
     [HttpGet("PayAtExitCamera")]
     [Authorize]
-    public async Task<Result<InvoiceMobileDto>> PayInvoice(int InvoiceId, decimal DiscountValue, int paymentMethodType,string watcherCode)
+    public async Task<Result<InvoiceMobileDto>> PayInvoice(int InvoiceId, decimal DiscountValue, int paymentMethodType)
     {
-        var organization = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
-        var openGateDto = new OpenGateDto
-        {
-            WatcherCode = watcherCode,
-            OrganizationId = organization.Id,
-        };
         var invoice = await _keeperAppService.CheckoutAsync(InvoiceId, paymentMethodType, DiscountValue);
-        await _keeperTransactionsAppService.OpenGate(openGateDto);
+        var gt = await _garageTransactionsAppService.GetAsync(invoice.Value.GarageTransactionExitId);
+        string code = gt.LaneNO;
+        if (!string.IsNullOrEmpty(gt.LaneNO))
+        {
+            code =await _watcherAppService.GetWatcherCodeByWatcherIdAsync(gt.CameraId.Value);
+        }
+        await _keeperTransactionsAppService.OpenGate(new OpenGateDto
+        {
+            WatcherCode = code ,
+            OrganizationId = invoice.Value.OrganizationId,
+        });
         return invoice;
     }
     [HttpPut("cancelinvoiceandmapping")]
