@@ -70,7 +70,7 @@ public partial class CustomInvoiceMainPage
         };
         try
         {
-            await paymentAppService.PayCustomerInvoiceAsync(dto);
+            var paymentInvoice = await paymentAppService.PayCustomerInvoiceAsync(dto);
             snackbar.Add(L["PaymentSuccess"], Severity.Success);
 
 
