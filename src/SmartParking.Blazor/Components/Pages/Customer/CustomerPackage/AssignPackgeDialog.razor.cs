@@ -1,21 +1,15 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.Blazor.Components.Pages.PrePackageAssign;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Blazor.Components.Shared.Utilities;
 using SmartParking.Blazor.Components.State;
 using SmartParking.CustomerPackages;
 using SmartParking.Cutomers;
-using SmartParking.Entities.Discounts;
 using SmartParking.Enums;
-using SmartParking.GarageTransactions;
 using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.Packages;
-using SmartParking.Payments;
-using SmartParking.Results;
-using SmartParking.Utilities;
 using Volo.Abp.Application.Dtos;
-using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 
@@ -42,10 +36,8 @@ partial class AssignPackgeDialog
     private MudForm form;
     public List<PackageDto> selectedPackageDto { get; set; } = new List<PackageDto>();
     private bool IsCustom { get; set; } = false;
-    private DateTime? ActivationDate { get; set; }
-    private DateTime? DectivationDate { get; set; }
-    public TimeSpan? startTime { get; set; }
-    public TimeSpan? endTime { get; set; }
+    private CustomPackageUiDto CustomPackageUiDto { get; set; } 
+
 
     /// <summary>
     /// Retrieves the available packages based on the customer's category.
@@ -70,12 +62,13 @@ partial class AssignPackgeDialog
         Organizations = result.Items;
         await base.OnInitializedAsync();
     }
-
+ 
     /// <summary>
     /// Submits the package assignment to the customer.
     /// </summary>
     private async Task SubmitEdit()
     {
+
         var package = selectedPackageDto.FirstOrDefault();
         if (CustomerPackage.CustomerCategory != Customercategory.ToString() && !IsCustom)
         {
@@ -86,7 +79,7 @@ partial class AssignPackgeDialog
         }
         if (IsCustom)
         {
-            if (startTime == null || endTime == null)
+            if (CustomPackageUiDto.startTime == null || CustomPackageUiDto.endTime == null)
             {
                 SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("Time")} , " +
                 $"{LocalizationHelper.GetLocalizedString("TimeMustBeEntered")} ", Severity.Error);
@@ -111,22 +104,22 @@ partial class AssignPackgeDialog
         if (IsCustom)
         {
             //Method  to Check Is Custom Varaiable
-            CheckIsCustomProperties(_customerPackageDto);
+            CustomPackageValidations.CheckIsCustomProperties(CustomPackageUiDto,Snackbar);
             _customerPackageDto.publishedOfPackage = true;
-            _customerPackageDto.ActivationDateOfPackage = ActivationDate.HasValue && startTime.HasValue
-                                                        ? ActivationDate.Value.Date + startTime.Value
-                                                        : ActivationDate.Value.Date;
-            _customerPackageDto.ExpiryDate = DectivationDate.HasValue && endTime.HasValue
-                                            ? DectivationDate.Value.Date + endTime.Value
-                                            : DectivationDate.Value.Date;
+            _customerPackageDto.ActivationDateOfPackage = CustomPackageUiDto.ActivationDate.HasValue && CustomPackageUiDto.startTime.HasValue
+                                                        ? CustomPackageUiDto.ActivationDate.Value.Date + CustomPackageUiDto.startTime.Value
+                                                        : CustomPackageUiDto.ActivationDate.Value.Date;
+            _customerPackageDto.ExpiryDate = CustomPackageUiDto.DectivationDate.HasValue && CustomPackageUiDto.endTime.HasValue
+                                            ? CustomPackageUiDto.DectivationDate.Value.Date + CustomPackageUiDto.endTime.Value
+                                            : CustomPackageUiDto.DectivationDate.Value.Date;
             _customerPackageDto.IsCustomPackage = true;
-            _customerPackageDto.DurationOfPackage = DectivationDate.Value.DayOfYear - ActivationDate.Value.DayOfYear;
+            _customerPackageDto.DurationOfPackage = CustomPackageUiDto.DectivationDate.Value.DayOfYear - CustomPackageUiDto.ActivationDate.Value.DayOfYear;
             CustomerPackage.Id = default;
             _customerPackageDto.PackageArabicName = AlertMessages.AlertMessages.PackageNameAr;
             _customerPackageDto.PackageEnglishName = AlertMessages.AlertMessages.PackageNameEn;
-            _customerPackageDto.PublishFromOfPackage = startTime.HasValue ? TimeOnly.FromTimeSpan(startTime.Value) : null;
-            _customerPackageDto.PublishToOfPackage = endTime.HasValue ? TimeOnly.FromTimeSpan(endTime.Value) : null;
-            if (ActivationDate == DectivationDate && endTime.Value <= startTime.Value)
+            _customerPackageDto.PublishFromOfPackage = CustomPackageUiDto.startTime.HasValue ? TimeOnly.FromTimeSpan(CustomPackageUiDto.startTime.Value) : null;
+            _customerPackageDto.PublishToOfPackage = CustomPackageUiDto.endTime.HasValue ? TimeOnly.FromTimeSpan(CustomPackageUiDto.endTime.Value) : null;
+            if (CustomPackageUiDto.ActivationDate == CustomPackageUiDto.DectivationDate &&  CustomPackageUiDto.endTime.Value <= CustomPackageUiDto.startTime.Value)
                 throw new Exception(LocalizationHelper.GetLocalizedString("EndTimeShouldBeGreaterThanStartTime"));
         }
         else
@@ -135,14 +128,16 @@ partial class AssignPackgeDialog
             _customerPackageDto.PriceOfPackage = package.Price;
             _customerPackageDto.PackageArabicName = package.ArabicName;
             _customerPackageDto.PackageEnglishName = package.EnglishName;
-            _customerPackageDto.ExpiryDate = DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute);
+            _customerPackageDto.ExpiryDate = package.PackageCategoryType!=PackageCategoryTypes.CustomPackage ? DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute): package.DectivationDate; 
             _customerPackageDto.PublishFromOfPackage = package.PublishFrom;
             _customerPackageDto.PublishToOfPackage = package.PublishTo;
-            _customerPackageDto.ActivationDateOfPackage = DateTime.Now;
-            _customerPackageDto.DectivationDateOfPackage = package.DectivationDate;
+            _customerPackageDto.ActivationDateOfPackage = package.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateTime.Now : package.ActivationDate;
+            _customerPackageDto.DectivationDateOfPackage = package.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute) : package.DectivationDate;
             _customerPackageDto.DescriptionOfPackage = package.Description;
             _customerPackageDto.DurationOfPackage = package.DurationOfPackage;
             _customerPackageDto.publishedOfPackage = package.Published;
+            _customerPackageDto.CountOfDays = package.DurationOfPackage;
+            _customerPackageDto.PriceOfPackagePerDay = Math.Round((package.Price / package.DurationOfPackage),2);
 
 
         }
@@ -163,16 +158,7 @@ partial class AssignPackgeDialog
         Navigation.NavigateTo("/prepayment");
 
     }
-    private string ValidateEndTime(TimeSpan? value)
-    {
-        if (!value.HasValue || !startTime.HasValue)
-            return null;
 
-        if (ActivationDate == DectivationDate && value <= startTime)
-            return L["EndTimeShouldBeGreaterThanStartTime"];
-
-        return null;
-    }
     /// <summary>
     /// Cancels the edit operation and closes the dialog.
     /// </summary>
@@ -193,89 +179,8 @@ partial class AssignPackgeDialog
 
     }
 
-    private void CheckIsCustomProperties(CustomerPackageDto customerPackageDto)
-    {
-        if (ActivationDate == null)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("StartDate") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
-        }
-        if (DectivationDate == null)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("EndDate") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
-        }
-        if (startTime == null)
-        {
-            SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("StartTime")} , " +
-          $"{LocalizationHelper.GetLocalizedString("EmptyValidation")} " +
-          $"{LocalizationHelper.GetLocalizedString("TimeMustBeEntered")} ", Severity.Error);
-            //throw new Exception(LocalizationHelper.GetLocalizedString("StartTime") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
-        }
-        if (endTime == null)
-        {
-            SnackBar.ShowSnackbar(Snackbar, $"{LocalizationHelper.GetLocalizedString("EndTime")} , " +
-                    $"{LocalizationHelper.GetLocalizedString("EmptyValidation")} " +
-                    $"{LocalizationHelper.GetLocalizedString("TimeMustBeEntered")} ", Severity.Error);
-            //throw new Exception(LocalizationHelper.GetLocalizedString("StartTime") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
-        }
-        if (customerPackageDto.PriceOfPackage == null)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Price") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
-        }
-    }
 
-    private void OnActivationDateChanged(DateTime? newDate)
-    {
-        ActivationDate = newDate;
-        if (ActivationDate > DectivationDate)
-            DectivationDate = ActivationDate.Value.AddDays(1);
-        OnDateChanged();
-    }
 
-    private void OnDectivationDateChanged(DateTime? newDate)
-    {
-        DectivationDate = newDate;
-        OnDateChanged();
-    }
 
-    private void OnPriceOfPackageChanged(decimal? amount)
-    {
-        _customerPackageDto.PriceOfPackage = amount;
-        if (_customerPackageDto.CountOfDays > 0)
-            _customerPackageDto.PriceOfPackagePerDay = _customerPackageDto.PriceOfPackage / _customerPackageDto.CountOfDays;
-    }
 
-    private void OnPriceOfPackagePerDayChanged(decimal? amount)
-    {
-        _customerPackageDto.PriceOfPackagePerDay = amount;
-        if (_customerPackageDto.CountOfDays > 0)
-            _customerPackageDto.PriceOfPackage = _customerPackageDto.PriceOfPackagePerDay * _customerPackageDto.CountOfDays;
-    }
-
-    private void OnCountOfDaysChanged(decimal? count)
-    {
-        _customerPackageDto.CountOfDays = count;
-        if (ActivationDate != null && _customerPackageDto.CountOfDays > 0)
-        {
-            DectivationDate = ActivationDate;
-            if (_customerPackageDto.CountOfDays.Value - 1 > 0)
-                DectivationDate = ActivationDate.Value.AddDays((int)_customerPackageDto.CountOfDays.Value - 1);
-            if (_customerPackageDto.PriceOfPackagePerDay > 0)
-            {
-                _customerPackageDto.PriceOfPackage = _customerPackageDto.PriceOfPackagePerDay * _customerPackageDto.CountOfDays;
-            }
-        }
-    }
-
-    private void OnDateChanged()
-    {
-        _customerPackageDto.CountOfDays = 0;
-        if (ActivationDate != null && DectivationDate != null)
-        {
-            _customerPackageDto.CountOfDays = (decimal)DectivationDate.Value.Subtract(ActivationDate.Value).TotalDays;
-            if (_customerPackageDto.PriceOfPackagePerDay > 0)
-            {
-                _customerPackageDto.PriceOfPackage = _customerPackageDto.PriceOfPackagePerDay * _customerPackageDto.CountOfDays;
-            }
-        }
-    }
 }

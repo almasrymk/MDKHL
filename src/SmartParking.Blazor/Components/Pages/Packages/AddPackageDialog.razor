@@ -1,4 +1,7 @@
 ﻿@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Blazor.Components.Shared.Components
+@using SmartParking.Blazor.Components.Shared.Utilities
+@using SmartParking.Blazor.Components.State
 @using SmartParking.Currency
 @using SmartParking.Enums
 @using SmartParking.Lookups
@@ -79,9 +82,30 @@
                             }
                         </MudSelect>
                     </MudItem>
+                    <MudItem sm="6" md="6">
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                @L["Price"]
+                                @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                            </label>
 
-                    
+                            <MudNumericField @bind-Value="createUpdatePackage.Price"
+                                             For="@(() => createUpdatePackage.Price)"
+                                             Variant="Variant.Text"
+                                             Required="true"
+                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                                             HideSpinButtons="true"
+                                             class="@(CultureInfo.CurrentCulture.Name == "ar" ? "custom-numeric-field" : "")" />
+                        </div>
+                    </MudItem>
+                    @if (createUpdatePackage.PackageCategoryType == PackageCategoryTypes.CustomPackage){
 
+                        <CustomPackageComponent CustomPackageUiDto="CustomPackageUiDto" />
+
+                    }
+                    else
+                    {
+                        
                     <MudItem sm="6" md="6">
                         <MudNumericField @bind-Value="createUpdatePackage.DurationOfPackage"
                         For="@(() => createUpdatePackage.DurationOfPackage)"
@@ -127,24 +151,6 @@
 
                     }
 
-
-                    <MudItem sm="6" md="6">
-                        <div style="display: flex; flex-direction: column;">
-                            <label style="font-size: 0.75rem; margin-bottom: 4px;">
-                                @L["Price"]
-                                @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
-                            </label>
-
-                            <MudNumericField @bind-Value="createUpdatePackage.Price"
-                                             For="@(() => createUpdatePackage.Price)"
-                                             Variant="Variant.Text"
-                                             Required="true"
-                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                                             HideSpinButtons="true"
-                                             class="@(CultureInfo.CurrentCulture.Name == "ar" ? "custom-numeric-field" : "")"
-                                             />
-                        </div>
-                    </MudItem>
 
                         <MudItem sm="6" md="6">
                             <MudSelect @bind-Value="createUpdatePackage.CustomerCategory"
@@ -197,7 +203,7 @@
 
 
                     }
-
+                    }
                     <MudItem sm="12">
                         <label style="font-size: 0.75rem; margin-bottom: 4px;">
                             @L["Description"]
@@ -213,6 +219,7 @@
                        />
                     </MudItem>
 
+                    
 
                 </MudGrid>
             </MudForm>
@@ -271,7 +278,9 @@
     private TimeSpan? timeSpanTo;
     private string CustomerCategory { get; set; }
     private PagedResultDto<OrganizationDto> organizationsList { get; set; } = new();
-    private bool IsDurationDisabled { get; set; } = true;
+    private CustomPackageUiDto CustomPackageUiDto { get; set; } = new();
+
+    private bool IsDurationDisabled { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -285,6 +294,7 @@
             var id = await organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
             OrganizationId = id.ToString();
         }
+        IsDurationDisabled = false;
         await base.OnInitializedAsync();
     }
 
@@ -358,8 +368,20 @@ private void OnTimeToChanged(TimeSpan? value)
 
         try
         {
+            if (createUpdatePackage.PackageCategoryType ==PackageCategoryTypes.CustomPackage){
+
+                CustomPackageValidations.CheckIsCustomProperties(CustomPackageUiDto, Snackbar);
+                createUpdatePackage.ActivationDate = CustomPackageUiDto.ActivationDate.Value;
+                createUpdatePackage.DeactivationDate = CustomPackageUiDto.DectivationDate.Value;
+                createUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(CustomPackageUiDto.startTime.Value);
+                createUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(CustomPackageUiDto.endTime.Value);
+                createUpdatePackage.DurationOfPackage = (int) CustomPackageUiDto.CountOfDays.Value;
+            }
+            else{
+                createUpdatePackage.ActivationDate = DateTime.Now;
+            }
+
             createUpdatePackage.Published = createUpdatePackage.Published || PackageValidations.CheckPackageTimeValiditity(createUpdatePackage.PublishFrom, createUpdatePackage.PublishTo);
-            createUpdatePackage.ActivationDate = DateTime.Now;
             createUpdatePackage.PackageStatus = SubscriptionStatus.Draft;
             createUpdatePackage.Status = Status.Inactive;
             await PackagesAppService.CreateAsync(createUpdatePackage);
