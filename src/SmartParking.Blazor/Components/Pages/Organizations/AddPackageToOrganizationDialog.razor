@@ -1,4 +1,5 @@
-﻿@using SmartParking.Lookups
+﻿@using SmartParking.Enums
+@using SmartParking.Lookups
 @using SmartParking.Packages
 @using SmartParking.Organizations
 @using Microsoft.Extensions.Localization
@@ -50,16 +51,20 @@
 
                 
                     <MudItem sm="4" md="4">
-                        <MudSelect @bind-Value="@createUpdatePackage.PackageTypeId" 
-                        Label=@L["Package Type"]
-                                   Placeholder=@L["Choose"]
-                                   HelperText=@L["Helper Text"]>
+                        <MudSelect @bind-Value="@createUpdatePackage.PackageCategoryType"
+                        Label="@L["PackageType"]" 
+                        HelperText=@L["Helper Text"] 
+                        Placeholder=@L["Choose"]
+                        Required ="true" 
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
+                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
 
-                            @foreach (var type in packageTypes)
+                            @foreach (var type in Enum.GetValues(typeof(PackageCategoryTypes)).Cast<PackageCategoryTypes>())
                             {
-                                <MudSelectItem T="int" Value="@type.Id">
-                                    @type.EnglishName
+                                <MudSelectItem  Value="@type">
+                                    [type.ToString();
                                 </MudSelectItem>
+                                
                             }
                         </MudSelect>
                     </MudItem>

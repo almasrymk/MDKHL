@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.Shared
+@using SmartParking.Blazor.Components.Shared.Components
 @using SmartParking.Blazor.Components.State
 @using SmartParking.CustomerPackages
 @using SmartParking.Cutomers
@@ -145,56 +146,7 @@
 
                     @if (IsCustom)
                     {
-                        <MudItem sm="6">
-                            <MudDatePicker Label="@L["StartDate"]" DateChanged="OnActivationDateChanged"
-                                           PickerVariant="PickerVariant.Dialog"
-                                           ShowToolbar="false"
-                                           Date="ActivationDate"
-                                           Required="true"
-                                           MinDate="new DateTime(DateTime.Now.Year ,DateTime.Now.Month , DateTime.Now.Day)"
-                                           RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
-                        </MudItem>
-                        <MudItem sm="6">
-                            <MudDatePicker Label="@L["EndDate"]" DateChanged="OnDectivationDateChanged"
-                                           PickerVariant="PickerVariant.Dialog"
-                                           ShowToolbar="false"
-                                           Date="DectivationDate"
-                                           Required="true"
-                                           MinDate="ActivationDate==null?new DateTime(DateTime.Now.Year ,DateTime.Now.Month , DateTime.Now.Day).AddDays(1):ActivationDate.Value.AddDays(1)"
-                                           RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTimePicker Label="@L["StartTime"]"
-                                           PickerVariant="PickerVariant.Dialog"
-                                           @bind-Time="startTime"
-                                           Required="true"
-                                           RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTimePicker Label="@L["EndTime"]"
-                                           PickerVariant="PickerVariant.Dialog"
-                                           @bind-Time="endTime"
-                                           MinTime="startTime"
-                                           Required="true"
-                                           Validation="ValidateEndTime"
-                                           RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField T="decimal?" Value="_customerPackageDto.CountOfDays" ValueChanged="OnCountOfDaysChanged" HideSpinButtons Min="0" Label="@L["CountOfDays"]"
-                                             Required="true"
-                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField T="decimal?" Value="_customerPackageDto.PriceOfPackagePerDay" ValueChanged="OnPriceOfPackagePerDayChanged" HideSpinButtons Min="0" Label="@L["PriceOfPackagePerDay"]"
-                                             Required="true"
-                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudNumericField T="decimal?" Value="_customerPackageDto.PriceOfPackage" ValueChanged="OnPriceOfPackageChanged" HideSpinButtons Min="0" Label="@L["PriceOfPackage2"]"
-                                             Required="true"
-                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
-                        </MudItem>
-
+                        <CustomPackageComponent CustomPackageUiDto="CustomPackageUiDto" />
                     }
                 </MudGrid>
 
@@ -220,7 +172,7 @@
                                 <MudTd>@context.ArabicName</MudTd>
                             }
 
-                            <MudTd>@context.PackageTypeEnglishName</MudTd>
+                            <MudTd> @L[@context.PackageCategoryType.ToString()]</MudTd>
                             <MudTd>@context.Price</MudTd>
                             <MudTd>@context.PublishFrom</MudTd>
                             <MudTd>@context.PublishTo</MudTd>

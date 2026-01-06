@@ -6,18 +6,13 @@ using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Currency;
-using SmartParking.Cutomers;
 using SmartParking.Enums;
 using SmartParking.Localization;
-using SmartParking.Lookups;
 using SmartParking.Packages;
 using SmartParking.Permissions.CustomerPermissions;
 using SmartParking.Permissions.PackagePermissions;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 
@@ -294,7 +289,6 @@ public partial class Package
         var createUpdatePackage = new CreateUpdatePackageDto
         {
             ArabicName = packageDto.ArabicName,
-            PackageTypeId = packageDto.PackageTypeId,
             Description = packageDto.Description,
             EnglishName = packageDto.EnglishName,
             OrganizationId = packageDto.OrganizationId,

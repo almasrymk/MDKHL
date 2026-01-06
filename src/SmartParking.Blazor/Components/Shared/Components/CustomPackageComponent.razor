@@ -1,0 +1,130 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.State
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+
+<MudItem sm="6">
+    <MudDatePicker Label="@L["StartDate"]" DateChanged="OnActivationDateChanged"
+                   PickerVariant="PickerVariant.Dialog"
+                   ShowToolbar="false"
+                   Date="CustomPackageUiDto.ActivationDate"
+                   Required="true"
+                   MinDate="new DateTime(DateTime.Now.Year ,DateTime.Now.Month , DateTime.Now.Day)"
+                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+</MudItem>
+<MudItem sm="6">
+    <MudDatePicker Label="@L["EndDate"]" DateChanged="OnDectivationDateChanged"
+                   PickerVariant="PickerVariant.Dialog"
+                   ShowToolbar="false"
+                   Date="CustomPackageUiDto.DectivationDate"
+                   Required="true"
+                   MinDate="CustomPackageUiDto.ActivationDate==null?new DateTime(DateTime.Now.Year ,DateTime.Now.Month , DateTime.Now.Day).AddDays(1):CustomPackageUiDto.ActivationDate.Value.AddDays(1)"
+                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+</MudItem>
+<MudItem sm="4">
+    <MudTimePicker Label="@L["StartTime"]"
+                   PickerVariant="PickerVariant.Dialog"
+                   @bind-Time="CustomPackageUiDto.startTime"
+                   Required="true"
+                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+</MudItem>
+<MudItem sm="4">
+    <MudTimePicker Label="@L["EndTime"]"
+                   PickerVariant="PickerVariant.Dialog"
+                   @bind-Time="CustomPackageUiDto.endTime"
+                   MinTime="CustomPackageUiDto.startTime"
+                   Required="true"
+                   Validation="ValidateEndTime"
+                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+</MudItem>
+<MudItem sm="4">
+    <MudNumericField T="decimal?" Value="CustomPackageUiDto.CountOfDays" ValueChanged="OnCountOfDaysChanged" HideSpinButtons Min="0" Label="@L["CountOfDays"]"
+                     Required="true"
+                     RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+</MudItem>
+<MudItem sm="4">
+    <MudNumericField T="decimal?" Value="CustomPackageUiDto.PriceOfPackagePerDay" ValueChanged="OnPriceOfPackagePerDayChanged" HideSpinButtons Min="0" Label="@L["PriceOfPackagePerDay"]"
+                     Required="true"
+                     RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+</MudItem>
+<MudItem sm="4">
+    <MudNumericField T="decimal?" Value="CustomPackageUiDto.PriceOfPackage" ValueChanged="OnPriceOfPackageChanged" HideSpinButtons Min="0" Label="@L["PriceOfPackage2"]"
+                     Required="true"
+                     RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+</MudItem>
+
+
+@code{
+    [Parameter]
+    public CustomPackageUiDto CustomPackageUiDto { get; set; }
+
+
+
+    private string ValidateEndTime(TimeSpan? value)
+    {
+        if (!value.HasValue || !CustomPackageUiDto.startTime.HasValue)
+            return null;
+
+        if (CustomPackageUiDto.ActivationDate == CustomPackageUiDto.DectivationDate && value <= CustomPackageUiDto.startTime)
+            return L["EndTimeShouldBeGreaterThanStartTime"];
+
+        return null;
+    }
+
+
+    private void OnActivationDateChanged(DateTime? newDate)
+    {
+        CustomPackageUiDto.ActivationDate = newDate;
+        if (CustomPackageUiDto.ActivationDate > CustomPackageUiDto.DectivationDate)
+            CustomPackageUiDto.DectivationDate = CustomPackageUiDto.ActivationDate.Value.AddDays(1);
+        OnDateChanged();
+    }
+
+    private void OnDectivationDateChanged(DateTime? newDate)
+    {
+        CustomPackageUiDto.DectivationDate = newDate;
+        OnDateChanged();
+    }
+
+    private void OnPriceOfPackageChanged(decimal? amount)
+    {
+        CustomPackageUiDto.PriceOfPackage = amount;
+        if (CustomPackageUiDto.CountOfDays > 0)
+            CustomPackageUiDto.PriceOfPackagePerDay = CustomPackageUiDto.PriceOfPackage / CustomPackageUiDto.CountOfDays;
+    }
+
+    private void OnPriceOfPackagePerDayChanged(decimal? amount)
+    {
+        CustomPackageUiDto.PriceOfPackagePerDay = amount;
+        if (CustomPackageUiDto.CountOfDays > 0)
+            CustomPackageUiDto.PriceOfPackage = CustomPackageUiDto.PriceOfPackagePerDay * CustomPackageUiDto.CountOfDays;
+    }
+
+    private void OnCountOfDaysChanged(decimal? count)
+    {
+        CustomPackageUiDto.CountOfDays = count;
+        if (CustomPackageUiDto.ActivationDate != null && CustomPackageUiDto.CountOfDays > 0)
+        {
+            CustomPackageUiDto.DectivationDate = CustomPackageUiDto.ActivationDate;
+            if (CustomPackageUiDto.CountOfDays.Value - 1 > 0)
+                CustomPackageUiDto.DectivationDate = CustomPackageUiDto.ActivationDate.Value.AddDays((int)CustomPackageUiDto.CountOfDays.Value - 1);
+            if (CustomPackageUiDto.PriceOfPackagePerDay > 0)
+            {
+                CustomPackageUiDto.PriceOfPackage = CustomPackageUiDto.PriceOfPackagePerDay * CustomPackageUiDto.CountOfDays;
+            }
+        }
+    }
+
+    private void OnDateChanged()
+    {
+        CustomPackageUiDto.CountOfDays = 0;
+        if (CustomPackageUiDto.ActivationDate != null && CustomPackageUiDto.DectivationDate != null)
+        {
+            CustomPackageUiDto.CountOfDays = (decimal)CustomPackageUiDto.DectivationDate.Value.Subtract(CustomPackageUiDto.ActivationDate.Value).TotalDays;
+            if (CustomPackageUiDto.PriceOfPackagePerDay > 0)
+            {
+                CustomPackageUiDto.PriceOfPackage = CustomPackageUiDto.PriceOfPackagePerDay * CustomPackageUiDto.CountOfDays;
+            }
+        }
+    }
+}

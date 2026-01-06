@@ -77,23 +77,26 @@
                         Label=@L["PackageDuration"] />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="@Package.PackageTypeId" Label="@L["PackageType"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"] Required>
-                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
-                            @foreach (var type in packageTypes)
+                        <MudSelect
+                                   @bind-Value="Package.PackageCategoryType"
+                        Label="@L["PackageType"]" 
+                        HelperText=@L["Helper Text"] 
+                        Placeholder=@L["Choose"]
+                        Required ="true" 
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
+                            @foreach (var type in Enum.GetValues(typeof(PackageCategoryTypes)).Cast<PackageCategoryTypes>())
                             {
-                                @if(CultureInfo.CurrentCulture.Name == "en")
+                                if (CultureInfo.CurrentCulture.Name == "en")
                                 {
-                                  <MudSelectItem T="int" Value="@type.Id">
-                                    @type.EnglishName
-                                </MudSelectItem>
+                                     <MudSelectItem  Value="@type">
+                                         @L[type.ToString()];
+                                     </MudSelectItem>
                                 }
-                                else
-                                {
-                                  <MudSelectItem T="int" Value="@type.Id">
-                                    @type.ArabicName
-                                </MudSelectItem>
+                                else{
+                                    <MudSelectItem Value="@type">
+                                        @L[type.ToString()]
+                                    </MudSelectItem>
                                 }
-                              
                             }
                         </MudSelect>
                     </MudItem>

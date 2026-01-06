@@ -3,12 +3,16 @@ using SmartParking.CalculationsEndpoint;
 using SmartParking.CustomerPackages;
 using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.Cutomers;
+using SmartParking.Entities.Vehicles;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
 using System.Threading.Tasks;
+using Volo.Abp.Data;
+using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.GarageTransactionEndPoints;
 
@@ -20,14 +24,23 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
     private readonly IGarageTransactionUtilityAppService _garageTransactionUtilityAppService;
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
     private readonly ICustomerPackageHandlerAppService _customerPackagesHandlerAppService;
-
-    public CustomerMobileTransactionsAppService(IGarageTransactionUtilityAppService garageTransactionUtilityAppService, ICalculationsEndPointsAppService calculationsEndPointAppService, IInvoiceAppService invoiceAppService, IGarageTransactionsAppService garageTransactionsAppService, ICustomerPackageHandlerAppService customerPackagesHandlerAppService)
+    private readonly IRepository<Vehicle, int> _vehicleRepository;
+    private readonly IDataFilter _dataFilter;
+    public CustomerMobileTransactionsAppService(IGarageTransactionUtilityAppService garageTransactionUtilityAppService, 
+        ICalculationsEndPointsAppService calculationsEndPointAppService, 
+        IInvoiceAppService invoiceAppService, 
+        IGarageTransactionsAppService garageTransactionsAppService, 
+        ICustomerPackageHandlerAppService customerPackagesHandlerAppService,
+        IRepository<Vehicle, int> vehicleRepository,
+        IDataFilter dataFilter)
     {
         _garageTransactionUtilityAppService = garageTransactionUtilityAppService;
         _calculationsEndPointAppService = calculationsEndPointAppService;
         _invoiceAppService = invoiceAppService;
         _garageTransactionsAppService = garageTransactionsAppService;
         _customerPackagesHandlerAppService = customerPackagesHandlerAppService;
+        _vehicleRepository = vehicleRepository;
+        _dataFilter = dataFilter;
     }
 
     #region public methods for customer transactions
@@ -38,12 +51,20 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
 
         var customer = await _garageTransactionUtilityAppService.GetCurrentCustomer();
         var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
+        Vehicle? vehicle = null;
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            vehicle = await _vehicleRepository.FirstOrDefaultAsync(x => x.EnPlateNumber == entryGarageTransaction.PlateNumber);
+
+        }
         if (entryGarageTransaction.CanCheckout == false)
         {
                 throw new Exception("You have to wait Grace Period");
         }
         var createdExitGarageTransaction =await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction);
         var invoice = await PreCheckoutFlow(entryGarageTransaction.AccurateTime.Value, createdExitGarageTransaction, customer);
+        invoice.LicenseTypeImage = vehicle is null ? "" : vehicle.LicenceType.Image;
+        invoice.VehicleModelImage = vehicle is null ? "" : vehicle.VehicleModel.Image;
         return invoice;
 
     }
@@ -65,7 +86,10 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
         var savedExitgarageTransaction = await _garageTransactionsAppService.CreateAsync(createdExitGarageTransaction);
         invoice.Value.GarageTransactionExitId = savedExitgarageTransaction.Id;
         invoice.Value.ExitTransactionImage = savedExitgarageTransaction.VehiclePicture;
-        return await _invoiceAppService.CreateAsync(invoice);
+        var data =  await _invoiceAppService.CreateAsync(invoice);
+        data.LicenseTypeImage = invoice.Value.LicenseTypeImage;
+        data.VehicleModelImage = invoice.Value.VehicleModelImage;
+        return data;
     }
     #endregion
     #region private methods to get pre invoice

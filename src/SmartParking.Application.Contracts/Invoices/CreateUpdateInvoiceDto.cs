@@ -30,4 +30,6 @@ public class CreateUpdateInvoiceDto
     public decimal Discount { get; set; } = default;
     public decimal Vat { get; set; } = default;
     public string TicketId  { get; set; }
+    public string? LicenseTypeImage { get; set; }
+    public string? VehicleModelImage { get; set; }
 }

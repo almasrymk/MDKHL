@@ -4,7 +4,7 @@ public enum ResultStatus
 {
     Ok = 200,
     Error,
-    Forbidden,
+    Forbidden = 403,
     Unauthorized=401,
     Invalid=400,
     NotFound = 404,

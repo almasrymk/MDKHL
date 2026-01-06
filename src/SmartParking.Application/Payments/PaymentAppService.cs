@@ -1,15 +1,13 @@
 ﻿using Abp.Authorization;
-using Castle.Core.Resource;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
+using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.Invoices;
 using SmartParking.Organizations;
@@ -42,12 +40,13 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     private readonly ICustomerPackagesAppService customerPackagesAppService;
     private readonly IOrganizationsAppService organizationsAppService;
     private readonly IRepository<Invoice, int> _invoiceRepo;
-    private readonly IRepository<Package, int> _packageRepo;
+    private readonly IRepository<Organization, int> _organizationRepository;
     private readonly HttpClient _httpClient;
     private readonly IInvoiceUtilityAppService _invoiceUtility;
     private readonly IZatcaTaxInvoiceAppService _zatcaTaxInvoiceAppService;
-    private readonly IOptions<PaymentAppService> _options;
     private readonly ILogger<PaymentAppService> _logger;
+    private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
+    private readonly IRepository<Vehicle, int> _vehicleRepository;
     private const string Currency = "SAR";
     private const string PaymentType = "DB";
     private const string PaymentUrl = "https://eu-test.oppwa.com/v1/checkouts";
@@ -62,15 +61,18 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     };
 
     public PaymentAppService(IRepository<Payment, Guid> repository,
-        IRepository<Invoice, int> invoiceRepo, IRepository<Package, int> packageRepo,
-        IRepository<Customer, Guid> customerRepo, IDataFilter dataFilter,
+        IRepository<Invoice, int> invoiceRepo, 
+        IRepository<Customer, Guid> customerRepo, 
+        IDataFilter dataFilter,
         ICustomerPackagesAppService customerPackagesAppService,
         IOrganizationsAppService _organizationsAppService,
         HttpClient httpClient,
         IInvoiceUtilityAppService invoiceUtility,
          IZatcaTaxInvoiceAppService zatcaTaxInvoiceAppService,
-         IOptions<PaymentAppService> options,
-        ILogger<PaymentAppService> logger)
+        ILogger<PaymentAppService> logger,
+        IRepository<CustomerPackage, int> customerPackageRepository,
+        IRepository<Organization, int> organizationRepo,
+        IRepository<Vehicle,int> vehicleRepository)
     : base(repository)
     {
 
@@ -80,12 +82,13 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         this.customerPackagesAppService = customerPackagesAppService;
         organizationsAppService = _organizationsAppService;
         _invoiceRepo = invoiceRepo;
-        _packageRepo = packageRepo;
         _httpClient = httpClient;
         _invoiceUtility = invoiceUtility;
         _zatcaTaxInvoiceAppService = zatcaTaxInvoiceAppService;
-        _options = options;
         _logger = logger;
+        _customerPackageRepository = customerPackageRepository;
+        _organizationRepository = organizationRepo;
+        _vehicleRepository = vehicleRepository;
     }
 
 
@@ -368,14 +371,18 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     {
         using (dataFilter.Disable<IMultiTenant>())
         {
-            var customer = await _customerRepo.GetQueryableAsync();
-            var customerId = customer.Where(s => s.IdentityUserId == CurrentUser.Id).Select(s => s.Id).SingleOrDefault();
-            var payments = await _repository.GetQueryableAsync();
-            var result =await payments.Where(p => p.OrganizationId == organizationId && p.CustomerId == customerId && p.CustomerPackageId != null)
-                .ToListAsync();
-                
-            var paymentPackageDtos = ObjectMapper.Map<List<Payment>, List<PaymentPackageDto>>(result);
-            return Result<List<PaymentPackageDto>>.Success(paymentPackageDtos, "Payments Retrieved Successfully");
+
+            var data = await GetPaymentPackageDtosAsync(organizationId);
+
+            if (data == null || !data.Any())
+            {
+                return Result<List<PaymentPackageDto>>.Success(new List<PaymentPackageDto>(), "No Payments Found");
+            }
+            
+
+
+            //var paymentPackageDtos = ObjectMapper.Map<List<Payment>, List<PaymentPackageDto>>(result);
+            return Result<List<PaymentPackageDto>>.Success(data, "Payments Retrieved Successfully");
         }
     }
     [AbpAllowAnonymous]
@@ -567,6 +574,89 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             return $"{prefix}{currentYearSuffix}{formattedSequence}";
         }
     }
-     
+    [RemoteService(IsEnabled = false)]
+    private async Task<List<PaymentPackageDto>> GetPaymentPackageDtosAsync(int organizationId)
+    {
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var customers = await _customerRepo.GetQueryableAsync();
+            var payments = await _repository.GetQueryableAsync();
+            var invoice = await _invoiceRepo.GetQueryableAsync();
+            var customerPackages = await _customerPackageRepository.GetQueryableAsync();
+            var organizations = await _organizationRepository.GetQueryableAsync();
+            var vehicles = await _vehicleRepository.GetQueryableAsync();
+
+            var result =
+await (
+    from p in payments
+    join cp in customerPackages
+        on p.CustomerPackageId equals cp.Id
+
+    join c in customers
+        on p.CustomerId equals c.Id
+
+    join o in organizations
+        on cp.OrganizationId equals o.Id
+
+    join i in invoice
+        on p.InvoiceId equals i.Id into pi
+    from i in pi.DefaultIfEmpty()
+
+    join v in vehicles
+        on i.PlateNumber equals v.EnPlateNumber into pv
+    from v in pv.DefaultIfEmpty()
+
+    where p.OrganizationId == organizationId
+          && p.CustomerPackageId != null
+
+    select new PaymentPackageDto
+    {
+        PaymentId = p.Id,
+        PaymentNumber = p.PaymentNumber,
+
+        ArabicName = cp.PackageArabicName,
+        EnglishName = cp.PackageEnglishName,
+        Description = cp.DescriptionOfPackage,
+
+        PaymentTime = p.CreationTime,
+
+        OrganizationArabicName = o.ArabicName,
+        OrganizationEnglishName = o.EnglishName,
+        OrganizationAddress = o.Address,
+
+        CustomerArabicName = c.ArabicName,
+        CustomerEnglishName = c.IdentityUser.Name,
+
+        EnPlateNumber = cp.EnPlateNumber,
+        ArPlateNumber = cp.ArPlateNumber,
+
+        ExpiryDateOfPackage = DateOnly.FromDateTime(cp.ExpiryDate),
+        ExpiryTimeOfPackage = TimeOnly.FromDateTime(cp.ExpiryDate),
+
+        ActivationDate = cp.ActivationDateOfPackage.HasValue
+            ? DateOnly.FromDateTime(cp.ActivationDateOfPackage.Value)
+            : default,
+
+        ActivationTime = cp.ActivationDateOfPackage.HasValue
+            ? TimeOnly.FromDateTime(cp.ActivationDateOfPackage.Value)
+            : default,
+
+        PackageCode = cp.PackageCode,
+        QRCodePath = cp.QRCodePath,
+
+        TotalAmount = p.Amount,
+        Price = cp.PriceOfPackage ?? 0,
+        Discount = cp.Discount,
+        Vat = cp.Vat,
+
+        LicenseTypeImage = v != null ? v.LicenceType.Image : null,
+        VehicleModelImage = v != null ? v.VehicleModel.Image : null
+    }
+).ToListAsync();
+
+            return result;
+        }
+    }
+
     #endregion
 }

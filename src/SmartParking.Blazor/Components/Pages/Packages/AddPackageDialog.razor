@@ -1,4 +1,7 @@
 ﻿@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Blazor.Components.Shared.Components
+@using SmartParking.Blazor.Components.Shared.Utilities
+@using SmartParking.Blazor.Components.State
 @using SmartParking.Currency
 @using SmartParking.Enums
 @using SmartParking.Lookups
@@ -51,6 +54,34 @@
                         Placeholder=@L["Type Here"]
                         Label=@L["EnglishName"] />
                     </MudItem>
+
+                    <MudItem sm="6" md="6">
+                        <MudSelect 
+                            T="PackageCategoryTypes"
+                        Value="@createUpdatePackage.PackageCategoryType"
+                        ValueChanged="OnPackageTypeChanged"
+                        Label="@L["PackageType"]" 
+                        HelperText=@L["Helper Text"] 
+                        Placeholder=@L["Choose"]
+                        Required ="true" 
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
+
+                            @foreach (var type in Enum.GetValues(typeof(PackageCategoryTypes)).Cast<PackageCategoryTypes>())
+                            {
+                                if (CultureInfo.CurrentCulture.Name == "en")
+                                {
+                                     <MudSelectItem  Value="@type">
+                                         @L[type.ToString()]
+                                     </MudSelectItem>
+                                }
+                                else{
+                                    <MudSelectItem Value="@type">
+                                        @L[type.ToString()]
+                                    </MudSelectItem>
+                                }
+                            }
+                        </MudSelect>
+                    </MudItem>
                     <MudItem sm="6" md="6">
                         <div style="display: flex; flex-direction: column;">
                             <label style="font-size: 0.75rem; margin-bottom: 4px;">
@@ -64,21 +95,29 @@
                                              Required="true"
                                              RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                                              HideSpinButtons="true"
-                                             class="@(CultureInfo.CurrentCulture.Name == "ar" ? "custom-numeric-field" : "")"
-                                             />
+                                             class="@(CultureInfo.CurrentCulture.Name == "ar" ? "custom-numeric-field" : "")" />
                         </div>
                     </MudItem>
+                    @if (createUpdatePackage.PackageCategoryType == PackageCategoryTypes.CustomPackage){
 
+                        <CustomPackageComponent CustomPackageUiDto="CustomPackageUiDto" />
+
+                    }
+                    else
+                    {
+                        
                     <MudItem sm="6" md="6">
                         <MudNumericField @bind-Value="createUpdatePackage.DurationOfPackage"
                         For="@(() => createUpdatePackage.DurationOfPackage)"
                         Variant="Variant.Text"
                         HideSpinButtons="true"
                         Required="true"
+                        Disabled="IsDurationDisabled"
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                         class="@(CultureInfo.CurrentCulture.Name == "ar" ? "custom-numeric-field" : "")"
                         Label=@L["PackageDuration"] />
                     </MudItem>
+
                     @if (CurrentTenant.Id == null)
                     {
                         <MudItem sm="6">
@@ -113,44 +152,23 @@
                     }
 
 
-                    <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="@createUpdatePackage.PackageTypeId" Label="@L["PackageType"]" HelperText=@L["Helper Text"] Placeholder=@L["Choose"]
-                                   Required ="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
-                            <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                        <MudItem sm="6" md="6">
+                            <MudSelect @bind-Value="createUpdatePackage.CustomerCategory"
+                            Label="@L["customer category"]"
+                            Placeholder="@L[ "Choose"]"
+                            HelperText=@L["Helper Text"]
+                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                            Required>
 
-                            @foreach (var type in packageTypes)
-                            {
-                                if (CultureInfo.CurrentCulture.Name == "en")
+                                @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
                                 {
-                                     <MudSelectItem  Value="@type.Id">
-                                         @type.EnglishName
-                                     </MudSelectItem>
-                                }
-                                else{
-                                    <MudSelectItem Value="@type.Id">
-                                        @type.ArabicName
+                                    <MudSelectItem Value="@category">
+                                        @category.ToString()
                                     </MudSelectItem>
                                 }
-                            }
-                        </MudSelect>
-                    </MudItem>
-                    <MudItem sm="6" md="6">
-                        <MudSelect @bind-Value="createUpdatePackage.CustomerCategory"
-                        Label="@L["customer category"]"
-                        Placeholder="@L[ "Choose"]"
-                        HelperText=@L["Helper Text"]
-                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        Required>
+                            </MudSelect>
 
-                            @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
-                            {
-                                <MudSelectItem Value="@category">
-                                    @category.ToString()
-                                </MudSelectItem>
-                            }
-                        </MudSelect>
-
-                    </MudItem>
+                        </MudItem>
                     <MudItem sm="4">
                         <MudSwitch 
                         T="bool"
@@ -185,7 +203,7 @@
 
 
                     }
-
+                    }
                     <MudItem sm="12">
                         <label style="font-size: 0.75rem; margin-bottom: 4px;">
                             @L["Description"]
@@ -201,6 +219,7 @@
                        />
                     </MudItem>
 
+                    
 
                 </MudGrid>
             </MudForm>
@@ -258,9 +277,14 @@
     private TimeSpan? timeSpanFrom;
     private TimeSpan? timeSpanTo;
     private string CustomerCategory { get; set; }
+    private PagedResultDto<OrganizationDto> organizationsList { get; set; } = new();
+    private CustomPackageUiDto CustomPackageUiDto { get; set; } = new();
+
+    private bool IsDurationDisabled { get; set; } = false;
+
     protected override async Task OnInitializedAsync()
     {
-        var organizationsList = await organizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        organizationsList = await organizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         _organizations = organizationsList.Items.ToList();
         var packageTypesList = await packageTypesAppService.GetAllListAsync();
         packageTypes = packageTypesList;
@@ -270,20 +294,54 @@
             var id = await organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
             OrganizationId = id.ToString();
         }
+        IsDurationDisabled = false;
         await base.OnInitializedAsync();
     }
+
+    private async Task OnPackageTypeChanged(PackageCategoryTypes value)
+    {
+        createUpdatePackage.PackageCategoryType = value;
+        if (value != PackageCategoryTypes.CustomPackage && 
+            value != PackageCategoryTypes.Free && 
+            value != PackageCategoryTypes.Daily)
+        {
+            switch (value)
+            {
+                case PackageCategoryTypes.Year:
+                    createUpdatePackage.DurationOfPackage = 360;
+                    break;
+                
+                case PackageCategoryTypes.HalfYear:
+                    createUpdatePackage.DurationOfPackage = 180;
+                    break;
+
+                case PackageCategoryTypes.Monthly:
+                    createUpdatePackage.DurationOfPackage = 30;
+                    break;
+
+            }
+
+            IsDurationDisabled = true;
+        }
+        else
+        {
+            IsDurationDisabled = false;
+        }
+
+    }
+
     private void OnTimeFromChanged(TimeSpan? value)
-{
-    if (value.HasValue)
     {
-        timeSpanFrom = value;
-        createUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(value.Value);
+        if (value.HasValue)
+        {
+            timeSpanFrom = value;
+            createUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(value.Value);
+        }
+        else
+        {
+            createUpdatePackage.PublishFrom =null ; 
+        }
     }
-    else
-    {
-        createUpdatePackage.PublishFrom =null ; 
-    }
-}
 
 private void OnTimeToChanged(TimeSpan? value)
 {
@@ -310,8 +368,20 @@ private void OnTimeToChanged(TimeSpan? value)
 
         try
         {
+            if (createUpdatePackage.PackageCategoryType ==PackageCategoryTypes.CustomPackage){
+
+                CustomPackageValidations.CheckIsCustomProperties(CustomPackageUiDto, Snackbar);
+                createUpdatePackage.ActivationDate = CustomPackageUiDto.ActivationDate.Value;
+                createUpdatePackage.DeactivationDate = CustomPackageUiDto.DectivationDate.Value;
+                createUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(CustomPackageUiDto.startTime.Value);
+                createUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(CustomPackageUiDto.endTime.Value);
+                createUpdatePackage.DurationOfPackage = (int) CustomPackageUiDto.CountOfDays.Value;
+            }
+            else{
+                createUpdatePackage.ActivationDate = DateTime.Now;
+            }
+
             createUpdatePackage.Published = createUpdatePackage.Published || PackageValidations.CheckPackageTimeValiditity(createUpdatePackage.PublishFrom, createUpdatePackage.PublishTo);
-            createUpdatePackage.ActivationDate = DateTime.Now;
             createUpdatePackage.PackageStatus = SubscriptionStatus.Draft;
             createUpdatePackage.Status = Status.Inactive;
             await PackagesAppService.CreateAsync(createUpdatePackage);
