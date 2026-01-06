@@ -27,11 +27,7 @@ namespace SmartParking.Packages
 			   .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
 			   .MaximumLength(500);
 
-			RuleFor(x => x.PackageTypeId)
-				.NotEmpty()
-				.WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
-				.GreaterThan(0)
-				.WithMessage(LocalizationHelper.GetLocalizedString("PackageTypeValidation"));
+			
 
 
 

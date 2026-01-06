@@ -294,7 +294,6 @@ public partial class Package
         var createUpdatePackage = new CreateUpdatePackageDto
         {
             ArabicName = packageDto.ArabicName,
-            PackageTypeId = packageDto.PackageTypeId,
             Description = packageDto.Description,
             EnglishName = packageDto.EnglishName,
             OrganizationId = packageDto.OrganizationId,
