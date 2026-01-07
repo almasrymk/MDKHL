@@ -72,8 +72,18 @@ public partial class PreCheckoutForInvoice
 
     protected override async Task OnInitializedAsync()
     {
-        GarageTransactionDto = await GarageTransactionAppService.GetAsync(GarageTransactionId);
-        Invoice = await keeperTransactionsAppService.PreCheckout(GarageTransactionId);
-        InvoicePrice = Invoice.InvoicePrice;
+        try
+        {
+
+            GarageTransactionDto = await GarageTransactionAppService.GetAsync(GarageTransactionId);
+            Invoice = await keeperTransactionsAppService.PreCheckout(GarageTransactionId);
+            InvoicePrice = Invoice.InvoicePrice;
+        }
+        catch(Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, L["GracePeriodValidation"], MudBlazor.Severity.Error);
+        }
+        
+
     }
 }

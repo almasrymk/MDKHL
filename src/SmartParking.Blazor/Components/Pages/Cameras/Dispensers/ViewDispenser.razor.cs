@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.JSInterop;
 using MudBlazor;
-using SmartParking.Cameras;
 using SmartParking.Cameras.Watchers.Dispensers;
 using SmartParking.Garages;
-using SmartParking.Invoices;
 using SmartParking.Organizations;
 
 namespace SmartParking.Blazor.Components.Pages.Cameras.Dispensers;
@@ -38,14 +34,5 @@ public partial class ViewDispenser
         MudDialogAdd.Cancel();
     }
 
-    private async Task HandleDownload()
-    {
-        string watcherCode = Dispenser.DeviceId;
-        if (string.IsNullOrEmpty(watcherCode))
-            return;
-        var uri = new Uri(Navigation.BaseUri);
-        string domain = $"{uri.Scheme}://{uri.Host}{(uri.IsDefaultPort ? "" : ":" + uri.Port)}/";
-        var qr = await InvoiceAppService.QrCodeForInvoicePage((string)watcherCode, (string)domain);
-        await JSRuntime.InvokeVoidAsync("window.open", qr, "_blank");
-    }
+
 }

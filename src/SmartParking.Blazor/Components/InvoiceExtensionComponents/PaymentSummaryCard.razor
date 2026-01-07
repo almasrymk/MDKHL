@@ -30,10 +30,10 @@
         <MudRadioGroup T="string"
                        Value="SelectedPaymentMethod"
                        ValueChanged="OnPaymentChanged">
-            <MudPaper Class="@PaymentClass("Mada")">
+            <MudPaper Class="@PaymentClass("MADA")">
                 <MudGrid Justify="Justify.SpaceBetween" Class="pa-2">
                     <MudItem xs="8">
-                        <MudRadio Value="@("Mada")">Mada Card</MudRadio>
+                        <MudRadio Value="@("MADA")">Mada Card</MudRadio>
                     </MudItem>
                     <MudItem xs="4" Class="text-right">
                         <MudImage Src="images/mada.png" Width="50" />
@@ -58,7 +58,7 @@
                    Size="MudBlazor.Size.Large"
                    Variant="Variant.Filled"
                    Class="mt-4"
-                   OnClick="OnCheckout">
+                   OnClick="ProceedToPayment">
             Checkout
         </MudButton>
     </MudCardContent>
@@ -71,7 +71,7 @@
     [Parameter] public double TotalAmount { get; set; }
     [Parameter] public string SelectedPaymentMethod { get; set; }
     [Parameter] public EventCallback<string> SelectedPaymentMethodChanged { get; set; }
-    [Parameter] public EventCallback OnCheckout { get; set; }
+    [Parameter] public EventCallback ProceedToPayment { get; set; }
 
     private async Task OnPaymentChanged(string value)
     {

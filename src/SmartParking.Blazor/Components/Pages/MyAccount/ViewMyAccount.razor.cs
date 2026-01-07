@@ -1,19 +1,20 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using MudBlazor;
 using SmartParking.Blazor.Components.Pages.Organizations;
-using SmartParking.Organizations;
-using System.Globalization;
-using System.Threading.Tasks;
-using System;
+using SmartParking.Enums;
 using SmartParking.Lookups.City;
 using SmartParking.Lookups.Country;
 using SmartParking.Lookups.State;
-using System.Collections.Generic;
+using SmartParking.Organizations;
 using SmartParking.Permissions.GaragePermissions;
-using SmartParking.Permissions.MyAccount;
-using Microsoft.AspNetCore.Authorization;
 using SmartParking.Permissions.GarageTransactionPermissions;
-using SmartParking.Enums;
+using SmartParking.Permissions.MyAccount;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Threading.Tasks;
 
 namespace SmartParking.Blazor.Components.Pages.MyAccount;
 
@@ -178,6 +179,14 @@ public partial class ViewMyAccount
         await base.OnInitializedAsync();
 
 
+    }
+    private async Task HandleDownload()
+    {
+
+        var uri = new Uri(Navigation.BaseUri);
+        string domain = $"{uri.Scheme}://{uri.Host}{(uri.IsDefaultPort ? "" : ":" + uri.Port)}/";
+        var qr = await InvoiceAppService.QrCodeForInvoicePage( (string)domain);
+        await JSRuntime.InvokeVoidAsync("window.open", qr, "_blank");
     }
     private async Task ViewGarages()
     {

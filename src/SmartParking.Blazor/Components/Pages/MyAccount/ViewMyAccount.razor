@@ -4,6 +4,7 @@
 @using SmartParking.Blazor.Components.LookUps
 @inject IStringLocalizer<SmartParkingResource> L
 @using SmartParking.Currency
+@using SmartParking.Invoices
 @using SmartParking.Localization
 @using SmartParking.Lookups
 @using SmartParking.Lookups.State
@@ -29,7 +30,9 @@
 @inject ISubscriptionAppService SubscriptionAppService
 @inject ICurrentTenant currenttenant
 @inject ICurrentUser currentUser
-@inject IAuthorizationService AuthorizationService
+@inject IInvoiceAppService InvoiceAppService
+@inject IJSRuntime JSRuntime
+
 
 @* @attribute [Authorize(MyAccountPermissions.Default)] *@
 @inherits AbpCrudPageBase<IOrganizationsAppService, OrganizationDto, int, PagedAndSortedResultRequestDto, CreateUpdateOrganiztionDto>
@@ -166,7 +169,16 @@
                                 </MudRadioGroup>
                             </div>
                         </MudItem>
-                       
+                        <MudItem sm="4">
+                            <MudInputLabel Style="font-weight:bold;margin-bottom:4px">@L["Qr"]</MudInputLabel>
+                            <MudButton OnClick="HandleDownload"
+                                       StartIcon="@Icons.Material.Filled.QrCode2"
+                                       Variant="Variant.Filled"
+                                       Color="MudBlazor.Color.Primary"
+                                       Class="mx-1">
+                                @L["GetQr"]
+                            </MudButton>
+                        </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
                         <MudItem sm="4">
                             <div style="display: flex; flex-direction: column;font-weight:bold">
@@ -273,51 +285,7 @@
 
             </MudPaper>
         </MudItem>
-        @*      <MudItem sm="4">
-            <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column justify-content-between" Style="background-color: #F2F2F2;">
-                <MudGrid Class="mt-3">
-
-
-                    <MudItem class="d-flex flex-column align-content-center gap-4 p-5">
-                        <MudImage Src="@(OrganizationPicture ?? "images/MDHKL_04.png")" Class="bg_w_foto " Width="200" Height="200" Alt="@L["OrganizationLogo"]" />
-                    </MudItem>
-
-                </MudGrid>
-                <MudGrid Class="mt-3">
-                    <MudItem sm="6">
-                        <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewGarages">@L["Garages"]</MudLink>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem sm="6">
-                        <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewSubscription">@L["Subscriptions"]</MudLink>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem sm="6">
-                        <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewCategories">@L["Categories"]</MudLink>
-
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem sm="6">
-                        <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewCustomers">@L["Customers"]</MudLink>
-
-                        </MudPaper>
-                    </MudItem>
-
-                    <MudItem sm="6">
-                        <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewUsers">@L["Users"]</MudLink>
-                        </MudPaper>
-                    </MudItem>
-
-
-                </MudGrid>
-            </MudPaper>
-        </MudItem>
- *@
+       
     </MudGrid>
 </div>
 

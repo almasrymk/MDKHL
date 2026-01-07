@@ -8,18 +8,19 @@
 @using SmartParking.Invoices.Factory
 @using SmartParking.Localization
 @using SmartParking.Payments
+@using SmartParking.Payments.PaymentIntegrations
 @using SmartParking.Watchers
 @using Volo.Abp.Domain
 @layout CustomLayout
-@inject IPublicInvoiceAppService invoiceAppService
-@inject IInvoiceAppService Invoive
 @inject IPaymentAppService paymentAppService
 @inject NavigationManager navigationManager
-@inject IWatcherAppService watcherAppService
 @inject ISnackbar snackbar
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IInvoiceActionsFactoryAppService InvoiceActionsFactory
 @inject IInvoiceUiAppService invoiceUiAppService
+@inject IOppwaIntegrationAppService OppwaIntegrationAppService
+@inject IJSRuntime JS 
+
 
 @attribute [AllowAnonymous]
 
@@ -64,7 +65,49 @@
                                 TotalAmount="@InvoiceAmount"
                                 SelectedPaymentMethod="@paymentMethod"
                                 SelectedPaymentMethodChanged="OnPaymentMethodChanged"
-                                OnCheckout="HandleCheckout" />
+                                ProceedToPayment="ProceedToPayment" />
+
+            <div id="hyperpay-container"></div>
+
         </MudItem>
     </MudGrid>
 </MudContainer>
+<script>
+    window.hyperPay = {
+        loadWidget: function (checkoutId, shopperResultUrl, brands) {
+
+            if (!checkoutId) {
+                console.error("HyperPay: checkoutId is missing");
+                return;
+            }
+
+            // Remove previous widget if exists
+            document.getElementById("hyperpay-script")?.remove();
+            document.getElementById("hyperpay-form")?.remove();
+
+            // Create HyperPay script
+            const script = document.createElement("script");
+            script.id = "hyperpay-script";
+            script.src = `https://eu-test.oppwa.com/v1/paymentWidgets.js?checkoutId=${checkoutId}`;
+            script.crossOrigin = "anonymous";
+
+            script.onload = function () {
+                const form = document.createElement("form");
+                form.id = "hyperpay-form";
+                form.action = shopperResultUrl;
+                form.className = "paymentWidgets";
+                form.setAttribute("data-brands", brands);
+
+                const container = document.getElementById("hyperpay-container");
+                if (!container) {
+                    console.error("HyperPay: container not found");
+                    return;
+                }
+
+                container.appendChild(form);
+            };
+
+            document.body.appendChild(script);
+        }
+    };
+</script>

@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using MudBlazor;
-using SmartParking.Blazor.Components.Pages.Cameras;
 using SmartParking.Blazor.Dtos;
-using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Enums;
 using SmartParking.Invoices;
 using SmartParking.Payments;
+using SmartParking.Payments.PaymentIntegrations;
+using SmartParking.Results;
+using SmartParking.Utilities;
 using SmartParking.Validations;
-using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Blazor.Components.Pages.CustomInvoiceExtensions;
 
@@ -34,8 +35,15 @@ public partial class CustomInvoiceMainPage
     private CreateUpdateInvoiceUiDto? invoiceDto { get; set; } = new();
 
     private bool ShowInvoiceDetails = false;
+    private PaymentMethod paymentMethodValue { get; set; } = PaymentMethod.MADA;
 
     private InvoiceSearchDto InvoiceSearchDto = new InvoiceSearchDto();
+    private static readonly Dictionary<string,PaymentMethod> PaymentMap =
+    new()
+    {
+        { "MADA" ,PaymentMethod.MADA },
+        { "APPLEPAY" , PaymentMethod.ApplePay }
+    };
 
 
     protected override async Task OnInitializedAsync()
@@ -57,76 +65,46 @@ public partial class CustomInvoiceMainPage
     private void OnPaymentMethodChanged(string method)
     {
         paymentMethod = method;
-    }
+        if (!PaymentMap.TryGetValue(method, out var brand))
+            return;
+        paymentMethodValue = brand;
 
-    private async Task HandleCheckout()
+    }
+    private async Task ProceedToPayment()
     {
-        var invoice = await invoiceUiAppService.GetInvoiceAfterCheckout(InvoiceSearchDto);
-        InvoiceNumber = invoice.InvoiceNumber;
-        var dto = new PayCustomerInvoiceDto
-        {
-            InvoiceId = invoice.Id,
-            Method = Enum.TryParse<PaymentMethod>(paymentMethod, true, out var methodEnum) ? methodEnum : PaymentMethod.MADA
-        };
         try
         {
-            var paymentInvoice = await paymentAppService.PayCustomerInvoiceAsync(dto);
-            snackbar.Add(L["PaymentSuccess"], Severity.Success);
-            await Task.Delay(1000);
-            navigationManager.NavigateTo($"/custom-invoice/details/{paymentInvoice.Value.PaymentId}");
+            // 🔹 Normally this comes from backend (Create Checkout API)
+            var invoice = await invoiceUiAppService.GetInvoiceAfterCheckout(InvoiceSearchDto);
+            var checkoutId = await OppwaIntegrationAppService.PrepareCheckoutAsync((decimal)InvoiceAmount, paymentMethodValue);
 
+            await OppwaIntegrationAppService.SavePaymentRequest(new PaymentCheckoutRequestDto
+            {
+                InvoiceId = invoice.InvoiceId,
+                OrganizationId = invoice.OrganizationId,
+                Amount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount),
+                PaymentCategory = PaymentCategory.PaymentParking,
+                PaymentMethod = paymentMethodValue,
+                TenantId = invoice.TenantId.Value,
+
+            }, checkoutId);
+
+            await JS.InvokeVoidAsync(
+                "hyperPay.loadWidget",
+                checkoutId,
+                $"{navigationManager.BaseUri}api/PaymentResult/hyperpay/result",
+                paymentMethodValue.ToString()
+            );
         }
         catch (Exception ex)
         {
             snackbar.Add(L["PaymentFailed"], Severity.Error);
         }
-        //await Task.Delay(500);
-        //navigationManager.NavigateTo("/", true);
     }
 
-    private async Task PlateNumberSearch(Watcher watcher) {
-        LatestInvoice = await Invoive.GetLatestInvoiceForCustomerInOrganizationGarage(SearchText, watcher.OrganizationId, watcher.GarageId);
-        if (LatestInvoice != null)
-        {
-            InvoiceNumber = LatestInvoice.InvoiceId.ToString();
-            InvoiceDate = LatestInvoice.InvoiceTime!.Value;
-            InvoicePrice = (double)LatestInvoice.InvoicePrice;
-            Vat = (double)LatestInvoice.Vat;
-
-            var duration = LatestInvoice.InvoiceTime.Value - LatestInvoice.EntranceTime.Value;
-            Duration = $"{(int)duration.TotalHours} hours {duration.Minutes} minutes";
-
-            CheckIn = LatestInvoice.EntranceTime.Value;
-            Checkout = LatestInvoice.InvoiceTime.Value;
-
-            EntryPicture = LatestInvoice.EntryTransactionImage;
-            ExitPicture = LatestInvoice.ExitTransactionImage;
-            PlateNumber = LatestInvoice.PlateNumber;
-
-            InvoiceAmount = InvoicePrice + Vat;
-            VatRate = (int)(Vat / InvoicePrice * 100);
-        }
-
-    }
     private async Task OnSearch()
     {
-        //var camera = await watcherAppService.GetcameraByWatherCodeAsync(WatcherCode);
-        //if (camera != null)
-        //{
-        //    await PlateNumberSearch(camera);
-        //}
-        //else
-        //{
-        //    var dispenser = await watcherAppService.GetDispenserByWatherCodeAsync(WatcherCode);
-        //    if (dispenser != null)
-        //    {
-        //        await PlateNumberSearch(dispenser);
-        //    }
-        //}
-
-
-        //var dto = new InvoiceSearchDto();
-        //string te = VehicleValidation.MapToEnglishNumerals(SearchText);
+  
         InvoiceSearchDto.TicketId = VehicleValidation.HandleKeyUp(SearchText).Item1;
         InvoiceSearchDto.PlateNumber = PlateSearchText;
 

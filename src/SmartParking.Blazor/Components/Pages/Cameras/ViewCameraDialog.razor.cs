@@ -32,14 +32,5 @@ partial class ViewCameraDialog
         MudDialogAdd.Cancel();
     }
 
-    private async Task HandleDownload()
-    {
-        string watcherCode = Camera.DeviceId;
-        if (string.IsNullOrEmpty(watcherCode))
-            return;
-        var uri = new Uri(Navigation.BaseUri);
-        string domain = $"{uri.Scheme}://{uri.Host}{(uri.IsDefaultPort ? "" : ":" + uri.Port)}/";
-        var qr = await InvoiceAppService.QrCodeForInvoicePage((string)watcherCode, (string)domain);
-        await JSRuntime.InvokeVoidAsync("window.open", qr, "_blank");
-    }
+
 }
