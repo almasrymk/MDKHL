@@ -117,7 +117,7 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     /// </summary>
     /// <param name="watcherCode"></param>
     /// <returns></returns>
-    Task<string> QrCodeForInvoicePage(string watcherCode,string domain);
+    Task<string> QrCodeForInvoicePage(string domain);
 
 
 

@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using SmartParking.Entities.Cameras.Watchers;
-using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
@@ -10,7 +8,6 @@ using SmartParking.Filters;
 using SmartParking.Localization;
 using SmartParking.QRCode;
 using SmartParking.Results;
-using SmartParking.Utilities;
 using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
@@ -31,31 +28,24 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     private readonly IRepository<Invoice, int> _invoiceRepository;
     private readonly IRepository<Organization, int> _organizationsRepository;
     private readonly IQRCodeAppService _qrCodeAppService;
-    private readonly IInvoiceUtilityAppService _invoiceUtility;
     private readonly IRepository<Payment, Guid> _paymentRepository;
-    private readonly IRepository<GarageTransaction, int> _garageTransactionRepository;
-    private readonly IRepository<Dispenser, int> _dispenserRepository;
 
-    private string LastInvoicePageUrl = "https://localhost:44322/checkout-extension/";
+
 
     public InvoiceAppService(IRepository<Invoice, int> repository, 
         IDataFilter dataFilter, 
         IRepository<Organization, int> organizationsRepository, 
-        IInvoiceUtilityAppService invoiceUtility, 
         IRepository<Payment, Guid> paymentRepository, 
-        IQRCodeAppService qrCodeAppService, 
-        IRepository<GarageTransaction, int> garageTransactionRepository,
-        IRepository<Dispenser, int> dispenserRepository)
+        IQRCodeAppService qrCodeAppService
+   )
     : base(repository)
     {
         _dataFilter = dataFilter;
         _invoiceRepository = repository;
         _organizationsRepository = organizationsRepository;
-        _invoiceUtility = invoiceUtility;
         _paymentRepository = paymentRepository;
         _qrCodeAppService = qrCodeAppService;
-        _garageTransactionRepository = garageTransactionRepository;
-        _dispenserRepository = dispenserRepository;
+
     }
     #region public methods 
     /// <inheritdoc/>
@@ -428,7 +418,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     }
 
     /// <inheritdoc/>
-    public async Task<string> QrCodeForInvoicePage(string watcherCode,string domain)
+    public async Task<string> QrCodeForInvoicePage(string domain)
     {
         string qrText = $"{domain}checkout-extension/";
         return await _qrCodeAppService.CreateQRCOdeImageAsync(qrText);

@@ -534,7 +534,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     }
 
     [RemoteService(IsEnabled = false)]
-    private async Task<string> GeneratePaymentNumberAsync(int organizationId)
+    public async Task<string> GeneratePaymentNumberAsync(int organizationId)
     {
         using (dataFilter.Disable<IMultiTenant>())
         {
