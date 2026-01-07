@@ -25,6 +25,7 @@ using SmartParking.Localization;
 using SmartParking.MultiTenancy;
 using SmartParking.OpenGate;
 using SmartParking.OpeningGate;
+using SmartParking.Payments.PaymentIntegrations;
 using SmartParking.PDF;
 using SmartParking.Results;
 using SmartParking.Watchers;
@@ -134,6 +135,8 @@ public class SmartParkingBlazorModule : AbpModule
     {
 
         var hostingEnvironment = context.Services.GetHostingEnvironment();
+        context.Services.Configure<OppwaRootOptions>(
+        context.Services.GetConfiguration().GetSection("Oppwa"));
         var configuration = context.Services.GetConfiguration();
         var tenantDomains = configuration.GetSection("TenantDomains").Get<string[]>();
         context.Services.AddMiniProfiler(options =>

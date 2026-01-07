@@ -882,6 +882,10 @@
     "PaymentSuccess": "Payment completed successfully",
     "PaymentFailed": "PaymentFailed",
     "HotelInfo": "Hotel information",
-    "ClientInfo": "Client information"
+    "ClientInfo": "Client information",
+    "GracePeriodValidation": "You Have to wait grace period",
+    "GetQr": "Get Qr Code",
+    "Qr": "Qr Code"
+
   }
 }
