@@ -45,10 +45,9 @@ public class WatcherAppService : ApplicationService, IWatcherAppService
 
     public async Task<ICollection<Watcher>> GetAllWatchersAsync()
     {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
+        
             return await _watcherRepository.GetListAsync();
-        }
+        
     }
 
     public async Task<string> GetWatcherCodeByWatcherIdAsync(int watcherId)
