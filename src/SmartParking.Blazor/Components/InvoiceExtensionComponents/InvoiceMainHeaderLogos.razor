@@ -1,0 +1,45 @@
+﻿@using MudBlazor
+
+<MudGrid Justify="Justify.Center" Class="my-6">
+
+    <MudItem xs="12" Class="d-flex flex-column align-items-center">
+        <MudText Typo="Typo.h6" Align="Align.Center">
+            @Title
+        </MudText>
+
+        <MudText Typo="Typo.subtitle2"
+                 Align="Align.Center"
+                 Style="color:#0A0A0A;"
+                 Class="mt-1">
+            @SubTitle
+        </MudText>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudGrid>
+
+            <MudItem xs="6" sm="6" Class="d-flex justify-content-start">
+                <MudImage Src="@LeftImage"
+                          Alt="Left Image"
+                          Width="90"
+                          Elevation="1" />
+            </MudItem>
+
+            <MudItem xs="6" sm="6" Class="d-flex justify-content-end">
+                <MudImage Src="@RightImage"
+                          Alt="Right Image"
+                          Width="90"
+                          Elevation="1" />
+            </MudItem>
+
+        </MudGrid>
+    </MudItem>
+
+</MudGrid>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string SubTitle { get; set; } = string.Empty;
+    [Parameter] public string LeftImage { get; set; } = string.Empty;
+    [Parameter] public string RightImage { get; set; } = string.Empty;
+}

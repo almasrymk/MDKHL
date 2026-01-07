@@ -829,7 +829,6 @@
         "AmountOfVisa": "المبلغ البنكي",
         "Permission:Checkout": "الخروج",
         "Permission:OpenGate": "فتح البوابة",
-        "Permission:CancelTransaction": "إلغاء العملية",
         "Permission:PDF Export": "تصدير PDF",
         "Permission:CSV Export": "تصدير CSV",
         "Permission:Excel Export": "تصدير Excel",
@@ -914,12 +913,8 @@
         "No": "لا",
         "PaymentSuccess": "تم الدفع بنجاح",
         "PaymentFailed": "فشل الدفع",
-        "Daily": "يومي",
-        "Monthly": "شهري",
-        "HalfYear": "نصف سنوي",
-        "Year": "سنوي",
-        "Free": "مجاني"
-
+        "HotelInfo": "بيانات الفندق",
+        "ClientInfo": "بيانات العميل"
     }
 
 }

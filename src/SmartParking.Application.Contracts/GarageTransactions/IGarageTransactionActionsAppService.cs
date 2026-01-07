@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Invoices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,9 @@ public interface IGarageTransactionActionsAppService
     /// <returns>transaction that matched</returns>
     Task<GarageTransactionDto> CheckIfCheckoutFromMobile(GarageTransactionDto key);
 
+    Task<GarageTransactionDto> GetGarageTransaction(InvoiceSearchDto invoiceSearchDto);
 
     bool CanHandle(GarageTransactionDto garageTransactionDto);
+
+    bool CanHandle(InvoiceSearchDto invoiceSearchDto);
 }

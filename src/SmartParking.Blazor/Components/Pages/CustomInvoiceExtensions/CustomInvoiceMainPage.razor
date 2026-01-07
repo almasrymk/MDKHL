@@ -1,14 +1,15 @@
-﻿@page "/checkout-extension/{WatcherCode}"
+﻿@page "/checkout-extension/"
 @using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.InvoiceExtensionComponents
 @using SmartParking.Blazor.Components.Shared
+@using SmartParking.Blazor.Contracts
 @using SmartParking.Entities.Cameras.Watchers
 @using SmartParking.Invoices
 @using SmartParking.Invoices.Factory
 @using SmartParking.Localization
 @using SmartParking.Payments
 @using SmartParking.Watchers
-@using Volo.Abp.Domain.Repositories
+@using Volo.Abp.Domain
 @layout CustomLayout
 @inject IPublicInvoiceAppService invoiceAppService
 @inject IInvoiceAppService Invoive
@@ -18,6 +19,7 @@
 @inject ISnackbar snackbar
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IInvoiceActionsFactoryAppService InvoiceActionsFactory
+@inject IInvoiceUiAppService invoiceUiAppService
 
 @attribute [AllowAnonymous]
 
@@ -32,8 +34,9 @@
         <MudItem xs="12" md="8">
             <MudStack Spacing="3">
                 <InvoiceScan  OnButtonTriggered="OnSearch" OnSearchTextChanged="OnSearchValueChanged"/>
-
-                <InvoiceDetailsCard InvoiceNo="@InvoiceNumber"
+                @if (ShowInvoiceDetails)
+                {
+                    <InvoiceDetailsCard InvoiceNo="@InvoiceNumber"
                                     InvoiceDate="@InvoiceDate"
                                     AmountPaid="@InvoicePrice"
                                     VATAmount="@Vat"
@@ -42,13 +45,15 @@
                                     CheckInTime="@CheckIn"
                                     CheckOutTime="@Checkout" />
 
-                <VehicleImagesCard EntryPictureUrl="@EntryPicture"
-                                   ExitPictureUrl="@ExitPicture" />
+                    <VehicleImagesCard EntryPictureUrl="@EntryPicture"
+                                       ExitPictureUrl="@ExitPicture" />
 
-                <VehicleInfoCard PlateText="@PlateNumber"
-                                 PlateCountry="KSA"
-                                 CountryFlagUrl="images/sa.png"
-                                  />
+                    <VehicleInfoCard PlateText="@PlateNumber"
+                                     PlateCountry="KSA"
+                                     CountryFlagUrl="images/sa.png"
+                                      />
+                }
+                
             </MudStack>
         </MudItem>
 

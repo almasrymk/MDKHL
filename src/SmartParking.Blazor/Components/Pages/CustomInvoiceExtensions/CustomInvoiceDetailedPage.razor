@@ -1,0 +1,96 @@
+﻿@* @page "/custom-invoice/details" *@
+@page "/custom-invoice/details/{PaymentId}" 
+@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.InvoiceExtensionComponents
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Blazor.Contracts
+@using SmartParking.Localization
+@inject IInvoiceCheckoutUiAppService invoiceCheckoutUiAppService
+@inject IStringLocalizer<SmartParkingResource> L
+
+@layout CustomLayout
+@attribute [AllowAnonymous]
+
+<MudGrid class="p-3" Spacing="3" Style="background-color:#FFFFFF">
+
+    <MudItem xs="12">
+        <InvoiceMainHeaderLogos LeftImage="images/logo/MDHKL_01.png"
+                                RightImage="@invoiceCheckout.OrganizationPicture"
+                                Title="@L["InvoiceNumberView"]"
+                                SubTitle="@invoiceCheckout.InvoiceNumber" />
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudDivider Class="mt-3 mb-3" />
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudText Class="align-items-center mb-3" Typo="Typo.h6" Align="Align.Center">
+            @L["SimplifiedTaxInvoice"]
+        </MudText>
+    </MudItem>
+
+    <MudItem xs="12">
+        <InvoiceDetailedPaper
+            RightText="@L["InvoiceId"]"
+            RightValue="@invoiceCheckout.InvoiceId.ToString()"
+            CenterText="@L["InvoiceNumberView"]"
+            CenterValue="@invoiceCheckout.PaymentNumber"
+            LeftText="@L["Total"]"
+            LeftValue="@invoiceCheckout.InvoicePrice.ToString()">
+
+        </InvoiceDetailedPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="6">
+    <DetailedInfoCard Title="@L["HotelInfo"]"
+                          Row1Text="@L["Cashier No"]"
+                          Row1Value="@invoiceCheckout.CashierName"
+                          Row2Text="@L["OrganizationNameInvoicePopUp"]"
+                          Row2Value="@invoiceCheckout.BranchName"
+                          Row3Text="@L["OrganizationAddressInvoicePopUp"]"
+                          Row3Value="@invoiceCheckout.OrganizationAddress" />
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        <DetailedInfoCard Title="@L["ClientInfo"]"
+                          Row1Text="@L["PlateNumber"]"
+                          Row1Value="@invoiceCheckout.PlateNumber"
+                          Row2Text="@L["EntranceTime"]"
+                          Row2Value="@invoiceCheckout.EntranceTime.ToString()"
+                          Row3Text="@L["ExitTime"]"
+                          Row3Value="@invoiceCheckout.InvoiceTime.ToString()" />
+    </MudItem>
+    <MudItem xs="12">
+        @* <SubscriptionDetailed
+
+            SecondValue="@((invoiceCheckout.InvoiceTime - invoiceCheckout.EntranceTime).ToString())">
+
+        </SubscriptionDetailed> *@
+    </MudItem>
+    <MudItem xs="12">
+        <InvoicePaymentStructure
+            Label_Subtotal="@L["TotalPreVAT"]"
+            Subtotal="@subtotal"
+            Label_Discount="@L["Discount"]"
+            Discount="@invoiceCheckout.Discount"
+            Label_VatRate="@L["VAT"]"
+            VatRate="15"
+            
+            TotalGrand="@L["Total"]"
+            QrCodeUrl="@invoiceCheckout.QrCodeInvoice">
+        </InvoicePaymentStructure>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudDivider Class="mt-3 mb-3" />
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudText Class="align-items-center mb-1" Style="color:#6A7282; font-size:12px" Align="Align.Center">
+            شكراً لاستخدامكم نظام المواقف
+        </MudText>
+    </MudItem>
+</MudGrid>
+<MudItem Class="d-flex justify-content-center align-content-center align-items-center mt-4 mb-4">
+    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" EndIcon="@Icons.Material.Filled.Download">طباعة الفاتوره</MudButton>
+</MudItem>

@@ -1,0 +1,56 @@
+﻿@using MudBlazor
+
+<MudPaper Class="pa-4" Style="background-color:#F9FAFB; border-radius:12px;">
+    <MudGrid>
+
+        <!-- Right Section -->
+        <MudItem xs="12" sm="4"
+                 Class="d-flex justify-content-start">
+            <MudText>
+                <span style="color:#6A7282;">@RightText</span>
+                <span class="fw-bold ms-1">@RightValue</span>
+            </MudText>
+        </MudItem>
+
+        <!-- Center Section -->
+        <MudItem xs="12" sm="4"
+                 Class="d-flex justify-content-start justify-content-sm-center">
+            <MudText>
+                <span style="color:#6A7282;">@CenterText</span>
+                <span class="fw-bold ms-1">@CenterValue</span>
+            </MudText>
+        </MudItem>
+
+        <!-- Left Section -->
+        <MudItem xs="12" sm="4"
+                 Class="d-flex justify-content-start justify-content-sm-end align-items-center">
+            <MudText>
+                <span style="color:#00A63E;">@LeftText</span>
+                <span class="fw-bold ms-1" style="color:#00A63E;">
+                    @LeftValue
+                </span>
+            </MudText>
+
+            @if (!string.IsNullOrWhiteSpace(LeftImage))
+            {
+                <MudImage Src="@LeftImage"
+                          Width="14"
+                          Height="14"
+                          Class="ms-2" />
+            }
+        </MudItem>
+
+    </MudGrid>
+</MudPaper>
+
+@code {
+    [Parameter] public string RightText { get; set; } = "رقم الفاتورة:";
+    [Parameter] public string RightValue { get; set; } = "INV-0001";
+
+    [Parameter] public string CenterText { get; set; } = "رقم المعاملة:";
+    [Parameter] public string CenterValue { get; set; } = "TXN-98765";
+
+    [Parameter] public string LeftText { get; set; } = "تم الدفع بنجاح - المبلغ:";
+    [Parameter] public string LeftValue { get; set; } = "51.75";
+    [Parameter] public string LeftImage { get; set; } = "images/Saudi_Riyal_Symbolsvg.png";
+}

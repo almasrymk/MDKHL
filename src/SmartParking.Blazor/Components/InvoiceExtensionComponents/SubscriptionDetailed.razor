@@ -1,0 +1,28 @@
+﻿@using MudBlazor
+
+<MudPaper Style="background-color:#F9FAFB; border-radius:12px;" Class="pa-4">
+    <MudGrid Justify="Justify.FlexStart">
+        <MudItem xs="6" sm="3">
+            <MudText Style="color:#6A7282;">@FirstText</MudText>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudText Class="fw-bold">@FirstValue</MudText>
+        </MudItem>
+
+        <!-- Second Pair -->
+        <MudItem xs="6" sm="3">
+            <MudText Style="color:#6A7282;">@SecondText</MudText>
+        </MudItem>
+        <MudItem xs="6" sm="3" Class="d-flex justify-content-end">
+            <MudText Class="fw-bold" Style="font-weight:400">@SecondValue</MudText>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@code {
+    [Parameter] public string FirstText { get; set; } = "نوع الاشتراك:";
+    [Parameter] public string FirstValue { get; set; } = "اشتراك ساعات";
+
+    [Parameter] public string SecondText { get; set; } = "المدة:";
+    [Parameter] public string SecondValue { get; set; } = "6.25 ساعة";
+}
