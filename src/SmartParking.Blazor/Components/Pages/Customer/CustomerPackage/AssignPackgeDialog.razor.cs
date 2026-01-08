@@ -36,7 +36,7 @@ partial class AssignPackgeDialog
     private MudForm form;
     public List<PackageDto> selectedPackageDto { get; set; } = new List<PackageDto>();
     private bool IsCustom { get; set; } = false;
-    private CustomPackageUiDto CustomPackageUiDto { get; set; } 
+    private CustomPackageUiDto CustomPackageUiDto { get; set; } = new();
 
 
     /// <summary>
