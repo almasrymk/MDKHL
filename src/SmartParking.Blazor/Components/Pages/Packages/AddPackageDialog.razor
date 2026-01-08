@@ -82,7 +82,10 @@
                             }
                         </MudSelect>
                     </MudItem>
-                    <MudItem sm="6" md="6">
+                    @if(createUpdatePackage.PackageCategoryType != PackageCategoryTypes.CustomPackage)
+                    {
+                        
+                          <MudItem sm="6" md="6">
                         <div style="display: flex; flex-direction: column;">
                             <label style="font-size: 0.75rem; margin-bottom: 4px;">
                                 @L["Price"]
@@ -98,6 +101,7 @@
                                              class="@(CultureInfo.CurrentCulture.Name == "ar" ? "custom-numeric-field" : "")" />
                         </div>
                     </MudItem>
+                    }
                     @if (createUpdatePackage.PackageCategoryType == PackageCategoryTypes.CustomPackage){
 
                         <CustomPackageComponent CustomPackageUiDto="CustomPackageUiDto" />
@@ -310,7 +314,7 @@
                 case PackageCategoryTypes.Year:
                     createUpdatePackage.DurationOfPackage = 360;
                     break;
-                
+
                 case PackageCategoryTypes.HalfYear:
                     createUpdatePackage.DurationOfPackage = 180;
                     break;
@@ -343,24 +347,24 @@
         }
     }
 
-private void OnTimeToChanged(TimeSpan? value)
-{
-    if (value.HasValue)
+    private void OnTimeToChanged(TimeSpan? value)
     {
-        timeSpanTo = value;
-        createUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(value.Value);
+        if (value.HasValue)
+        {
+            timeSpanTo = value;
+            createUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(value.Value);
+        }
+        else
+        {
+            createUpdatePackage.PublishTo = null; 
+        }
     }
-    else
-    {
-        createUpdatePackage.PublishTo = null; 
-    }
-}
 
 
     private async Task Submit()
     {
         createUpdatePackage.OrganizationId = int.Parse(OrganizationId);
-         // = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), CustomerCategory);
+        // = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), CustomerCategory);
         if (CurrentTenant.Id == null)
         {
             createUpdatePackage.TenantId = _organizations.FirstOrDefault(x => x.Id == createUpdatePackage.OrganizationId).TenantId;
@@ -376,6 +380,7 @@ private void OnTimeToChanged(TimeSpan? value)
                 createUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(CustomPackageUiDto.startTime.Value);
                 createUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(CustomPackageUiDto.endTime.Value);
                 createUpdatePackage.DurationOfPackage = (int) CustomPackageUiDto.CountOfDays.Value;
+                createUpdatePackage.Price = CustomPackageUiDto.PriceOfPackage.Value;
             }
             else{
                 createUpdatePackage.ActivationDate = DateTime.Now;

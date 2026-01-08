@@ -131,8 +131,10 @@ partial class AssignPackgeDialog
             _customerPackageDto.ExpiryDate = package.PackageCategoryType!=PackageCategoryTypes.CustomPackage ? DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute): package.DectivationDate; 
             _customerPackageDto.PublishFromOfPackage = package.PublishFrom;
             _customerPackageDto.PublishToOfPackage = package.PublishTo;
-            _customerPackageDto.ActivationDateOfPackage = package.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateTime.Now : package.ActivationDate;
+            _customerPackageDto.ActivationDateOfPackage=  package.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateTime.Now : package.ActivationDate;
+            _customerPackageDto.ActivationDate = package.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateOnly.FromDateTime(DateTime.Now) : DateOnly.FromDateTime(package.ActivationDate.Date);
             _customerPackageDto.DectivationDateOfPackage = package.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute) : package.DectivationDate;
+            _customerPackageDto.ExpiryDateOfPackage = package.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateOnly.FromDateTime(DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute) ): DateOnly.FromDateTime(package.DectivationDate);
             _customerPackageDto.DescriptionOfPackage = package.Description;
             _customerPackageDto.DurationOfPackage = package.DurationOfPackage;
             _customerPackageDto.publishedOfPackage = package.Published;

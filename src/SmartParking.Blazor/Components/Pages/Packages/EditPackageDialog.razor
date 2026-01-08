@@ -77,7 +77,7 @@
                         Label=@L["PackageDuration"] />
                     </MudItem>
                     <MudItem sm="6" md="6">
-                        <MudSelect
+                        <MudSelect T="PackageCategoryTypes"
                                    @bind-Value="Package.PackageCategoryType"
                         Label="@L["PackageType"]" 
                         HelperText=@L["Helper Text"] 
@@ -86,17 +86,9 @@
                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
                             @foreach (var type in Enum.GetValues(typeof(PackageCategoryTypes)).Cast<PackageCategoryTypes>())
                             {
-                                if (CultureInfo.CurrentCulture.Name == "en")
-                                {
-                                     <MudSelectItem  Value="@type">
-                                         @L[type.ToString()];
-                                     </MudSelectItem>
-                                }
-                                else{
-                                    <MudSelectItem Value="@type">
-                                        @L[type.ToString()]
-                                    </MudSelectItem>
-                                }
+                                <MudSelectItem Value="@type">
+                                    @L[type.ToString()]
+                                </MudSelectItem>
                             }
                         </MudSelect>
                     </MudItem>

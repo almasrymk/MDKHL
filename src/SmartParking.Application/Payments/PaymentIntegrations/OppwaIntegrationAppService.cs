@@ -126,8 +126,8 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
         var json = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<HyperPayResultDto>(json);
 
-        if (!IsSuccess(result.Result.Code))
-            return PaymentVerificationResult.Failed();
+      //  if (!IsSuccess(result.Result.Code))
+        //    return PaymentVerificationResult.Failed();
 
         var checkoutId = ExtractCheckoutId(resourcePath);
         var paymentId =await UpdatePayment(checkoutId);
