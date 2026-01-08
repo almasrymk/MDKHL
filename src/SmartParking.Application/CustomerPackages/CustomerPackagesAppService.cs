@@ -15,6 +15,7 @@ using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO.Packaging;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -388,7 +389,7 @@ public class CustomerPackagesAppService :
         var package = await GetPackageAsync(customerPackageDto!.PackageId);
         if (package == null)
             throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-        var customerPackage = CreateCustomerPackage(customerPackageDto);
+        var customerPackage = CreateCustomerPackage(customerPackageDto , package);
         var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
         bool flag = false;
         if (existingPackage != null)
@@ -556,16 +557,16 @@ public class CustomerPackagesAppService :
     /// <returns>
     /// A new <see cref="CustomerPackage"/> object populated with package and customer data.
     /// </returns>
-    private static CustomerPackage CreateCustomerPackage(CustomerPackageDto customerPackageDto)
+    private static CustomerPackage CreateCustomerPackage(CustomerPackageDto customerPackageDto , Package package)
     {
         return new CustomerPackage
         {
             PackageId = customerPackageDto.PackageId,
             CustomerId = customerPackageDto.CustomerId,
             OrganizationId = customerPackageDto.OrganizationId,
-            ExpiryDate = DateTime.Now.AddDays(customerPackageDto.DurationOfPackage.Value).AddMinutes(60 - DateTime.Now.AddDays(customerPackageDto.DurationOfPackage.Value).Minute),
-            ActivationDateOfPackage = DateTime.Now,
-            DectivationDateOfPackage = customerPackageDto.DectivationDateOfPackage,
+            ExpiryDate = package.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute) : package.DectivationDate,
+            ActivationDateOfPackage = package.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateTime.Now : package.ActivationDate,
+            DectivationDateOfPackage = package.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateTime.Now.AddDays(package.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(package.DurationOfPackage).Minute) : package.DectivationDate,
             DescriptionOfPackage = customerPackageDto.DescriptionOfPackage,
             DurationOfPackage = customerPackageDto.DurationOfPackage,
             PriceOfPackage = customerPackageDto.PriceOfPackage,
@@ -590,7 +591,7 @@ public class CustomerPackagesAppService :
             PackageId = PackageDto.Id,
             CustomerId = CustomerId,
             OrganizationId = PackageDto.OrganizationId,
-            ExpiryDate = DateTime.Now.AddDays(PackageDto.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(PackageDto.DurationOfPackage).Minute),
+            ExpiryDate = PackageDto.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateTime.Now.AddDays(PackageDto.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(PackageDto.DurationOfPackage).Minute):PackageDto.DectivationDate,
             ActivationDateOfPackage = PackageDto.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateTime.Now : PackageDto.ActivationDate,
             DectivationDateOfPackage = PackageDto.PackageCategoryType != PackageCategoryTypes.CustomPackage ? DateTime.Now.AddDays(PackageDto.DurationOfPackage).AddMinutes(60 - DateTime.Now.AddDays(PackageDto.DurationOfPackage).Minute) : PackageDto.DectivationDate,
             DescriptionOfPackage = PackageDto.Description,

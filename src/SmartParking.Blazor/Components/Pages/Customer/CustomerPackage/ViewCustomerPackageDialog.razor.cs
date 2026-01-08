@@ -8,6 +8,7 @@ using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Currency;
 using SmartParking.CustomerPackages;
 using SmartParking.Localization;
+using System;
 using System.Globalization;
 using System.Security.Authentication;
 using Volo.Abp;
@@ -131,8 +132,8 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                    item.PriceOfPackage != null ? $"{item.PriceOfPackage.ToString()} {iconHtml}" : $"0 {iconHtml}"
                 ));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageDuration"], item!.DurationOfPackage.ToString()));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ActivationDate"], item!.ActivationDateOfPackage.ToString()));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ExpiryDate"], item!.ExpiryDate.ToString()));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ActivationDate"], DateOnly.FromDateTime(item!.ActivationDateOfPackage.Value).ToString()));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ExpiryDate"], DateOnly.FromDateTime(item!.ExpiryDate.Date).ToString()));
                 string publishedText;
 
                 if (item.publishedOfPackage.HasValue && item.publishedOfPackage.Value)
@@ -143,7 +144,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 {
                     var from = item.PublishFromOfPackage?.ToString() ?? "-";
                     var to = item.PublishToOfPackage?.ToString() ?? "-";
-                    publishedText = $"{from} - {to}";
+                    publishedText = $"{from}-{to}";
                 }
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], publishedText)); rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], $"{RLM}{item.ArPlateNumber} , {LRM}{item.EnPlateNumber}"));
