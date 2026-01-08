@@ -61,21 +61,28 @@ public partial class LastInvoiceAtCamera
         {
             await InvoiceAppService.UpdateDiscountForInvoice(Invoice.Id, Discount);
         }
-
-        PaymentCheckoutDto payment = await RequestToPaymentCheckout();
-        if (payment != null)
+        try
         {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
-            await Task.Delay(500);
-            await OpenGate();
-            await JSRuntime.InvokeVoidAsync("eval", $"window.open('/payments/view/{payment.PaymentId}', '_blank');");
+            PaymentCheckoutDto payment = await RequestToPaymentCheckout();
+            if (payment != null)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
+                await Task.Delay(500);
+                await OpenGate();
+                await JSRuntime.InvokeVoidAsync("eval", $"window.open('/payments/view/{payment.PaymentId}', '_blank');");
 
-            // await JSRuntime.InvokeAsync<object>("open", $"/payments/view/{payment.PaymentId}", "_blank");
+                // await JSRuntime.InvokeAsync<object>("open", $"/payments/view/{payment.PaymentId}", "_blank");
 
+            }
+            else
+            {
+                await OpenGate();
+            }
         }
-        else
+        catch(Exception e)
         {
-            await OpenGate();
+            Snackbar.Add(e.Message, MudBlazor.Severity.Error);
+            await Task.Delay (1000);
         }
         Refresh();
 

@@ -104,27 +104,39 @@ public partial class CustomInvoiceMainPage
 
     private async Task OnSearch()
     {
-  
-        InvoiceSearchDto.TicketId = VehicleValidation.HandleKeyUp(SearchText).Item1;
-        InvoiceSearchDto.PlateNumber = PlateSearchText;
 
-        invoiceDto = await invoiceUiAppService.GetInvoiceAfterPreCheckout(InvoiceSearchDto);
-        if (invoiceDto is not null)
+        try
         {
-            ShowInvoiceDetails = true;
-            InvoiceNumber = invoiceDto.InvoiceNumber;
-            InvoiceDate = invoiceDto.InvoiceTime!.Value;
-            InvoicePrice = (double)invoiceDto.InvoicePrice;
-            Vat = (double)invoiceDto.Vat;
-            var duration = invoiceDto.InvoiceTime.Value - invoiceDto.EntranceTime.Value;
-            Duration = $"{(int)duration.TotalHours} hours {duration.Minutes} minutes";
-            CheckIn = invoiceDto.EntranceTime.Value;
-            Checkout = invoiceDto.InvoiceTime.Value;
-            EntryPicture = invoiceDto.EntryTransactionImage;
-            ExitPicture = invoiceDto.ExitTransactionImage;
-            PlateNumber = invoiceDto.PlateNumber;
-            InvoiceAmount = InvoicePrice + Vat;
-            VatRate = 15;
+            InvoiceSearchDto.TicketId = VehicleValidation.HandleKeyUp(SearchText).Item1;
+            InvoiceSearchDto.PlateNumber = PlateSearchText;
+
+            invoiceDto = await invoiceUiAppService.GetInvoiceAfterPreCheckout(InvoiceSearchDto);
+            if (invoiceDto is not null)
+            {
+                ShowInvoiceDetails = true;
+                InvoiceNumber = invoiceDto.InvoiceNumber;
+                InvoiceDate = invoiceDto.InvoiceTime!.Value;
+                InvoicePrice = (double)invoiceDto.InvoicePrice;
+                Vat = (double)invoiceDto.Vat;
+                var duration = invoiceDto.InvoiceTime.Value - invoiceDto.EntranceTime.Value;
+                Duration = $"{(int)duration.TotalHours} hours {duration.Minutes} minutes";
+                CheckIn = invoiceDto.EntranceTime.Value;
+                Checkout = invoiceDto.InvoiceTime.Value;
+                EntryPicture = invoiceDto.EntryTransactionImage;
+                ExitPicture = invoiceDto.ExitTransactionImage;
+                PlateNumber = invoiceDto.PlateNumber;
+                InvoiceAmount = InvoicePrice + Vat;
+                VatRate = 15;
+            }
+            else
+            {
+                snackbar.Add(L["InvoiceNotFound"], Severity.Error);
+                await Task.Delay(1000);
+            }
+        }
+        catch (Exception ex) {
+            snackbar.Add(L["InvoiceNotFound"], Severity.Error);
+            await Task.Delay(1000);
         }
         StateHasChanged();
     }
