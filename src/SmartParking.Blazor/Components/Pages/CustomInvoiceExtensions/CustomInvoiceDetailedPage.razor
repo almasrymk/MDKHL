@@ -6,6 +6,9 @@
 @using SmartParking.Localization
 @inject IInvoiceCheckoutUiAppService invoiceCheckoutUiAppService
 @inject IStringLocalizer<SmartParkingResource> L
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
 
 @layout CustomLayout
 @attribute [AllowAnonymous]
@@ -91,5 +94,23 @@
     </MudItem>
 </MudGrid>
 <MudItem Class="d-flex justify-content-center align-content-center align-items-center mt-4 mb-4">
-    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" EndIcon="@Icons.Material.Filled.Download">@L["PrintInvoice"]</MudButton>
+    <MudButton 
+        Variant="Variant.Filled" 
+        Color="MudBlazor.Color.Primary" 
+        EndIcon="@Icons.Material.Filled.Download"
+        OnClick="Print">@L["PrintInvoice"]</MudButton>
 </MudItem>
+
+<script>
+    window.openShare = async function (title, text, url) {
+        if (navigator.share) {
+            await navigator.share({
+                title: title,
+                text: text,
+                url: url
+            });
+        } else {
+            alert("Sharing is not supported on this device.");
+        }
+    };
+</script>
