@@ -886,8 +886,14 @@
         "GracePeriodValidation": "You Have to wait grace period",
         "GetQr": "Get Qr Code",
         "Qr": "Qr Code",
-        "InvoiceNotFound": "There is no such invoice with this data"
-
-
+        "InvoiceNotFound": "There is no such invoice with this data",
+        "InvalidTicket": "The 11-digit ticket number must be entered correctly.",
+        "InvoiceNo": "Invoice Number",
+        "InvoiceDate": "Invoice Date",
+        "InvoicePaymentMethod": "Payment Method",
+        "Check-in": "Check-in",
+        "Check-out": "Check-out",
+        "ThankyouforusingMadkhal": "Thank you for using the 'Madkhal' smart parking system.",
+        "PrintInvoice": "Print Invoice"
     }
 }
