@@ -19,17 +19,17 @@ public partial class CustomInvoiceMainPage
     private string PlateSearchText { get; set; } = string.Empty;
     public string InvoiceNumber { get; set; }
     public DateTime InvoiceDate { get; set; }
-    public double InvoicePrice { get; set; }
-    public double Vat { get; set; }
+    public decimal InvoicePrice { get; set; }
+    public decimal Vat { get; set; }
     public DateTime Checkout { get; set; }
     public DateTime CheckIn { get; set; }
     public string Duration { get; set; }
     public string EntryPicture { get; set; }
     public string ExitPicture { get; set; }
     public string PlateNumber { get; set; }
-    public double InvoiceAmount { get; set; }
+    public decimal InvoiceAmount { get; set; }
     public int VatRate { get; set; }
-    private string paymentMethod { get; set; } = "Mada";
+    private string paymentMethod { get; set; } = "MADA";
     private InvoiceDto? LatestInvoice { get; set; }
 
     private CreateUpdateInvoiceUiDto? invoiceDto { get; set; } = new();
@@ -86,7 +86,7 @@ public partial class CustomInvoiceMainPage
                 PaymentCategory = PaymentCategory.PaymentParking,
                 PaymentMethod = paymentMethodValue,
                 TenantId = invoice.TenantId.Value,
-
+                EnPlateNumber = invoice.PlateNumber,
             }, checkoutId);
 
             await JS.InvokeVoidAsync(
@@ -108,6 +108,11 @@ public partial class CustomInvoiceMainPage
         try
         {
             InvoiceSearchDto.TicketId = VehicleValidation.HandleKeyUp(SearchText).Item1;
+            if (SearchText.Length != 11)
+            {
+                snackbar.Add(L["InvalidTicket"],Severity.Warning);
+                return;
+            }
             InvoiceSearchDto.PlateNumber = PlateSearchText;
 
             invoiceDto = await invoiceUiAppService.GetInvoiceAfterPreCheckout(InvoiceSearchDto);
@@ -116,8 +121,8 @@ public partial class CustomInvoiceMainPage
                 ShowInvoiceDetails = true;
                 InvoiceNumber = invoiceDto.InvoiceNumber;
                 InvoiceDate = invoiceDto.InvoiceTime!.Value;
-                InvoicePrice = (double)invoiceDto.InvoicePrice;
-                Vat = (double)invoiceDto.Vat;
+                InvoicePrice = Math.Round(invoiceDto.InvoicePrice,2);
+                Vat = Math.Round(invoiceDto.Vat,2);
                 var duration = invoiceDto.InvoiceTime.Value - invoiceDto.EntranceTime.Value;
                 Duration = $"{(int)duration.TotalHours} hours {duration.Minutes} minutes";
                 CheckIn = invoiceDto.EntranceTime.Value;
@@ -125,7 +130,7 @@ public partial class CustomInvoiceMainPage
                 EntryPicture = invoiceDto.EntryTransactionImage;
                 ExitPicture = invoiceDto.ExitTransactionImage;
                 PlateNumber = invoiceDto.PlateNumber;
-                InvoiceAmount = InvoicePrice + Vat;
+                InvoiceAmount = Math.Round(InvoicePrice + Vat,2);
                 VatRate = 15;
             }
             else

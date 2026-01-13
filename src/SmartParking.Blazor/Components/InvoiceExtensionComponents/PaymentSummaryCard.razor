@@ -1,31 +1,36 @@
-﻿<MudCard Elevation="0" Class="custom-card">
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+
+
+<MudCard Elevation="0" Class="custom-card">
     <MudCardHeader>
-        <MudText Typo="Typo.h6">Payment Summary</MudText>
+        <MudText Typo="Typo.h6">@L["Summary"]</MudText>
     </MudCardHeader>
 
     <MudCardContent>
         <MudGrid>
             <MudItem xs="12" Class="d-flex justify-space-between">
-                <MudText>Amount</MudText>
+                <MudText>@L["Amount"]</MudText>
                 <MudText>@Amount.ToString("F2") SAR</MudText>
             </MudItem>
 
             <MudItem xs="12" Class="d-flex justify-space-between">
-                <MudText>VAT (@VATRate%)</MudText>
+                <MudText>@L["VAT"] (@VATRate%)</MudText>
                 <MudText>@VATAmount.ToString("F2") SAR</MudText>
             </MudItem>
 
             <MudDivider Class="my-1" />
 
             <MudItem xs="12" Class="d-flex justify-space-between">
-                <MudText>Total</MudText>
+                <MudText>@L["Total"]</MudText>
                 <MudText>@TotalAmount.ToString("F2") SAR</MudText>
             </MudItem>
         </MudGrid>
 
         <MudDivider Class="my-3" />
 
-        <MudText Typo="Typo.h6">Payment Method</MudText>
+        <MudText Typo="Typo.h6">@L["InvoicePaymentMethod"]</MudText>
 
         <MudRadioGroup T="string"
                        Value="SelectedPaymentMethod"
@@ -65,10 +70,10 @@
 </MudCard>
 
 @code {
-    [Parameter] public double Amount { get; set; }
+    [Parameter] public decimal Amount { get; set; }
     [Parameter] public int VATRate { get; set; }
-    [Parameter] public double VATAmount { get; set; }
-    [Parameter] public double TotalAmount { get; set; }
+    [Parameter] public decimal VATAmount { get; set; }
+    [Parameter] public decimal TotalAmount { get; set; }
     [Parameter] public string SelectedPaymentMethod { get; set; }
     [Parameter] public EventCallback<string> SelectedPaymentMethodChanged { get; set; }
     [Parameter] public EventCallback ProceedToPayment { get; set; }

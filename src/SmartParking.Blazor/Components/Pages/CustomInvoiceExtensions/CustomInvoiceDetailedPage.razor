@@ -1,5 +1,4 @@
-﻿@* @page "/custom-invoice/details" *@
-@page "/custom-invoice/details/{PaymentId}" 
+﻿@page "/custom-invoice/details/{PaymentId}" 
 @using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.InvoiceExtensionComponents
 @using SmartParking.Blazor.Components.Shared
@@ -45,7 +44,7 @@
     <MudItem xs="12" sm="6">
     <DetailedInfoCard Title="@L["HotelInfo"]"
                           Row1Text="@L["Cashier No"]"
-                          Row1Value="@invoiceCheckout.CashierName"
+                          Row1Value="@invoiceCheckout.TicketId"
                           Row2Text="@L["OrganizationNameInvoicePopUp"]"
                           Row2Value="@invoiceCheckout.BranchName"
                           Row3Text="@L["OrganizationAddressInvoicePopUp"]"
@@ -87,10 +86,10 @@
 
     <MudItem xs="12">
         <MudText Class="align-items-center mb-1" Style="color:#6A7282; font-size:12px" Align="Align.Center">
-            شكراً لاستخدامكم نظام المواقف
+            @L["ThankyouforusingMadkhal"]
         </MudText>
     </MudItem>
 </MudGrid>
 <MudItem Class="d-flex justify-content-center align-content-center align-items-center mt-4 mb-4">
-    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" EndIcon="@Icons.Material.Filled.Download">طباعة الفاتوره</MudButton>
+    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" EndIcon="@Icons.Material.Filled.Download">@L["PrintInvoice"]</MudButton>
 </MudItem>
