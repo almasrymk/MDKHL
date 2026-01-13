@@ -445,7 +445,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         if (organization != null && organization.StatusZatca == Status.Active  && payment.Amount > 0)
         {
             var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
-            payment.QrCodeInvoice = qrCode .QRCode = res.invoiceQRCode;
+            payment.QrCodeInvoice = qrCode.QRCode = res.invoiceQRCode;
             payment.IsSentZatca = res.status;
             payment.ErrorMessagesZatca = null;
             if (res.validationResults != null && res.validationResults.errorMessages != null && res.validationResults.errorMessages.Count > 0)
