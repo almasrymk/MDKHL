@@ -28,12 +28,13 @@ public class InvoiceCheckoutUiAppService : ApplicationService, IInvoiceCheckoutU
             var payment = await _paymentRepository.GetAsync(paymentId);
             var invoiceCheckout = new InvoiceCheckoutUiDto
             {
+                TicketId = payment.Invoice.TicketId,
                 PaymentNumber = payment.PaymentNumber,
                 InvoiceId = payment.InvoiceId,
                 InvoiceNumber = payment.Invoice.InvoiceNumber,
                 EntranceTime = payment.Invoice.EntranceTime,
                 InvoiceTime = payment.Invoice.InvoiceTime,
-                PlateNumber = payment.ArPlateNumber,
+                PlateNumber = payment.EnPlateNumber,
                 InvoicePrice = payment.Amount,
                 Discount = payment.Invoice.Discount,
                 IsPackage = payment.Invoice.IsPackage,
