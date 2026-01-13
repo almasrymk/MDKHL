@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @using MudBlazor
+@using SmartParking.Organizations
+@inject IOrganizationsAppService organizationAppService
 
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -17,7 +19,7 @@
                               Height="70" />
                 </MudItem>
                 <MudItem xs="6" Class="text-center">
-                    <MudImage Src="images/logo/footer-image-logo.png"
+                    <MudImage Src="@organizationDto.OrganizationPicture"
                               Alt="LogoOrg"
                               Height="70" />
                 </MudItem>
@@ -152,21 +154,27 @@
     }
 </style>
 
-        @code
-        {
+@code
+{
+    private OrganizationDto organizationDto = new();
 
-                MudTheme SPCustomTheme = new MudTheme()
-                {
-                    PaletteLight = new PaletteLight()
-                    {
-                        Primary = "#0D5480",
-                        Secondary = "#21A5BC",
-                        Tertiary = "#6A7282",
-                        GrayLight = "#F2F2F2",
-                        GrayDark = "#434341",
-                        WarningLighten = "#CE3333",
-                        Success = "#28BA24",
-                        White = "FFFFFF"
-                    },
-                };
-        }
+    MudTheme SPCustomTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#0D5480",
+            Secondary = "#21A5BC",
+            Tertiary = "#6A7282",
+            GrayLight = "#F2F2F2",
+            GrayDark = "#434341",
+            WarningLighten = "#CE3333",
+            Success = "#28BA24",
+            White = "FFFFFF"
+        },
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        organizationDto = await organizationAppService.GetOrganizationForCurrentTenatAsync();
+    }
+}
