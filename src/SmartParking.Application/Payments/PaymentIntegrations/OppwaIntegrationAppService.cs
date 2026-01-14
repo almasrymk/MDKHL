@@ -73,7 +73,6 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
             { "amount", amount.ToString() },
             { "currency", Current.Currency },
             { "paymentType", Current.PaymentType},
-            { "integrity", "true" },
             { "merchantInvoiceId",  paymentCheckoutRequest.PaymentNumber},
             { "merchantTransactionId", paymentCheckoutRequest.PaymentNumber },
             { "transactionCategory", "EC" },
