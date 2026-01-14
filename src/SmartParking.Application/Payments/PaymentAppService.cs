@@ -581,78 +581,74 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         {
             var customers = await _customerRepo.GetQueryableAsync();
             var payments = await _repository.GetQueryableAsync();
-            var invoice = await _invoiceRepo.GetQueryableAsync();
             var customerPackages = await _customerPackageRepository.GetQueryableAsync();
             var organizations = await _organizationRepository.GetQueryableAsync();
             var vehicles = await _vehicleRepository.GetQueryableAsync();
+            var customer = await _customerRepo.FirstOrDefaultAsync(_ => _.IdentityUserId == CurrentUser.Id);
+            
+            var result = 
+                await (
+                    from p in payments
+                    join c in customers
+                    on p.CustomerId equals c.Id
+                    where c.Id == customer.Id
 
-            var result =
-await (
-    from p in payments
-    join cp in customerPackages
-        on p.CustomerPackageId equals cp.Id
+                    join o in organizations
+                    on p.OrganizationId equals o.Id
+                    where o.Id == organizationId
 
-    join c in customers
-        on p.CustomerId equals c.Id
+                    join cp in customerPackages
+                    on p.CustomerPackageId equals cp.Id
 
-    join o in organizations
-        on cp.OrganizationId equals o.Id
+                    join v in vehicles
+                    on cp.ArPlateNumber equals v.ArPlateNumber
 
-    join i in invoice
-        on p.InvoiceId equals i.Id into pi
-    from i in pi.DefaultIfEmpty()
+                    select new PaymentPackageDto
+                    {
+                        PaymentId = p.Id,
+                        PaymentNumber = p.PaymentNumber,
 
-    join v in vehicles
-        on i.PlateNumber equals v.EnPlateNumber into pv
-    from v in pv.DefaultIfEmpty()
+                        ArabicName = cp.PackageArabicName,
+                        EnglishName = cp.PackageEnglishName,
+                        Description = cp.DescriptionOfPackage,
 
-    where p.OrganizationId == organizationId
-          && p.CustomerPackageId != null
+                        PaymentTime = p.CreationTime,
 
-    select new PaymentPackageDto
-    {
-        PaymentId = p.Id,
-        PaymentNumber = p.PaymentNumber,
+                        OrganizationArabicName = o.ArabicName,
+                        OrganizationEnglishName = o.EnglishName,
+                        OrganizationAddress = o.Address,
 
-        ArabicName = cp.PackageArabicName,
-        EnglishName = cp.PackageEnglishName,
-        Description = cp.DescriptionOfPackage,
+                        CustomerArabicName = c.ArabicName,
+                        CustomerEnglishName = c.IdentityUser.Name,
 
-        PaymentTime = p.CreationTime,
+                        EnPlateNumber = cp.EnPlateNumber,
+                        ArPlateNumber = cp.ArPlateNumber,
 
-        OrganizationArabicName = o.ArabicName,
-        OrganizationEnglishName = o.EnglishName,
-        OrganizationAddress = o.Address,
+                        ExpiryDateOfPackage = DateOnly.FromDateTime(cp.ExpiryDate),
+                        ExpiryTimeOfPackage = TimeOnly.FromDateTime(cp.ExpiryDate),
 
-        CustomerArabicName = c.ArabicName,
-        CustomerEnglishName = c.IdentityUser.Name,
+                        ActivationDate = cp.ActivationDateOfPackage.HasValue
+                                ? DateOnly.FromDateTime(cp.ActivationDateOfPackage.Value)
+                                : default,
 
-        EnPlateNumber = cp.EnPlateNumber,
-        ArPlateNumber = cp.ArPlateNumber,
+                        ActivationTime = cp.ActivationDateOfPackage.HasValue
+                                ? TimeOnly.FromDateTime(cp.ActivationDateOfPackage.Value)
+                                : default,
 
-        ExpiryDateOfPackage = DateOnly.FromDateTime(cp.ExpiryDate),
-        ExpiryTimeOfPackage = TimeOnly.FromDateTime(cp.ExpiryDate),
+                        PackageCode = cp.PackageCode,
+                        QRCodePath = cp.QRCodePath,
 
-        ActivationDate = cp.ActivationDateOfPackage.HasValue
-            ? DateOnly.FromDateTime(cp.ActivationDateOfPackage.Value)
-            : default,
+                        TotalAmount = p.Amount,
+                        Price = cp.PriceOfPackage ?? 0,
+                        Discount = cp.Discount,
+                        Vat = cp.Vat,
 
-        ActivationTime = cp.ActivationDateOfPackage.HasValue
-            ? TimeOnly.FromDateTime(cp.ActivationDateOfPackage.Value)
-            : default,
+                        LicenseTypeImage = v != null ? v.LicenceType.Image : null,
+                        VehicleModelImage = v != null ? v.VehicleModel.Image : null
+                    }
 
-        PackageCode = cp.PackageCode,
-        QRCodePath = cp.QRCodePath,
+                ).ToListAsync();
 
-        TotalAmount = p.Amount,
-        Price = cp.PriceOfPackage ?? 0,
-        Discount = cp.Discount,
-        Vat = cp.Vat,
-
-        LicenseTypeImage = v != null ? v.LicenceType.Image : null,
-        VehicleModelImage = v != null ? v.VehicleModel.Image : null
-    }
-).ToListAsync();
 
             return result;
         }
