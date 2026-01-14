@@ -5,8 +5,6 @@ using SmartParking.Blazor.Dtos;
 using SmartParking.Enums;
 using SmartParking.Invoices;
 using SmartParking.Payments;
-using SmartParking.Payments.PaymentIntegrations;
-using SmartParking.Results;
 using SmartParking.Utilities;
 using SmartParking.Validations;
 
@@ -76,9 +74,7 @@ public partial class CustomInvoiceMainPage
         {
             // 🔹 Normally this comes from backend (Create Checkout API)
             var invoice = await invoiceUiAppService.GetInvoiceAfterCheckout(InvoiceSearchDto);
-            var checkoutId = await OppwaIntegrationAppService.PrepareCheckoutAsync((decimal)InvoiceAmount, paymentMethodValue);
-
-            await OppwaIntegrationAppService.SavePaymentRequest(new PaymentCheckoutRequestDto
+            var dto = new PaymentCheckoutRequestDto
             {
                 InvoiceId = invoice.InvoiceId,
                 OrganizationId = invoice.OrganizationId,
@@ -87,7 +83,11 @@ public partial class CustomInvoiceMainPage
                 PaymentMethod = paymentMethodValue,
                 TenantId = invoice.TenantId.Value,
                 EnPlateNumber = invoice.PlateNumber,
-            }, checkoutId);
+            };
+            var paymentNumber= await OppwaIntegrationAppService.InitiatePaymentAsync(dto);
+            dto.PaymentNumber = paymentNumber;
+            var checkoutId = await OppwaIntegrationAppService.PrepareCheckoutAsync((decimal)InvoiceAmount, paymentMethodValue, dto);
+            var id = await paymentAppService.UpdatePaymentStausByPaymentNumberAsync(paymentNumber, checkoutId);
 
             await JS.InvokeVoidAsync(
                 "hyperPay.loadWidget",

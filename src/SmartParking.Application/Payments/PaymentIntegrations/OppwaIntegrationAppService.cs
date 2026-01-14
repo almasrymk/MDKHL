@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Payments;
 using SmartParking.Enums;
+using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using static QRCoder.PayloadGenerator;
 
 namespace SmartParking.Payments.PaymentIntegrations;
 
@@ -59,18 +61,39 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
 
     public async Task<string> PrepareCheckoutAsync(
         decimal amount,
-        PaymentMethod brand)
+        PaymentMethod brand,
+        PaymentCheckoutRequestDto paymentCheckoutRequest)
     {
-     //   var entityId = GetEntityIdByPaymentMethod(brand);
+        //   var entityId = GetEntityIdByPaymentMethod(brand);
 
 
-        var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        var payload = new Dictionary<string, string>
         {
             { "entityId", Current.EntityId },
-            { "amount", amount.ToString("F2", CultureInfo.InvariantCulture) },
+            { "amount", amount.ToString() },
             { "currency", Current.Currency },
-            { "paymentType", Current.PaymentType }
-        });
+            { "paymentType", Current.PaymentType},
+            { "integrity", "true" },
+            { "merchantInvoiceId",  paymentCheckoutRequest.PaymentNumber},
+            { "merchantTransactionId", paymentCheckoutRequest.PaymentNumber },
+            { "transactionCategory", "EC" },
+            { "customer.givenName", "Marwan Ahmed" },
+            { "customer.surname", "user" },
+            { "customer.email", "user@example.com" },
+            { "billing.country", "SA" },
+            { "billing.city", "Riyadh" },
+            { "billing.state", "Riyadh" },
+            { "billing.street1", "Olaya St." },
+            { "billing.postcode", "12211" },
+        };
+        if (_options.CurrentValue.Mode == "Test")
+        {
+            //payload.Add("testMode", "EXTERNAL");
+            payload.Add("customParameters[3DS2_enrolled]", "true");
+        }
+        var content = new FormUrlEncodedContent(payload);
+
+
 
         var request = new HttpRequestMessage(
             HttpMethod.Post,
@@ -115,9 +138,9 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
 
         };
         payment = await _repository.InsertAsync(payment);
-        var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
-        payment.QrCodeInvoice = res.invoiceQRCode;
-        payment = await _repository.UpdateAsync(payment);
+        //var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
+        //payment.QrCodeInvoice = res.invoiceQRCode;
+        //payment = await _repository.UpdateAsync(payment);
 
     }
     public async Task<PaymentVerificationResult> VerifyHyperPayPaymentAsync(string resourcePath)
@@ -140,6 +163,33 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
         var paymentId =await UpdatePayment(checkoutId);
 
         return PaymentVerificationResult.Success(paymentId);
+    }
+
+    public async Task<string> InitiatePaymentAsync(PaymentCheckoutRequestDto paymentCheckoutRequest,string checkoutid = null)
+    {
+        PaymentCheckoutDto result;
+        if (string.IsNullOrEmpty(checkoutid))
+        {
+            result = await _paymentAppService.SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Pending, paymentCheckoutRequest.CustomerId, Current.EntityId);
+            return result.PaymentNumber;
+        }
+        result = await _paymentAppService.SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Pending, paymentCheckoutRequest.CustomerId, checkoutid, Current.EntityId);
+        return result.PaymentNumber;
+    }   
+
+    public async Task<Result> HandlePayment(Guid? paymentId)
+    {
+        if (paymentId == null || paymentId == Guid.Empty)
+        {
+            return Result.Error("Payment not found");
+        }
+        var payment = await _repository.FirstOrDefaultAsync(_ => _.Id == paymentId);
+        var id = await _paymentAppService.UpdatePaymentStausByCheckOutIdAsync(payment.CheckoutId);
+        if (id != Guid.Empty)
+        {
+            return Result.Success();
+        }
+        return Result.Error("Payment not found");
     }
 
     private string GetEntityIdByPaymentMethod(PaymentMethod paymentMethod)
@@ -179,6 +229,9 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
                 {
                     invoice.InvoiceType = InvoiceType.Paid;
                     invoice.InvoiceNumber=payment.PaymentNumber;
+                    var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
+                    payment.QrCodeInvoice = res.invoiceQRCode;
+                    payment = await _repository.UpdateAsync(payment);
                     await _invoiceRepo.UpdateAsync(invoice);
                 }
             }
