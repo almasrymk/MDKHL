@@ -1,11 +1,16 @@
-﻿<MudCard Elevation="0" Class="custom-card">
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+
+
+<MudCard Elevation="0" Class="custom-card">
     <MudCardHeader>
         <MudText Typo="Typo.h6">Vehicle Images</MudText>
     </MudCardHeader>
     <MudCardContent>
         <MudGrid Justify="Justify.SpaceBetween">
             <MudItem xs="5" sm="5">
-                <MudText Typo="Typo.body2" Class="mb-2">Entry Picture</MudText>
+                <MudText Typo="Typo.body2" Class="mb-2">@L["Entry"]</MudText>
                 <MudImage Src="@EntryPictureUrl" Alt="Entry Picture" Fluid="true" Style="border-radius: 8px; border: 1px solid #ddd;" />
             </MudItem>
 
@@ -14,7 +19,7 @@
             </MudItem>
 
             <MudItem xs="5" sm="5">
-                <MudText Typo="Typo.body2" Class="mb-2">Exit Picture</MudText>
+                <MudText Typo="Typo.body2" Class="mb-2">@L["Exit"]</MudText>
                 <MudImage Src="@ExitPictureUrl" Alt="Exit Picture" Fluid="true" Style="border-radius: 8px; border: 1px solid #ddd;" />
             </MudItem>
         </MudGrid>

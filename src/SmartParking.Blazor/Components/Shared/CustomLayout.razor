@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @using MudBlazor
+@using SmartParking.Organizations
+@inject IOrganizationsAppService organizationAppService
 
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -10,10 +12,15 @@
 
     <header class="public-header">
         <MudPaper Elevation="3" Class="public-header-paper">
-            <MudGrid Justify="Justify.Center">
-                <MudItem xs="12" Class="text-center">
+            <MudGrid Justify="Justify.SpaceBetween">
+                <MudItem xs="6" Class="text-center">
                     <MudImage Src="images/logo/footer-image-logo.png"
                               Alt="Logo"
+                              Height="70" />
+                </MudItem>
+                <MudItem xs="6" Class="text-center">
+                    <MudImage Src="@organizationDto.OrganizationPicture"
+                              Alt="LogoOrg"
                               Height="70" />
                 </MudItem>
             </MudGrid>
@@ -39,16 +46,36 @@
                          Spacing="2"
                          Class="text-sm-end text-center">
                     <MudItem>
-                        <MudIcon Icon="@Icons.Custom.Brands.Instagram" />
+                        <MudLink 
+                            Href="https://www.instagram.com/mdkhlapp"
+                            Target="_blank"
+                            Style="color:white !important">
+                            <MudIcon Icon="@Icons.Custom.Brands.Instagram" />
+                        </MudLink>
                     </MudItem>
                     <MudItem>
-                        <MudIcon Icon="@Icons.Custom.Brands.Twitter" />
+                        <MudLink 
+                            Href="https://x.com/mdkhlapp?s=11&t=AA3J8id4ERe8AGRykuJdwQ"
+                            Target="_blank"
+                            Style="color:white !important">
+                            <MudIcon Icon="@Icons.Custom.Brands.X" />
+                        </MudLink>
                     </MudItem>
                     <MudItem>
+                        <MudLink 
+                        Href="https://www.linkedin.com/company/mdkhlapp/"
+                        Target="_blank"
+                        Style="color:white !important">
                         <MudIcon Icon="@Icons.Custom.Brands.LinkedIn" />
+                    </MudLink>
                     </MudItem>
                     <MudItem>
+                        <MudLink 
+                        Href="https://www.facebook.com/mdkhlapp"
+                        Target="_blank"
+                        Style="color:white !important">
                         <MudIcon Icon="@Icons.Custom.Brands.Facebook" />
+                    </MudLink>
                     </MudItem>
                 </MudGrid>
             </MudItem>
@@ -147,21 +174,27 @@
     }
 </style>
 
-        @code
-        {
+@code
+{
+    private OrganizationDto organizationDto = new();
 
-                MudTheme SPCustomTheme = new MudTheme()
-                {
-                    PaletteLight = new PaletteLight()
-                    {
-                        Primary = "#0D5480",
-                        Secondary = "#21A5BC",
-                        Tertiary = "#6A7282",
-                        GrayLight = "#F2F2F2",
-                        GrayDark = "#434341",
-                        WarningLighten = "#CE3333",
-                        Success = "#28BA24",
-                        White = "FFFFFF"
-                    },
-                };
-        }
+    MudTheme SPCustomTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#0D5480",
+            Secondary = "#21A5BC",
+            Tertiary = "#6A7282",
+            GrayLight = "#F2F2F2",
+            GrayDark = "#434341",
+            WarningLighten = "#CE3333",
+            Success = "#28BA24",
+            White = "FFFFFF"
+        },
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        organizationDto = await organizationAppService.GetOrganizationForCurrentTenatAsync();
+    }
+}

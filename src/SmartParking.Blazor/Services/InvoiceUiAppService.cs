@@ -25,12 +25,11 @@ public class InvoiceUiAppService : ApplicationService, IInvoiceUiAppService
     [RemoteService(false)]
     public async Task<GarageTransactionUiDto> GetGarageTransaction(InvoiceSearchDto invoiceSearchDto)
     {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
+        
             var dto = await _garageTransactionActionsAppService.GetGarageTransaction(invoiceSearchDto);
             var mapped = ObjectMapper.Map<GarageTransactionDto, GarageTransactionUiDto>(dto);
             return mapped;
-        }
+        
 
     }
 
@@ -49,11 +48,10 @@ public class InvoiceUiAppService : ApplicationService, IInvoiceUiAppService
     [RemoteService(false)]
     public async Task<CreateUpdateInvoiceUiDto> GetInvoiceAfterPreCheckout(InvoiceSearchDto invoiceSearchDto)
     {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
+        
             var transaction = await GetGarageTransaction(invoiceSearchDto);
             return await PreCheckout(transaction);
-        }
+        
     }
 
     [RemoteService(false)]

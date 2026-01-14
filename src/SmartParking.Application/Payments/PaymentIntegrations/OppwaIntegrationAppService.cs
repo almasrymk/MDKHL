@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Payments;
 using SmartParking.Enums;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -25,6 +26,7 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
     private readonly IRepository<Invoice, int> _invoiceRepo;
     private readonly IPaymentAppService _paymentAppService;
     private readonly IDataFilter _dataFilter;
+    private readonly IZatcaTaxInvoiceAppService _zatcaTaxInvoiceAppService;
 
 
     private readonly Dictionary<string, string> PaymentEntityID = new Dictionary<string, string>
@@ -38,7 +40,8 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
         IRepository<Payment, Guid> repository,
         IPaymentAppService paymentAppService,
         IDataFilter dataFilter,
-        IRepository<Invoice, int> invoiceRepo)
+        IRepository<Invoice, int> invoiceRepo,
+        IZatcaTaxInvoiceAppService zatcaTaxInvoiceAppService)
     {
         _http = http;
         _options = options;
@@ -46,6 +49,7 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
         _paymentAppService = paymentAppService;
         _dataFilter = dataFilter;
         _invoiceRepo = invoiceRepo;
+        _zatcaTaxInvoiceAppService = zatcaTaxInvoiceAppService;
     }
 
     private OppwaEnvironmentOptions Current =>
@@ -111,6 +115,9 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
 
         };
         payment = await _repository.InsertAsync(payment);
+        var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
+        payment.QrCodeInvoice = res.invoiceQRCode;
+        payment = await _repository.UpdateAsync(payment);
 
     }
     public async Task<PaymentVerificationResult> VerifyHyperPayPaymentAsync(string resourcePath)

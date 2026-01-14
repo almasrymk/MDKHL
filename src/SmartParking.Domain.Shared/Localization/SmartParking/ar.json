@@ -918,8 +918,15 @@
         "GracePeriodValidation": "يجب انتظار فترة السماح",
         "GetQr": "احصل علي رمز Qr",
         "Qr": "Qr كود",
-        "InvoiceNotFound": "لا توجد فاتوره بهذا البيانات"
-
+        "InvoiceNotFound": "لا توجد فاتوره بهذا البيانات",
+        "InvalidTicket": "يجب ادخال رقم التيكت بالطريقة الصحيحة والمكون من ١١ رقم",
+        "InvoiceNo": "رقم الفاتورة",
+        "InvoiceDate": "ناريخ الفاتورة",
+        "InvoicePaymentMethod": "طريقة الدفع",
+        "Check-in": "توقيت الدخول",
+        "Check-out": "توقيت الخروج",
+        "ThankyouforusingMadkhal": "شكرا لاستخدامك نظام مدخل للمواقف الذكية",
+        "PrintInvoice": "طباعة الفاتوره"
     }
 
 }

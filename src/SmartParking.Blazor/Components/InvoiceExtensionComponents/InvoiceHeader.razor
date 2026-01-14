@@ -1,8 +1,9 @@
-﻿<MudItem Class="mb-4 d-flex align-center">
-    <MudText Typo="Typo.h6" Color="MudBlazor.Color.Dark">Check out</MudText>
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+
+
+<MudItem Class="mb-4 d-flex align-center">
+    <MudText Typo="Typo.h6" Color="MudBlazor.Color.Dark">@L["Checkout"]</MudText>
     <MudIcon Icon="@Icons.Material.Filled.ArrowForwardIos" Size="MudBlazor.Size.Small" Class="ml-1" />
 </MudItem>
-
-@code {
-
-}
