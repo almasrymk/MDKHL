@@ -436,6 +436,20 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             
         };
 
+        var PaymentForInvoiceId = await _repository.FirstOrDefaultAsync(p => p.InvoiceId == payment.InvoiceId);
+        if (PaymentForInvoiceId != null)
+        {
+            _logger.LogError("This Invoice Is already paid with payment id : {PaymentId}", PaymentForInvoiceId.Id);
+            throw new Exception("This Invoice Is already paid");
+        }
+
+        var PaymentNumberExist = await _repository.FirstOrDefaultAsync(p=> p.PaymentNumber == payment.PaymentNumber);
+        if(PaymentNumberExist != null)
+        {
+            _logger.LogError("This Payment Number Is already Exist with payment id : {PaymentId}", payment.Id);
+            throw new Exception("This Payment Number Is already Exist");
+        }
+
         payment = await _repository.InsertAsync(payment);
         _logger.LogInformation("Payment created with ID: {PaymentId}", payment.Id);
         await CurrentUnitOfWork!.SaveChangesAsync();
