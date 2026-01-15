@@ -21,5 +21,5 @@ public interface IOppwaIntegrationAppService
     Task<PaymentVerificationResult> VerifyHyperPayPaymentAsync(string resourcePath);
 
     Task<string> InitiatePaymentAsync(PaymentCheckoutRequestDto paymentCheckoutRequest, string checkoutid = null);
-    Task<Result> HandlePayment(Guid? paymentId);
+    Task<Result<decimal>> HandlePayment(Guid? paymentId);
 }

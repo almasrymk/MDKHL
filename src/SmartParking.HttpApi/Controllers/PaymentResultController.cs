@@ -27,7 +27,10 @@ public class PaymentResultController : ControllerBase
         
         if (!payment.IsSuccess)
             return Redirect("/payment-failed");
-
+        if (payment.Value == null)
+            return Redirect("/payment-failed");
+        if (payment.Value == 0)
+            return Ok();
         return Redirect($"/custom-invoice/details/{result.PaymentId}");
     }
 }

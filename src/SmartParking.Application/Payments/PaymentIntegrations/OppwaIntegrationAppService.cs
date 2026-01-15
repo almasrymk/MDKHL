@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
@@ -90,6 +91,7 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
             //payload.Add("testMode", "EXTERNAL");
             payload.Add("customParameters[3DS2_enrolled]", "true");
         }
+        
         var content = new FormUrlEncodedContent(payload);
 
 
@@ -176,7 +178,7 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
         return result.PaymentNumber;
     }   
 
-    public async Task<Result> HandlePayment(Guid? paymentId)
+    public async Task<Result<decimal>> HandlePayment(Guid? paymentId)
     {
         if (paymentId == null || paymentId == Guid.Empty)
         {
@@ -186,7 +188,7 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
         var id = await _paymentAppService.UpdatePaymentStausByCheckOutIdAsync(payment.CheckoutId);
         if (id != Guid.Empty)
         {
-            return Result.Success();
+            return Result.Success(payment.Amount);
         }
         return Result.Error("Payment not found");
     }
