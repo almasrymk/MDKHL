@@ -900,7 +900,9 @@
     "GateName": "اسم البوابه",
     "Gate": "البوابه",
     "Permission:AllowFreeOpenGate": "السماح بفتح البوابة الحر",
-    "Multiple": "متعدد"
+    "Multiple": "متعدد",
+    "This Invoice Is already paid": "هذه الفاتورة مدفوعة بالفعل",
+    "This Payment Number Is already Exist": "كود الدفع موجود مسبقا"
   }
 
 }

@@ -164,6 +164,20 @@ namespace SmartParking.Utilities
                 response.generalError += LocalizationHelper.GetLocalizedString("UsernameOrPasswordForZatcaNotFound");
                 return response;
             }
+            var PaymentForInvoiceId = await _repository.FirstOrDefaultAsync(p => p.InvoiceId == payment.InvoiceId && p.IsSentZatca == true);
+            if (PaymentForInvoiceId != null)
+            {
+                response.generalError += LocalizationHelper.GetLocalizedString("This Invoice Is already sent to zatca");
+                return response;
+            }
+
+            var PaymentNumberExist = await _repository.FirstOrDefaultAsync(p => p.PaymentNumber == payment.PaymentNumber && p.IsSentZatca == true);
+            if (PaymentNumberExist != null)
+            {
+                response.generalError += LocalizationHelper.GetLocalizedString("This Payment Number Is already sent to zatca");
+                return response;
+            }
+
 
             var customer = new CustomerDto { ArabicName = "غير معرف" };
             if (payment.CustomerId != null)
