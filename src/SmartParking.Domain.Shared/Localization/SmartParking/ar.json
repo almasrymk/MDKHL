@@ -902,7 +902,14 @@
     "Permission:AllowFreeOpenGate": "السماح بفتح البوابة الحر",
     "Multiple": "متعدد",
     "This Invoice Is already paid": "هذه الفاتورة مدفوعة بالفعل",
-    "This Payment Number Is already Exist": "كود الدفع موجود مسبقا"
+    "This Payment Number Is already Exist": "كود الدفع موجود مسبقا",
+    "This Invoice Is already sent to zatca": "تم إرسال هذه الفاتورة بالفعل إلى الزكاة والدخل",
+    "This Payment Number Is already sent to zatca": "تم إرسال كود الدفع هذا بالفعل إلى الزكاة والدخل",
+    "InvoiceId is required for PaymentParking category.": "رقم المطابقة مطلوب لفئة فاتورة الركن.",
+    "PackageId is required for Package category.": "معرف الباقة مطلوب لفئة الباقة.",
+    "This Package Is already paid": "تم دفع هذه الباقة بالفعل",
+    "This Package Invoice Is already sent to zatca" : "تم إرسال فاتورة هذه الباقة بالفعل إلى الزكاة والدخل"
+
   }
 
 }
