@@ -400,26 +400,26 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             {
                 throw new Exception("InvoiceId is required for PaymentParking category.");
             }
-            var PaymentForInvoiceId = await _repository.FirstOrDefaultAsync(p => p.InvoiceId == payment.InvoiceId);
-            if (PaymentForInvoiceId != null)
+            var PaymentForInvoiceId = await _repository.AnyAsync(p => p.InvoiceId == payment.InvoiceId);
+            if (PaymentForInvoiceId)
             {
                 throw new Exception("This Invoice Is already paid");
             }
         }
-        else
+        else if(payment.PaymentCategory == PaymentCategory.Package)
         {
             if (payment.CustomerPackageId == null)
             {
                 throw new Exception("PackageId is required for Package category.");
             }
-            var PaymentForPackageId = await _repository.FirstOrDefaultAsync(p => p.CustomerPackageId == payment.CustomerPackageId);
-            if (PaymentForPackageId != null)
+            var PaymentForPackageId = await _repository.AnyAsync(p => p.CustomerPackageId == payment.CustomerPackageId);
+            if (PaymentForPackageId)
             {
                 throw new Exception("This Package Is already paid");
             }
         }
-        var PaymentNumberExist = await _repository.FirstOrDefaultAsync(p => p.PaymentNumber == payment.PaymentNumber);
-        if (PaymentNumberExist != null)
+        var PaymentNumberExist = await _repository.AnyAsync(p => p.PaymentNumber == payment.PaymentNumber);
+        if (PaymentNumberExist)
         {
             throw new Exception("This Payment Number Is already Exist");
         }

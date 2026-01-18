@@ -1,25 +1,26 @@
-﻿using System;
-using System.Text;
-using Newtonsoft.Json;
-using System.Net.Http;
-using Newtonsoft.Json.Linq;
-using System.Threading.Tasks;
-using System.Net.Http.Headers;
-using System.Collections.Generic;
-using Volo.Abp.Domain.Repositories;
-using Microsoft.Extensions.Logging;
-using SmartParking.ZATCATaxInvoice;
-using SmartParking.Entities.Payments;
-using SmartParking.Entities.Organizations;
-using SmartParking.Entities.Customers;
-using Castle.Core.Resource;
-using System.Text.RegularExpressions;
-using SmartParking.Results;
+﻿using Castle.Core.Resource;
 using Microsoft.AspNetCore.Mvc;
-using SmartParking.Organizations;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SmartParking.Cutomers;
-using SmartParking.Localization;
+using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
+using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Payments;
+using SmartParking.Enums;
+using SmartParking.Localization;
+using SmartParking.Organizations;
+using SmartParking.Results;
+using SmartParking.ZATCATaxInvoice;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Utilities
 {
@@ -164,27 +165,31 @@ namespace SmartParking.Utilities
                 response.generalError += LocalizationHelper.GetLocalizedString("UsernameOrPasswordForZatcaNotFound");
                 return response;
             }
-            var PaymentForInvoiceId = await _repository.FirstOrDefaultAsync(p => p.InvoiceId == payment.InvoiceId && p.IsSentZatca == true);
-            if (PaymentForInvoiceId != null)
-            {
-                response.generalError += LocalizationHelper.GetLocalizedString("This Invoice Is already sent to zatca");
-                return response;
-            }
 
-            var PaymentNumberExist = await _repository.FirstOrDefaultAsync(p => p.PaymentNumber == payment.PaymentNumber && p.IsSentZatca == true);
-            if (PaymentNumberExist != null)
+            if (payment.PaymentCategory == PaymentCategory.PaymentParking)
+            { 
+                var PaymentForInvoiceId = await _repository.AnyAsync(p => p.InvoiceId == payment.InvoiceId && p.IsSentZatca == true);
+                if (PaymentForInvoiceId)
+                {
+                    response.generalError += LocalizationHelper.GetLocalizedString("This Invoice Is already sent to zatca");
+                    return response;
+                }
+            }
+            else if (payment.PaymentCategory == PaymentCategory.Package)
+            {
+                var paymentForPackageId = await _repository.AnyAsync(p => p.CustomerPackageId == payment.CustomerPackageId && p.IsSentZatca == true);
+                if (paymentForPackageId)
+                {
+                    response.generalError += LocalizationHelper.GetLocalizedString("This Package Invoice Is already sent to zatca");
+                    return response;
+                }
+            }
+            var PaymentNumberExist = await _repository.AnyAsync(p => p.PaymentNumber == payment.PaymentNumber && p.IsSentZatca == true);
+            if (PaymentNumberExist)
             {
                 response.generalError += LocalizationHelper.GetLocalizedString("This Payment Number Is already sent to zatca");
                 return response;
             }
-
-            var paymentForPackageId = await _repository.FirstOrDefaultAsync(p => p.CustomerPackageId == payment.CustomerPackageId && p.IsSentZatca == true);
-            if (paymentForPackageId != null)
-            {
-                response.generalError += LocalizationHelper.GetLocalizedString("This Package Invoice Is already sent to zatca");
-                return response;
-            }
-
 
             var customer = new CustomerDto { ArabicName = "غير معرف" };
             if (payment.CustomerId != null)
