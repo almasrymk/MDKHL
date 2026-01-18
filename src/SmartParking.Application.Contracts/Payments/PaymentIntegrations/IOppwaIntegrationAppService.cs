@@ -1,4 +1,6 @@
-﻿using SmartParking.Enums;
+﻿using SmartParking.Entities.Payments;
+using SmartParking.Enums;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +13,13 @@ public interface IOppwaIntegrationAppService
 {
     Task<string> PrepareCheckoutAsync(
         decimal amount,
-           PaymentMethod brand );
+           PaymentMethod brand ,
+           PaymentCheckoutRequestDto paymentCheckoutRequest);
     Task SavePaymentRequest(PaymentCheckoutRequestDto paymentCheckoutRequest,
        string checkoutid );
 
     Task<PaymentVerificationResult> VerifyHyperPayPaymentAsync(string resourcePath);
+
+    Task<string> InitiatePaymentAsync(PaymentCheckoutRequestDto paymentCheckoutRequest, string checkoutid = null);
+    Task<Result<decimal>> HandlePayment(Guid? paymentId);
 }

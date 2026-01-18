@@ -20,9 +20,17 @@ public class PaymentResultController : ControllerBase
     {
         var result = await _paymentService.VerifyHyperPayPaymentAsync(resourcePath);
 
-        //if (!result.IsSuccess)
-        //    return Redirect("/payment-failed");
+        if (!result.IsSuccess)
+            return Redirect("/payment-failed");
 
+        var payment = await _paymentService.HandlePayment(result.PaymentId);
+        
+        if (!payment.IsSuccess)
+            return Redirect("/payment-failed");
+        if (payment.Value == null)
+            return Redirect("/payment-failed");
+        if (payment.Value == 0)
+            return Ok();
         return Redirect($"/custom-invoice/details/{result.PaymentId}");
     }
 }

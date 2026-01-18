@@ -11,7 +11,7 @@ public class PaymentCheckoutDto
     public Guid PaymentId { get; set; }
     public PaymentMethod PaymentMethod { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
-    public string QrCodeInvoice { get; set; }
+    public string? QrCodeInvoice { get; set; }
     public string? PaymentName { get; set; }
     public string PaymentNumber { get; set; }
 
