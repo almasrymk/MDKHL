@@ -113,7 +113,7 @@
 
 
                     <MudItem xs="@(ConfirmSize)" Class="text-center">
-                        <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid || !CanPayInvoice" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ? L["Paid"] : L["CONFIRM"])  </MudButton>
+                        <MudButton FullWidth="true" Variant="Variant.Filled" Disabled="IsPaid || !CanPayInvoice || IsPaying" Color="MudBlazor.Color.Primary" OnClick="PayInvoice"> @(IsPaid ? L["Paid"] : L["CONFIRM"])  </MudButton>
                     </MudItem>
                 }
 

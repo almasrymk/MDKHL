@@ -23,6 +23,7 @@ public partial class LastInvoiceAtCamera
     public PaymentMethod PaymentMethod { get; set; }
     public decimal Discount { get; set; } = default;
     public decimal InvoicePrice { get; set; } = default;
+    private bool isPaying = false;
     private Task HandleAddDiscount(decimal selected)
     {
         Discount = selected;
@@ -56,7 +57,8 @@ public partial class LastInvoiceAtCamera
     }
     private async Task PayInvoice()
     {
-
+       
+        isPaying = true;
         if (Discount != default)
         {
             await InvoiceAppService.UpdateDiscountForInvoice(Invoice.Id, Discount);
@@ -81,8 +83,12 @@ public partial class LastInvoiceAtCamera
         }
         catch(Exception e)
         {
-            Snackbar.Add(e.Message, MudBlazor.Severity.Error);
+            Snackbar.Add(L[e.Message], MudBlazor.Severity.Error);
             await Task.Delay (1000);
+        }
+        finally
+        {
+            isPaying = false;
         }
         Refresh();
 

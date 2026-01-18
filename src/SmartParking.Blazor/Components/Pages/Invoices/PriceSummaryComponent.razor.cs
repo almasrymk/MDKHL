@@ -8,6 +8,7 @@ namespace SmartParking.Blazor.Components.Pages.Invoices;
 public partial class PriceSummaryComponent
 {
     [Parameter] public bool IsPaid { get; set; }
+    [Parameter] public bool IsPaying { get; set; }
     [Parameter] public bool NoInvoice { get; set; }
     [Parameter] public bool ShowOpenGate { get; set; }
     [Parameter] public decimal? InvoicePrice { get; set; }
