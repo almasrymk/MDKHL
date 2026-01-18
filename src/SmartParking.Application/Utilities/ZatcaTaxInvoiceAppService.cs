@@ -178,6 +178,13 @@ namespace SmartParking.Utilities
                 return response;
             }
 
+            var paymentForPackageId = await _repository.FirstOrDefaultAsync(p => p.CustomerPackageId == payment.CustomerPackageId && p.IsSentZatca == true);
+            if (paymentForPackageId != null)
+            {
+                response.generalError += LocalizationHelper.GetLocalizedString("This Package Invoice Is already sent to zatca");
+                return response;
+            }
+
 
             var customer = new CustomerDto { ArabicName = "غير معرف" };
             if (payment.CustomerId != null)

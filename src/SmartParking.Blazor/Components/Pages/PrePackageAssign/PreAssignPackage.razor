@@ -67,17 +67,19 @@
                            InvoicePrice="@(CustomerPackageDto?.PriceOfPackage!.Value ??0 )"
                            PayInvoice="PayPackage"
                            PaymentMethod="PaymentMethod"
-                           ShowOpenGate="false" />
+                           ShowOpenGate="false"
+                           IsPaying="IsPaying"/>
 </MudGrid>
 
 @code {
     public bool IsPaid { get; set; }
+    public bool IsPaying { get; set; } = false;
     public PaymentMethod PaymentMethod { get; set; }
     public string publishedText { get; set; }
     private CustomerPackageDto CustomerPackageDto { get; set; } = new();
     private CustomerDto CustomerDto { get; set; } = new();
     private decimal packagePrice { get; set; } = default;
-    private Task HandleAddDiscount(decimal selected)  { 
+    private Task HandleAddDiscount(decimal selected)  {
         CustomerPackageDto.Discount = selected;
         CustomerPackageDto.PriceOfPackage = packagePrice;
 
@@ -105,14 +107,14 @@
             var to = CustomerPackageDto.PublishToOfPackage?.ToString() ?? "-";
             publishedText = $"{from} - {to}";
         }
-                
-                
+
+
     }
     private async Task PayPackage()
     {
         try
         {
-
+            IsPaying = true;
             CustomerPackageDto.Organization = null;
             CustomerPackageDto.Vat = Math.Round( (packagePrice - CustomerPackageDto.Discount) * 0.15m, 2);
             var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(
@@ -135,8 +137,8 @@
         {
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
+        IsPaying = false;
 
-   
     }
 
     private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()

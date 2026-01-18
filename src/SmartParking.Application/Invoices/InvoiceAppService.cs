@@ -217,6 +217,10 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("Invoice") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
+        if (invoice.InvoiceType == InvoiceType.Paid)
+        {
+            throw new Exception("This Invoice Is already paid");
+        }
         await base.DeleteAsync(id);
         await CurrentUnitOfWork.SaveChangesAsync();
     }
