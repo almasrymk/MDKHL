@@ -60,7 +60,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 Sorting = pageInfo.SortColumn
             };
 
-            PagedResultDto<CustomerPackageDto> customerPackageDto;
+            PagedResultDto<CustomerPackageDto> customerPackageDto = new();
 
             if (CurrentTenant.Id == null)
             {
