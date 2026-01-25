@@ -104,31 +104,14 @@ public class CustomerPackagesAppService :
             if (package == null)
                 return Result.NotFound("Package not found");
 
-            if (await CustomerPackageExistsAsync(package.OrganizationId, customer.Id, ArabicPlateNumber, EnglishPlateNumber))
-            {
-                return Result.Invalid(new ValidationError
-                {
-                    ErrorCode = StatusCodes.Status409Conflict.ToString(),
-                    ErrorMessage = LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("DuplicateValidation")
-                });
-            }
 
 
             var customerPackage = CreateCustomerMobilePackage(package, customer.Id, ArabicPlateNumber, EnglishPlateNumber);
-            var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
+            var dto = ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(customerPackage);
+            await HandleExistingPackagesForVehicleAsync(dto);
+
             customerPackage.QRCodePath = await HandleQRCode(new CustomerPackageDto { OrganizationId = package.OrganizationId, PackageId = packageId, ArPlateNumber = ArabicPlateNumber, EnPlateNumber = EnglishPlateNumber }, customer, customerPackage);
-            CustomerPackage result = null;
-            if (existingPackage != null)
-            {
-                ObjectHelper.TrySetProperty(
-                    customerPackage,
-                    x => x.Id,
-                    () => existingPackage.Id
-                );
-                result = await UpdateCustomerPackageAsync(customerPackage);
-            }
-            if(result == null)
-                result = await InsertCustomerPackageAsync(customerPackage);
+            CustomerPackage result = await InsertCustomerPackageAsync(customerPackage); 
             var packageDto = ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(result);
             var paymentRqDto = RequestToPaymentCheckout(packageDto, package.TenantId.Value);
             return Result.Success(paymentRqDto);
@@ -144,29 +127,26 @@ public class CustomerPackagesAppService :
             var customer = await _customerRepository.FirstOrDefaultAsync(c => c.Id == customerPackageDto.CustomerId);
             if (customer == null)
                 throw new Exception(LocalizationHelper.GetLocalizedString("Customer") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-            if (await CustomerPackageExistsAsync(customerPackageDto.OrganizationId, customer.Id, customerPackageDto.ArPlateNumber, customerPackageDto.EnPlateNumber))
-            {
-                throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("DuplicateValidation")
-                    + " " + LocalizationHelper.GetLocalizedString("Customer"));
-            }
-            await CheckPackageDuplication(customerPackageDto);
             await CheckSubscriptionCustomersLimitsAsync(customerPackageDto.OrganizationId);
             CustomerPackage customerPackage;
+            await HandleExistingPackagesForVehicleAsync(customerPackageDto);
 
             if (packageId != 0)
             {
-                var result = await AssignNormalPackageToCUstomerAsync(customerPackageDto);
-                customerPackage = result.Item1;
-                if (result.Item2)
-                {
-                    customerPackage.QRCodePath = await HandleQRCode(customerPackageDto, customer, customerPackage);
-                    await CurrentUnitOfWork.SaveChangesAsync();
-                    return customerPackage.Id;
-                }
+                var package = await GetPackageAsync(customerPackageDto!.PackageId);
+                if (package == null)
+                    throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+                customerPackage = CreateCustomerPackage(customerPackageDto , package);
+                
+                customerPackage.QRCodePath = await HandleQRCode(customerPackageDto, customer, customerPackage);
+                await CurrentUnitOfWork.SaveChangesAsync();
+                return customerPackage.Id;
+                
             }
             else
             {
                 customerPackage = ObjectMapper.Map<CustomerPackageDto, CustomerPackage>(customerPackageDto);
+                await HandleExistingPackagesForVehicleAsync(customerPackageDto);
                 customerPackage.PackageId = null;
                 customerPackage.Package = null;
             }
@@ -234,14 +214,6 @@ public class CustomerPackagesAppService :
         return Code;
     }
 
-    private async Task CheckPackageDuplication(CustomerPackageDto customerPackageDto)
-    {
-        var activePackage = await GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(customerPackageDto.OrganizationId, customerPackageDto.EnPlateNumber, DateTime.Now);
-        if (activePackage != null)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("CannotAssignTwoPackageToSameVehicle"));
-        }
-    }
 
 
     ///<inheritdoc/>
@@ -374,38 +346,7 @@ public class CustomerPackagesAppService :
             return count;
         }
     }
-    /// <summary>
-    /// Assigns a normal package to a customer. If the customer already has a package in the same organization, it updates the existing one.
-    /// </summary>
-    /// <param name="packageId">The ID of the package to assign.</param>
-    /// <param name="customerId">The ID of the customer.</param>
-    /// <param name="ArabicPlateNumber">The Arabic plate number of the customer’s vehicle.</param>
-    /// <param name="EnglishPlateNumber">The English plate number of the customer’s vehicle.</param>
-    /// <returns>
-    /// A tuple containing the <see cref="CustomerPackage"/> and a boolean flag indicating whether the package was updated (true) or newly assigned (false).
-    /// </returns>
-    private async Task<(CustomerPackage, bool)> AssignNormalPackageToCUstomerAsync(CustomerPackageDto customerPackageDto)
-    {
-        var package = await GetPackageAsync(customerPackageDto!.PackageId);
-        if (package == null)
-            throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-        var customerPackage = CreateCustomerPackage(customerPackageDto , package);
-        var existingPackage = await GetExistingPackageAsync(package.OrganizationId);
-        bool flag = false;
-        if (existingPackage != null)
-        {
-            ObjectHelper.TrySetProperty(
-                customerPackage,
-                x => x.Id,
-                () => existingPackage.Id
-            );
-            // update 
-            await UpdateCustomerPackageAsync(customerPackage);
-            flag = true;
-
-        }
-        return (customerPackage, flag);
-    }
+    
     /// <summary>
     /// Clears the details of a customer package and sets it to an inactive state.
     /// </summary>
@@ -506,19 +447,22 @@ public class CustomerPackagesAppService :
             );
         return existingPackage;
     }
-    /// <summary>
-    /// Retrieves an existing unassigned standard package (i.e., not a custom package and without a package ID) for a specific organization.
-    /// </summary>
-    /// <param name="organizationId">The ID of the organization.</param>
-    /// <returns>
-    /// A task that represents the asynchronous operation.
-    /// The task result contains the existing <see cref="CustomerPackage"/> if found; otherwise, null.
-    /// </returns>
-    private async Task<CustomerPackage?> GetExistingPackageAsync(int organizationId)
+    
+
+
+    private async Task HandleExistingPackagesForVehicleAsync(CustomerPackageDto customerPackageDto)
     {
+        var newExpiryDate = customerPackageDto.ActivationDateOfPackage.Value.AddDays(-1);
+
         var query = await _repository.GetQueryableAsync();
-        return await query.AsNoTracking()
-            .FirstOrDefaultAsync(p => p.IsCustomPackage == false && p.PackageId == null && p.OrganizationId == organizationId);
+
+        await query
+            .Where(p =>
+                p.OrganizationId == customerPackageDto.OrganizationId &&
+                p.EnPlateNumber == customerPackageDto.EnPlateNumber &&
+                p.ActivationDateOfPackage <= customerPackageDto.ActivationDateOfPackage)
+            .ExecuteUpdateAsync(p => p
+                .SetProperty(x => x.ExpiryDate, newExpiryDate));
     }
     /// <summary>
     /// Updates a given customer package in the database.
