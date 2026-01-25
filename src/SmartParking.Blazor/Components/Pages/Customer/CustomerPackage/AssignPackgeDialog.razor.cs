@@ -119,6 +119,7 @@ partial class AssignPackgeDialog
             _customerPackageDto.PackageEnglishName = AlertMessages.AlertMessages.PackageNameEn;
             _customerPackageDto.PublishFromOfPackage = CustomPackageUiDto.startTime.HasValue ? TimeOnly.FromTimeSpan(CustomPackageUiDto.startTime.Value) : null;
             _customerPackageDto.PublishToOfPackage = CustomPackageUiDto.endTime.HasValue ? TimeOnly.FromTimeSpan(CustomPackageUiDto.endTime.Value) : null;
+            _customerPackageDto.PriceOfPackage = CustomPackageUiDto.PriceOfPackage;
             if (CustomPackageUiDto.ActivationDate == CustomPackageUiDto.DectivationDate &&  CustomPackageUiDto.endTime.Value <= CustomPackageUiDto.startTime.Value)
                 throw new Exception(LocalizationHelper.GetLocalizedString("EndTimeShouldBeGreaterThanStartTime"));
         }
