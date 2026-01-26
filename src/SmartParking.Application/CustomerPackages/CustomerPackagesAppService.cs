@@ -139,6 +139,7 @@ public class CustomerPackagesAppService :
                 customerPackage = CreateCustomerPackage(customerPackageDto , package);
                 
                 customerPackage.QRCodePath = await HandleQRCode(customerPackageDto, customer, customerPackage);
+                await _repository.InsertAsync(customerPackage);
                 await CurrentUnitOfWork.SaveChangesAsync();
                 return customerPackage.Id;
                 
@@ -146,7 +147,6 @@ public class CustomerPackagesAppService :
             else
             {
                 customerPackage = ObjectMapper.Map<CustomerPackageDto, CustomerPackage>(customerPackageDto);
-                await HandleExistingPackagesForVehicleAsync(customerPackageDto);
                 customerPackage.PackageId = null;
                 customerPackage.Package = null;
             }
