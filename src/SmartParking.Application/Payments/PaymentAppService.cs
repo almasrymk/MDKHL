@@ -417,7 +417,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         // add QrCode
         // var token = await _invoiceUtility.GetTokenAsync();
         paymentCheckoutRequest.PaymentNumber = await GeneratePaymentNumberAsync(paymentCheckoutRequest.OrganizationId);
-        //var qrCode = await _invoiceUtility.GetQrCodeAsync(paymentCheckoutRequest.Amount, paymentCheckoutRequest.OrganizationId);
+        var qrCode = await _invoiceUtility.GetQrCodeAsync(paymentCheckoutRequest.Amount, paymentCheckoutRequest.OrganizationId);
         Payment payment = new Payment
         {
             Amount = paymentCheckoutRequest.Amount,
@@ -432,7 +432,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             EntityId = entityId,
             CustomerId = customerId,
             PaymentStatus = paymentStatus,
-            //QrCodeInvoice = qrCode,
+            QrCodeInvoice = qrCode.QRCode,
             PaymentNumber = paymentCheckoutRequest.PaymentNumber,
             ArPlateNumber = paymentCheckoutRequest.ArPlateNumber,
             EnPlateNumber = paymentCheckoutRequest.EnPlateNumber,
