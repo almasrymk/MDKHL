@@ -29,7 +29,7 @@ public class CustomerPackagePDFAppService : ApplicationService , ICustomerPackag
         {
             Directory.CreateDirectory(directoryPath);
         }
-        var fileName = Path.Combine(directoryPath, $"{input.PhoneNumber}.{"pdf"}");
+        var fileName = Path.Combine(directoryPath, $"{input.PackageCode}.{"pdf"}");
         FileInfo file = new FileInfo(fileName);
         using (PdfWriter writer = new PdfWriter(file.FullName))
         {
