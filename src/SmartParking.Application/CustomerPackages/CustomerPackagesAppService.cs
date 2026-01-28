@@ -453,16 +453,37 @@ public class CustomerPackagesAppService :
     private async Task HandleExistingPackagesForVehicleAsync(CustomerPackageDto customerPackageDto)
     {
         var newExpiryDate = customerPackageDto.ActivationDateOfPackage.Value.AddDays(-1);
+        var newActivationDate = customerPackageDto.ExpiryDate.AddDays(1);
 
         var query = await _repository.GetQueryableAsync();
 
+        // case new is after current
         await query
             .Where(p =>
                 p.OrganizationId == customerPackageDto.OrganizationId &&
                 p.EnPlateNumber == customerPackageDto.EnPlateNumber &&
-                p.ActivationDateOfPackage <= customerPackageDto.ActivationDateOfPackage)
+                p.ActivationDateOfPackage < customerPackageDto.ActivationDateOfPackage)
             .ExecuteUpdateAsync(p => p
                 .SetProperty(x => x.ExpiryDate, newExpiryDate));
+
+        // case they are equal to each other 
+        await query .Where(p =>
+                p.OrganizationId == customerPackageDto.OrganizationId &&
+                p.EnPlateNumber == customerPackageDto.EnPlateNumber &&
+                p.ActivationDateOfPackage == customerPackageDto.ActivationDateOfPackage && 
+                p.ExpiryDate == customerPackageDto.ExpiryDate)
+            .ExecuteUpdateAsync(p => p
+                .SetProperty(x => x.Status, Status.Inactive));
+
+        // case new is before current
+        await query
+            .Where(p =>
+                p.OrganizationId == customerPackageDto.OrganizationId &&
+                p.EnPlateNumber == customerPackageDto.EnPlateNumber &&
+                p.ActivationDateOfPackage >= customerPackageDto.ActivationDateOfPackage)
+            .ExecuteUpdateAsync(p => p
+                .SetProperty(x => x.ActivationDateOfPackage, newActivationDate));
+
     }
     /// <summary>
     /// Updates a given customer package in the database.
