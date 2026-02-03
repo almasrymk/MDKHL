@@ -105,8 +105,8 @@
             var to = CustomerPackageDto.PublishToOfPackage?.ToString() ?? "-";
             publishedText = $"{from} - {to}";
         }
-                
-                
+
+
     }
     private async Task PayPackage()
     {
@@ -115,6 +115,7 @@
 
             CustomerPackageDto.Organization = null;
             CustomerPackageDto.Vat = Math.Round( (packagePrice - CustomerPackageDto.Discount) * 0.15m, 2);
+            CustomerPackageDto.Customer = CustomerDto;
             var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(
                 CustomerPackageDto.PackageId, CustomerPackageDto);
 

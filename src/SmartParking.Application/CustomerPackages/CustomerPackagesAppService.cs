@@ -81,7 +81,7 @@ public class CustomerPackagesAppService :
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => c.Customer.IdentityUserId == CurrentUser.Id && c.PackageId != null);
+            query = query.Where(c => c.Customer.IdentityUserId == CurrentUser.Id);
 
             var result = await AsyncExecuter.ToListAsync(query);
 

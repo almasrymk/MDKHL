@@ -103,7 +103,6 @@ partial class AssignPackgeDialog
         // Handle custom package assignment
         if (IsCustom)
         {
-            //Method  to Check Is Custom Varaiable
             CustomPackageValidations.CheckIsCustomProperties(CustomPackageUiDto,Snackbar);
             _customerPackageDto.publishedOfPackage = true;
             _customerPackageDto.ActivationDateOfPackage = CustomPackageUiDto.ActivationDate.HasValue && CustomPackageUiDto.startTime.HasValue
@@ -117,9 +116,13 @@ partial class AssignPackgeDialog
             CustomerPackage.Id = default;
             _customerPackageDto.PackageArabicName = AlertMessages.AlertMessages.PackageNameAr;
             _customerPackageDto.PackageEnglishName = AlertMessages.AlertMessages.PackageNameEn;
+            _customerPackageDto.CountOfDays = (_customerPackageDto.ExpiryDate -_customerPackageDto.ActivationDateOfPackage.Value ).Days;
             _customerPackageDto.PublishFromOfPackage = CustomPackageUiDto.startTime.HasValue ? TimeOnly.FromTimeSpan(CustomPackageUiDto.startTime.Value) : null;
             _customerPackageDto.PublishToOfPackage = CustomPackageUiDto.endTime.HasValue ? TimeOnly.FromTimeSpan(CustomPackageUiDto.endTime.Value) : null;
             _customerPackageDto.PriceOfPackage = CustomPackageUiDto.PriceOfPackage;
+            _customerPackageDto.PriceOfPackagePerDay =Math.Round( (_customerPackageDto.PriceOfPackage / _customerPackageDto.CountOfDays).Value ,2);
+            _customerPackageDto.publishedOfPackage = _customerPackageDto.PublishFromOfPackage == _customerPackageDto.PublishToOfPackage;
+            _customerPackageDto.CustomerId = Customer.Id;
             if (CustomPackageUiDto.ActivationDate == CustomPackageUiDto.DectivationDate &&  CustomPackageUiDto.endTime.Value <= CustomPackageUiDto.startTime.Value)
                 throw new Exception(LocalizationHelper.GetLocalizedString("EndTimeShouldBeGreaterThanStartTime"));
         }
@@ -148,6 +151,7 @@ partial class AssignPackgeDialog
         {
             _customerPackageDto.OrganizationId = organizationId;
             _customerPackageDto.TenantId = Organizations.FirstOrDefault(x => x.Id == organizationId).TenantId;
+
         }
         else
         {
