@@ -4,6 +4,7 @@ using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.GarageTransactions;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
@@ -34,10 +35,44 @@ public class CameraTransactionActionsAppService : SmartParkingAppService ,  ICus
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var query = await _repository.GetQueryableAsync();
-            query = query.Where(x => x.OrganizationId == garageTransactionDto.OrganizationID && (x.ArPlateNumber == garageTransactionDto.PlateNumber || x.EnPlateNumber== garageTransactionDto.PlateNumber) && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= garageTransactionDto.AccurateTime && ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null)));
-            var customerPackageDto = await query.FirstOrDefaultAsync();
-            return ObjectMapper.Map<CustomerPackage, CustomerPackageTransactionDto>(customerPackageDto);
+            if (garageTransactionDto == null || string.IsNullOrEmpty(garageTransactionDto.TicketId) || garageTransactionDto.AccurateTime == null)
+            {
+                return null!;
+            }
+
+            var accurateTime = garageTransactionDto.AccurateTime.Value;
+            var timeOfDay = TimeOnly.FromTimeSpan(accurateTime.TimeOfDay);
+
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var query = await _repository.GetQueryableAsync();
+
+                query = query.Where(x =>
+                    x.OrganizationId == garageTransactionDto.OrganizationID &&
+                    (x.ArPlateNumber == garageTransactionDto.PlateNumber || x.EnPlateNumber == garageTransactionDto.PlateNumber) &&
+
+                    x.ActivationDateOfPackage.HasValue &&
+                    x.DectivationDateOfPackage.HasValue &&
+                    x.ActivationDateOfPackage.Value <= accurateTime &&
+                    x.DectivationDateOfPackage.Value >= accurateTime &&
+
+                    x.PublishFromOfPackage.HasValue &&
+                    x.PublishToOfPackage.HasValue &&
+                    (
+                        (x.PublishFromOfPackage.Value <= x.PublishToOfPackage.Value &&
+                         x.PublishFromOfPackage.Value <= timeOfDay &&
+                         x.PublishToOfPackage.Value >= timeOfDay)
+                        ||
+                        //midnight
+                        (x.PublishFromOfPackage.Value > x.PublishToOfPackage.Value &&
+                         (x.PublishFromOfPackage.Value <= timeOfDay || x.PublishToOfPackage.Value >= timeOfDay))
+                    ) &&
+
+                    ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null))
+                );
+                var customerPackageDto = await query.FirstOrDefaultAsync();
+                return ObjectMapper.Map<CustomerPackage, CustomerPackageTransactionDto>(customerPackageDto);
+            }
 
 
         }

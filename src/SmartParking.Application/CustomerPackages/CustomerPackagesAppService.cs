@@ -189,17 +189,6 @@ public class CustomerPackagesAppService :
     {
         return await _repository.AnyAsync(cp => cp.PackageCode == Code);
     }
-    private async Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(int OrganizationID, string PlateNumber, DateTime ExitTransaction)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var query = await _repository.GetQueryableAsync();
-            query = query.Where(x => x.OrganizationId == OrganizationID && (x.EnPlateNumber == PlateNumber || x.ArPlateNumber == PlateNumber) && x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate >= ExitTransaction && ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null)));
-            var customerPackageDto = await AsyncExecuter.FirstOrDefaultAsync(query);
-            return ObjectMapper.Map<CustomerPackage, CustomerPackageTransactionDto>(customerPackageDto);
-        }
-
-    }
 
 
     private static string GeneratePackageCode(string PayemntCode, string EnglishName)
@@ -457,32 +446,32 @@ public class CustomerPackagesAppService :
 
         var query = await _repository.GetQueryableAsync();
 
-        // case new is after current
         await query
             .Where(p =>
                 p.OrganizationId == customerPackageDto.OrganizationId &&
                 p.EnPlateNumber == customerPackageDto.EnPlateNumber &&
-                p.ActivationDateOfPackage < customerPackageDto.ActivationDateOfPackage)
+                (
+                    // Only include rows that need any update
+                    (p.ActivationDateOfPackage < customerPackageDto.ActivationDateOfPackage) || // new after current
+                    (p.ActivationDateOfPackage == customerPackageDto.ActivationDateOfPackage && p.ExpiryDate == customerPackageDto.ExpiryDate) || // equal
+                    (p.ActivationDateOfPackage >= customerPackageDto.ActivationDateOfPackage) // new before current
+                )
+            )
             .ExecuteUpdateAsync(p => p
-                .SetProperty(x => x.ExpiryDate, newExpiryDate));
-
-        // case they are equal to each other 
-        await query .Where(p =>
-                p.OrganizationId == customerPackageDto.OrganizationId &&
-                p.EnPlateNumber == customerPackageDto.EnPlateNumber &&
-                p.ActivationDateOfPackage == customerPackageDto.ActivationDateOfPackage && 
-                p.ExpiryDate == customerPackageDto.ExpiryDate)
-            .ExecuteUpdateAsync(p => p
-                .SetProperty(x => x.Status, Status.Inactive));
-
-        // case new is before current
-        await query
-            .Where(p =>
-                p.OrganizationId == customerPackageDto.OrganizationId &&
-                p.EnPlateNumber == customerPackageDto.EnPlateNumber &&
-                p.ActivationDateOfPackage >= customerPackageDto.ActivationDateOfPackage)
-            .ExecuteUpdateAsync(p => p
-                .SetProperty(x => x.ActivationDateOfPackage, newActivationDate));
+                .SetProperty(x => x.ExpiryDate,
+                    x => x.ActivationDateOfPackage < customerPackageDto.ActivationDateOfPackage
+                        ? newExpiryDate
+                        : x.ExpiryDate) // only update if new is after current
+                .SetProperty(x => x.Status,
+                    x => x.ActivationDateOfPackage == customerPackageDto.ActivationDateOfPackage &&
+                         x.ExpiryDate == customerPackageDto.ExpiryDate
+                        ? Status.Inactive
+                        : x.Status) // only update if equal
+                .SetProperty(x => x.ActivationDateOfPackage,
+                    x => x.ActivationDateOfPackage >= customerPackageDto.ActivationDateOfPackage
+                        ? newActivationDate
+                        : x.ActivationDateOfPackage) // only update if new is before current
+            );
 
     }
     /// <summary>

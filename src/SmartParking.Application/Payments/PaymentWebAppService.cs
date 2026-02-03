@@ -59,6 +59,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _paymentRepository.GetQueryableAsync();
+            query = query.Where(pay=>pay.PaymentStatus == PaymentStatus.Success);
             var organizationQuery = await _organizationRepository.GetQueryableAsync();
             var customerQuery = await _customerRepository.GetQueryableAsync();
             var userQuery = await _myUserRepository.GetQueryableAsync();
@@ -126,7 +127,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
         using (DataFilter.Disable<IMultiTenant>())
         {
             var query = await _paymentRepository.GetQueryableAsync();
-            query = query.Where(pay => pay.TenantId == currentOrganization.TenantId);
+            query = query.Where(pay => pay.TenantId == currentOrganization.TenantId && pay.PaymentStatus==PaymentStatus.Success);
 
             var customerQuery = (await _customerRepository.GetQueryableAsync())
                                 .Include(x => x.IdentityUser);
