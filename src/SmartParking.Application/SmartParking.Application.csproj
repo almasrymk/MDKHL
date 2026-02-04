@@ -51,7 +51,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="CustomerPackages\CustomerPackagesTransactions\" />
 	  <Folder Include="Events\" />
 	</ItemGroup>
 

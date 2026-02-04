@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.CustomerPackages.CustomerPackagesTransactions;
+namespace SmartParking.CustomerPackages.CustomerPackagesTransaction;
 
 public interface ICustomerPackageTransactionActionsAppService
 {
