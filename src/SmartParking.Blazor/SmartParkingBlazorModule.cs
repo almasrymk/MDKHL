@@ -16,6 +16,7 @@ using SmartParking.Blazor.Components.State;
 using SmartParking.Blazor.Filters;
 using SmartParking.Blazor.Menus;
 using SmartParking.Blazor.MultiTenants;
+using SmartParking.CustomerPackages.CustomerPackagesTransaction;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.GarageTransactionEndPoints.Factory;
 using SmartParking.GarageTransactions;
@@ -159,6 +160,9 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsCameraActionsAppService>();
         context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsDispenserActionsAppService>();
         context.Services.AddScoped<IGarageTransactionsActionsFactoryAppService, GarageTransactionsActionsFactoryAppService>();
+        context.Services.AddScoped<ICustomerPackageHandlerAppService, CustomerPackageHandlerAppService>();
+        context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, CameraTransactionActionsAppService>();
+        context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, DispenserTransactionActionsAppService>();
 
 
 
