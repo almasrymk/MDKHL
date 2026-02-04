@@ -2,6 +2,7 @@
 using Org.BouncyCastle.Asn1.X509;
 using SmartParking.BarrierAppService;
 using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.CustomerPackagesTransaction;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
@@ -23,7 +24,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     private readonly IGarageTransactionEndPointsAppService _garageTransactionEndPointsAppService;
     private readonly IGarageTransactionUtilityAppService _garageTransactionUtilityAppService;
     private readonly IBarrierAppService _barrierAppService;
-    private readonly ICustomerPackagesAppService _customerPackagesAppService;
+    private readonly ICustomerPackageHandlerAppService _customerPackagesHandlerAppService;
     private readonly IRepository<Dispenser, int> _dispenserRepository;
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly ILogger<DispenserEndPointsAppService> _logger;
@@ -38,7 +39,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     private readonly string _multipleRequests = "Multiple Request from Pre-Entry";
 
 
-    public DispenserEndPointsAppService(IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IBarrierAppService barrierAppService, IRepository<Dispenser, int> dispenserRepository, ILogger<DispenserEndPointsAppService> logger, IRepository<Organization, int> organizationRepository, ICustomerPackagesAppService customerPackagesAppService , IUnLinkedTransactionAppService unlinkedGarageTransactionsAppService, IGarageTransactionUtilityAppService garageTransactionUtilityAppService)
+    public DispenserEndPointsAppService(IGarageTransactionEndPointsAppService garageTransactionEndPointsAppService, IBarrierAppService barrierAppService, IRepository<Dispenser, int> dispenserRepository, ILogger<DispenserEndPointsAppService> logger, IRepository<Organization, int> organizationRepository, IUnLinkedTransactionAppService unlinkedGarageTransactionsAppService, IGarageTransactionUtilityAppService garageTransactionUtilityAppService, ICustomerPackageHandlerAppService customerPackagesHandlerAppService)
     {
         _garageTransactionEndPointsAppService = garageTransactionEndPointsAppService;
         _barrierAppService = barrierAppService;
@@ -47,7 +48,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
         _organizationRepository = organizationRepository;
         _unlinkedGarageTransactionsAppService = unlinkedGarageTransactionsAppService;
         _garageTransactionUtilityAppService = garageTransactionUtilityAppService;
-        _customerPackagesAppService = customerPackagesAppService;
+        _customerPackagesHandlerAppService = customerPackagesHandlerAppService;
     }
     #region public methods
     public async Task<IBaseGateResponseDto> Entry(EntryDto request)
@@ -73,7 +74,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
                 return NotFoundOrganizationHandler(request.CarNum);
             }
             var _garageTransactionDto = InitiateCreateGarageTransactionDtoForPreEntry(request, _dispenser);
-            var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(_organization.Id, _garageTransactionDto.TicketId, _garageTransactionDto.AccurateTime.Value);
+            var packageDto = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(new GarageTransactionDto { OrganizationID = _garageTransactionDto.OrganizationID, PlateNumber = _garageTransactionDto.PlateNumber, TicketId = _garageTransactionDto.TicketId, AccurateTime = _garageTransactionDto.AccurateTime });
             if (packageDto != null)
             {
                 return GetGateResponse(request.CarNum, false, _multipleRequests);
@@ -107,7 +108,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
                 return NotFoundOrganizationHandler(packageCodeEntry.CarNum);
             }
             var _garageTransactionDto = InitalizePreEntryCreateUpdateGarageTransactionDto(packageCodeEntry, _dispenser);
-            var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(_organization.Id, packageCodeEntry.PackageCode, _garageTransactionDto.AccurateTime.Value);
+            var packageDto = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(new GarageTransactionDto { OrganizationID = _garageTransactionDto.OrganizationID, PlateNumber = _garageTransactionDto.PlateNumber, TicketId = _garageTransactionDto.TicketId, AccurateTime = _garageTransactionDto.AccurateTime });
             if (packageDto == null)
             {
                 return NotFoundPackageHandler(packageCodeEntry.CarNum);
@@ -147,7 +148,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             {
                 return NOtFoundPlateOrTicketHandler(request.CarNum);
             }
-            var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(_organization.Id, _garageTransactionDto.TicketId, _garageTransactionDto.AccurateTime.Value);
+            var packageDto = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(new GarageTransactionDto { OrganizationID = _garageTransactionDto.OrganizationID, PlateNumber = _garageTransactionDto.PlateNumber, TicketId = _garageTransactionDto.TicketId, AccurateTime = _garageTransactionDto.AccurateTime });
             if (packageDto != null)
             {
                 return GetGateResponse(request.CarNum, false, _multipleRequests);
@@ -183,7 +184,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             _logger.LogInformation($"Organization is found");
             var _garageTransactionDto = InitalizePreExitCreateUpdateGarageTransactionDto(packageCodeExit, _dispenser);
             var input = ObjectMapper.Map<CreateUpdateGarageTransactionDto, CreateUpdateGarageTransactionEndPointDto>(_garageTransactionDto);
-            var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPackageCode(_organization.Id, packageCodeExit.PackageCode, _garageTransactionDto.AccurateTime.Value);
+            var packageDto = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(new GarageTransactionDto { OrganizationID = _garageTransactionDto.OrganizationID, PlateNumber = _garageTransactionDto.PlateNumber, TicketId = _garageTransactionDto.TicketId, AccurateTime = _garageTransactionDto.AccurateTime });
             if (packageDto == null)
             {
                 return NotFoundPackageHandler(packageCodeExit.CarNum);
