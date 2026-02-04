@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.CustomerPackagesTransaction;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
@@ -23,15 +24,15 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
     private readonly ICalculationsEndPointsAppService _calculationsEndPointAppService;
     private readonly IGarageTransactionUtilityAppService _garageTransactionUtilityAppService;
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
-    private readonly ICustomerPackagesAppService _customerPackagesAppService;
+    private readonly ICustomerPackageHandlerAppService _customerPackagesHandlerAppService;
 
-    public CustomerMobileTransactionsAppService(IGarageTransactionUtilityAppService garageTransactionUtilityAppService, ICalculationsEndPointsAppService calculationsEndPointAppService, IInvoiceAppService invoiceAppService, IGarageTransactionsAppService garageTransactionsAppService, ICustomerPackagesAppService customerPackagesAppService)
+    public CustomerMobileTransactionsAppService(IGarageTransactionUtilityAppService garageTransactionUtilityAppService, ICalculationsEndPointsAppService calculationsEndPointAppService, IInvoiceAppService invoiceAppService, IGarageTransactionsAppService garageTransactionsAppService, ICustomerPackageHandlerAppService customerPackagesHandlerAppService)
     {
         _garageTransactionUtilityAppService = garageTransactionUtilityAppService;
         _calculationsEndPointAppService = calculationsEndPointAppService;
         _invoiceAppService = invoiceAppService;
         _garageTransactionsAppService = garageTransactionsAppService;
-        _customerPackagesAppService = customerPackagesAppService;
+        _customerPackagesHandlerAppService = customerPackagesHandlerAppService;
     }
 
     #region public methods for customer transactions
@@ -83,7 +84,7 @@ public class CustomerMobileTransactionsAppService : SmartParkingAppService, ICus
             return await _garageTransactionUtilityAppService.InitiateInvoice(entranceTime, exitTransaction, totalHours, 0, false,customer);
 
         }
-        var packageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(exitTransaction.OrganizationID, exitTransaction.PlateNumber, exitTransaction.AccurateTime.Value);
+        var packageDto = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(new GarageTransactionDto { OrganizationID = exitTransaction.OrganizationID, PlateNumber = exitTransaction.PlateNumber, TicketId = exitTransaction.TicketId, AccurateTime = exitTransaction.AccurateTime });
         var _price = _calculationsEndPointAppService.CalculationForRegisteredCustomer(entranceTime, exitTransaction.AccurateTime.Value, organization, packageDto, totalHours);
         CreateUpdateInvoiceDto newInvoice = await _garageTransactionUtilityAppService.InitiateInvoice(entranceTime, exitTransaction, totalHours, _price, true,customer);
         newInvoice.EntranceTime = entranceTime;
