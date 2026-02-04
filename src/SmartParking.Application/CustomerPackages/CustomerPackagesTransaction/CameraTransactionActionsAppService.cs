@@ -34,10 +34,6 @@ public class CameraTransactionActionsAppService : SmartParkingAppService, ICusto
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            if (garageTransactionDto == null || string.IsNullOrEmpty(garageTransactionDto.TicketId) || garageTransactionDto.AccurateTime == null)
-            {
-                return null!;
-            }
 
             var accurateTime = garageTransactionDto.AccurateTime.Value;
             var timeOfDay = TimeOnly.FromTimeSpan(accurateTime.TimeOfDay);
@@ -50,10 +46,8 @@ public class CameraTransactionActionsAppService : SmartParkingAppService, ICusto
                     x.OrganizationId == garageTransactionDto.OrganizationID &&
                     (x.ArPlateNumber == garageTransactionDto.PlateNumber || x.EnPlateNumber == garageTransactionDto.PlateNumber) &&
 
-                    x.ActivationDateOfPackage.HasValue &&
-                    x.DectivationDateOfPackage.HasValue &&
-                    x.ActivationDateOfPackage.Value <= accurateTime &&
-                    x.DectivationDateOfPackage.Value >= accurateTime &&
+                    x.ActivationDateOfPackage!.Value <= accurateTime &&
+                    x.ExpiryDate >= accurateTime &&
 
                     x.PublishFromOfPackage.HasValue &&
                     x.PublishToOfPackage.HasValue &&

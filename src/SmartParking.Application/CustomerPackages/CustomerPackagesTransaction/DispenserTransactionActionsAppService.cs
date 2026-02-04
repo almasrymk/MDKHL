@@ -49,10 +49,8 @@ public class DispenserTransactionActionsAppService : SmartParkingAppService, ICu
                     x.OrganizationId == garageTransactionDto.OrganizationID &&
                     x.PackageCode == garageTransactionDto.TicketId &&
 
-                    x.ActivationDateOfPackage.HasValue &&
-                    x.DectivationDateOfPackage.HasValue &&
-                    x.ActivationDateOfPackage.Value <= accurateTime &&
-                    x.DectivationDateOfPackage.Value >= accurateTime &&
+                    x.ActivationDateOfPackage!.Value <= accurateTime &&
+                    x.ExpiryDate >= accurateTime &&
 
                     x.PublishFromOfPackage.HasValue &&
                     x.PublishToOfPackage.HasValue &&
