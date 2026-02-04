@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.CustomerPackagesTransaction;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Enums;
@@ -25,19 +26,19 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
     private readonly ICalculationsEndPointsAppService _calculationsEndPointAppService;
     private readonly IGarageTransactionUtilityAppService _garageTransactionUtilityAppService;
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
-    private readonly ICustomerPackagesAppService _customerPackagesAppService;
+    private readonly ICustomerPackageHandlerAppService _customerPackagesHandlerAppService;
     private readonly IOrganizationsAppService _organizationAppService;
     private readonly IOpenGateFactoryService _openGateFactoryAppService;
 
-    public KeeperTransactionsAppService(IInvoiceAppService invoiceAppService, ICalculationsEndPointsAppService calculationsEndPointAppService, IGarageTransactionUtilityAppService garageTransactionUtilityAppService, IGarageTransactionsAppService garageTransactionsAppService, ICustomerPackagesAppService customerPackagesAppService, IOrganizationsAppService organizationAppService, IOpenGateFactoryService openGateAppService)
+    public KeeperTransactionsAppService(IInvoiceAppService invoiceAppService, ICalculationsEndPointsAppService calculationsEndPointAppService, IGarageTransactionUtilityAppService garageTransactionUtilityAppService, IGarageTransactionsAppService garageTransactionsAppService,  IOrganizationsAppService organizationAppService, IOpenGateFactoryService openGateAppService, ICustomerPackageHandlerAppService customerPackagesHandlerAppService)
     {
         _invoiceAppService = invoiceAppService;
         _calculationsEndPointAppService = calculationsEndPointAppService;
         _garageTransactionUtilityAppService = garageTransactionUtilityAppService;
         _garageTransactionsAppService = garageTransactionsAppService;
-        _customerPackagesAppService = customerPackagesAppService;
         _organizationAppService = organizationAppService;
         _openGateFactoryAppService = openGateAppService;
+        _customerPackagesHandlerAppService = customerPackagesHandlerAppService;
     }
 
 
@@ -93,7 +94,7 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
         }
         var organization = await _garageTransactionUtilityAppService.GetOrganization(createdExitGarageTransaction.OrganizationID);
         int totalHours = _calculationsEndPointAppService.CalculateTime(entryGarageTransaction.AccurateTime.Value, (DateTime)createdExitGarageTransaction.AccurateTime, organization.FreeMinutes);
-        var customerPackageDto = await _customerPackagesAppService.GetOneActiveCustomerPackageByOrganizationIdAndPlateNumberForGarageTransaction(createdExitGarageTransaction.OrganizationID, createdExitGarageTransaction.PlateNumber, createdExitGarageTransaction.AccurateTime.Value);
+        var customerPackageDto = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(new GarageTransactionDto { OrganizationID = createdExitGarageTransaction.OrganizationID, AccurateTime = createdExitGarageTransaction.AccurateTime, PlateNumber = createdExitGarageTransaction.PlateNumber, TicketId = createdExitGarageTransaction.TicketId });
         if (customerPackageDto == null)
         {
             decimal price =  _calculationsEndPointAppService.CalculateInvoiceCases(entryGarageTransaction.AccurateTime.Value, totalHours, createdExitGarageTransaction.AccurateTime.Value, organization);
