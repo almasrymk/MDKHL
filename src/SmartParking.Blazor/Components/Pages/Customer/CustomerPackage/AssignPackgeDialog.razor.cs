@@ -103,7 +103,7 @@ partial class AssignPackgeDialog
         // Handle custom package assignment
         if (IsCustom)
         {
-            CustomPackageValidations.CheckIsCustomProperties(CustomPackageUiDto,Snackbar);
+            BlazorPackageValidations.CheckIsCustomProperties(CustomPackageUiDto,Snackbar);
             _customerPackageDto.publishedOfPackage = true;
             _customerPackageDto.ActivationDateOfPackage = CustomPackageUiDto.ActivationDate.HasValue && CustomPackageUiDto.startTime.HasValue
                                                         ? CustomPackageUiDto.ActivationDate.Value.Date + CustomPackageUiDto.startTime.Value

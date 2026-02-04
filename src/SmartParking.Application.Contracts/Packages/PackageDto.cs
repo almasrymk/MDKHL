@@ -36,5 +36,7 @@ public class PackageDto : AuditedEntityDto<int>
 
     public Status Status { get; set; }
     public PackageCategoryTypes PackageCategoryType { get; set; }
+    public Guid? TenantId { get; set; }
+
 
 }

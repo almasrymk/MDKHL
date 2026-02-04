@@ -71,8 +71,7 @@
                                       Disabled=true
                                       Label=@L["customer category"] />
                     </MudItem>
-                    @if (Package.Status == Enums.Status.Active)
-                    {
+
                         <MudItem sm="6" md="6">
                             <MudTextField Variant="Variant.Text"
                                            Class="w-100"
@@ -80,10 +79,7 @@
                                            Disabled
                                            Label="@L["ActivationDate"]" />
                         </MudItem>
-                    }
 
-                    @if (Package.Status == Enums.Status.Inactive)
-                    {
                         <MudItem sm="6" md="6">
                             <MudTextField Variant="Variant.Text"
                                            Class="w-100"
@@ -91,7 +87,7 @@
                                            Disabled
                                            Label="@L["DectivationDate"]" />
                         </MudItem>
-                    }
+                
 
                     @if(Package.Published == true)
                     {

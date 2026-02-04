@@ -1,0 +1,91 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.State
+@using SmartParking.Localization
+@using System.Globalization
+@inject IStringLocalizer<SmartParkingResource> L
+<MudItem sm="6" md="6">
+    <MudNumericField @bind-Value="createUpdatePackage.DurationOfPackage"
+                     For="@(() => createUpdatePackage.DurationOfPackage)"
+                     Variant="Variant.Text"
+                     HideSpinButtons="true"
+                     Required="true"
+                     Disabled="IsDurationDisabled"
+                     RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                     class="@(CultureInfo.CurrentCulture.Name == "ar" ? "custom-numeric-field" : "")"
+                     Label=@L["PackageDuration"] />
+</MudItem>
+
+<MudItem sm="4">
+    <MudSwitch T="bool"
+               @bind-Value="createUpdatePackage.Published"
+               Label="@L["Published"]"
+               LabelPosition="LabelPosition.Start"
+               Color="MudBlazor.Color.Primary" />
+</MudItem>
+@if (createUpdatePackage.Published == false)
+{
+    <MudItem sm="4" md="4">
+        <MudTimePicker Variant="Variant.Text"
+					   Time="timeSpanFrom"
+                       Class="w-100"
+                       Required="!createUpdatePackage.Published"
+                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                       TimeChanged="OnTimeFromChanged"
+                       PickerVariant="PickerVariant.Dialog"
+                       Placeholder=@L["Time Placeholder"]
+                       Label="@L["Publish From"]" />
+    </MudItem>
+
+    <MudItem sm="4" md="4">
+        <MudTimePicker Variant="Variant.Text"
+                       Class="w-100"
+                       Time="timeSpanTo"
+                       Required="!createUpdatePackage.Published"
+                       PickerVariant="PickerVariant.Dialog"
+                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                       TimeChanged="OnTimeToChanged"
+                       Placeholder=@L["Time Placeholder"]
+                       Label="@L["Publish To"]" />
+    </MudItem>
+
+
+}
+@code {
+    [Parameter]
+    public NormalPackagePropertiesDto createUpdatePackage { get; set; }
+    [Parameter]
+    public bool IsDurationDisabled { get; set; } = false;
+    private TimeSpan? timeSpanFrom;
+    private TimeSpan? timeSpanTo;
+    protected override void OnParametersSet()
+    {
+        timeSpanFrom = createUpdatePackage.PublishFrom?.ToTimeSpan();
+        timeSpanTo = createUpdatePackage.PublishTo?.ToTimeSpan();
+        base.OnParametersSet();
+    }
+    private void OnTimeFromChanged(TimeSpan? value)
+    {
+        if (value.HasValue)
+        {
+            timeSpanFrom = value;
+            createUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(value.Value);
+        }
+        else
+        {
+            createUpdatePackage.PublishFrom = null;
+        }
+    }
+
+    private void OnTimeToChanged(TimeSpan? value)
+    {
+        if (value.HasValue)
+        {
+            timeSpanTo = value;
+            createUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(value.Value);
+        }
+        else
+        {
+            createUpdatePackage.PublishTo = null;
+        }
+    }
+}

@@ -1,10 +1,12 @@
 ﻿using MudBlazor;
 using SmartParking.Blazor.Components.State;
+using SmartParking.Enums;
 using SmartParking.Localization;
+using SmartParking.Packages;
 
 namespace SmartParking.Blazor.Components.Shared.Utilities;
 
-public static class CustomPackageValidations
+public static class BlazorPackageValidations
 {
     public static void CheckIsCustomProperties(CustomPackageUiDto customerPackageDto , ISnackbar Snackbar )
     {
@@ -31,6 +33,32 @@ public static class CustomPackageValidations
         if (customerPackageDto.PriceOfPackage == null)
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("Price") + " " + LocalizationHelper.GetLocalizedString("EmptyValidation"));
+        }
+    }
+
+    public static void MapToCreateUpdatePackage(
+        CreateUpdatePackageDto createUpdatePackage,
+        CustomPackageUiDto? customDto,
+        NormalPackagePropertiesDto? normalDto,
+        ISnackbar snackbar)
+    {
+        if (createUpdatePackage.PackageCategoryType == PackageCategoryTypes.CustomPackage)
+        {
+            CheckIsCustomProperties(customDto, snackbar);
+
+            createUpdatePackage.ActivationDate = customDto!.ActivationDate!.Value;
+            createUpdatePackage.DeactivationDate = customDto.DectivationDate!.Value;
+            createUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(customDto.startTime!.Value);
+            createUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(customDto.endTime!.Value);
+            createUpdatePackage.DurationOfPackage = (int)customDto.CountOfDays!.Value;
+            createUpdatePackage.Price = customDto.PriceOfPackage!.Value;
+        }
+        else
+        {
+            createUpdatePackage.ActivationDate = DateTime.Now;
+            createUpdatePackage.Published = normalDto!.Published;
+            createUpdatePackage.PublishFrom = normalDto.PublishFrom;
+            createUpdatePackage.PublishTo = normalDto.PublishTo;
         }
     }
 }

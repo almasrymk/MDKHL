@@ -302,7 +302,9 @@ public partial class Package
             Status = packageDto.Status,
             ActivationDate = packageDto.ActivationDate,
             DeactivationDate = packageDto.DectivationDate,
-            PackageCategoryType=packageDto.PackageCategoryType
+            PackageCategoryType = packageDto.PackageCategoryType,
+            TenantId = packageDto.TenantId
+
 
 
         };

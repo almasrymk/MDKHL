@@ -10,6 +10,7 @@
 @using SmartParking.Blazor.Components.Shared
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using SmartParking.Utilities
 @using SmartParking.Validations
 @using System.Globalization
 @using Volo.Abp
@@ -82,6 +83,23 @@
                             }
                         </MudSelect>
                     </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudSelect @bind-Value="createUpdatePackage.CustomerCategory"
+                                   Label="@L["customer category"]"
+                                   Placeholder="@L["Choose"]"
+                                   HelperText=@L["Helper Text"]
+                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                                   Required>
+
+                            @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
+                            {
+                                <MudSelectItem Value="@category">
+                                    @category.ToString()
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+
+                    </MudItem>
                     @if(createUpdatePackage.PackageCategoryType != PackageCategoryTypes.CustomPackage)
                     {
                         
@@ -102,39 +120,18 @@
                         </div>
                     </MudItem>
                     }
-                    @if (createUpdatePackage.PackageCategoryType == PackageCategoryTypes.CustomPackage){
-
-                        <CustomPackageComponent CustomPackageUiDto="CustomPackageUiDto" />
-
-                    }
-                    else
-                    {
-                        
-                    <MudItem sm="6" md="6">
-                        <MudNumericField @bind-Value="createUpdatePackage.DurationOfPackage"
-                        For="@(() => createUpdatePackage.DurationOfPackage)"
-                        Variant="Variant.Text"
-                        HideSpinButtons="true"
-                        Required="true"
-                        Disabled="IsDurationDisabled"
-                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        class="@(CultureInfo.CurrentCulture.Name == "ar" ? "custom-numeric-field" : "")"
-                        Label=@L["PackageDuration"] />
-                    </MudItem>
-
                     @if (CurrentTenant.Id == null)
                     {
                         <MudItem sm="6">
                             <MudSelect T="string"
-                            Class="custom-placeholder"
-                            Variant="Variant.Text"
-                            Label=@L["Organizations"]
-                            HelperText=@L["Helper Text"]
-                            Required
-                            Placeholder="@L[ "Choose"]"
-                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                            @bind-Value="OrganizationId">
-                                @* <MudSelectItem Value="0" Disabled="true" style="color: rgb(66 66 66 / 48%);">@L["Choose"]</MudSelectItem> *@
+                                       Class="custom-placeholder"
+                                       Variant="Variant.Text"
+                                       Label=@L["Organizations"]
+                                       HelperText=@L["Helper Text"]
+                                       Required
+                                       Placeholder="@L[ "Choose"]"
+                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                                       @bind-Value="OrganizationId">
 
                                 @foreach (var organization in _organizations)
                                 {
@@ -154,59 +151,15 @@
                         </MudItem>
 
                     }
+                    @if (createUpdatePackage.PackageCategoryType == PackageCategoryTypes.CustomPackage){
 
-
-                        <MudItem sm="6" md="6">
-                            <MudSelect @bind-Value="createUpdatePackage.CustomerCategory"
-                            Label="@L["customer category"]"
-                            Placeholder="@L[ "Choose"]"
-                            HelperText=@L["Helper Text"]
-                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                            Required>
-
-                                @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
-                                {
-                                    <MudSelectItem Value="@category">
-                                        @category.ToString()
-                                    </MudSelectItem>
-                                }
-                            </MudSelect>
-
-                        </MudItem>
-                    <MudItem sm="4">
-                        <MudSwitch 
-                        T="bool"
-                        @bind-Value="createUpdatePackage.Published"
-                        Label="@L["Published"]"
-                        LabelPosition="LabelPosition.Start"
-                        Color="MudBlazor.Color.Primary" />
-                    </MudItem>
-                    @if(createUpdatePackage.Published == false)
-                    {
-                        <MudItem sm="4" md="4">
-                            <MudTimePicker Variant="Variant.Text"
-                            Class="w-100"
-                            Required="!createUpdatePackage.Published" 
-                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                            TimeChanged="OnTimeFromChanged"
-                            PickerVariant="PickerVariant.Dialog"
-                            Placeholder=@L["Time Placeholder"]
-                            Label="@L["Publish From"]" />
-                        </MudItem>
-
-                        <MudItem sm="4" md="4">
-                            <MudTimePicker Variant="Variant.Text"
-                            Class="w-100"
-                            Required="!createUpdatePackage.Published"
-                            PickerVariant="PickerVariant.Dialog"
-                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                            TimeChanged="OnTimeToChanged"
-                            Placeholder=@L["Time Placeholder"]
-                            Label="@L["Publish To"]" />
-                        </MudItem>
-
+                        <CustomPackageComponent CustomPackageUiDto="CustomPackageUiDto" />
 
                     }
+                    else
+                    {
+                        <NormalPackageComponent IsDurationDisabled="IsDurationDisabled" createUpdatePackage="NormalPackageUiDto" />
+          
                     }
                     <MudItem sm="12">
                         <label style="font-size: 0.75rem; margin-bottom: 4px;">
@@ -273,16 +226,13 @@
     private CreateUpdatePackageDto createUpdatePackage = new CreateUpdatePackageDto();
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; }
-    private string PackageTypeId { get; set; }
     private string OrganizationId { get; set; }
     bool _clearable;
-    private List<PackageTypeDto> packageTypes = new List<PackageTypeDto>();
     private List<OrganizationDto> _organizations = new List<OrganizationDto>();
-    private TimeSpan? timeSpanFrom;
-    private TimeSpan? timeSpanTo;
     private string CustomerCategory { get; set; }
     private PagedResultDto<OrganizationDto> organizationsList { get; set; } = new();
     private CustomPackageUiDto CustomPackageUiDto { get; set; } = new();
+    private NormalPackagePropertiesDto NormalPackageUiDto { get; set; } = new();
 
     private bool IsDurationDisabled { get; set; } = false;
 
@@ -290,10 +240,6 @@
     {
         organizationsList = await organizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         _organizations = organizationsList.Items.ToList();
-        var packageTypesList = await packageTypesAppService.GetAllListAsync();
-        packageTypes = packageTypesList;
-        timeSpanFrom = createUpdatePackage.PublishFrom?.ToTimeSpan();
-        timeSpanTo = createUpdatePackage.PublishTo?.ToTimeSpan();
         if(CurrentTenant.Id!=null){
             var id = await organizationAppService.GetOrganizationIdByTenant(CurrentTenant.Id);
             OrganizationId = id.ToString();
@@ -301,70 +247,18 @@
         IsDurationDisabled = false;
         await base.OnInitializedAsync();
     }
-
-    private async Task OnPackageTypeChanged(PackageCategoryTypes value)
+    private void OnPackageTypeChanged(PackageCategoryTypes value)
     {
         createUpdatePackage.PackageCategoryType = value;
-        if (value != PackageCategoryTypes.CustomPackage && 
-            value != PackageCategoryTypes.Free && 
-            value != PackageCategoryTypes.Daily)
-        {
-            switch (value)
-            {
-                case PackageCategoryTypes.Year:
-                    createUpdatePackage.DurationOfPackage = 360;
-                    break;
-
-                case PackageCategoryTypes.HalfYear:
-                    createUpdatePackage.DurationOfPackage = 180;
-                    break;
-
-                case PackageCategoryTypes.Monthly:
-                    createUpdatePackage.DurationOfPackage = 30;
-                    break;
-
-            }
-
-            IsDurationDisabled = true;
-        }
-        else
-        {
-            IsDurationDisabled = false;
-        }
-
-    }
-
-    private void OnTimeFromChanged(TimeSpan? value)
-    {
-        if (value.HasValue)
-        {
-            timeSpanFrom = value;
-            createUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(value.Value);
-        }
-        else
-        {
-            createUpdatePackage.PublishFrom =null ; 
-        }
-    }
-
-    private void OnTimeToChanged(TimeSpan? value)
-    {
-        if (value.HasValue)
-        {
-            timeSpanTo = value;
-            createUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(value.Value);
-        }
-        else
-        {
-            createUpdatePackage.PublishTo = null; 
-        }
+        var result = PackageExtension.OnPackageTypeChanged(value);
+        createUpdatePackage.DurationOfPackage=result.PackageDuration;
+		IsDurationDisabled = result.IsDurationDisabled;
     }
 
 
     private async Task Submit()
     {
         createUpdatePackage.OrganizationId = int.Parse(OrganizationId);
-        // = (CustomerCategoryStatus)Enum.Parse(typeof(CustomerCategoryStatus), CustomerCategory);
         if (CurrentTenant.Id == null)
         {
             createUpdatePackage.TenantId = _organizations.FirstOrDefault(x => x.Id == createUpdatePackage.OrganizationId).TenantId;
@@ -372,20 +266,11 @@
 
         try
         {
-            if (createUpdatePackage.PackageCategoryType ==PackageCategoryTypes.CustomPackage){
-
-                CustomPackageValidations.CheckIsCustomProperties(CustomPackageUiDto, Snackbar);
-                createUpdatePackage.ActivationDate = CustomPackageUiDto.ActivationDate.Value;
-                createUpdatePackage.DeactivationDate = CustomPackageUiDto.DectivationDate.Value;
-                createUpdatePackage.PublishFrom = TimeOnly.FromTimeSpan(CustomPackageUiDto.startTime.Value);
-                createUpdatePackage.PublishTo = TimeOnly.FromTimeSpan(CustomPackageUiDto.endTime.Value);
-                createUpdatePackage.DurationOfPackage = (int) CustomPackageUiDto.CountOfDays.Value;
-                createUpdatePackage.Price = CustomPackageUiDto.PriceOfPackage.Value;
-            }
-            else{
-                createUpdatePackage.ActivationDate = DateTime.Now;
-            }
-
+            BlazorPackageValidations.MapToCreateUpdatePackage(
+                createUpdatePackage,
+                CustomPackageUiDto,
+                NormalPackageUiDto,
+                Snackbar);
             createUpdatePackage.Published = createUpdatePackage.Published || PackageValidations.CheckPackageTimeValiditity(createUpdatePackage.PublishFrom, createUpdatePackage.PublishTo);
             createUpdatePackage.PackageStatus = SubscriptionStatus.Draft;
             createUpdatePackage.Status = Status.Inactive;
