@@ -76,9 +76,9 @@ public abstract class CustomerPackageTransactionBaseAppService : SmartParkingApp
             x.OrganizationId == garageTransactionDto.OrganizationID &&
             x.CustomerPackageStatus == CustomerPackageStatus.Active &&
             x.ActivationDateOfPackage.HasValue &&
-            x.DectivationDateOfPackage.HasValue &&
+            x.ExpiryDate != null &&
             x.ActivationDateOfPackage.Value <= accurateTime &&
-            x.DectivationDateOfPackage.Value >= accurateTime &&
+            x.ExpiryDate >= accurateTime &&
             ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null))
         );
 

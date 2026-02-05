@@ -264,6 +264,8 @@
             CustomPackageUiDto.CountOfDays=Package.DurationOfPackage;
             CustomPackageUiDto.endTime = Package.PublishTo?.ToTimeSpan();
             CustomPackageUiDto.startTime = Package.PublishFrom?.ToTimeSpan();
+            CustomPackageUiDto.PriceOfPackage = Package.Price;
+
         }
         else
         {
@@ -271,15 +273,17 @@
             NormalPackageUiDto.PublishFrom=Package.PublishFrom;
             NormalPackageUiDto.PublishTo=Package.PublishTo;
             NormalPackageUiDto.Published = Package.Published;
+            
         }
     }
 
-    private void OnPackageTypeChanged(PackageCategoryTypes value)
+    private async Task OnPackageTypeChanged(PackageCategoryTypes value)
     {
         Package.PackageCategoryType = value;
         var result = PackageExtension.OnPackageTypeChanged(value);
         Package.DurationOfPackage = result.PackageDuration;
         IsDurationDisabled = result.IsDurationDisabled;
+        await InitializePackageDetails();
     }
 
     private void OnTimeFromChanged(TimeSpan? value)
