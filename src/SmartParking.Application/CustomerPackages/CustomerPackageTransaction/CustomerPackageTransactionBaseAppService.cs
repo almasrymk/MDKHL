@@ -83,7 +83,7 @@ public abstract class CustomerPackageTransactionBaseAppService : SmartParkingApp
         );
 
         // Apply identification filters (plate or ticket)
-    //    query = ApplyIdentificationFilters(query, garageTransactionDto);
+        query = ApplyIdentificationFilters(query, garageTransactionDto);
 
         // Apply time-of-day restrictions
         query = ApplyTimeOfDayFilters(query, timeOfDay);
