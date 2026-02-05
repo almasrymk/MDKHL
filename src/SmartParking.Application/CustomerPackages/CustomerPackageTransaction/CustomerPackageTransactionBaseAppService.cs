@@ -77,13 +77,13 @@ public abstract class CustomerPackageTransactionBaseAppService : SmartParkingApp
             x.CustomerPackageStatus == CustomerPackageStatus.Active &&
             x.ActivationDateOfPackage.HasValue &&
             x.ExpiryDate != null &&
-            x.ActivationDateOfPackage.Value <= accurateTime &&
-            x.ExpiryDate >= accurateTime &&
+            x.ActivationDateOfPackage.Value.Date <= accurateTime.Date &&
+            x.ExpiryDate.Date >= accurateTime.Date &&
             ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null))
         );
 
         // Apply identification filters (plate or ticket)
-        query = ApplyIdentificationFilters(query, garageTransactionDto);
+    //    query = ApplyIdentificationFilters(query, garageTransactionDto);
 
         // Apply time-of-day restrictions
         query = ApplyTimeOfDayFilters(query, timeOfDay);

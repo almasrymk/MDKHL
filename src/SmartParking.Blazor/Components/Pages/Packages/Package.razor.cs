@@ -217,7 +217,6 @@ public partial class Package
 		}
         tableData.Columns.Add(new ColumnDef() {DisplayName = $"{_localizer["Price"]}", Name = "Price", IsFilterable = false, PropertyName = "Price", IsSortable = true, TypeFilter = TypeFilter.Text , TypeOfColumn = typeof(decimal) });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Published"], Name = "published", IsFilterable = false, PropertyName = "published", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Subscribers"], Name = "Subscribers", IsFilterable = false, PropertyName = "CustomerPackages.Count", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CurrentTenant.Id == null)
         {
             if (CultureInfo.CurrentCulture.Name == "en")
@@ -250,7 +249,6 @@ public partial class Package
                 $"{_localizer["Price"]}",
                 $"{item.Price} {IconHtml}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], item.Published ? 24 + _localizer[$"Hour"] : $" {item.PublishFrom} " + " - " + $" {item.PublishTo}"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Subscribers"], item.SubscribersInPackages.ToString()));
             if (CurrentTenant.Id == null)
             {
                 if (CultureInfo.CurrentCulture.Name == "en")

@@ -361,22 +361,7 @@ public class CustomerPackagesAppService :
             return await _subscriptionRepository.FirstOrDefaultAsync(s => s.Id == organization.SubscriptionId);
         }
     }
-    /// <summary>
-    /// Counts the number of packages related to a specific customer in a given organization.
-    /// </summary>
-    /// <param name="customerPackage">The customer package to use for filtering the count.</param>
-    /// <returns>
-    /// A task that represents the asynchronous operation. 
-    /// The task result contains the count of customer packages that belong to the same customer and organization.
-    /// </returns>
-    private async Task<int> CheckCountOfCustomerPackage(CustomerPackage? customerPackage)
-    {
-        var query = await _repository.GetQueryableAsync();
-        int RelatedPackages = await query.CountAsync(p =>
-            p.OrganizationId == customerPackage.OrganizationId &&
-            p.CustomerId == customerPackage.CustomerId);
-        return RelatedPackages;
-    }
+
 
     /// <summary>
     /// Retrieves the currently authenticated customer based on the user's identity.
@@ -402,31 +387,7 @@ public class CustomerPackagesAppService :
         return await _packageRepository.FirstOrDefaultAsync(p => p.Id == packageId);
 
     }
-    /// <summary>
-    /// Checks whether a customer package already exists based on package ID, organization, customer, and plate numbers.
-    /// </summary>
-    /// <param name="packageId">The ID of the package, or null for a custom package.</param>
-    /// <param name="organizationId">The ID of the organization.</param>
-    /// <param name="customerId">The ID of the customer.</param>
-    /// <param name="ArabicPlateNumber">The Arabic plate number of the customer's vehicle.</param>
-    /// <param name="EnglishPlateNumber">The English plate number of the customer's vehicle.</param>
-    /// <returns>
-    /// A task that represents the asynchronous operation.
-    /// The task result is true if a matching active package exists; otherwise, false.
-    /// </returns>
-    private async Task<bool> CustomerPackageExistsAsync(int organizationId, Guid customerId, string ArabicPlateNumber, string EnglishPlateNumber)
-    {
-        var existingPackage = await _repository.AnyAsync(p =>
-            p.OrganizationId == organizationId &&
-            p.CustomerId == customerId &&
-            p.ExpiryDate >= DateTime.Today &&
-            p.CustomerPackageStatus == CustomerPackageStatus.Active &&
-            p.ArPlateNumber == ArabicPlateNumber &&
-            p.EnPlateNumber == EnglishPlateNumber
-            );
-        return existingPackage;
-    }
-    
+
 
 
     private async Task HandleExistingPackagesForVehicleAsync(CustomerPackageDto customerPackageDto)
@@ -441,7 +402,6 @@ public class CustomerPackagesAppService :
                 p.OrganizationId == customerPackageDto.OrganizationId &&
                 p.EnPlateNumber == customerPackageDto.EnPlateNumber &&
                 (
-                    // Only include rows that need any update
                     (p.ActivationDateOfPackage < customerPackageDto.ActivationDateOfPackage) || // new after current
                     (p.ActivationDateOfPackage == customerPackageDto.ActivationDateOfPackage && p.ExpiryDate == customerPackageDto.ExpiryDate) || // equal
                     (p.ActivationDateOfPackage >= customerPackageDto.ActivationDateOfPackage) // new before current
@@ -464,19 +424,7 @@ public class CustomerPackagesAppService :
             );
 
     }
-    /// <summary>
-    /// Updates a given customer package in the database.
-    /// </summary>
-    /// <param name="customerPackage">The customer package to update.</param>
-    /// <returns>
-    /// A task that represents the asynchronous operation.
-    /// The task result contains a <see cref="Result"/> indicating success or failure.
-    /// </returns>
-    private async Task<Result<CustomerPackage>> UpdateCustomerPackageAsync(CustomerPackage customerPackage)
-    {
-        var updatedPackage = await _repository.UpdateAsync(customerPackage, true);
-        return updatedPackage != null ? Result.Success(updatedPackage) : Result.Error("Can't assign package to customer");
-    }
+
     /// <summary>
     /// Inserts a new customer package into the database.
     /// </summary>
