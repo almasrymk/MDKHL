@@ -342,17 +342,7 @@ public class CustomerPackagesAppService :
     /// <param name="customerPackage">The customer package to clear.</param>
     private void ClearPackageDetails(CustomerPackage customerPackage)
     {
-        customerPackage.PackageArabicName = null;
-        customerPackage.PackageEnglishName = null;
-        customerPackage.PackageId = null;
-        customerPackage.PublishToOfPackage = null;
-        customerPackage.PublishFromOfPackage = null;
-        customerPackage.PriceOfPackage = null;
-        customerPackage.DurationOfPackage = null;
-        customerPackage.DectivationDateOfPackage = null;
-        customerPackage.DescriptionOfPackage = null;
-        customerPackage.IsCustomPackage = false;
-        customerPackage.CustomerPackageStatus = CustomerPackageStatus.InActive;
+        customerPackage.CustomerPackageStatus = CustomerPackageStatus.Deleted;
     }
  
 

@@ -1,5 +1,6 @@
 ﻿using MudBlazor;
 using SmartParking.Blazor.Components.State;
+using SmartParking.CustomerPackages;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Packages;
@@ -61,4 +62,90 @@ public static class BlazorPackageValidations
             createUpdatePackage.PublishTo = normalDto.PublishTo;
         }
     }
+    public static CustomerPackageStatus GetDisplayStatus(CustomerPackageDto package)
+    {
+        var now = DateTime.Now;
+        var currentDate = DateOnly.FromDateTime(now);
+        var currentTime = TimeOnly.FromDateTime(now);
+
+        // If the package status is not Active in DB, return the DB status
+        if (package.CustomerPackageStatus != CustomerPackageStatus.Active)
+        {
+            return package.CustomerPackageStatus;
+        }
+
+        // Check if dates are available
+        if (!package.ActivationDateOfPackage.HasValue || !package.DectivationDateOfPackage.HasValue)
+        {
+            return package.CustomerPackageStatus;
+        }
+
+        var activationDate = DateOnly.FromDateTime(package.ActivationDateOfPackage.Value);
+        var expirationDate = DateOnly.FromDateTime(package.DectivationDateOfPackage.Value);
+
+        // Check if before activation date
+        if (currentDate < activationDate)
+        {
+            return CustomerPackageStatus.InActive;
+        }
+
+        // Check if after expiration date
+        if (currentDate > expirationDate)
+        {
+            return CustomerPackageStatus.Expired;
+        }
+
+        // We are within the valid date range
+        // Now check if we're on the activation date or expiration date
+
+        // If on activation date, check if time has started
+        if (currentDate == activationDate)
+        {
+            // 24-hour access - active immediately on activation date
+            if (package.publishedOfPackage.HasValue && package.publishedOfPackage.Value)
+            {
+                return CustomerPackageStatus.Active;
+            }
+
+            // Check if time has started
+            if (package.PublishFromOfPackage.HasValue)
+            {
+                if (currentTime < package.PublishFromOfPackage.Value)
+                {
+                    // Time hasn't started yet on activation date
+                    return CustomerPackageStatus.InActive;
+                }
+            }
+
+            return CustomerPackageStatus.Active;
+        }
+
+        // If on expiration date, check if time has passed
+        if (currentDate == expirationDate)
+        {
+            // 24-hour access - active until end of expiration date
+            if (package.publishedOfPackage.HasValue && package.publishedOfPackage.Value)
+            {
+                return CustomerPackageStatus.Active;
+            }
+
+            // Check if time has passed
+            if (package.PublishToOfPackage.HasValue)
+            {
+                if (currentTime > package.PublishToOfPackage.Value)
+                {
+                    // Time has passed on expiration date
+                    return CustomerPackageStatus.Expired;
+                }
+            }
+
+            return CustomerPackageStatus.Active;
+        }
+
+        // We are between activation and expiration dates (not on either boundary)
+        // Package is active regardless of time
+        return CustomerPackageStatus.Active;
+    }
+
+   
 }

@@ -4,9 +4,11 @@ using Microsoft.JSInterop;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Blazor.Components.Shared.Utilities;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Currency;
 using SmartParking.CustomerPackages;
+using SmartParking.Enums;
 using SmartParking.Localization;
 using System;
 using System.Globalization;
@@ -112,6 +114,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
             {
                 tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = false, PropertyName = "ArPlateNumber", IsSortable = false, TypeFilter = TypeFilter.Text });
             }
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "CustomerPackageStatus", IsSortable = false, TypeFilter = TypeFilter.Enum });
 
             foreach (var item in customerPackages)
             {
@@ -147,7 +150,11 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                     publishedText = $"{from}-{to}";
                 }
 
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], publishedText)); rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], $"{RLM}{item.ArPlateNumber} , {LRM}{item.EnPlateNumber}"));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], publishedText));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], $"{RLM}{item.ArPlateNumber} , {LRM}{item.EnPlateNumber}"));
+                CustomerPackageStatus displayStatus = BlazorPackageValidations.GetDisplayStatus(item);
+
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{displayStatus.ToString()}"]));
                 
                 
                 tableData.Rows.Add(rowDef);

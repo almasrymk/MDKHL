@@ -14,64 +14,40 @@ using Volo.Abp.MultiTenancy;
 namespace SmartParking.CustomerPackages.CustomerPackageTransaction;
 [RemoteService(false)]
 
-public class DispenserTransactionActionsAppService : SmartParkingAppService , ICustomerPackageTransactionActionsAppService
+public class DispenserTransactionActionsAppService : CustomerPackageTransactionBaseAppService
 {
-    private readonly IDataFilter _dataFilter;
-    private readonly IRepository<CustomerPackage, int> _repository;
 
-    public DispenserTransactionActionsAppService(IRepository<CustomerPackage, int> repository, IDataFilter dataFilter)
+
+    public DispenserTransactionActionsAppService(IRepository<CustomerPackage, int> repository, IDataFilter dataFilter) : base(repository, dataFilter)
     {
-        _repository = repository;
-        _dataFilter = dataFilter;
     }
 
-    public bool CanHandle(GarageTransactionDto garageTransactionDto)
+
+
+    /// <summary>
+    /// Dispenser transactions use ticket/package codes
+    /// </summary>
+    public override bool CanHandle(GarageTransactionDto garageTransactionDto)
     {
         return !string.IsNullOrEmpty(garageTransactionDto.TicketId);
     }
 
-    public async Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackage(GarageTransactionDto garageTransactionDto)
+    /// <summary>
+    /// Override to filter only by ticket/package code for dispenser transactions
+    /// </summary>
+    protected override IQueryable<CustomerPackage> ApplyIdentificationFilters(
+        IQueryable<CustomerPackage> query,
+        GarageTransactionDto garageTransactionDto)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            if (garageTransactionDto == null || string.IsNullOrEmpty(garageTransactionDto.TicketId) || garageTransactionDto.AccurateTime == null)
-            {
-                return null!;
-            }
+        return query.Where(x => x.PackageCode == garageTransactionDto.TicketId);
+    }
 
-            var accurateTime = garageTransactionDto.AccurateTime.Value;
-            var timeOfDay = TimeOnly.FromTimeSpan(accurateTime.TimeOfDay);
-
-            using (_dataFilter.Disable<IMultiTenant>())
-            {
-                var query = await _repository.GetQueryableAsync();
-
-                query = query.Where(x =>
-                    x.OrganizationId == garageTransactionDto.OrganizationID &&
-                    x.PackageCode == garageTransactionDto.TicketId &&
-
-                    x.ActivationDateOfPackage.HasValue &&
-                    x.DectivationDateOfPackage.HasValue &&
-                    x.ActivationDateOfPackage.Value <= accurateTime &&
-                    x.DectivationDateOfPackage.Value >= accurateTime &&
-
-                    x.PublishFromOfPackage.HasValue &&
-                    x.PublishToOfPackage.HasValue &&
-                    (
-                        (x.PublishFromOfPackage.Value <= x.PublishToOfPackage.Value &&
-                         x.PublishFromOfPackage.Value <= timeOfDay &&
-                         x.PublishToOfPackage.Value >= timeOfDay)
-                        ||
-                        //midnight
-                        (x.PublishFromOfPackage.Value > x.PublishToOfPackage.Value &&
-                         (x.PublishFromOfPackage.Value <= timeOfDay || x.PublishToOfPackage.Value >= timeOfDay))
-                    ) &&
-
-                    ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null))
-                );
-                var customerPackageDto = await query.FirstOrDefaultAsync();
-                return ObjectMapper.Map<CustomerPackage, CustomerPackageTransactionDto>(customerPackageDto);
-            }
-        }
+    /// <summary>
+    /// Dispenser-specific validation
+    /// </summary>
+    protected override bool ValidateGarageTransactionDto(GarageTransactionDto garageTransactionDto)
+    {
+        return base.ValidateGarageTransactionDto(garageTransactionDto) &&
+               !string.IsNullOrEmpty(garageTransactionDto.TicketId);
     }
 }
