@@ -30,39 +30,31 @@ public class KeeperController : AbpController
     private readonly IKeeperAppService _keeperAppService;
     private readonly IAuthenticationAppService _authenticationAppService;
     private readonly IUsersAppService _usersAppService;
-    private readonly ICurrentTenant _currentTenant;
     private readonly ICurrentUser _currentUser;
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly IKeeperTransactionsAppService _keeperTransactionsAppService;
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
     private readonly IDiscountAppService _discountAppService;
-    private readonly IInvoiceUtilityAppService _invoiceUtilityAppService;
-    private readonly IOrganizationsAppService _organizationAppService;
+
     private readonly IWatcherAppService _watcherAppService;
     public KeeperController(IKeeperAppService keeperAppService,
         IAuthenticationAppService authenticationAppService,
         ICurrentUser currentUser,
-        ICurrentTenant currentTenant,
         IInvoiceAppService invoiceAppService,
         IDiscountAppService discountAppService,
         IUsersAppService usersAppService,
-        IInvoiceUtilityAppService invoiceUtilityAppService = null,
         IGarageTransactionsAppService garageTransactionsAppService = null,
-        IOrganizationsAppService organizationsAppService = null,
         IKeeperTransactionsAppService keeperTransactionsAppService = null,
         IWatcherAppService watcherAppService = null)
     {
         _keeperAppService = keeperAppService;
         _authenticationAppService = authenticationAppService;
         _currentUser = currentUser;
-        _currentTenant = currentTenant;
         _invoiceAppService = invoiceAppService;
         _usersAppService = usersAppService;
-        _invoiceUtilityAppService = invoiceUtilityAppService;
         _garageTransactionsAppService = garageTransactionsAppService;
         _discountAppService = discountAppService;
         _keeperTransactionsAppService = keeperTransactionsAppService;
-        _organizationAppService = organizationsAppService;
         _watcherAppService = watcherAppService;
     }
 
