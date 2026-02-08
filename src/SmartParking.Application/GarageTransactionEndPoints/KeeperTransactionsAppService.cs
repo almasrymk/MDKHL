@@ -32,6 +32,7 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
         _customerPackagesHandlerAppService = customerPackagesHandlerAppService;
         _organizationAppService = organizationAppService;
         _openGateFactoryAppService = openGateAppService;
+        _customerPackagesHandlerAppService = customerPackagesHandlerAppService;
     }
 
 

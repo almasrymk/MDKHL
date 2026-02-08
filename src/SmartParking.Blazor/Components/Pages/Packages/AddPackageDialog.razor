@@ -251,7 +251,7 @@
     {
         createUpdatePackage.PackageCategoryType = value;
         var result = PackageExtension.OnPackageTypeChanged(value);
-        createUpdatePackage.DurationOfPackage=result.PackageDuration;
+        CustomPackageUiDto.DurationOfPackage = NormalPackageUiDto .DurationOfPackage= result.PackageDuration;
 		IsDurationDisabled = result.IsDurationDisabled;
     }
 
