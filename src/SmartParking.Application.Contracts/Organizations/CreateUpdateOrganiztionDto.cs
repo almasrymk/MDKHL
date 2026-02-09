@@ -56,6 +56,6 @@ public class CreateUpdateOrganiztionDto
     public string UserNameZatca { get; set; }
     public string PasswordZatca { get; set; }
     public Status StatusZatca { get; set; }
-    public OrganizationSettingsDto OrganizationSettingsDto { get; set; }
+    public OrganizationSettingsDto OrganizationSettingsDto { get; set; } 
     
 }

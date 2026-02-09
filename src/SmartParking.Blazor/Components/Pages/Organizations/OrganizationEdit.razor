@@ -356,6 +356,17 @@
                         <MudItem sm="4">
                             <MudNumericField T="int" @bind-Value="_createUpdateOrganiztionDto.Graceperiod" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["Graceperiod"]} ({L["Minutes"]})") />
                         </MudItem>
+
+                        <MudGrid>
+                        <MudItem sm="4">
+                            <MudSwitch Label=@L["UserAccess"] @bind-Value="_organizationSettingsDto.UserAccess" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <MudSwitch Label=@L["VhecileAccess"] @bind-Value="_organizationSettingsDto.VehcileAccess" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+                    </MudGrid>
+
                         <MudItem sm="12">
                             <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.End" @bind-Value="_createUpdateOrganiztionDto.IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
                         </MudItem>
@@ -380,8 +391,11 @@
 
                         }
                                                
+                        
                        
                     </MudGrid>
+
+                    
                    
                     <div class="d-flex justify-content-between mt-5">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
@@ -446,6 +460,7 @@
                 </MudGrid>
             </MudPaper>
         </MudItem>
+        
 
     </MudGrid>
 </div>

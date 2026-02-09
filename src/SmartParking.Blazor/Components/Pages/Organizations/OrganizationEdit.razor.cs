@@ -62,7 +62,7 @@ public partial class OrganizationEdit
     private bool IsPictureChanged;
     private bool IsReadOnly = false;
     private CreateUpdateOrganiztionDto _createUpdateOrganiztionDto = new CreateUpdateOrganiztionDto();
-
+    private OrganizationSettingsDto _organizationSettingsDto = new OrganizationSettingsDto();
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
     IReadOnlyList<CountryLookupDto> countries = new List<CountryLookupDto>();
@@ -133,6 +133,13 @@ public partial class OrganizationEdit
         _createUpdateOrganiztionDto.CRExpiryDate = DateOnly.FromDateTime(CRExpiryDate ?? DateTime.MinValue);
         _createUpdateOrganiztionDto.NumberOfHours = NumberOfHours;
         _createUpdateOrganiztionDto.Status = Status ? Enums.Status.Active : Enums.Status.Inactive;
+        _createUpdateOrganiztionDto.OrganizationSettingsDto = new OrganizationSettingsDto
+        {
+            VehcileAccess = _organizationSettingsDto.VehcileAccess,
+            UserAccess = _organizationSettingsDto.UserAccess,
+        };
+        //_createUpdateOrganiztionDto.OrganizationSettingsDto.VehcileAccess = _organizationSettingsDto.VehcileAccess;
+        //_createUpdateOrganiztionDto.OrganizationSettingsDto.UserAccess = _organizationSettingsDto.UserAccess;
 
         try
         {
@@ -218,6 +225,9 @@ public partial class OrganizationEdit
         NumberOfCustomers = SelectedSubscription.NumberOfCustomers;
         SubscriptionSlotNumber = SelectedSubscription.ParkingSlot;
         Parkingslot = SelectedSubscription.ParkingSlot;
+        _organizationSettingsDto.UserAccess = organization.OrganizationSettings.UserAccess;
+        _organizationSettingsDto.VehcileAccess = organization.OrganizationSettings.VehcileAccess;
+        //StateHasChanged();
 
     }
 
