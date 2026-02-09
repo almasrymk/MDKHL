@@ -93,8 +93,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.PaymentCode, opt => opt.MapFrom(src => src.PaymentCode))
             .ForMember(dest => dest.TaxNumber, opt => opt.MapFrom(src => src.TaxIdentificationNumber))
             .ForMember(dest => dest.RegionNameAr, opt => opt.MapFrom(src => src.Region.ArabicName))
-            .ForMember(dest => dest.OrganizationSettings.VehcileAccess, opt => opt.MapFrom(src => src.Settings.VehcileAccess))
-            .ForMember(dest => dest.OrganizationSettings.UserAccess, opt => opt.MapFrom(src => src.Settings.UserAccess))
+            .ForPath(dest => dest.OrganizationSettings.VehcileAccess, opt => opt.MapFrom(src => src.Settings.VehcileAccess))
+            .ForPath(dest => dest.OrganizationSettings.UserAccess, opt => opt.MapFrom(src => src.Settings.UserAccess))
             .ReverseMap();
 
 
