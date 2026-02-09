@@ -93,6 +93,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.PaymentCode, opt => opt.MapFrom(src => src.PaymentCode))
             .ForMember(dest => dest.TaxNumber, opt => opt.MapFrom(src => src.TaxIdentificationNumber))
             .ForMember(dest => dest.RegionNameAr, opt => opt.MapFrom(src => src.Region.ArabicName))
+            .ForMember(dest => dest.OrganizationSettings.VehcileAccess, opt => opt.MapFrom(src => src.Settings.VehcileAccess))
+            .ForMember(dest => dest.OrganizationSettings.UserAccess, opt => opt.MapFrom(src => src.Settings.UserAccess))
             .ReverseMap();
 
 
@@ -106,6 +108,11 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.TaxIdentificationNumber, opt => opt.MapFrom(src => src.TaxNumber))
             .ForMember(dest => dest.PhoneNum, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForMember(dest => dest.ContactMail, opt => opt.MapFrom(src => src.Email))
+            .ForPath(dest => dest.Settings.VehcileAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.VehcileAccess))
+            .ForPath(dest => dest.Settings.UserAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UserAccess))
+            .ReverseMap();
+
+        CreateMap<OrganizationSettingsDto, OrganizationSettings>()
             .ReverseMap();
 
         CreateMap<CreateUpdateOrganiztionDto, OrganizationDto>()
@@ -113,6 +120,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
              .ForMember(dest => dest.PhoneNum , opt => opt.MapFrom(src => src.PhoneNumber))
              .ForMember(dest => dest.ContactMail , opt => opt.MapFrom(src => src.Email))
             .ReverseMap();
+
+        //CreateMap<OrganizationSettingsDto, OrganizationSettings>()
+        //    .ReverseMap();
 
         CreateMap<CustomerCategory, CustomerCategoryDto>()
             .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.EnglishName)).ReverseMap();

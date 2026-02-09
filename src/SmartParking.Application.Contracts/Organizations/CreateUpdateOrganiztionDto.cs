@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.Organizations;
 
-public class CreateUpdateOrganiztionDto 
+public class CreateUpdateOrganiztionDto
 {
     public string ArabicName { get; set; }
     public string EnglishName { get; set; }
@@ -45,11 +45,8 @@ public class CreateUpdateOrganiztionDto
     public Guid TenantId { get; set; }
     public int FreeMinutes { get; set; }
     public int Graceperiod { get; set; }
-
     public string TaxNumber { get; set; }
-
     public string? NationalId { get; set; }
-
     public string TenantName { get; set; }
     public bool HasFreeSlots { get; set; }
     public bool HasPackageOnly { get; set; }
@@ -59,5 +56,6 @@ public class CreateUpdateOrganiztionDto
     public string UserNameZatca { get; set; }
     public string PasswordZatca { get; set; }
     public Status StatusZatca { get; set; }
+    public OrganizationSettingsDto OrganizationSettingsDto { get; set; }
     
 }
