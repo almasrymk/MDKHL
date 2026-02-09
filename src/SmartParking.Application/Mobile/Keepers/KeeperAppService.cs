@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OpenIddict.Server;
@@ -11,6 +12,7 @@ using SmartParking.Invoices;
 using SmartParking.Mobile.Invoices;
 using SmartParking.Mobile.Vehicles;
 using SmartParking.Payments;
+using SmartParking.Permissions.CheckoutPermissions;
 using SmartParking.QRCode;
 using SmartParking.Repositories;
 using SmartParking.Results;
@@ -50,6 +52,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IAuthenticationUtility _authenticationUtility;
     private readonly IVehicleAppService _vehicleAppService;
     private readonly IQRCodeAppService _qrCodeAppService;
+    private readonly IAuthorizationService _authorizationService;
     private string _notFound = "Not found";
 
 
@@ -68,8 +71,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IAuthenticationUtility authenticationUtility,
          IVehicleAppService vehicleAppService,
          IPaymentWebAppService paymentWebAppService,
-         IQRCodeAppService qrCodeAppService,
-         IPermissionManagementProvider permissionManager)
+         IQRCodeAppService qrCodeAppService)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -86,7 +88,6 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _vehicleAppService = vehicleAppService;
         _paymentWebAppService = paymentWebAppService;
         _qrCodeAppService = qrCodeAppService;
-        _permissionManager = permissionManager;
     }
 
     #region Public Methods
@@ -262,7 +263,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             await _signInManager.SignInAsync(user, isPersistent: false);
             var tenantId = user.TenantId.ToString();
 
-            
+            bool canCheckout = await _authorizationService.IsGrantedAsync(CheckoutPermissions.Confirm);
 
             return Result<LoginResponseDto>.Success(new LoginResponseDto
             {
