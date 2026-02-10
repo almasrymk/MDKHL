@@ -336,6 +336,17 @@
 
 
                 </MudGrid>
+
+                <MudGrid>
+                        <MudItem sm="4">
+                            <MudSwitch Label=@L["UserAccess"] @bind-Value="organizationSettings.UserAccess" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <MudSwitch Label=@L["VhecileAccess"] @bind-Value="organizationSettings.VehcileAccess" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+                    </MudGrid>
+
                 <MudGrid Class="mt-3">
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">

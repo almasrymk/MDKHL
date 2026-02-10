@@ -93,6 +93,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.PaymentCode, opt => opt.MapFrom(src => src.PaymentCode))
             .ForMember(dest => dest.TaxNumber, opt => opt.MapFrom(src => src.TaxIdentificationNumber))
             .ForMember(dest => dest.RegionNameAr, opt => opt.MapFrom(src => src.Region.ArabicName))
+            .ForPath(dest => dest.OrganizationSettings.VehcileAccess, opt => opt.MapFrom(src => src.Settings.VehcileAccess))
+            .ForPath(dest => dest.OrganizationSettings.UserAccess, opt => opt.MapFrom(src => src.Settings.UserAccess))
             .ReverseMap();
 
 
@@ -106,13 +108,28 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.TaxIdentificationNumber, opt => opt.MapFrom(src => src.TaxNumber))
             .ForMember(dest => dest.PhoneNum, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForMember(dest => dest.ContactMail, opt => opt.MapFrom(src => src.Email))
+            .ForPath(dest => dest.Settings.VehcileAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.VehcileAccess))
+            .ForPath(dest => dest.Settings.UserAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UserAccess))
+            .ReverseMap();
+
+        CreateMap<OrganizationSettingsDto, OrganizationSettings>()
             .ReverseMap();
 
         CreateMap<CreateUpdateOrganiztionDto, OrganizationDto>()
              .ForMember(dest => dest.TaxNumber, opt => opt.MapFrom(src => src.TaxNumber))
              .ForMember(dest => dest.PhoneNum , opt => opt.MapFrom(src => src.PhoneNumber))
              .ForMember(dest => dest.ContactMail , opt => opt.MapFrom(src => src.Email))
+             .ForPath(dest => dest.OrganizationSettings.VehcileAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.VehcileAccess))
+            .ForPath(dest => dest.OrganizationSettings.UserAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UserAccess))
             .ReverseMap();
+        CreateMap<OrganizationDto, CreateUpdateOrganiztionDto>()
+    .ForPath(dest => dest.OrganizationSettingsDto.VehcileAccess,
+             opt => opt.MapFrom(src => src.OrganizationSettings.VehcileAccess))
+    .ForPath(dest => dest.OrganizationSettingsDto.UserAccess,
+             opt => opt.MapFrom(src => src.OrganizationSettings.UserAccess));
+
+        //CreateMap<OrganizationSettingsDto, OrganizationSettings>()
+        //    .ReverseMap();
 
         CreateMap<CustomerCategory, CustomerCategoryDto>()
             .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.EnglishName)).ReverseMap();

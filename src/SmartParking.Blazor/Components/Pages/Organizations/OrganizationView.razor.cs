@@ -31,10 +31,13 @@ public partial class OrganizationView
 
 
     OrganizationDto organization = new OrganizationDto();
+    OrganizationSettingsDto organizationSettings = new OrganizationSettingsDto();
     private async Task FetchData()
     {
         var id = int.Parse(Id);
-        organization = await OrganizationsAppService.GetAsync(id);       
+        organization = await OrganizationsAppService.GetAsync(id);     
+        organizationSettings.VehcileAccess = organization.OrganizationSettings.VehcileAccess;
+        organizationSettings.UserAccess = organization.OrganizationSettings.UserAccess;
         ClosingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
         ClosingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
        CRExpiryDate =   organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));

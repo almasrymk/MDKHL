@@ -73,7 +73,6 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         await AddUser(input, tenant, organization, role);
         organization.Code = CodeGenerator(organization.Id);
         await CurrentUnitOfWork.SaveChangesAsync();
-        await _customerCategoryAppService.CreateAsync(new CreateUpdateCutomerCategoryDto { Name = EnumValues.GetEnumDescription(CustomerCategoriesDefaults.Public), Description = EnumValues.GetEnumDescription(CustomerCategoriesDefaults.AllCustomers), Default = true, OrganizationId = organization.Id, CreatedByOrganization = true });
         return ObjectMapper.Map<Organization, OrganizationDto>(organization);
     }
     ///<inheritdoc/>
@@ -287,6 +286,17 @@ public class OrganizationsAppService : CrudAppService<Organization, Organization
         var organization = await GetAsync(orgId);
         return organization.OrganizationPicture;
     }
+
+    //public async Task<Result<OrganizationSettingsDto>> UpdateOrganizationSettingsAsync(CreateUpdateOrganizationSettingsDto organizationSettingsDto)
+    //{
+    //    var org = await _repository.GetAsync(organizationSettingsDto.OrganizationId);
+    //    if (org == null)
+    //    {
+    //        return Result.Error("There is no organization with such id");
+    //    }
+    //    var dto = 
+    //}
+
     #endregion
     #region private methods 
     /// <summary>

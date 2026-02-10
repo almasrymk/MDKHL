@@ -894,6 +894,8 @@
         "Check-in": "Check-in",
         "Check-out": "Check-out",
         "ThankyouforusingMadkhal": "Thank you for using the 'Madkhal' smart parking system.",
-        "PrintInvoice": "Print Invoice"
+        "PrintInvoice": "Print Invoice",
+        "VhecileAccess": "Vhecile Access",
+        "UserAccess": "User Access"
     }
 }
