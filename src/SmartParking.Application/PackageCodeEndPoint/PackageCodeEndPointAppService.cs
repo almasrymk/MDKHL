@@ -40,6 +40,7 @@ public class PackageCodeEndPointAppService : SmartParkingAppService, IPackageCod
         _organizationRepository = organizationRepository;
         _logger = logger;
         _unlinkedGarageTransactionsAppService = unlinkedGarageTransactionsAppService;
+        _customerPackagesHandlerAppService = customerPackagesHandlerAppService;
     }
     #region public methods
     public async Task<bool> PackageCodeEntry(PackageCodeEntryDto packageCodeEntry)

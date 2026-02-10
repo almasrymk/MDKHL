@@ -140,7 +140,7 @@ public partial class LastInvoiceAtCamera
         }
         catch(Exception ex)
         {
-            SnackBar.ShowSnackbar(Snackbar, ex.Message, MudBlazor.Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, L[ex.Message], MudBlazor.Severity.Error);
 
         }
         Refresh();

@@ -60,6 +60,7 @@ public static class BlazorPackageValidations
             createUpdatePackage.Published = normalDto!.Published;
             createUpdatePackage.PublishFrom = normalDto.PublishFrom;
             createUpdatePackage.PublishTo = normalDto.PublishTo;
+            createUpdatePackage.DurationOfPackage = normalDto.DurationOfPackage;
         }
     }
     public static CustomerPackageStatus GetDisplayStatus(CustomerPackageDto package)

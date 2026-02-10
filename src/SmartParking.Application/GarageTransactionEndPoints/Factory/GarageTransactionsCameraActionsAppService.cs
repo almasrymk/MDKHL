@@ -30,7 +30,7 @@ public class GarageTransactionsCameraActionsAppService : ApplicationService,IGar
         var latestTransaction = query
                 .Where(gt => gt.PlateNumber == garageTransactionDto.PlateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == false && gt.IsMapped == true)
                 .OrderByDescending(gt => gt.AccurateTime)
-                .SingleOrDefault();
+                .FirstOrDefault();
         if (latestTransaction == null) {
             return;
         }
