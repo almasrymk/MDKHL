@@ -297,7 +297,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 UserId = user.Id.ToString(),
                 OrganizationId = organizationEntity.Id,
                 GracePeriod = organizationEntity.Graceperiod,
-                CanCheckout = canCheckout
+                CanCancelTransaction = canCheckout
             });
         }
     }
