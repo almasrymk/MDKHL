@@ -128,125 +128,126 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     [RemoteService(IsEnabled = false)]
     public async Task<PaymentDto> GetPaymentStatus(string input, string entityId, string ArabicPlateNumber, string EnglishPlateNumber)
     {
-        var url = $"{PaymentUrl}/{input}/payment?entityId={entityId}";
+        return null;
+        //var url = $"{PaymentUrl}/{input}/payment?entityId={entityId}";
 
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(tokenType, token);
+        //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(tokenType, token);
 
-        var response = await _httpClient.GetAsync(url);
-        if (response.IsSuccessStatusCode)
-        {
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var responseObject = JObject.Parse(responseContent);
+        //var response = await _httpClient.GetAsync(url);
+        //if (response.IsSuccessStatusCode)
+        //{
+        //    var responseContent = await response.Content.ReadAsStringAsync();
+        //    var responseObject = JObject.Parse(responseContent);
 
-            var resultDescription = responseObject["result"]?["description"]?.ToString();
-            var status = PaymentStatus.Cancelled;
+        //    var resultDescription = responseObject["result"]?["description"]?.ToString();
+        //    var status = PaymentStatus.Cancelled;
 
-            if (!string.IsNullOrEmpty(resultDescription))
-            {
-                if (resultDescription.Contains("pending", StringComparison.OrdinalIgnoreCase))
-                {
-                    status = PaymentStatus.Pending;
-                    return new PaymentDto
-                    {
-                        CheckoutId = input,
-                        PaymentStatus = status,
-                    };
-                }
-                else if (resultDescription.Contains("successfuly", StringComparison.OrdinalIgnoreCase))
-                {
-                    status = PaymentStatus.Success;
-                }
-            }
-            using (dataFilter.Disable<IMultiTenant>())
-            {
+        //    if (!string.IsNullOrEmpty(resultDescription))
+        //    {
+        //        if (resultDescription.Contains("pending", StringComparison.OrdinalIgnoreCase))
+        //        {
+        //            status = PaymentStatus.Pending;
+        //            return new PaymentDto
+        //            {
+        //                CheckoutId = input,
+        //                PaymentStatus = status,
+        //            };
+        //        }
+        //        else if (resultDescription.Contains("successfuly", StringComparison.OrdinalIgnoreCase))
+        //        {
+        //            status = PaymentStatus.Success;
+        //        }
+        //    }
+        //    using (dataFilter.Disable<IMultiTenant>())
+        //    {
 
-                var payment = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == input);
-                if (payment != null)
-                {
-                    if (payment.PaymentCategory == PaymentCategory.PaymentParking)
-                    {
+        //        var payment = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == input);
+        //        if (payment != null)
+        //        {
+        //            if (payment.PaymentCategory == PaymentCategory.PaymentParking)
+        //            {
 
-                        var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
-                        if (invoice != null)
-                        {
-                            invoice.InvoiceType = status == PaymentStatus.Success ? InvoiceType.Paid : InvoiceType.UnPaid;
-                            await _invoiceRepo.UpdateAsync(invoice);
-                        }
-                    }
-                    else if (payment.PaymentCategory == PaymentCategory.Package)
-                    {
+        //                var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
+        //                if (invoice != null)
+        //                {
+        //                    invoice.InvoiceType = status == PaymentStatus.Success ? InvoiceType.Paid : InvoiceType.UnPaid;
+        //                    await _invoiceRepo.UpdateAsync(invoice);
+        //                }
+        //            }
+        //            else if (payment.PaymentCategory == PaymentCategory.Package)
+        //            {
 
-                        if (status == PaymentStatus.Success)
-                        {
-                            //package.Status = status == PaymentStatus.Success ? Status.Active : Status.Inactive;
-                            //await _packageRepo.UpdateAsync(package);
-                            var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value,
+        //                if (status == PaymentStatus.Success)
+        //                {
+        //                    //package.Status = status == PaymentStatus.Success ? Status.Active : Status.Inactive;
+        //                    //await _packageRepo.UpdateAsync(package);
+        //                    var assignStatus = await customerPackagesAppService.AssignPackageToCustomerWebAsync(payment.PackageId.Value,
 
-                                new CustomerPackageDto
-                                {
-                                    OrganizationId = payment.OrganizationId,
-                                    CustomerId = payment.CustomerId.Value,
-                                    ArPlateNumber = ArabicPlateNumber,
-                                    EnPlateNumber = EnglishPlateNumber,
+        //                        new CustomerPackageDto
+        //                        {
+        //                            OrganizationId = payment.OrganizationId,
+        //                            CustomerId = payment.CustomerId.Value,
+        //                            ArPlateNumber = ArabicPlateNumber,
+        //                            EnPlateNumber = EnglishPlateNumber,
 
 
-                                });
-                            if (assignStatus==0)
-                            {
-                                throw new Exception("Can't assign package to customer");
-                            }
-                        }
-                    }
+        //                        });
+        //                    if (assignStatus==0)
+        //                    {
+        //                        throw new Exception("Can't assign package to customer");
+        //                    }
+        //                }
+        //            }
 
-                    // add QrCode
-                    payment.PaymentStatus = status;
-                    //var token = await _invoiceUtility.GetTokenAsync();
-                    //var qrCode = await _invoiceUtility.GetQrCodeAsync(payment.Amount, payment.OrganizationId);
-                    var organization = await organizationsAppService.GetAsync(payment.OrganizationId);
-                    if (organization != null && organization.StatusZatca == Status.Active && payment.Amount > 0)
-                    {
-                        var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
-                        payment.QrCodeInvoice = res.invoiceQRCode;
-                        payment.IsSentZatca = res.status;
-                        payment.ErrorMessagesZatca = null;
-                        if (res.validationResults != null && res.validationResults.errorMessages != null && res.validationResults.errorMessages.Count > 0)
-                        {
-                            var listErrors = res.validationResults.errorMessages.Select(e => e.Message).ToList();
-                            payment.ErrorMessagesZatca = string.Join(",", listErrors);
-                        }
-                        else if (res.validationResults != null && res.validationResults.warningMessages != null && res.validationResults.warningMessages.Count > 0)
-                        {
-                            var listErrors = res.validationResults.warningMessages.Select(e => e.Message).ToList();
-                            payment.ErrorMessagesZatca = string.Join(",", listErrors);
-                        }
-                    }
-                    else
-                    {
-                        var qrCode = await _invoiceUtility.GetQrCodeAsync(payment.Amount, payment.OrganizationId);
-                        payment.QrCodeInvoice = qrCode.QRCode;
-                    }
+        //            // add QrCode
+        //            payment.PaymentStatus = status;
+        //            //var token = await _invoiceUtility.GetTokenAsync();
+        //            //var qrCode = await _invoiceUtility.GetQrCodeAsync(payment.Amount, payment.OrganizationId);
+        //            var organization = await organizationsAppService.GetAsync(payment.OrganizationId);
+        //            if (organization != null && organization.StatusZatca == Status.Active && payment.Amount > 0)
+        //            {
+        //                var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
+        //                payment.QrCodeInvoice = res.invoiceQRCode;
+        //                payment.IsSentZatca = res.status;
+        //                payment.ErrorMessagesZatca = null;
+        //                if (res.validationResults != null && res.validationResults.errorMessages != null && res.validationResults.errorMessages.Count > 0)
+        //                {
+        //                    var listErrors = res.validationResults.errorMessages.Select(e => e.Message).ToList();
+        //                    payment.ErrorMessagesZatca = string.Join(",", listErrors);
+        //                }
+        //                else if (res.validationResults != null && res.validationResults.warningMessages != null && res.validationResults.warningMessages.Count > 0)
+        //                {
+        //                    var listErrors = res.validationResults.warningMessages.Select(e => e.Message).ToList();
+        //                    payment.ErrorMessagesZatca = string.Join(",", listErrors);
+        //                }
+        //            }
+        //            else
+        //            {
+        //                var qrCode = await _invoiceUtility.GetQrCodeAsync(payment.Amount, payment.OrganizationId);
+        //                payment.QrCodeInvoice = qrCode.QRCode;
+        //            }
                         
-                    await _repository.UpdateAsync(payment);
-                }
+        //            await _repository.UpdateAsync(payment);
+        //        }
 
-                return new PaymentDto
-                {
-                    CheckoutId = payment.CheckoutId,
-                    CustomerId = (Guid)payment.CustomerId,
-                    Id = payment.Id,
-                    PaymentStatus = status,
-                    PaymentCategory = payment.PaymentCategory,
-                    InvoiceId = payment.InvoiceId,
-                    PackageId = payment.PackageId,
-                    OrganizationId = payment.OrganizationId,
-                    QrCodeInvoice = payment.QrCodeInvoice,
-                };
-            }
-        }
-        else
-        {
-            throw new Exception($"Payment status request failed with status: {response.StatusCode}");
-        }
+        //        return new PaymentDto
+        //        {
+        //            CheckoutId = payment.CheckoutId,
+        //            CustomerId = (Guid)payment.CustomerId,
+        //            Id = payment.Id,
+        //            PaymentStatus = status,
+        //            PaymentCategory = payment.PaymentCategory,
+        //            InvoiceId = payment.InvoiceId,
+        //            PackageId = payment.PackageId,
+        //            OrganizationId = payment.OrganizationId,
+        //            QrCodeInvoice = payment.QrCodeInvoice,
+        //        };
+        //    }
+        //}
+        //else
+        //{
+        //    throw new Exception($"Payment status request failed with status: {response.StatusCode}");
+        //}
     }
     [RemoteService(IsEnabled = false)]
     public async Task<bool> ResendZatca(Guid Id)

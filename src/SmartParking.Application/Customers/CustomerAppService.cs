@@ -122,7 +122,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             if (user != null)
             {
                 var customerDto = await _baseCustomer.GetCustomerIdForUser(user.Id);
-                await _customerPackagesAppService.AddDefaultPackageToCustomerAsync(customerDto.Id);
+                await _customerPackagesAppService.AddDefaultPackageToCustomerAsync(new DefaultCustomerPackageDto { CustomerId=customerDto.Id,OrganizationId= createUpdateCustomerDto .OrganizationId,TenantId=user.TenantId.Value});
                 return customerDto;
             }
             return null;
