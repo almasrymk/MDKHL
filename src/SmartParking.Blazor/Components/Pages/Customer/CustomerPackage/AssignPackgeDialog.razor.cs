@@ -90,7 +90,7 @@ partial class AssignPackgeDialog
         var vehicle = await VehiclesAppService.GetAsync(VehicleId);
         if (CustomerPackage.CustomerCategory == CustomerCategoryStatus.Customer.ToString())
         {
-            await CustomerPackagesAppService.CheckSubscriptionCustomersLimitsAsync(CustomerPackage.OrganizationId);
+            await CustomerPackagesValidationsAppService.CheckSubscriptionCustomersLimitsAsync(CustomerPackage.OrganizationId);
         }
 
         _customerPackageDto.ArPlateNumber = vehicle.ArPlateNumber;

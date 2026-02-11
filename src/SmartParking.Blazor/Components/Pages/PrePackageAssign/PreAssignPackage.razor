@@ -18,7 +18,7 @@
 @inject IPaymentAppService paymentAppService
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
-@inject ICustomerPackagesAppService CustomerPackagesAppService
+@inject IAssignCustomerPackagesAppService CustomerPackagesAppService
 @inject PreAssignPackageState preAssignState
 
 <PageTitle>@L["PreInvoice"]</PageTitle>
@@ -118,14 +118,14 @@
             CustomerPackageDto.Organization = null;
             CustomerPackageDto.Vat = Math.Round( (packagePrice - CustomerPackageDto.Discount) * 0.15m, 2);
             CustomerPackageDto.Customer = CustomerDto;
-            var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerWebAsync(
-                CustomerPackageDto.PackageId, CustomerPackageDto);
+            var dto = CreateUpdateCustomerPackageDto.From(CustomerPackageDto);
+            var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerAsync(dto);
 
-            if (assignPackage ==0)
+            if (assignPackage.Errors.Count() >0)
                 throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
                                     LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ASSIGN) + " " +
                                     LocalizationHelper.GetLocalizedString("Package"));
-            CustomerPackageDto.Id = assignPackage;
+            CustomerPackageDto.Id = assignPackage.Value.Id;
             PaymentCheckoutDto payment = await RequestToPaymentCheckout();
             if (payment != null)
             {
