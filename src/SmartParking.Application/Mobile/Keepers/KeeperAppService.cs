@@ -263,7 +263,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             await _signInManager.SignInAsync(user, isPersistent: false);
             var tenantId = user.TenantId.ToString();
 
-            bool canCheckout = await _authorizationService.IsGrantedAsync(CheckoutPermissions.Confirm);
+            bool canCheckout = await _authorizationService.IsGrantedAsync(CheckoutPermissions.CancelTransaction);
 
             return Result<LoginResponseDto>.Success(new LoginResponseDto
             {
@@ -273,8 +273,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 TenantId = tenantId,
                 UserId = user.Id.ToString(),
                 OrganizationId = organizationEntity.Id,
-                GracePeriod = organizationEntity.Graceperiod
-
+                GracePeriod = organizationEntity.Graceperiod,
+                CanCancelTransaction = canCheckout
             });
         }
     }
