@@ -46,6 +46,7 @@ using SmartParking.Shifts;
 using SmartParking.StateManagements;
 using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
+using SmartParking.UnitPackages;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
@@ -93,8 +94,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.PaymentCode, opt => opt.MapFrom(src => src.PaymentCode))
             .ForMember(dest => dest.TaxNumber, opt => opt.MapFrom(src => src.TaxIdentificationNumber))
             .ForMember(dest => dest.RegionNameAr, opt => opt.MapFrom(src => src.Region.ArabicName))
-            .ForPath(dest => dest.OrganizationSettings.VehcileAccess, opt => opt.MapFrom(src => src.Settings.VehcileAccess))
-            .ForPath(dest => dest.OrganizationSettings.UserAccess, opt => opt.MapFrom(src => src.Settings.UserAccess))
+            .ForPath(dest => dest.OrganizationSettings.VehcileAccess, opt => opt.MapFrom(src => src.Settings.VehcilePackage))
+            .ForPath(dest => dest.OrganizationSettings.UserAccess, opt => opt.MapFrom(src => src.Settings.CustomerPackage))
             .ReverseMap();
 
 
@@ -108,8 +109,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.TaxIdentificationNumber, opt => opt.MapFrom(src => src.TaxNumber))
             .ForMember(dest => dest.PhoneNum, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForMember(dest => dest.ContactMail, opt => opt.MapFrom(src => src.Email))
-            .ForPath(dest => dest.Settings.VehcileAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.VehcileAccess))
-            .ForPath(dest => dest.Settings.UserAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UserAccess))
+            .ForPath(dest => dest.Settings.VehcilePackage, opt => opt.MapFrom(src => src.OrganizationSettingsDto.VehcileAccess))
+            .ForPath(dest => dest.Settings.CustomerPackage, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UserAccess))
             .ReverseMap();
 
         CreateMap<OrganizationSettingsDto, OrganizationSettings>()
@@ -423,6 +424,11 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         .ForMember(d => d.PaymentId, o => o.MapFrom(s => s.Id))
         .ForMember(d => d.PaymentNumber, o => o.MapFrom(s => s.PaymentNumber));
 
+        CreateMap<CreateUpdateUnitPackageDto, UnitPackage>()
+            .ForMember(d => d.Package, o => o.MapFrom(s => s.Package));
+
+        CreateMap<UnitPackage, UnitPackageDto>()
+            .ForMember(d => d.Package, o => o.MapFrom(s => s.Package));
 
     }
 
