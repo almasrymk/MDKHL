@@ -4,6 +4,6 @@ namespace SmartParking.Entities.Organizations;
 [ComplexType]
 public class OrganizationSettings
 {
-    public bool UserAccess { get; set; }
-    public bool VehcileAccess { get; set; }
+    public bool CustomerPackage { get; set; }
+    public bool VehcilePackage { get; set; }
 }

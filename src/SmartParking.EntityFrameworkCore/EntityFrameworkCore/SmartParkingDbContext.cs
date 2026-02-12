@@ -116,6 +116,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<Shift> Shifts { get; set; }
     public DbSet<DailyShift> DailyShifts { get; set; }
     public DbSet<Discount> Discounts { get; set; }
+    public DbSet<UnitPackage> UnitPackages { get; set; }
 
 
     #endregion
