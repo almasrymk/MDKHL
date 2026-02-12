@@ -1,0 +1,395 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Blazor.Components.Shared.Components
+@using SmartParking.Blazor.Components.Shared.Utilities
+@using SmartParking.Blazor.Components.State
+@using SmartParking.Currency
+@using SmartParking.Enums
+@using SmartParking.Localization
+@using SmartParking.Lookups
+@using SmartParking.Organizations
+@using SmartParking.Packages
+@using System.Globalization
+@using System.Security.Authentication
+@using SmartParking.UnitPackages
+@using SmartParking.Utilities
+@using SmartParking.Validations
+@using Volo.Abp
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.Validation
+@using SmartParking.Validations
+@inject IUnitPackageAppService PackagesAppService
+@inject IOrganizationsAppService organizationAppService
+@inject IPackageTypesAppService packageTypesAppService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
+
+
+<PageTitle>@L["Edit Package"]</PageTitle>
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal" MaxWidth="MaxWidth.Medium" FullWidth="true">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["Edit"] </MudText>
+        </TitleContent>
+        <DialogContent>
+
+
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                <MudGrid>
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="Package.ArabicName"
+                        For="@(() => Package.ArabicName)"
+                        Variant="Variant.Text"
+                        Class="w-100"
+                        Label="@L["ArabicName"]" />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="Package.EnglishName"
+                        For="@(() => Package.EnglishName)"
+                        Variant="Variant.Text"
+                        Class="w-100"
+                        Label="@L["EnglishName"]" />
+                    </MudItem>
+               
+                    <MudItem sm="6" md="6">
+                        <MudSelect 
+                            T="PackageCategoryTypes"
+                                   Value="@Package.PackageCategoryType"
+                        ValueChanged="OnPackageTypeChanged"
+                        Label="@L["PackageType"]" 
+                        HelperText=@L["Helper Text"] 
+                        Placeholder=@L["Choose"]
+                        Required ="true" 
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))">
+
+                            @foreach (var type in Enum.GetValues(typeof(PackageCategoryTypes)).Cast<PackageCategoryTypes>())
+                            {
+                                if (CultureInfo.CurrentCulture.Name == "en")
+                                {
+                                     <MudSelectItem  Value="@type">
+                                         @L[type.ToString()]
+                                     </MudSelectItem>
+                                }
+                                else{
+                                    <MudSelectItem Value="@type">
+                                        @L[type.ToString()]
+                                    </MudSelectItem>
+                                }
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudSelect @bind-Value="Package.CustomerCategory"
+                                   Label="@L["customer category"]"
+                                   Placeholder="@L["Choose"]"
+                                   HelperText=@L["Helper Text"]
+                                   RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                                   Required>
+
+                            @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
+                            {
+                                <MudSelectItem Value="@category">
+                                    @category.ToString()
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+
+                    </MudItem>
+                    @if (Package.PackageCategoryType != PackageCategoryTypes.CustomPackage)
+                    {
+                        
+                          <MudItem sm="6" md="6">
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                @L["Price"]
+                                @((MarkupString)CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px"))
+                            </label>
+
+                                <MudNumericField @bind-Value="Package.Price"
+                                                 For="@(() => Package.Price)"
+                                             Variant="Variant.Text"
+                                             Required="true"
+                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                                             HideSpinButtons="true"
+                                             class="@(CultureInfo.CurrentCulture.Name == "ar" ? "custom-numeric-field" : "")" />
+                        </div>
+                    </MudItem>
+                    }
+                    @if (CurrentTenant.Id == null)
+                    {
+                        <MudItem sm="6">
+                            <MudSelect T="string"
+                                       Class="custom-placeholder"
+                                       Variant="Variant.Text"
+                                       Label=@L["Organizations"]
+                                       HelperText=@L["Helper Text"]
+                                       Required
+                                       Placeholder="@L[ "Choose"]"
+                                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                                       @bind-Value="OrganizationId">
+
+                                @foreach (var organization in _organizations)
+                                {
+                                    if (organization.Status != Enums.Status.Active)
+                                        continue;
+
+                                    if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="organization.Id.ToString()">@organization.EnglishName</MudSelectItem>
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="organization.Id.ToString()">@organization.ArabicName</MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+                        </MudItem>
+
+                    }
+                    @if (Package.PackageCategoryType == PackageCategoryTypes.CustomPackage){
+
+                        <CustomPackageComponent CustomPackageUiDto="CustomPackageUiDto" />
+
+                    }
+                    else
+                    {
+                        <NormalPackageComponent IsDurationDisabled="IsDurationDisabled" createUpdatePackage="NormalPackageUiDto" />
+          
+                    }
+
+                    <MudItem sm="12">
+                        <label style="font-size: 0.75rem; margin-bottom: 4px;  ">
+                            @L["Description"]
+                        </label>
+                        <MudTextField @bind-Value="Package.Description"
+                        For="@(() => Package.Description)"
+                        Variant="Variant.Outlined"
+                        Class="w-100"
+                        Lines="5"
+                         />
+
+                    </MudItem>
+                    <MudItem sm="12" md="12" Class="d-flex justify-content-between">
+                        <MudRadioGroup @bind-Value="@Package.Status" Class="d-flex">
+                            <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
+                            <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
+                        </MudRadioGroup>
+                    </MudItem>
+                </MudGrid>
+
+                <MudGrid>
+                    <MudItem sm="6" md="6">
+                        <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                            @L["NumberOfSlots"]
+                        </label>
+                        <MudTextField @bind-Value="UnitPackage.NumberOfSlots"
+                        For="@(() => UnitPackage.NumberOfSlots)"
+                        Variant="Variant.Outlined"
+                        Class="w-100"
+                        Required="true"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        />
+
+                    </MudItem>
+
+                    <MudItem sm="6" md="6">
+                        <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                            @L["NumberOfVehicles"]
+                        </label>
+                        <MudTextField @bind-Value="UnitPackage.NumberOfVehicles"
+                        For="@(() => UnitPackage.NumberOfVehicles)"
+                        Variant="Variant.Outlined"
+                        Class="w-100"
+                        Required="true"
+                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                        />
+                    </MudItem>
+                </MudGrid>
+
+            </MudForm>
+
+
+
+        </DialogContent>
+        <DialogActions>
+    <DialogActionComponent 
+        ButtonOneColor="MudBlazor.Color.Dark" 
+        ButtonTwoColor="MudBlazor.Color.Primary" 
+        ButtonOneLabel="@L["Back"]" 
+        ButtonTwoLabel="@L["Save"]" 
+        ButtonOneClick="CancelEdit" 
+        ButtonTwoClick="SubmitEdit" 
+        ButtonOneVariant="MudBlazor.Variant.Filled" 
+        ButtonTwoVariant="MudBlazor.Variant.Filled" />
+</DialogActions>
+
+
+    </MudDialog>
+
+</div>
+
+<style>
+    .mud-modal {
+    border-radius: 0 20px 0 20px;
+    }
+
+    .custom-numeric-field input {
+        display: flex;
+        text-align: end;
+        width: 100%; /* Equivalent to w-100 in Bootstrap */
+    }
+
+</style>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public CreateUpdatePackageDto Package { get; set; } = new CreateUpdatePackageDto();
+    [Parameter] public CreateUpdateUnitPackageDto UnitPackage { get; set; }
+    [Parameter] public int UpdatedId { get; set; }
+    private CustomPackageUiDto CustomPackageUiDto { get; set; } = new();
+    private NormalPackagePropertiesDto NormalPackageUiDto { get; set; } = new();
+
+    public DateTime? ActivationDate { get; set; } = DateTime.Now;
+    public DateTime? DeactivationDate { get; set; } = DateTime.Now;
+    private List<OrganizationDto> _organizations = new List<OrganizationDto>();
+    bool _clearable;
+    private MudForm form;
+    private TimeSpan? timeSpanFrom;
+    private TimeSpan? timeSpanTo;
+    private DateTime? DectivationDate { get; set; } = DateTime.Now;
+    private Status currentStatus { get; set; }
+    private bool IsDurationDisabled { get; set; } = false;
+    private string OrganizationId { get; set; }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var organizationsList = await organizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        _organizations = organizationsList.Items.ToList();
+        currentStatus = Package.Status;
+        timeSpanFrom = Package.PublishFrom?.ToTimeSpan();
+        timeSpanTo = Package.PublishTo?.ToTimeSpan();
+        ActivationDate = Package.ActivationDate;
+        DectivationDate = Package.DeactivationDate;
+        OrganizationId = Package.OrganizationId.ToString();
+        await base.OnInitializedAsync();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        await InitializePackageDetails();
+        StateHasChanged();
+    }
+    private async ValueTask InitializePackageDetails()
+    {
+        if(Package.PackageCategoryType == PackageCategoryTypes.CustomPackage)
+        {
+            CustomPackageUiDto.DectivationDate = Package.DeactivationDate;
+            CustomPackageUiDto.ActivationDate = Package.ActivationDate;
+            CustomPackageUiDto.DurationOfPackage=Package.DurationOfPackage;
+            CustomPackageUiDto.PriceOfPackagePerDay = Math.Round(Package.Price / Package.DurationOfPackage,2);
+            CustomPackageUiDto.CountOfDays=Package.DurationOfPackage;
+            CustomPackageUiDto.endTime = Package.PublishTo?.ToTimeSpan();
+            CustomPackageUiDto.startTime = Package.PublishFrom?.ToTimeSpan();
+            CustomPackageUiDto.PriceOfPackage = Package.Price;
+
+        }
+        else
+        {
+            NormalPackageUiDto.DurationOfPackage=Package.DurationOfPackage;
+            NormalPackageUiDto.PublishFrom=Package.PublishFrom;
+            NormalPackageUiDto.PublishTo=Package.PublishTo;
+            NormalPackageUiDto.Published = Package.Published;
+
+        }
+    }
+
+    private async Task OnPackageTypeChanged(PackageCategoryTypes value)
+    {
+        Package.PackageCategoryType = value;
+        var result = PackageExtension.OnPackageTypeChanged(value);
+        Package.DurationOfPackage = result.PackageDuration;
+        IsDurationDisabled = result.IsDurationDisabled;
+        await InitializePackageDetails();
+    }
+
+    private void OnTimeFromChanged(TimeSpan? value)
+    {
+        if (value.HasValue)
+        {
+            timeSpanFrom = value;
+            Package.PublishFrom = TimeOnly.FromTimeSpan(value.Value);
+        }
+    }
+    private void OnTimeToChanged(TimeSpan? value)
+    {
+        if (value.HasValue)
+        {
+            timeSpanTo = value;
+            Package.PublishTo = TimeOnly.FromTimeSpan(value.Value);
+        }
+    }
+    private async Task SubmitEdit()
+    {
+
+        try
+        {
+            if(form.IsValid)
+            {
+                Package.OrganizationId = int.Parse(OrganizationId);
+                if (CurrentTenant.Id == null)
+                {
+                    Package.TenantId = _organizations.FirstOrDefault(x => x.Id == Package.OrganizationId).TenantId;
+                }
+                BlazorPackageValidations.MapToCreateUpdatePackage(
+                  Package,
+                  CustomPackageUiDto,
+                  NormalPackageUiDto,
+                  Snackbar);
+                UnitPackage.Package = Package;
+                await PackagesAppService.UpdateAsync(UpdatedId, UnitPackage);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {Package.EnglishName}", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}", Severity.Error);
+
+            }
+            
+           
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.UPDATE]} {L[AlertMessages.AlertMessages.FAILED]} : {ex.Message} ", Severity.Error);
+        }
+	}
+
+	private async Task CancelEdit()
+	{
+	    	MudDialog.Cancel();
+	}
+
+
+}
