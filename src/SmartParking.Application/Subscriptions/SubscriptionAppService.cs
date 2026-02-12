@@ -1,9 +1,5 @@
-﻿
-
-using SmartParking.Entities.Organizations;
-using SmartParking.Entities.Subscriptions;
+﻿using SmartParking.Entities.Subscriptions;
 using SmartParking.Enums;
-using SmartParking.Organizations;
 using System;
 using System.Collections.Generic;
 using System.Linq;

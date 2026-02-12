@@ -65,9 +65,8 @@ public static class BlazorPackageValidations
     }
     public static CustomerPackageStatus GetDisplayStatus(CustomerPackageDto package)
     {
-        var now = DateTime.Now;
-        var currentDate = DateOnly.FromDateTime(now);
-        var currentTime = TimeOnly.FromDateTime(now);
+        var currentDate = DateOnly.FromDateTime(DateTime.Now);
+        var currentTime = TimeOnly.FromDateTime(DateTime.Now);
 
         // If the package status is not Active in DB, return the DB status
         if (package.CustomerPackageStatus != CustomerPackageStatus.Active)
@@ -76,13 +75,13 @@ public static class BlazorPackageValidations
         }
 
         // Check if dates are available
-        if (!package.ActivationDateOfPackage.HasValue || !package.DectivationDateOfPackage.HasValue)
+        if (!package.ActivationDateOfPackage.HasValue || package.ExpiryDate ==null)
         {
             return package.CustomerPackageStatus;
         }
 
         var activationDate = DateOnly.FromDateTime(package.ActivationDateOfPackage.Value);
-        var expirationDate = DateOnly.FromDateTime(package.DectivationDateOfPackage.Value);
+        var expirationDate = DateOnly.FromDateTime(package.ExpiryDate);
 
         // Check if before activation date
         if (currentDate < activationDate)

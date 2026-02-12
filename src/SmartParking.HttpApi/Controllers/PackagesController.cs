@@ -19,13 +19,16 @@ public class PackagesController : ControllerBase
     private readonly IPackagesAppService _packages;
     private readonly ICustomerPackagesAppService _customerPackagesApp;
     private readonly IPaymentAppService _paymentAppService;
+    private readonly IAssignCustomerPackagesMobileAppService _customerPackagesActionsAppService;
 
 
-    public PackagesController(IPackagesAppService package, ICustomerPackagesAppService customerPackagesApp, IPaymentAppService paymentAppService)
+
+    public PackagesController(IPackagesAppService package, ICustomerPackagesAppService customerPackagesApp, IPaymentAppService paymentAppService, IAssignCustomerPackagesMobileAppService customerPackagesActionsAppService)
     {
         _packages = package;
         _customerPackagesApp = customerPackagesApp;
         _paymentAppService = paymentAppService;
+        _customerPackagesActionsAppService = customerPackagesActionsAppService;
     }
     [HttpGet("{oragnizationId}")]
     [Authorize]
@@ -44,12 +47,13 @@ public class PackagesController : ControllerBase
     [Authorize]
     public async Task<Result<PaymentCheckoutDto>> AssignPackageToCustomer(int packageId,string ArabicNumber , string EnglishPlateNumber)
     {
-        var paymentReq = await _customerPackagesApp.AssignPackageToCustomerAsync(packageId,ArabicNumber,EnglishPlateNumber);
-        if (paymentReq.Errors.Any() )
-            return Result.Error(paymentReq.Errors.FirstOrDefault()!);
-        if (paymentReq.ValidationErrors.Any())
-            return Result.Invalid(paymentReq.ValidationErrors.FirstOrDefault()!);
-        var result=await _paymentAppService.CreateCheckoutPackagePaymentWebAsync(paymentReq.Value);
+        var customerPackageDto = await _customerPackagesActionsAppService.AssignPackageToCustomerAsync(packageId,ArabicNumber,EnglishPlateNumber);
+        if (customerPackageDto.Errors.Any() )
+            return Result.Error(customerPackageDto.Errors.FirstOrDefault()!);
+        if (customerPackageDto.ValidationErrors.Any())
+            return Result.Invalid(customerPackageDto.ValidationErrors.FirstOrDefault()!);
+        var paymentReq = customerPackageDto.Value.MapToPaymentCheckout(customerPackageDto, customerPackageDto.Value.TenantId.Value);
+        var result=await _paymentAppService.CreateCheckoutPackagePaymentWebAsync(paymentReq);
         return Result.Success(result!);
     } 
     

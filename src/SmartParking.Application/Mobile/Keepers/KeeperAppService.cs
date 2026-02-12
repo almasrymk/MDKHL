@@ -71,7 +71,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IAuthenticationUtility authenticationUtility,
          IVehicleAppService vehicleAppService,
          IPaymentWebAppService paymentWebAppService,
-         IQRCodeAppService qrCodeAppService)
+         IQRCodeAppService qrCodeAppService,
+         IAuthorizationService authorizationService)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -88,6 +89,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _vehicleAppService = vehicleAppService;
         _paymentWebAppService = paymentWebAppService;
         _qrCodeAppService = qrCodeAppService;
+        _authorizationService = authorizationService;
     }
 
     #region Public Methods
