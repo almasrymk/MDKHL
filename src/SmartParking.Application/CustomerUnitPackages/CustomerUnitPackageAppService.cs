@@ -1,0 +1,145 @@
+﻿using SmartParking.CustomerPackages;
+using SmartParking.Cutomers;
+using SmartParking.Entities.Customers;
+using SmartParking.Entities.CustomerUnitPackages;
+using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
+using SmartParking.Organizations;
+using SmartParking.Packages;
+using SmartParking.Payments;
+using SmartParking.Results;
+using SmartParking.UnitPackages;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
+using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
+using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
+
+namespace SmartParking.CustomerUnitPackages;
+
+public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPackage, CustomerUnitPackageDto, int>, 
+    ICustomerUnitPackageAppService
+
+{
+    private readonly IRepository<CustomerUnitPackage, int> _repository;
+    private readonly IRepository<UnitPackage> _packageRepository;
+    private readonly IDataFilter _dataFilter;
+    private readonly IRepository<Customer, Guid> _customerRepository;
+    private readonly ICustomerAppService _customerAppService;
+    private readonly IOrganizationsAppService _organizationsApp;
+    private readonly IRepository<Organization, int> _organizationsRepository;
+
+    public CustomerUnitPackageAppService(IRepository<CustomerUnitPackage, int> repository,
+        IRepository<UnitPackage> packageRepository,
+        IDataFilter dataFilter,
+        IRepository<Customer, Guid> customerRepository,
+        IOrganizationsAppService organizationsApp,
+        IRepository<Organization, int> organizationsRepository,
+        ICustomerAppService customerAppService) : base(repository)
+    {
+        _repository = repository;
+        _packageRepository = packageRepository;
+        _dataFilter = dataFilter;
+        _customerRepository = customerRepository;
+        _organizationsApp = organizationsApp;
+        _organizationsRepository = organizationsRepository;
+        _customerAppService = customerAppService;
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var customerPackage = await _repository.FindAsync(id);
+
+        if (customerPackage is null)
+        {
+            throw new EntityNotFoundException(typeof(CustomerPackage), id);
+        }
+        customerPackage.Status = Status.Deleted;
+        await _repository.UpdateAsync(customerPackage, true);
+    }
+
+    
+
+    public async Task<Result<List<CustomerUnitPackageDto>>> GetUnitPackageByCustomer(Guid customerId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(c => c.Customer.Id == customerId);
+
+            var result = await AsyncExecuter.ToListAsync(query);
+
+            var packageMap = ObjectMapper.Map<List<CustomerUnitPackage>, List<CustomerUnitPackageDto>>(result);
+            return Result<List<CustomerUnitPackageDto>>.Success(packageMap);
+        }
+    }
+
+    public async Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(int packageId, Guid customerId)
+    {
+        var customer = await _customerAppService.GetAsync(customerId);
+        if (customer == null)
+            return Result.NotFound("Customer not found");
+
+        var package = await GetPackageAsync(packageId);
+        if (package == null)
+            return Result.NotFound("Package not found");
+
+        return await AssignPackage(customer, package);
+    }
+
+    public override async Task<CustomerUnitPackageDto> GetAsync(int id)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            return await base.GetAsync(id);
+        }
+    }
+
+    #region Private methods
+
+    private async Task<UnitPackageDto> GetPackageAsync(int packageId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var package = await _packageRepository.FirstOrDefaultAsync(p => p.Id == packageId);
+            return ObjectMapper.Map<UnitPackage, UnitPackageDto>(package);
+        }
+    }
+
+    private async Task<Result<CustomerUnitPackageDto>> AssignPackage(CustomerDto customer, UnitPackageDto package)
+    {
+        CreateUpdateCustomerUnitPackageDto customerUnitPackageDto = new CreateUpdateCustomerUnitPackageDto
+        {
+            ArabicName = package.Package.ArabicName,
+            EnglishName = package.Package.EnglishName,
+            ActivationDate = package.Package.ActivationDate,
+            Status = package.Package.Status,
+            DectivationDate = package.Package.DectivationDate,
+            Price = package.Package.Price,
+            PublishFrom = package.Package.PublishFrom,
+            PublishTo = package.Package.PublishTo,
+            NumberOfSlots = package.NumberOfSlots,
+            NumberOfVehicles = package.NumberOfVehicles,
+            CustomerId = customer.Id,
+            UnitPackageId = package.Id
+        };
+
+        var entity = ObjectMapper.Map<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>(customerUnitPackageDto);
+        var data = await _repository.InsertAsync(entity);
+        var dto = ObjectMapper.Map<CustomerUnitPackage, CustomerUnitPackageDto>(data);
+        return dto;
+    }
+
+    
+
+    
+
+    #endregion
+
+}

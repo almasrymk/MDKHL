@@ -4,6 +4,7 @@ using SmartParking.Cameras;
 using SmartParking.Cameras.Watchers.Dispensers;
 using SmartParking.CustomerCategories;
 using SmartParking.CustomerPackages;
+using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
 using SmartParking.DailyShifts;
 using SmartParking.Discounts;
@@ -12,6 +13,7 @@ using SmartParking.Entities.Authentication;
 using SmartParking.Entities.Banners;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Customers;
+using SmartParking.Entities.CustomerUnitPackages;
 using SmartParking.Entities.Discounts;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
@@ -429,6 +431,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<UnitPackage, UnitPackageDto>()
             .ForMember(d => d.Package, o => o.MapFrom(s => s.Package));
+
+        CreateMap<CustomerUnitPackage, CustomerUnitPackageDto>();
+
+        CreateMap<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>();
 
     }
 
