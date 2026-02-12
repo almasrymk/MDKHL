@@ -92,14 +92,28 @@
                         </MudItem>
                     }
                     
+                        <MudItem sm="6">
+                            <MudPaper class="text-center p-2">
+                                <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewVehicle">@L["Cars"]</MudLink>
+                            </MudPaper>
+                        </MudItem>
+
+                    
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewVehicle">@L["Cars"]</MudLink>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem sm="6">
-                        <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewPackage">@L["Packages"]</MudLink>
+                            @if (!OrganizationSettings.UserAccess)
+                            {
+                                <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewPackage">
+                                     @L["Packages"]
+                                </MudLink>
+                            }
+                            else
+                            {
+                                <MudLink Color="MudBlazor.Color.Dark" OnClick="AssignUnitPackage">
+                                     @L["UnitPackage"]
+                                </MudLink>
+                            }
+
                         </MudPaper>
                     </MudItem>
                 </MudGrid>

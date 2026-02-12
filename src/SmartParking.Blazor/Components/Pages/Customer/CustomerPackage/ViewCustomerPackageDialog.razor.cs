@@ -18,6 +18,8 @@ using Volo.Abp.Application.Dtos;
 using static Microsoft.AspNetCore.Razor.Language.TagHelperMetadata;
 using static QRCoder.PayloadGenerator;
 
+using SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
+
 namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
 {
     /// <summary>
@@ -30,6 +32,9 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
 
         [Parameter]
         public string CustomerId { get; set; }
+
+        [Parameter]
+        public bool UserAccess { get; set; }
 
         private const string RLM = "\u200F"; 
         private const string LRM = "\u200E"; 
@@ -169,6 +174,22 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 return;
             await JSRuntime.InvokeVoidAsync("window.open", $"{customerPackage.QRCodePath}", "_blank");
 
+        }
+
+        private async Task OpenAssignDialog()
+        {
+            var parameters = new DialogParameters
+            {
+                ["CustomerId"] = CustomerId
+            };
+            var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true };
+            var dialog = await DialogService.ShowAsync<AssignCustomerUnitPackage>(L["AssignPackage"], parameters, options);
+            var result = await dialog.Result;
+
+            if (!result.Canceled)
+            {
+                await FetchTableData(new PageChangeEventArgs { PageNumber = 1, RowsPerPage = 10 });
+            }
         }
 
         /// <summary>

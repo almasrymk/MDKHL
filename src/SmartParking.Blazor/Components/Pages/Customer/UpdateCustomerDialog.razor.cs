@@ -31,6 +31,7 @@ public partial class UpdateCustomerDialog
     public CreateUpdateCustomerDto customerDataDto { get; set; } = new CreateUpdateCustomerDto();
     public string Picture { get; set; }
     public Guid IdentityUserId { get; set; }
+    public OrganizationSettingsDto OrganizationSettings { get; set; } = new OrganizationSettingsDto();
 
     /// <summary>
     /// Initializes the component.
@@ -43,6 +44,13 @@ public partial class UpdateCustomerDialog
         }
         await Fetch();
         Picture = await UsersAppService.GetImage(IdentityUserId) ?? "images/users/149071.png";
+
+        // Fetch organization settings
+        var org = await OrganizationAppService.GetOrganizationByTenant(CurrentTenant.Id);
+        if (org != null)
+        {
+            OrganizationSettings = org.OrganizationSettings ?? new OrganizationSettingsDto();
+        }
     }
 
     /// <summary>
@@ -132,7 +140,8 @@ public partial class UpdateCustomerDialog
         var parameters = new DialogParameters
         {
             ["CustomerId"] = customerId,
+            ["UserAccess"] = OrganizationSettings.UserAccess
         };
-        return await DialogService.ShowAsync<ViewCustomerPackageDialog>("view customer package", parameters);
+        return await DialogService.ShowAsync<ViewCustomerPackageDialog>(OrganizationSettings.UserAccess ? L["UnitPackages"] : L["Packages"], parameters);
     }
 }
