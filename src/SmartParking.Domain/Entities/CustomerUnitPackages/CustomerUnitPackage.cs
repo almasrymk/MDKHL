@@ -1,0 +1,24 @@
+﻿using SmartParking.Entities.Customers;
+using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
+using System;
+
+namespace SmartParking.Entities.CustomerUnitPackages;
+
+public class CustomerUnitPackage : BaseEntity
+{
+    public Guid CustomerId { get; set; }
+    public virtual Customer Customer { get; set; }
+    public int UnitPackageId { get; set; }
+    public int NumberOfVehicles { get; set; }
+    public int NumberOfSlots { get; set; }
+    public decimal Price { get; set; }
+    public TimeOnly PublishFrom { get; set; }
+    public TimeOnly PublishTo { get; set; }
+    public DateTime ActivationDate { get; set; }
+    public DateTime DectivationDate { get; set; }
+    public string ArabicName { get; set; }
+    public string EnglishName { get; set; }
+    public Status Status { get; set; }
+
+}
