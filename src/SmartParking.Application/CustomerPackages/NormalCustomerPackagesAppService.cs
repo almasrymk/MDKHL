@@ -66,7 +66,7 @@ public class NormalCustomerPackagesAppService : BaseCustomerPackagesAssigingAppS
             return ToDto(insertPackage);
         }
     }
-
+    
     public async Task<bool> HandleExistingPackagesForVehicleAsync(CreateUpdateCustomerPackageDto customerPackageDto)
     {
         var newExpiryDate = customerPackageDto.ActivationDateOfPackage.Value.AddDays(-1);

@@ -41,7 +41,6 @@ public class CustomerUnitPackageDto
         {
             // Core
             CustomerId = CustomerId,
-            PackageId = UnitPackageId,               
             OrganizationId = OrganizationId,
             CustomerPackageStatus = CustomerPackageStatus,
             TenantId = TenantId,

@@ -55,7 +55,7 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
     /// A task that represents the asynchronous operation.
     /// The task result contains the <see cref="Package"/> entity if found; otherwise, null.
     /// </returns>
-    public async Task<PackageDto> GetPackageAsync(int packageId)
+    public virtual async Task<PackageDto> GetPackageAsync(int packageId)
     {
         var package= await _packageRepository.FirstOrDefaultAsync(p => p.Id == packageId);
         return package != null ? new PackageDto
