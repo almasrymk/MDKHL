@@ -173,6 +173,7 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.AddScoped<IWatcherAppService, WatcherAppService>();
         context.Services.AddScoped<IAssignCustomerPackagesMobileAppService, MobileCustomerPackagesAppService>();
         context.Services.AddScoped<IAssignCustomerPackagesAppService, NormalCustomerPackagesAppService>();
+        context.Services.AddScoped<IAssignUnitCustomerPackageAppService, UnitCustomerPackageAppService>();
         context.Services.AddScoped<ICustomerPackagesCreationValidationsAppService, CustomerPackageCreationValidationsAppService>();
         context.Services.AddScoped<ISubscriptionActionsAppService, SubsctiptionActionsAppService>();
         context.Services.AddScoped<IWatcherAppService, WatcherAppService>();

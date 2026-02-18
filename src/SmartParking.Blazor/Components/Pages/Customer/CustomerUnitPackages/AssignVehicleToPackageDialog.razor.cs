@@ -25,7 +25,6 @@ public partial class AssignVehicleToPackageDialog
         public int RowPerPage { get; set; } = 10;
 
         private TableData itemData = new TableData();
-        private string termSearch;
 
         private List<CustomerUnitPackageDto> customerUnitPackages = new List<CustomerUnitPackageDto>();
 
@@ -121,7 +120,7 @@ public partial class AssignVehicleToPackageDialog
                 var result = await AssignCustomerPackagesAppService.AssignPackageToCustomerAsync(CustomerPackage);
                 if (result != null)
                 {
-                    SnackBar.ShowSnackbar(Snackbar, $"{L["PackagePaymentSuccessfully"]}", MudBlazor.Severity.Success);
+                    SnackBar.ShowSnackbar(Snackbar, $"{L["AssigningDone"]}", MudBlazor.Severity.Success);
                     await Task.Delay(1000);
                     Navigation.NavigateTo($"/customers/view/{CustomerId}");
                 }
