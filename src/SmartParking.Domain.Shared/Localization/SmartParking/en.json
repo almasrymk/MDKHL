@@ -895,10 +895,11 @@
         "Check-out": "Check-out",
         "ThankyouforusingMadkhal": "Thank you for using the 'Madkhal' smart parking system.",
         "PrintInvoice": "Print Invoice",
-        "VhecileAccess": "Vhecile Access",
+        "VhecileAccess": "Vehicle Access",
         "UserAccess": "User Access",
         "UnitPackages": "Packages",
         "NumberOfSlots": "Number Of Slots",
-        "NumberOfVehicles": "Number Of Vehicles"
+        "NumberOfVehicles": "Number Of Vehicles",
+        "AssignPackage": "Assign Package"
     }
 }

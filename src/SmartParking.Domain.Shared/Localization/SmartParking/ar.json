@@ -941,7 +941,8 @@
         "UserAccess": "اتاحه مستخدم",
         "UnitPackages": "الباقات",
         "NumberOfSlots": "الاماكن المتاحه",
-        "NumberOfVehicles": "عدد السيارات المتاحه"
+        "NumberOfVehicles": "عدد السيارات المتاحه",
+        "AssignPackage": "تعيين باقه"
     }
 
 }
