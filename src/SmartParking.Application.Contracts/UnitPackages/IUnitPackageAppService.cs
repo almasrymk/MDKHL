@@ -1,4 +1,7 @@
-﻿using SmartParking.Packages;
+﻿using iText.Layout.Element;
+using SmartParking.Enums;
+using SmartParking.Packages;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -14,4 +17,6 @@ public interface IUnitPackageAppService
     IApplicationService
 {
     Task<PagedResultDto<UnitPackageDto>> GetUnitPackagesByOrganization(PagedAndSortedResultRequestDto input, int organizationId);
+    Task<List<UnitPackageDto>> GetUnitPackagesByCategory(CustomerCategoryStatus customerCategory);
+    Task<List<UnitPackageDto>> GetUnitPackagesByCategory(int organizationId,CustomerCategoryStatus customerCategory);
 }

@@ -24,7 +24,7 @@ public interface ICustomerUnitPackageAppService :
     Task<Result<List<CustomerUnitPackageDto>>> GetUnitPackageByCustomer(Guid customerId);
 
 
-    Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(int packageId, Guid customerId);
+    Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(int packageId, Guid customerId , CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto);
 
 
 }

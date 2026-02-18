@@ -1,8 +1,14 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Cutomers
 @using SmartParking.Localization
 @using SmartParking.UnitPackages
 @using SmartParking.Blazor.Components.SPComponents
 @using SmartParking.CustomerUnitPackages
+@inject IDialogService Dialog
+@inject ICustomerAppService CustomersAppService
+@inject IStringLocalizer<SmartParkingResource> L
+
+
 
 <PageTitle>@L["AssignPackage"]</PageTitle>
 
@@ -13,11 +19,11 @@
         </TitleContent>
         <DialogContent>
             <SPDataGrid PageName=@L["UnitPackages"] 
-                        TotalItemsInTable="@TotalItem" 
+                        TotalItemsInTable="@TotalItem"
                         Data="@itemData" 
-                        OnPageChanged="FetchTableData" 
-                        ShowAssign="true" 
-                        OnClickAssign="HandleAssign"></SPDataGrid>
+                        OnAdd="OpenAssignPackage" 
+                        OnPageChanged="FetchTableData">
+            </SPDataGrid>
         </DialogContent>
         <DialogActions>
             <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>

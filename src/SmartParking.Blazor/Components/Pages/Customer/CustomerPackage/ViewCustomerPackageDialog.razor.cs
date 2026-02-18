@@ -183,7 +183,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 ["CustomerId"] = CustomerId
             };
             var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true };
-            var dialog = await DialogService.ShowAsync<AssignCustomerUnitPackage>(L["AssignPackage"], parameters, options);
+            var dialog = await DialogService.ShowAsync<CustomerUnitPackageDialog>(L["AssignPackage"], parameters, options);
             var result = await dialog.Result;
 
             if (!result.Canceled)

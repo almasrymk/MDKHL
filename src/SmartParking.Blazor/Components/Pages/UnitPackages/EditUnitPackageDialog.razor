@@ -351,6 +351,7 @@
                   NormalPackageUiDto,
                   Snackbar);
                 UnitPackage.Package = Package;
+                
                 await PackagesAppService.UpdateAsync(UpdatedId, UnitPackage);
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {Package.EnglishName}", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));

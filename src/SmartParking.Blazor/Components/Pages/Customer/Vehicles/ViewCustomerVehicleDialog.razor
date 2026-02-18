@@ -3,6 +3,7 @@
 @using SmartParking.Analysis
 @using SmartParking.Cutomers
 @using SmartParking.Localization
+@using SmartParking.Organizations
 @using SmartParking.PDF
 @using SmartParking.Permissions.Reports
 @using SmartParking.Vehicles
@@ -17,6 +18,7 @@
 @inject ICurrentTenant CurrentTenant
 @inject IAuthorizationService AuthorizationService
 @inject IAnalysisAppService AnalysisAppService
+@inject IOrganizationsAppService OrganizationsAppService
 @inject IGenerateFilesAppService GenerateFilesAppService
 @inject IJSRuntime JSRuntime;
 @inject IMapper Mapper

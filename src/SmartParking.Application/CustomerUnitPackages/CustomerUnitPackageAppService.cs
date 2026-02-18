@@ -9,6 +9,7 @@ using SmartParking.Packages;
 using SmartParking.Payments;
 using SmartParking.Results;
 using SmartParking.UnitPackages;
+using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,7 +81,7 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         }
     }
 
-    public async Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(int packageId, Guid customerId)
+    public async Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(int packageId, Guid customerId, CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto)
     {
         var customer = await _customerAppService.GetAsync(customerId);
         if (customer == null)
@@ -90,7 +91,7 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         if (package == null)
             return Result.NotFound("Package not found");
 
-        return await AssignPackage(customer, package);
+        return await AssignPackage(customer, package , customerUnitPackageAssignationDto);
     }
 
     public override async Task<CustomerUnitPackageDto> GetAsync(int id)
@@ -112,15 +113,15 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         }
     }
 
-    private async Task<Result<CustomerUnitPackageDto>> AssignPackage(CustomerDto customer, UnitPackageDto package)
+    private async Task<Result<CustomerUnitPackageDto>> AssignPackage(CustomerDto customer, UnitPackageDto package , CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto)
     {
         CreateUpdateCustomerUnitPackageDto customerUnitPackageDto = new CreateUpdateCustomerUnitPackageDto
         {
             ArabicName = package.Package.ArabicName,
             EnglishName = package.Package.EnglishName,
-            ActivationDate = package.Package.ActivationDate,
+            ActivationDate = PackageAssignationLogic.PackageActivationTime(package.Package.ActivationDate,package.Package.PublishFrom, package.Package.PackageCategoryType == PackageCategoryTypes.CustomPackage),
             Status = package.Package.Status,
-            DectivationDate = package.Package.DectivationDate,
+            DectivationDate = PackageAssignationLogic.PackageExpirationTime(package.Package.DectivationDate , package.Package.DurationOfPackage, package.Package.PackageCategoryType == PackageCategoryTypes.CustomPackage),
             Price = package.Package.Price,
             PublishFrom = package.Package.PublishFrom,
             PublishTo = package.Package.PublishTo,
@@ -136,9 +137,6 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         return dto;
     }
 
-    
-
-    
 
     #endregion
 

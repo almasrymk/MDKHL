@@ -294,6 +294,11 @@
         if (CurrentTenant.Id == null)
         {
             createUpdatePackage.TenantId = _organizations.FirstOrDefault(x => x.Id == createUpdatePackage.OrganizationId).TenantId;
+
+        }
+        else
+        {
+            createUpdatePackage.TenantId = CurrentTenant.Id;
         }
 
         try
@@ -307,6 +312,7 @@
             createUpdatePackage.PackageStatus = SubscriptionStatus.Draft;
             createUpdatePackage.Status = Status.Inactive;
             createUpdateUnitPackage.Package = createUpdatePackage;
+
             await PackagesAppService.CreateAsync(createUpdateUnitPackage);
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {createUpdatePackage.ArabicName}", Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));

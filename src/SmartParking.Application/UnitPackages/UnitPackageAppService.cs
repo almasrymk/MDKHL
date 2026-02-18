@@ -6,6 +6,7 @@ using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Packages;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -136,6 +137,37 @@ public class UnitPackageAppService : CrudAppService<UnitPackage, UnitPackageDto,
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("DuplicationPackageName"));
         }
+    }
+
+    public async Task<List<UnitPackageDto>> GetUnitPackagesByCategory(CustomerCategoryStatus customerCategory)
+    {
+        var query = await _repository.GetQueryableAsync();
+        query = query.Where(x => x.Package.CustomerCategory == customerCategory && x.Package.Status == Status.Active);
+        var entities = await AsyncExecuter.ToListAsync(query);
+        var unitPackageDtos = entities.Select(x => {
+            var dto = ObjectMapper.Map<UnitPackage, UnitPackageDto>(x);
+            dto.Package = ObjectMapper.Map<Package, PackageDto>(x.Package);
+            return dto;
+        }).ToList();
+        return unitPackageDtos;
+        
+    }
+
+    public async Task<List<UnitPackageDto>> GetUnitPackagesByCategory(int organizationId, CustomerCategoryStatus customerCategory)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(x => x.Package.CustomerCategory == customerCategory && x.Package.Status == Status.Active && x.Package.OrganizationId==organizationId );
+            var entities = await AsyncExecuter.ToListAsync(query);
+            var unitPackageDtos = entities.Select(x => {
+                var dto = ObjectMapper.Map<UnitPackage, UnitPackageDto>(x);
+                dto.Package = ObjectMapper.Map<Package, PackageDto>(x.Package);
+                return dto;
+            }).ToList();
+            return unitPackageDtos;
+        }
+
     }
     #endregion
 }
