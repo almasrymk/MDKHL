@@ -97,7 +97,7 @@ public partial class CustomerUnitPackageDialog
             rowDef.Cells.Add(new KeyValuePair<string, string>(
                 L["Price"],
                 $"{item.Price} {IconHtml}"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["PackageDuration"], (item.ActivationDate - item.ActivationDate).Days.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["PackageDuration"], item.DurationOfPackage.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["ActivationDate"], item.ActivationDate.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["ExpiryDate"], item.DectivationDate.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Published"], item.PublishTo==item.PublishFrom ? 24 + L["Hour"] : $" {item.PublishFrom} " + " - " + $" {item.PublishTo}"));

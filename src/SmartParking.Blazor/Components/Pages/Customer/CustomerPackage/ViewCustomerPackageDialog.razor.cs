@@ -33,8 +33,6 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
         [Parameter]
         public string CustomerId { get; set; }
 
-        [Parameter]
-        public bool UserAccess { get; set; }
 
         private const string RLM = "\u200F"; 
         private const string LRM = "\u200E"; 

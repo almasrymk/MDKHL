@@ -145,6 +145,6 @@ public partial class CustomerView
         {
             ["CustomerId"] = customerId,
         };
-        return await DialogService.ShowAsync<CustomerUnitPackageDialog>(OrganizationSettings.UserAccess ? L["UnitPackages"] : L["Packages"], parameters);
+        return await DialogService.ShowAsync<CustomerUnitPackageDialog>(L["Packages"], parameters);
     }
 }

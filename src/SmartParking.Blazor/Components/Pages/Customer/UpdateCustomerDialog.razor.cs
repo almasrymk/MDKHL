@@ -140,8 +140,7 @@ public partial class UpdateCustomerDialog
         var parameters = new DialogParameters
         {
             ["CustomerId"] = customerId,
-            ["UserAccess"] = OrganizationSettings.UserAccess
         };
-        return await DialogService.ShowAsync<ViewCustomerPackageDialog>(OrganizationSettings.UserAccess ? L["UnitPackages"] : L["Packages"], parameters);
+        return await DialogService.ShowAsync<ViewCustomerPackageDialog>(L["Packages"], parameters);
     }
 }

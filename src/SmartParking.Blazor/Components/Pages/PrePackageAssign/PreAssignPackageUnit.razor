@@ -118,6 +118,7 @@
         ActivationDate = PackageAssignationLogic.PackageActivationTime(UnitPackageDto.Package.ActivationDate, UnitPackageDto.Package.PublishFrom, UnitPackageDto.Package.PackageCategoryType == PackageCategoryTypes.CustomPackage);
         ExpiryDate = PackageAssignationLogic.PackageExpirationTime(UnitPackageDto.Package.DectivationDate, UnitPackageDto.Package.DurationOfPackage, UnitPackageDto.Package.PackageCategoryType == PackageCategoryTypes.CustomPackage);
 		CountOfDays = UnitPackageDto.Package.DurationOfPackage;
+        
 		PriceOfPackagePerDay = Math.Round((decimal)(packagePrice / CountOfDays),2);
 
     }
