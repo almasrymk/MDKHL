@@ -935,13 +935,16 @@
     "Check-out": "توقيت الخروج",
     "ThankyouforusingMadkhal": "شكرا لاستخدامك نظام مدخل للمواقف الذكية",
     "PrintInvoice": "طباعة الفاتوره",
-    "VhecileAccess": "اتاحه سياره",
-    "UserAccess": "اتاحه مستخدم",
+    "VhecileAccess": "إتاحه سيارة",
+    "UserAccess": "إتاحه مستخدم",
     "UnitPackages": "الباقات",
     "NumberOfSlots": "الاماكن المتاحه",
     "NumberOfVehicles": "عدد السيارات المتاحه",
     "AssignPackage": "تعيين باقه",
-    "AssigningDone": "تم التخصيص"
+    "AssigningDone": "تم التخصيص",
+    "VehiclePackages": "باقات السيارات",
+    "OnlyOnePackageTypeAllowed": "يجب تفعيل نوع حزمة واحد فقط."
+
   }
 
 }

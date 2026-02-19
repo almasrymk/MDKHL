@@ -901,7 +901,11 @@
     "NumberOfSlots": "Number Of Slots",
     "NumberOfVehicles": "Number Of Vehicles",
     "AssignPackage": "Assign Package",
-    "AssigningDone": "Assigning Done"
+    "AssigningDone": "Assigning Done",
+    "VehiclePackages": "Vehicle Packages",
+    "OnlyOnePackageTypeAllowed": "Only one package type can be enabled."
+
+
 
   }
 }
