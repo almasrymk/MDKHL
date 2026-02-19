@@ -10,6 +10,7 @@ public class CustomerUnitPackageDto
     public int NumberOfVehicles { get; set; }
     public int NumberOfSlots { get; set; }
     public decimal Price { get; set; }
+
     public decimal Discount { get; set; }
     public decimal Vat { get; set; }
     public TimeOnly PublishFrom { get; set; }
@@ -51,7 +52,8 @@ public class CustomerUnitPackageDto
 
             // Package-related values you CAN map from this DTO
             PriceOfPackage = Price,
-            PublishedOfPackage = PublishFrom==PublishTo,               // assumption: if returned, it’s publishable; change if you have a flag
+            
+            PublishedOfPackage = PublishFrom==PublishTo,               
             PublishFromOfPackage = PublishFrom,
             PublishToOfPackage = PublishTo,
 
@@ -82,7 +84,7 @@ public class CustomerUnitPackageDto
 
             // If you don’t have these values here, leave as null
             DurationOfPackage = DurationOfPackage,
-            PriceOfPackagePerDay = null,
+            PriceOfPackagePerDay = Math.Round(Price / DurationOfPackage,2),
             CountOfDays = DurationOfPackage,
         };
     }

@@ -114,5 +114,9 @@ public class CreatedUpdatedOrganizationDtoValidator : AbstractValidator<CreateUp
            .NotEmpty().WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"))
            .Length(3).WithMessage(LocalizationHelper.GetLocalizedString("RangeValidation") + " " + 3)
            .Matches(@"^[A-Z]{3}$").WithMessage(LocalizationHelper.GetLocalizedString("MaxLengthCodeValidation"));
+        RuleFor(x => x.OrganizationSettingsDto)
+            .Must(x => !(x.UserAccess && x.VehcileAccess))
+            .WithMessage(LocalizationHelper.GetLocalizedString("OnlyOnePackageTypeAllowed"))
+            .OverridePropertyName("");
     }
 }

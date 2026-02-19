@@ -115,6 +115,14 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
 
     private async Task<Result<CustomerUnitPackageDto>> AssignPackage(CustomerDto customer, UnitPackageDto package , CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto)
     {
+        CustomerCategoryStatus category;
+
+        Enum.TryParse(
+            package.Package.CustomerCategory,
+            true,
+            out category
+        );
+
         CreateUpdateCustomerUnitPackageDto customerUnitPackageDto = new CreateUpdateCustomerUnitPackageDto
         {
             ArabicName = package.Package.ArabicName,
@@ -128,7 +136,12 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
             NumberOfSlots = package.NumberOfSlots,
             NumberOfVehicles = package.NumberOfVehicles,
             CustomerId = customer.Id,
-            UnitPackageId = package.Id
+     //       UnitPackageId = package.Id,
+            DurationOfPackage=customerUnitPackageAssignationDto.DurationOfPackage,
+            Vat=customerUnitPackageAssignationDto.Vat,
+            OrganizationId=package.Package.OrganizationId,
+            Discount=customerUnitPackageAssignationDto.Discount,
+            CustomerCategory = category,
         };
 
         var entity = ObjectMapper.Map<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>(customerUnitPackageDto);

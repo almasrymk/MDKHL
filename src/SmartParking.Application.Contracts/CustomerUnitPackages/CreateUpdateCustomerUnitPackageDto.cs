@@ -17,5 +17,10 @@ public class CreateUpdateCustomerUnitPackageDto
     public Guid CustomerId { get; set; }
     public int UnitPackageId { get; set; }
     public Status Status { get; set; }
+    public decimal Discount { get; set; }
+    public int DurationOfPackage { get; set; }
+    public decimal Vat { get; set; }
+    public int OrganizationId { get; set; }
+    public CustomerCategoryStatus CustomerCategory { get; set; }
 
 }
