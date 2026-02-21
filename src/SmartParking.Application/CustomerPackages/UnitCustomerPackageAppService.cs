@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.CustomerPackages.QRGenerator;
+using SmartParking.CustomerUnitPackages;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
@@ -10,9 +11,7 @@ using SmartParking.PDF;
 using SmartParking.Results;
 using SmartParking.UnitPackages;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;

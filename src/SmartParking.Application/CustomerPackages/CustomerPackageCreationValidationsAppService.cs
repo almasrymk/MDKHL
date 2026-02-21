@@ -44,6 +44,21 @@ public class CustomerPackageCreationValidationsAppService : ApplicationService, 
         }
     }
 
+    public async Task<int> GetNumberOfVehiclesPackagesInOrganizationForCustomer(
+        Guid customerId,
+        int organizationId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+                return await query
+                .Where(x =>
+                    x.CustomerId == customerId &&
+                    x.OrganizationId == organizationId )
+                .CountAsync();
+        }
+    }
+
 
     #region Private Methods
     /// <summary>

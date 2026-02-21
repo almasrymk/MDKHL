@@ -15,4 +15,7 @@ public interface ICustomerPackagesCreationValidationsAppService
     /// <param name="organizationId">The ID of the organization to check limits for.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
     Task CheckSubscriptionCustomersLimitsAsync(int organizationId);
+
+
+    Task<int> GetNumberOfVehiclesPackagesInOrganizationForCustomer(Guid customerId , int organizationId);
 }

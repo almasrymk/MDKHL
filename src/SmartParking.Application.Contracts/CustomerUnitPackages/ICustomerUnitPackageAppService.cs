@@ -1,11 +1,8 @@
 ﻿using SmartParking.CustomerPackages;
-using SmartParking.Payments;
 using SmartParking.Results;
-using SmartParking.UnitPackages;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
 namespace SmartParking.CustomerUnitPackages;
@@ -26,5 +23,7 @@ public interface ICustomerUnitPackageAppService :
 
     Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(int packageId, Guid customerId , CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto);
 
+    Task<bool> IfCustomerHasMultiplePackageAsync(Guid CustomerId);
+    Task<bool> CheckCustomerUnitPackageVehicleLimitations(Guid CustomerId, int numberOfVehicles);
 
 }

@@ -1,12 +1,7 @@
-﻿using SmartParking.CustomerPackages;
-using SmartParking.Cutomers;
-using SmartParking.Entities.Customers;
+﻿using SmartParking.Cutomers;
 using SmartParking.Entities.CustomerUnitPackages;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
-using SmartParking.Organizations;
-using SmartParking.Packages;
-using SmartParking.Payments;
 using SmartParking.Results;
 using SmartParking.UnitPackages;
 using SmartParking.Validations;
@@ -14,13 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.CustomerUnitPackages;
 
@@ -31,25 +24,17 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
     private readonly IRepository<CustomerUnitPackage, int> _repository;
     private readonly IRepository<UnitPackage> _packageRepository;
     private readonly IDataFilter _dataFilter;
-    private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly ICustomerAppService _customerAppService;
-    private readonly IOrganizationsAppService _organizationsApp;
-    private readonly IRepository<Organization, int> _organizationsRepository;
 
     public CustomerUnitPackageAppService(IRepository<CustomerUnitPackage, int> repository,
         IRepository<UnitPackage> packageRepository,
         IDataFilter dataFilter,
-        IRepository<Customer, Guid> customerRepository,
-        IOrganizationsAppService organizationsApp,
-        IRepository<Organization, int> organizationsRepository,
         ICustomerAppService customerAppService) : base(repository)
     {
         _repository = repository;
         _packageRepository = packageRepository;
         _dataFilter = dataFilter;
-        _customerRepository = customerRepository;
-        _organizationsApp = organizationsApp;
-        _organizationsRepository = organizationsRepository;
+
         _customerAppService = customerAppService;
     }
 
@@ -136,7 +121,7 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
             NumberOfSlots = package.NumberOfSlots,
             NumberOfVehicles = package.NumberOfVehicles,
             CustomerId = customer.Id,
-     //       UnitPackageId = package.Id,
+            UnitPackageId = package.Id,
             DurationOfPackage=customerUnitPackageAssignationDto.DurationOfPackage,
             Vat=customerUnitPackageAssignationDto.Vat,
             OrganizationId=package.Package.OrganizationId,
@@ -148,6 +133,21 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         var data = await _repository.InsertAsync(entity);
         var dto = ObjectMapper.Map<CustomerUnitPackage, CustomerUnitPackageDto>(data);
         return dto;
+    }
+
+    public Task<bool> IfCustomerHasMultiplePackageAsync(Guid CustomerId)
+    {
+        return _repository.AnyAsync(x=> x.CustomerId == CustomerId);
+    }
+
+    public async Task<bool> CheckCustomerUnitPackageVehicleLimitations(Guid CustomerId , int numberOfVehicles)
+    {
+      var customerUnitPackge = await _repository.SingleOrDefaultAsync(x=>x.CustomerId == CustomerId);
+        if (customerUnitPackge == null) {
+            throw new Exception("NotFound");
+            
+        }
+        return customerUnitPackge!.NumberOfVehicles > numberOfVehicles;
     }
 
 
