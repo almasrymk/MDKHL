@@ -3,6 +3,7 @@
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using System.Text.Json
+@using SmartParking.Organizations
 @using SmartParking.Permissions.CameraPermissions
 @using SmartParking.Permissions.ContactPermissions
 @using SmartParking.Permissions.CustomerPermissions
@@ -36,6 +37,7 @@
 @inject ICurrentUser currentuser
 @inject IAuthorizationService AuthorizationService
 @inject IUsersAppService usersService
+@inject IOrganizationsAppService OrganizationsAppService
 @inject UserSingletonService UserSingletonService
 
 <div class="pt-5">
@@ -108,7 +110,9 @@
                  }
                  @if (AuthorizationService.IsGrantedAnyAsync(PackagePermissions.Default).Result)
                  {
-                     <MudNavLink Href="/package" Icon="@Icons.Material.Filled.Subscriptions">@L["Packages"]</MudNavLink>
+                    <MudNavLink Href="@(organizationSettingsDto.OrganizationSettings.UserAccess
+                                            ? "/package"
+                                            : "/unit-package")" Icon="@Icons.Material.Filled.Subscriptions">@L["Packages"]</MudNavLink>
                  }
                  @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Default).Result )
                  {
@@ -230,10 +234,15 @@
     private bool _expanded = true;
     private void ToggleDrawer() => _open = !_open;
 
+    private OrganizationDto organizationSettingsDto = new();
+
     public void HandleLogout()
     {
         NavigationManager.NavigateTo("/logOut", true);
     }
-
+    protected override async Task OnInitializedAsync()
+    {
+        organizationSettingsDto = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
+    }
 }
 
