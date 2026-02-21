@@ -903,7 +903,9 @@
     "AssignPackage": "Assign Package",
     "AssigningDone": "Assigning Done",
     "VehiclePackages": "Vehicle Packages",
-    "OnlyOnePackageTypeAllowed": "Only one package type can be enabled."
+    "OnlyOnePackageTypeAllowed": "Only one package type can be enabled.",
+    "CustomerHasActivePackage": "Customer already package",
+    "PackgeVehiclesLimitationsExceeded": "Number of vehicles allowed for that package exceeded"
 
 
 

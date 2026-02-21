@@ -943,7 +943,9 @@
     "AssignPackage": "تعيين باقه",
     "AssigningDone": "تم التخصيص",
     "VehiclePackages": "باقات السيارات",
-    "OnlyOnePackageTypeAllowed": "يجب تفعيل نوع حزمة واحد فقط."
+    "OnlyOnePackageTypeAllowed": "يجب تفعيل نوع حزمة واحد فقط.",
+    "CustomerHasActivePackage": "المستفيد لديه باقة بالفعل",
+    "PackgeVehiclesLimitationsExceeded" : "لقد تجاوزت العدد المسوح من المركبات لتلك الباقة"
 
   }
 
