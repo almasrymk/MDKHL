@@ -68,7 +68,7 @@ public class PackageCodeEndPointAppService : SmartParkingAppService, IPackageCod
             }
             var _garageTransactionDto = InitalizeCreateUpdateGarageTransactionDto(packageCodeEntry, _dispenser);
             var packageDto = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(new GarageTransactionDto { OrganizationID = _garageTransactionDto.OrganizationID, PlateNumber = _garageTransactionDto.PlateNumber, TicketId = _garageTransactionDto.TicketId, AccurateTime = _garageTransactionDto.AccurateTime });
-            var result = await _garageTransactionEndPointsAppService.HandleEntrance(unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _organization.DispenserTransaction, _organization.CameraTransaction, _garageTransactionDto, packageDto);
+            var result = await _garageTransactionEndPointsAppService.HandleEntrance(unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _garageTransactionDto, packageDto);
             if(result)
             {
               await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = packageCodeEntry.CarNum, laneNO = packageCodeEntry.LaneNO, operatorType = 5 });
