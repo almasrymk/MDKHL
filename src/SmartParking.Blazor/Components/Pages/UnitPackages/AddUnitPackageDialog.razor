@@ -7,7 +7,6 @@
 @using SmartParking.Lookups
 @using SmartParking.Packages
 @using SmartParking.Organizations
-@using SmartParking.Blazor.Components.Shared
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @using SmartParking.UnitPackages
@@ -56,6 +55,31 @@
                         Placeholder=@L["Type Here"]
                         Label=@L["EnglishName"] />
                     </MudItem>
+
+                        <MudItem sm="6" md="6">
+                        
+                            <MudTextField @bind-Value="createUpdateUnitPackage.NumberOfSlots"
+                                          For="@(() => createUpdateUnitPackage.NumberOfSlots)"
+                                      Label=@L["NumberOfSlots"] 
+
+                                          Variant="Variant.Text"
+                                          Class="w-100"
+                                            Placeholder=@L["Type Here"]
+                                          Required="true"
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+
+                        </MudItem>
+
+                        <MudItem sm="6" md="6">
+
+                            <MudTextField @bind-Value="createUpdateUnitPackage.NumberOfVehicles"
+                                          For="@(() => createUpdateUnitPackage.NumberOfVehicles)"
+                                          Variant="Variant.Text"
+                                          Class="w-100"
+                                      Label=@L["NumberOfVehicles"]
+                                      Required="true"
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                        </MudItem>
 
                     <MudItem sm="6" md="6">
                         <MudSelect 
@@ -181,34 +205,6 @@
 
                 </MudGrid>
                     
-                <MudGrid>
-                    <MudItem sm="6" md="6">
-                        <label style="font-size: 0.75rem; margin-bottom: 4px;">
-                            @L["NumberOfSlots"]
-                        </label>
-                        <MudTextField @bind-Value="createUpdateUnitPackage.NumberOfSlots"
-                        For="@(() => createUpdateUnitPackage.NumberOfSlots)"
-                        Variant="Variant.Outlined"
-                        Class="w-100"
-                        Required="true"
-                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        />
-
-                    </MudItem>
-
-                    <MudItem sm="6" md="6">
-                        <label style="font-size: 0.75rem; margin-bottom: 4px;">
-                            @L["NumberOfVehicles"]
-                        </label>
-                        <MudTextField @bind-Value="createUpdateUnitPackage.NumberOfVehicles"
-                        For="@(() => createUpdateUnitPackage.NumberOfVehicles)"
-                        Variant="Variant.Outlined"
-                        Class="w-100"
-                        Required="true"
-                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        />
-                    </MudItem>
-                </MudGrid>
 
             </MudForm>
 
@@ -316,6 +312,7 @@
             await PackagesAppService.CreateAsync(createUpdateUnitPackage);
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {createUpdatePackage.ArabicName}", Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
+            NavigationManager.Refresh(true);
         }
         catch (AbpValidationException validationException)
         {

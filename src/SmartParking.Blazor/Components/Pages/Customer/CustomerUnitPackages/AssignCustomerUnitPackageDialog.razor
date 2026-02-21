@@ -3,6 +3,8 @@
 @using SmartParking.Blazor.Components.Shared.Components
 @using System.Globalization
 @using SmartParking.Blazor.Components.State
+@using SmartParking.CustomerPackages
+@using SmartParking.CustomerUnitPackages
 @using SmartParking.Enums
 @using SmartParking.Localization
 @using SmartParking.Organizations
@@ -14,6 +16,10 @@
 @inject PreAssignPackageUnitState preAssignState
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject ICustomerUnitPackageAppService CustomerUnitPackageAppService
+
+
 
 <PageTitle>@L["Assign Package"]</PageTitle>
 
@@ -125,16 +131,7 @@
                         </MudItem>
 
                     }
-                    <MudItem sm="2">
-                        <MudCheckBox @bind-value="IsCustom">
-                            @L["CustomPackage"]
-                        </MudCheckBox>
-                    </MudItem>
 
-                    @if (IsCustom)
-                    {
-                        <CustomPackageComponent CustomPackageUiDto="CustomPackageUiDto" />
-                    }
                 </MudGrid>
 
 
@@ -148,6 +145,8 @@
                             <MudTh>@L["Publish From"]</MudTh>
                             <MudTh>@L["Publish To"]</MudTh>
                             <MudTh>@L["TotalHours"]</MudTh>
+                            <MudTh>@L["NumberOfVehicles"]</MudTh>
+                            <MudTh>@L["NumberOfSlots"]</MudTh>
                         </HeaderContent>
                         <RowTemplate>
                             @if (CultureInfo.CurrentCulture.Name == "en")
@@ -164,6 +163,8 @@
                             <MudTd>@context.Package.PublishFrom</MudTd>
                             <MudTd>@context.Package.PublishTo</MudTd>
                             <MudTd>@context.Package.DurationOfPackage</MudTd>
+                            <MudTd>@context.NumberOfVehicles</MudTd>
+                            <MudTd>@context.NumberOfSlots</MudTd>
                         </RowTemplate>
                     </MudTable>
                 }

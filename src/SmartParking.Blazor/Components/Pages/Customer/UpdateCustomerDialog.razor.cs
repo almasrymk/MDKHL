@@ -1,20 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.Customers;
 using SmartParking.Cutomers;
 using SmartParking.Organizations;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
 using Volo.Abp;
-using Volo.Abp.Application.Dtos;
-using System.Linq;
 using Volo.Abp.Validation;
 using SmartParking.Enums;
 using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using SmartParking.Blazor.Components.Shared;
-using SmartParking.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Permissions.CustomerPermissions;
 

@@ -1,28 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MudBlazor;
-using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.SPComponents;
-using SmartParking.Cameras;
-using SmartParking.CustomerPackages;
 using SmartParking.Cutomers;
-using SmartParking.Packages;
-using SmartParking.Vehicles;
-using System;
-using System.Collections.Generic;
-using System.Security.Authentication;
-using System.Threading.Tasks;
-using static MudBlazor.CategoryTypes;
-using Volo.Abp;
-using Microsoft.Extensions.Localization;
-using SmartParking.Localization;
-using SmartParking.Enums;
-using Blazorise;
 using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Permissions.CustomerPermissions;
-using SmartParking.Entities.Organizations;
 using SmartParking.Organizations;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
 

@@ -20,11 +20,11 @@
 @attribute [Authorize]
 @inherits AbpCrudPageBase<IUnitPackageAppService, UnitPackageDto, int, PagedAndSortedResultRequestDto, CreateUpdateUnitPackageDto>
 
-<PageTitle>@L["UnitPackages"]</PageTitle>
+<PageTitle>@L["Packages"]</PageTitle>
 
-<MudText Typo="Typo.h5" Class="mb-2">@L["UnitPackages"]</MudText>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Packages"]</MudText>
 
-<SPDataGrid PageName=@L["UnitPackages"] Menus="@MenuDatas" ShowMenue="true&&CurrentTenant.Id==null" Data="@itemData" 
+<SPDataGrid PageName=@L["Packages"] Menus="@MenuDatas" ShowMenue="true&&CurrentTenant.Id==null" Data="@itemData" 
             ShowAdd="AuthorizationService.IsGrantedAsync(PackagePermissions.Create).Result"
             ShowDelete="AuthorizationService.IsGrantedAsync(PackagePermissions.Delete).Result"
             ShowEdit="AuthorizationService.IsGrantedAsync(PackagePermissions.Edit).Result"

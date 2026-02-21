@@ -177,9 +177,10 @@ public partial class UnitPacakge
             }
 
         }
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["NumberOfVehicles"], Name = "NumberOfVehicles", IsFilterable = false, PropertyName = "NumberOfVehicles", IsSortable = true, TypeFilter = TypeFilter.Number });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["NumberOfSlots"], Name = "NumberOfSlots", IsFilterable = false, PropertyName = "NumberOfSlots", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
-        //tableData.Columns.Add(new ColumnDef() { DisplayName = "Max Capacity", Name = "MaxCapacity", IsFilterable = false, IsSortable = true, TypeFilter = TypeFilter.Number });
         foreach (var item in packages.Items)
         {
             var rowDef = new RowDef();
@@ -209,6 +210,8 @@ public partial class UnitPacakge
                 }
 
             }
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["NumberOfVehicles"], item.NumberOfVehicles.ToString() ));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["NumberOfSlots"], item.NumberOfSlots.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Package.Status.ToString()}"]));
 
 

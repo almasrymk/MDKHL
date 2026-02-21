@@ -18,7 +18,6 @@
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Validation
-@using SmartParking.Validations
 @inject IUnitPackageAppService PackagesAppService
 @inject IOrganizationsAppService organizationAppService
 @inject IPackageTypesAppService packageTypesAppService
@@ -53,6 +52,33 @@
                         Class="w-100"
                         Label="@L["EnglishName"]" />
                     </MudItem>
+                    <MudGrid>
+                        <MudItem sm="6" md="6">
+                            <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                @L["NumberOfSlots"]
+                            </label>
+                            <MudTextField @bind-Value="UnitPackage.NumberOfSlots"
+                                          For="@(() => UnitPackage.NumberOfSlots)"
+                                          Variant="Variant.Outlined"
+                                          Class="w-100"
+                                          Required="true"
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+
+                        </MudItem>
+
+                        <MudItem sm="6" md="6">
+                            <label style="font-size: 0.75rem; margin-bottom: 4px;">
+                                @L["NumberOfVehicles"]
+                            </label>
+                            <MudTextField @bind-Value="UnitPackage.NumberOfVehicles"
+                                          For="@(() => UnitPackage.NumberOfVehicles)"
+                                          Variant="Variant.Outlined"
+                                          Class="w-100"
+                                          Required="true"
+                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                        </MudItem>
+                    </MudGrid>
+
                
                     <MudItem sm="6" md="6">
                         <MudSelect 
@@ -180,34 +206,7 @@
                     </MudItem>
                 </MudGrid>
 
-                <MudGrid>
-                    <MudItem sm="6" md="6">
-                        <label style="font-size: 0.75rem; margin-bottom: 4px;">
-                            @L["NumberOfSlots"]
-                        </label>
-                        <MudTextField @bind-Value="UnitPackage.NumberOfSlots"
-                        For="@(() => UnitPackage.NumberOfSlots)"
-                        Variant="Variant.Outlined"
-                        Class="w-100"
-                        Required="true"
-                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        />
-
-                    </MudItem>
-
-                    <MudItem sm="6" md="6">
-                        <label style="font-size: 0.75rem; margin-bottom: 4px;">
-                            @L["NumberOfVehicles"]
-                        </label>
-                        <MudTextField @bind-Value="UnitPackage.NumberOfVehicles"
-                        For="@(() => UnitPackage.NumberOfVehicles)"
-                        Variant="Variant.Outlined"
-                        Class="w-100"
-                        Required="true"
-                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                        />
-                    </MudItem>
-                </MudGrid>
+              
 
             </MudForm>
 
@@ -355,6 +354,8 @@
                 await PackagesAppService.UpdateAsync(UpdatedId, UnitPackage);
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {Package.EnglishName}", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
+                Navigation.Refresh(true);
+
             }
             else
             {

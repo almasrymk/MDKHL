@@ -1,32 +1,21 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Identity;
 using MudBlazor;
-using SmartParking.Authentication;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
+using SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.CustomerPackages;
 using SmartParking.Cutomers;
-using SmartParking.DefaultPackages;
-using SmartParking.Entities.Vehicles;
-using SmartParking.Enums;
-using SmartParking.Localization;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;
 using SmartParking.Lookups.VehicleBrand;
 using SmartParking.Lookups.VehicleModel;
-using SmartParking.Mobile.Vehicles;
 using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.Permissions.CustomerPermissions;
 using SmartParking.Validations;
 using SmartParking.Vehicles;
-using SmartParking.Vehicles.LookUps;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Authentication;
-using System.Text;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Identity;
@@ -56,6 +45,7 @@ public partial class CustomerRegister
     private string plateNumbers = "";
     private string RoleId = "";
     private int PackageId { get; set; }
+    private  OrganizationDto organizationDto { get; set; } = new();
     public bool ShowAddUser { get; set; } = false;
     private CustomerDto Customer = new CustomerDto();
 
@@ -85,9 +75,9 @@ public partial class CustomerRegister
         Organizations = result.Items.ToList();
         if (CurrentTenant.Id is not null)
         {
-            var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+            organizationDto = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
             Roles = await RoleAppService.GetListByTenant(CurrentTenant.Id);
-            createUpdateCustomerDto.OrganizationId = organization.Id;
+            createUpdateCustomerDto.OrganizationId = organizationDto.Id;
             createUpdateCustomerDto.TenantId = CurrentTenant.Id;
             Picture = await OrganizationAppService.GetOrganizationPictureByOrganizationTenant(CurrentTenant.Id);
         }
@@ -138,6 +128,12 @@ public partial class CustomerRegister
                 if (Customer != null)
                 {
                     CustomerId = Customer.Id;
+                    await CustomerPackagesAppService.AddDefaultPackageToCustomerAsync(new DefaultCustomerPackageDto
+                    {
+                        CustomerId=Customer.Id,
+                        TenantId=organizationDto.TenantId,
+                        OrganizationId=organizationDto.Id
+                    });
                     SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}  {createUpdateCustomerDto.FullName}", Severity.Success);
                     showVehicle = true;
                 }
@@ -197,9 +193,17 @@ public partial class CustomerRegister
                 var parameters = new DialogParameters
                 {
                     ["Customer"] = Customer,
-                    ["VehicleId"] = vehichle.Id,
                 };
-                await DialogService.ShowAsync<AssignPackgeDialog>("view customer package", parameters);
+                
+                if (organizationDto.OrganizationSettings.UserAccess==true)
+                    await DialogService.ShowAsync<AssignCustomerUnitPackageDialog>("Assign Customer Package", parameters);
+                else
+                {
+                    parameters.Add("VehicleId", vehichle.Id);
+                    await DialogService.ShowAsync<AssignPackgeDialog>("view customer package", parameters);
+                }
+
+                //await AssignVehiclePackageExtensions.AssignPackgeToVehicleCases(vehichle.Id, CustomerId, vehichle, Customer, access, DialogService);
             }
         }
         catch (AbpValidationException validationException)

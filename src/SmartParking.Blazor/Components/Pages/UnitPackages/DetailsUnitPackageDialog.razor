@@ -41,6 +41,22 @@
                                       Label=@L["EnglishName"] />
                     </MudItem>
                     <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="Package.NumberOfVehicles"
+                                      For="@(() => Package.NumberOfVehicles)"
+                                      Variant="Variant.Text"
+                                      Class="w-100"
+                                      Disabled='true'
+                                      Label=@L["NumberOfVehicles"] />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
+                        <MudTextField @bind-Value="Package.NumberOfSlots"
+                                      For="@(() => Package.NumberOfSlots)"
+                                      Variant="Variant.Text"
+                                      Class="w-100"
+                                      Disabled='true'
+                                      Label=@L["NumberOfSlots"] />
+                    </MudItem>
+                    <MudItem sm="6" md="6">
                         <div style="display: flex; flex-direction: column;">
                             <label style="font-size: 0.75rem; margin-bottom: 4px; color: rgba(0, 0, 0, 0.38); cursor: default;">
                                 @L["Price"]
@@ -154,26 +170,6 @@
                    
 
 				</MudGrid>
-
-                <MudGrid>
-                   <MudItem sm="6" md="6">
-                        <MudTextField @bind-Value="Package.NumberOfVehicles"
-                                      For="@(() => Package.NumberOfVehicles)"
-                                      Variant="Variant.Text"
-                                      Class="w-100"
-                                      Disabled='true'
-                                      Label=@L["NumberOfVehicles"] />
-                    </MudItem>
-                    <MudItem sm="6" md="6">
-                        <MudTextField @bind-Value="Package.NumberOfSlots"
-                                      For="@(() => Package.NumberOfSlots)"
-                                      Variant="Variant.Text"
-                                      Class="w-100"
-                                      Disabled='true'
-                                      Label=@L["NumberOfSlots"] />
-                    </MudItem>
-                </MudGrid>
-
 			</MudForm>
 
             

@@ -279,42 +279,9 @@ public partial class ViewCustomerVehicleDialog
             organization.OrganizationSettings.VehcileAccess,
             organization.OrganizationSettings.UserAccess
         );
-
-        switch (access)
-        {
-            case (true, false):
-                await DialogService.ShowAsync<AssignPackgeDialog>(
-                    "view customer package",
-                    new DialogParameters
-                    {
-                        ["Customer"] = customer,
-                        ["VehicleId"] = vehicleIdParsed,
-                    });
-                break;
-
-            case (false, true):
-                await DialogService.ShowAsync<AssignVehicleToPackageDialog>(
-                    "view customer package",
-                    new DialogParameters
-                    {
-                        ["Vehicle"] = vehicle,
-                        ["CustomerId"] = customerIdParsed,
-                    });
-                break;
-
-            default:
-                await DialogService.ShowAsync<AssignPackgeDialog>(
-                              "view customer package",
-                              new DialogParameters
-                              {
-                                  ["Customer"] = customer,
-                                  ["VehicleId"] = vehicleIdParsed,
-                              });
-                break;
-        }
+        await AssignVehiclePackageExtensions.AssignPackgeToVehicleCases(vehicleIdParsed, customerIdParsed, vehicle, customer, access , DialogService);
 
     }
 
 
-    
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MudBlazor;
-using SmartParking.Blazor.Components.State;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
 using SmartParking.Enums;
@@ -30,7 +29,6 @@ public partial class AssignCustomerUnitPackageDialog
     private MudForm form;
     public List<UnitPackageDto> selectedPackageDto { get; set; } = new List<UnitPackageDto>();
     private bool IsCustom { get; set; } = false;
-    private CustomPackageUiDto CustomPackageUiDto { get; set; } = new();
 
 
     /// <summary>
@@ -62,8 +60,15 @@ public partial class AssignCustomerUnitPackageDialog
     /// </summary>
     private async Task SubmitEdit()
     {
-
+        var result = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(Customer.Id);
+        if (result)
+        {
+            SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"],Severity.Error);
+            return;
+        }
         var package = selectedPackageDto.FirstOrDefault();
+
+
         preAssignState.UnitPackage=package;
         preAssignState.Customer = Customer;
         Navigation.NavigateTo("/prepaymentpackageunit");
