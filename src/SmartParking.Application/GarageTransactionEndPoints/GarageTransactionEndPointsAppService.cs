@@ -33,7 +33,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly ICalculationsEndPointsAppService _calculationsEndPointAppService;
     private readonly IGarageTransactionsActionsFactoryAppService _garageTransactionActionsHandler;
-    private readonly IVehiclesAppService _vehicleAppService;
 
     public GarageTransactionEndPointsAppService(
         IGarageTransactionsAppService garageTransactionsAppService,
@@ -43,8 +42,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
        ICalculationsEndPointsAppService calculationsEndPointAppService,
        IUnLinkedTransactionAppService unlinkedGarageTransactionsAppService,
        IGarageTransactionUtilityAppService garageTransactionUtilityAppService,
-       IGarageTransactionsActionsFactoryAppService garageTransactionActionsHandler,
-       IVehiclesAppService vehicleAppService)
+       IGarageTransactionsActionsFactoryAppService garageTransactionActionsHandler)
     {
         _garageTransactionsAppService = garageTransactionsAppService;
         _logger = logger;
@@ -54,7 +52,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         _unlinkedGarageTransactionsAppService = unlinkedGarageTransactionsAppService;
         _garageTransactionUtilityAppService = garageTransactionUtilityAppService;
         _garageTransactionActionsHandler = garageTransactionActionsHandler;
-        _vehicleAppService = vehicleAppService;
     }
     #region public methods web methods
     public async Task<bool> CreateAsync(CreateUpdateGarageTransactionEndPointDto input)
@@ -100,7 +97,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     return await HandleExit(GarageTransaction, organization, input  , packageDto);
 
                 case WatcherType.Entry:
-                    return await HandleEntrance(input, _hasFreeSlots, _hasPackageOnly,organization.DispenserTransaction , organization.CameraTransaction  , GarageTransaction  , packageDto);
+                    return await HandleEntrance(input, _hasFreeSlots, _hasPackageOnly , GarageTransaction  , packageDto);
             }
         }
         catch (Exception ex)
@@ -128,7 +125,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     #endregion
     #region public methods to handle entrance and exit 
 
-    public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, bool dispenserTransaction, bool cameraTransaction, CreateUpdateGarageTransactionDto GarageTransaction, CustomerPackageTransactionDto? customerPackageDto = null)
+    public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, CreateUpdateGarageTransactionDto GarageTransaction, CustomerPackageTransactionDto? customerPackageDto = null)
     {
         bool _hasActivePackage = customerPackageDto is not null;
         GarageTransaction.CustomerCategory = customerPackageDto is not null ? customerPackageDto.CustomerCategory : CustomerCategoryStatus.Customer;

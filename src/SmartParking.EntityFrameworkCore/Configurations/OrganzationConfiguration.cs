@@ -30,6 +30,9 @@ public class OrganzationConfiguration : IEntityTypeConfiguration<Organization>
         builder.HasMany(_ => _.organizationPackages).WithOne(_ => _.Organization).OnDelete(DeleteBehavior.Restrict);
         builder.HasMany(_ => _.Customers).WithOne(_ => _.Organization).OnDelete(DeleteBehavior.Restrict);
         builder.HasMany(_ => _.organizationContactInfos).WithOne().OnDelete(DeleteBehavior.Restrict);
-        //builder.HasMany(_ => _.CustomerCategories).WithOne(_ => _.Organization).OnDelete(DeleteBehavior.Restrict);
+        builder.OwnsOne(e => e.Settings, navigationBuilder =>
+        {
+            navigationBuilder.ToJson();
+        });
     }
 }

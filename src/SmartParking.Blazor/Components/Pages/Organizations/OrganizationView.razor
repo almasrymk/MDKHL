@@ -55,6 +55,22 @@
 
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
+                        <MudGrid Class="ma-2">
+                            <MudItem sm="4">
+                                <MudSwitch Label="@L["UserAccess"]"
+                                           @bind-Value="organizationSettings.UserAccess"
+                                           Color="MudBlazor.Color.Primary" />
+                            </MudItem>
+
+                            <MudItem sm="4">
+                                <MudSwitch Label="@L["VhecileAccess"]"
+                                           @bind-Value="organizationSettings.VehcileAccess"
+                                           Color="MudBlazor.Color.Primary" />
+                            </MudItem>
+                        </MudGrid>
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
+
                         <MudItem sm="4">
                             <MudTextField ReadOnly="true" T="string" @bind-Value="organization.PhoneNum" Label=@L["Contact Phone"] />
                         </MudItem>
@@ -255,6 +271,9 @@
                             <MudNumericField T="int" @bind-Value="organization.Graceperiod" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["Graceperiod"]} ({L["Minutes"]})") ReadOnly="true" />
                         </MudItem>
 
+                        
+
+
                         <MudItem sm="12">
                             <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.End" @bind-Value="organization.IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" ReadOnly="true"  />
                         </MudItem>
@@ -336,6 +355,9 @@
 
 
                 </MudGrid>
+
+                
+
                 <MudGrid Class="mt-3">
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">

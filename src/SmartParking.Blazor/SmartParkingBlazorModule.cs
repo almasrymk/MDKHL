@@ -15,6 +15,7 @@ using SmartParking.Blazor.Components.State;
 using SmartParking.Blazor.Filters;
 using SmartParking.Blazor.Menus;
 using SmartParking.Blazor.MultiTenants;
+using SmartParking.CustomerPackages;
 using SmartParking.CustomerPackages.CustomerPackageTransaction;
 using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.EntityFrameworkCore;
@@ -28,6 +29,7 @@ using SmartParking.OpeningGate;
 using SmartParking.Payments.PaymentIntegrations;
 using SmartParking.PDF;
 using SmartParking.Results;
+using SmartParking.Subscriptions;
 using SmartParking.Watchers;
 using SmartParking.WebSockets;
 using StackExchange.Profiling;
@@ -161,12 +163,19 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.AddScoped<IOpeningGateService,OpenCameraGateService>();
         context.Services.AddScoped<IOpenGateFactoryService, OpenGateFactoryService>();
         context.Services.AddScoped<PreAssignPackageState>();
+        context.Services.AddScoped<PreAssignPackageUnitState>();
         context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsCameraActionsAppService>();
         context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsDispenserActionsAppService>();
         context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, CameraTransactionActionsAppService>();
         context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, DispenserTransactionActionsAppService>();
         context.Services.AddScoped<IGarageTransactionsActionsFactoryAppService, GarageTransactionsActionsFactoryAppService>();
         context.Services.AddScoped<ICustomerPackageHandlerAppService, CustomerPackageHandlerAppService>();
+        context.Services.AddScoped<IWatcherAppService, WatcherAppService>();
+        context.Services.AddScoped<IAssignCustomerPackagesMobileAppService, MobileCustomerPackagesAppService>();
+        context.Services.AddScoped<IAssignCustomerPackagesAppService, NormalCustomerPackagesAppService>();
+        context.Services.AddScoped<IAssignUnitCustomerPackageAppService, UnitCustomerPackageAppService>();
+        context.Services.AddScoped<ICustomerPackagesCreationValidationsAppService, CustomerPackageCreationValidationsAppService>();
+        context.Services.AddScoped<ISubscriptionActionsAppService, SubsctiptionActionsAppService>();
         context.Services.AddScoped<IWatcherAppService, WatcherAppService>();
 
 

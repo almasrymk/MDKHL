@@ -103,6 +103,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\Folders\PDF\" />
     <Folder Include="wwwroot\GarageTransactionsImages\" />
+    <Folder Include="wwwroot\images\CustomerPackageQRCode\" />
     <Folder Include="wwwroot\QRCodeImage\image\" />
   </ItemGroup>
 

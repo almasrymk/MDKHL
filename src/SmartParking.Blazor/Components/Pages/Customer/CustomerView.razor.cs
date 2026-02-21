@@ -1,28 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MudBlazor;
-using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.SPComponents;
-using SmartParking.Cameras;
-using SmartParking.CustomerPackages;
 using SmartParking.Cutomers;
-using SmartParking.Packages;
-using SmartParking.Vehicles;
-using System;
-using System.Collections.Generic;
-using System.Security.Authentication;
-using System.Threading.Tasks;
-using static MudBlazor.CategoryTypes;
-using Volo.Abp;
-using Microsoft.Extensions.Localization;
-using SmartParking.Localization;
-using SmartParking.Enums;
-using Blazorise;
 using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Permissions.CustomerPermissions;
-using SmartParking.Entities.Organizations;
+using SmartParking.Organizations;
+using SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -52,6 +36,8 @@ public partial class CustomerView
     /// </summary>
     public Guid IdentityUserId { get; set; }
 
+    public OrganizationSettingsDto OrganizationSettings { get; set; } = new OrganizationSettingsDto();
+
     /// <summary>
     /// Initializes the component, checks authorization, and fetches customer data.
     /// </summary>
@@ -69,6 +55,13 @@ public partial class CustomerView
 
         // Get customer picture
         Picture = await UsersAppService.GetImage(IdentityUserId) ?? "images/users/149071.png";
+
+        // Fetch organization settings
+        var org = await OrganizationAppService.GetOrganizationByTenant(CurrentTenant.Id);
+        if (org != null)
+        {
+            OrganizationSettings = org.OrganizationSettings ?? new OrganizationSettingsDto();
+        }
     }
 
     /// <summary>
@@ -125,6 +118,15 @@ public partial class CustomerView
         {
             ["CustomerId"] = customerId,
         };
-        return await DialogService.ShowAsync<ViewCustomerPackageDialog>("view customer package", parameters);
+        return await DialogService.ShowAsync<ViewCustomerPackageDialog>(L["Packages"], parameters);
+    }
+    private async Task<IDialogReference> AssignUnitPackage()
+    {
+        // Create dialog parameters
+        var parameters = new DialogParameters
+        {
+            ["CustomerId"] = customerId,
+        };
+        return await DialogService.ShowAsync<CustomerUnitPackageDialog>(L["Packages"], parameters);
     }
 }

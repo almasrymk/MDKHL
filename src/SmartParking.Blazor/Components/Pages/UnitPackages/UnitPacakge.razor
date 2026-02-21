@@ -1,0 +1,37 @@
+﻿@page "/unit-package"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Enums
+@using SmartParking.Organizations
+@using SmartParking.UnitPackages
+@using SmartParking.Localization
+@using SmartParking.Permissions
+@using SmartParking.Permissions.PackagePermissions
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
+@inject IUnitPackageAppService UnitPackageAppService
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
+@inject IOrganizationsAppService OrganizationAppService
+@inject IAuthorizationService AuthorizationService
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inherits AbpCrudPageBase<IUnitPackageAppService, UnitPackageDto, int, PagedAndSortedResultRequestDto, CreateUpdateUnitPackageDto>
+
+<PageTitle>@L["Packages"]</PageTitle>
+
+<MudText Typo="Typo.h5" Class="mb-2">@L["Packages"]</MudText>
+
+<SPDataGrid PageName=@L["Packages"] Menus="@MenuDatas" ShowMenue="true&&CurrentTenant.Id==null" Data="@itemData" 
+            ShowAdd="AuthorizationService.IsGrantedAsync(PackagePermissions.Create).Result"
+            ShowDelete="AuthorizationService.IsGrantedAsync(PackagePermissions.Delete).Result"
+            ShowEdit="AuthorizationService.IsGrantedAsync(PackagePermissions.Edit).Result"
+            ShowView="AuthorizationService.IsGrantedAsync(PackagePermissions.Default).Result"
+            TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" 
+            OnPageChanged="FetchTableData" 
+            OnClickRowDelete="OnClickRowDelete"
+            OnAdd="@(() => OpenAddDialogAsync(_backdropClick))"
+            OnClickRowEdit="OnClickRowEdit"
+            OnClickRowView="OnClickRowView"></SPDataGrid>

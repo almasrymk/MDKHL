@@ -93,14 +93,16 @@
                             </MudPaper>
                         </MudItem>
                     }
+                        <MudItem sm="6">
+                            <MudPaper class="text-center p-2">
+                                <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewVehicle">@L["Cars"]</MudLink>
+                            </MudPaper>
+                        </MudItem>
                     <MudItem sm="6">
                         <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewVehicle">@L["Cars"]</MudLink>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem sm="6">
-                        <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewPackage">@L["Packages"]</MudLink>
+                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewPackage">
+                                 @L["Packages"]
+                            </MudLink>
                         </MudPaper>
                     </MudItem>
                 </MudGrid>

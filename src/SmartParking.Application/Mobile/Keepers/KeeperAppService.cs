@@ -2,20 +2,11 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using OpenIddict.Abstractions;
 using OpenIddict.Server;
-using SmartParking.Discounts;
-using SmartParking.Entities.Customers;
-using SmartParking.Entities.Discounts;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
-using SmartParking.Entities.Payments;
 using SmartParking.Enums;
-using SmartParking.Garages;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Invoices;
@@ -26,13 +17,10 @@ using SmartParking.QRCode;
 using SmartParking.Repositories;
 using SmartParking.Results;
 using SmartParking.Utilities;
-using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -40,19 +28,18 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.PermissionManagement;
 using Volo.Abp.TenantManagement;
-using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace SmartParking.Mobile.Keepers;
 
 [RemoteService(isEnabled: false)]
 public class KeeperAppService : ApplicationService, IKeeperAppService
 {
+    private readonly IPermissionManagementProvider _permissionManager; 
     private readonly IRepository<Invoice,int> _invoiceRepository;
-    private readonly IRepository<Payment,Guid> _paymentRepository;
     private readonly SignInManager<Volo.Abp.Identity.IdentityUser> _signInManager;
     private readonly UserManager<Volo.Abp.Identity.IdentityUser> _userManager;
-    private readonly IOptionsMonitor<OpenIddictServerOptions> _openIddictOptions;
     private readonly IHttpContextAccessor _httpContext;
     private readonly IRepository<Volo.Abp.Identity.IdentityUser, Guid> _userRepository;
     private readonly IRepository<GarageTransaction, int> _garageTransactionRepository;
@@ -64,7 +51,6 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly IAuthenticationUtility _authenticationUtility;
     private readonly IVehicleAppService _vehicleAppService;
-    private readonly IDiscountAppService _discountAppService;
     private readonly IQRCodeAppService _qrCodeAppService;
     private readonly IAuthorizationService _authorizationService;
     private string _notFound = "Not found";
@@ -74,7 +60,6 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         (IRepository<Invoice, int> invoiceRepository,
          SignInManager<Volo.Abp.Identity.IdentityUser> signInManager,
          UserManager<Volo.Abp.Identity.IdentityUser> userManager,
-         IOptionsMonitor<OpenIddictServerOptions> openIddictOptions,
          IHttpContextAccessor httpContext,
          IRepository<Volo.Abp.Identity.IdentityUser, Guid> userRepository,
          IRepository<GarageTransaction, int> garageTransactionRepository,
@@ -85,8 +70,6 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IInvoiceAppService invoiceAppService,
          IAuthenticationUtility authenticationUtility,
          IVehicleAppService vehicleAppService,
-         IDiscountAppService discountAppService,
-         IRepository<Payment, Guid> paymentRepository,
          IPaymentWebAppService paymentWebAppService,
          IQRCodeAppService qrCodeAppService,
          IAuthorizationService authorizationService)
@@ -94,7 +77,6 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
         _userManager = userManager;
-        _openIddictOptions = openIddictOptions;
         _httpContext = httpContext;
         _userRepository = userRepository;
         _garageTransactionRepository = garageTransactionRepository;
@@ -105,8 +87,6 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _invoiceAppService = invoiceAppService;
         this._authenticationUtility = authenticationUtility;
         _vehicleAppService = vehicleAppService;
-        _discountAppService = discountAppService;
-        _paymentRepository = paymentRepository;
         _paymentWebAppService = paymentWebAppService;
         _qrCodeAppService = qrCodeAppService;
         _authorizationService = authorizationService;
@@ -250,7 +230,6 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         {
             var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == input.PhoneNumber || u.UserName == input.PhoneNumber);
             
-
             if (user is null || !await _userManager.CheckPasswordAsync(user, input.Password))
             {
                 return Result<LoginResponseDto>.Invalid(new Results.ValidationError

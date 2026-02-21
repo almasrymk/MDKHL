@@ -5,6 +5,7 @@ using SmartParking.Entities;
 using SmartParking.Entities.Banners;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Customers;
+using SmartParking.Entities.CustomerUnitPackages;
 using SmartParking.Entities.Discounts;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
@@ -116,6 +117,8 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<Shift> Shifts { get; set; }
     public DbSet<DailyShift> DailyShifts { get; set; }
     public DbSet<Discount> Discounts { get; set; }
+    public DbSet<UnitPackage> UnitPackages { get; set; }
+    public DbSet<CustomerUnitPackage> CustomerUnitPackages { get; set; }
 
 
     #endregion

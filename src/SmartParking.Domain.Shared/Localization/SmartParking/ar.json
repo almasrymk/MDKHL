@@ -908,7 +908,7 @@
     "InvoiceId is required for PaymentParking category.": "رقم المطابقة مطلوب لفئة فاتورة الركن.",
     "PackageId is required for Package category.": "معرف الباقة مطلوب لفئة الباقة.",
     "This Package Is already paid": "تم دفع هذه الباقة بالفعل",
-    "This Package Invoice Is already sent to zatca" : "تم إرسال فاتورة هذه الباقة بالفعل إلى الزكاة والدخل",
+    "This Package Invoice Is already sent to zatca": "تم إرسال فاتورة هذه الباقة بالفعل إلى الزكاة والدخل",
     "CancelledGarageTransactionReport": "الحركات الملغاة",
     "DurationPerHour": "المدة بالساعة",
     "QRTransactionReport": "حركات رمز الاستجابة السريع",
@@ -935,8 +935,18 @@
     "Check-out": "توقيت الخروج",
     "ThankyouforusingMadkhal": "شكرا لاستخدامك نظام مدخل للمواقف الذكية",
     "PrintInvoice": "طباعة الفاتوره",
-    "This Invoice Is already paid": "هذه الفاتورة مدفوعة بالفعل",
-    "This Payment Number Is already Exist" :  "كود الدفع موجود مسبقا"
+    "VhecileAccess": "إتاحه سيارة",
+    "UserAccess": "إتاحه مستخدم",
+    "UnitPackages": "الباقات",
+    "NumberOfSlots": "الاماكن المتاحه",
+    "NumberOfVehicles": "عدد السيارات المتاحه",
+    "AssignPackage": "تعيين باقه",
+    "AssigningDone": "تم التخصيص",
+    "VehiclePackages": "باقات السيارات",
+    "OnlyOnePackageTypeAllowed": "يجب تفعيل نوع حزمة واحد فقط.",
+    "CustomerHasActivePackage": "المستفيد لديه باقة بالفعل",
+    "PackgeVehiclesLimitationsExceeded" : "لقد تجاوزت العدد المسوح من المركبات لتلك الباقة"
+
   }
 
 }

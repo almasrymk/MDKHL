@@ -1,20 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.Customers;
 using SmartParking.Cutomers;
 using SmartParking.Organizations;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
 using Volo.Abp;
-using Volo.Abp.Application.Dtos;
-using System.Linq;
 using Volo.Abp.Validation;
 using SmartParking.Enums;
 using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using SmartParking.Blazor.Components.Shared;
-using SmartParking.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Permissions.CustomerPermissions;
 
@@ -31,6 +24,7 @@ public partial class UpdateCustomerDialog
     public CreateUpdateCustomerDto customerDataDto { get; set; } = new CreateUpdateCustomerDto();
     public string Picture { get; set; }
     public Guid IdentityUserId { get; set; }
+    public OrganizationSettingsDto OrganizationSettings { get; set; } = new OrganizationSettingsDto();
 
     /// <summary>
     /// Initializes the component.
@@ -43,6 +37,13 @@ public partial class UpdateCustomerDialog
         }
         await Fetch();
         Picture = await UsersAppService.GetImage(IdentityUserId) ?? "images/users/149071.png";
+
+        // Fetch organization settings
+        var org = await OrganizationAppService.GetOrganizationByTenant(CurrentTenant.Id);
+        if (org != null)
+        {
+            OrganizationSettings = org.OrganizationSettings ?? new OrganizationSettingsDto();
+        }
     }
 
     /// <summary>
@@ -133,6 +134,6 @@ public partial class UpdateCustomerDialog
         {
             ["CustomerId"] = customerId,
         };
-        return await DialogService.ShowAsync<ViewCustomerPackageDialog>("view customer package", parameters);
+        return await DialogService.ShowAsync<ViewCustomerPackageDialog>(L["Packages"], parameters);
     }
 }

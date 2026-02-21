@@ -1,0 +1,195 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Blazor.Components.Shared.Components
+@using System.Globalization
+@using SmartParking.Blazor.Components.State
+@using SmartParking.CustomerPackages
+@using SmartParking.CustomerUnitPackages
+@using SmartParking.Enums
+@using SmartParking.Localization
+@using SmartParking.Organizations
+@using SmartParking.UnitPackages
+@using Volo.Abp.MultiTenancy
+@inject ICurrentTenant CurrentTenant
+@inject IUnitPackageAppService PackageAppService
+@inject IOrganizationsAppService OrganizationAppService
+@inject PreAssignPackageUnitState preAssignState
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject ICustomerUnitPackageAppService CustomerUnitPackageAppService
+
+
+
+<PageTitle>@L["Assign Package"]</PageTitle>
+
+<div class="modal-wrapper w-100">
+    <MudDialog class="d-flex mud-modal w-100">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["Assign Package"] </MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudForm Class="flex-grow-0 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
+                <MudGrid>
+                    @if (CurrentTenant.Id is null)
+                    {
+                        <MudItem sm="12" md="12">
+                            <MudSelect T="int"
+                                       Variant="Variant.Text"
+                                       Label=@L["Organizations"]
+                                       Placeholder=@L["Choose"]
+                                       HelperText=@L["Helper Text"]
+                                       Required
+                                       @bind-Value="organizationId">
+                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+                                @foreach (var organization in Organizations)
+                                {
+                                    if (organization.Status != Enums.Status.Active)
+                                        continue;
+
+
+                                    if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="organization.Id">@organization.EnglishName</MudSelectItem>
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="organization.Id">@organization.ArabicName</MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+                        </MudItem>
+
+
+
+                    }
+                    @if (organizationId != 0 || CurrentTenant.Id is not null)
+                    {
+                        <MudItem sm="12" md="12">
+                            <MudSelect T="string"
+                                       Label="@L["customer category"]"
+                                       Placeholder="@L[ "Choose"]"
+                                       HelperText=@L["Helper Text"]
+                                       Required="true"
+                                       ValueChanged="getPackage">
+
+                                @foreach (var category in Enum.GetValues(typeof(CustomerCategoryStatus)).Cast<CustomerCategoryStatus>())
+                                {
+                                    if (category == CustomerCategoryStatus.None)
+                                        continue;
+                                    <MudSelectItem Value="@category.ToString()">
+
+                                        @category.ToString()
+                                    </MudSelectItem>
+                                }
+                            </MudSelect>
+
+                        </MudItem>
+                    }
+                    @if (Packages.Count > 0 && !IsCustom)
+                    {
+                        <MudItem sm="10">
+                            <MudSelect T="int"
+                                       ValueChanged="PackageValueChanged"
+                                       Variant="Variant.Text"
+                                       Label="@L["EnglishName"]"
+                                       Placeholder=@L["Choose"]
+                                       HelperText=@L["Helper Text"]
+                                       Clearable="_clearable">
+                                <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
+
+                                @foreach (var package in Packages)
+                                {
+                                    if (package.Package.PackageStatus != SubscriptionStatus.Active && package.Package.Status != Status.Active)
+                                        continue;
+                                    if (CultureInfo.CurrentCulture.Name == "en")
+                                    {
+                                        <MudSelectItem Value="package.Id">@package.Package.EnglishName</MudSelectItem>
+
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="package.Id">@package.Package.ArabicName</MudSelectItem>
+
+                                    }
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    }
+                    else if (IsCustom)
+                    {
+                        <MudItem sm="10">
+                            @if (CultureInfo.CurrentCulture.Name == "en")
+                            {
+
+                                <MudTextField T="string" Label="@L["CustomPackage"]" Placeholder="@L["CustomPackage"]" ReadOnly @bind-Value="_customerPackageDto.ArabicName"> @L["CustomPackage"] </MudTextField>
+                            }
+                            else
+                            {
+                                <MudTextField T="string" Label="@L["CustomPackage"]" Placeholder="@L["CustomPackage"]" ReadOnly @bind-Value="_customerPackageDto.EnglishName"> @L["CustomPackage"] </MudTextField>
+                            }
+                        </MudItem>
+
+                    }
+
+                </MudGrid>
+
+
+                @if (!IsCustom)
+                {
+                    <MudTable T="UnitPackageDto" Items="selectedPackageDto" Style="width:100%">
+                        <HeaderContent>
+                            <MudTh>@L["Name"]</MudTh>
+                            <MudTh>@L["Package Type"]</MudTh>
+                            <MudTh>@L["Price"]</MudTh>
+                            <MudTh>@L["Publish From"]</MudTh>
+                            <MudTh>@L["Publish To"]</MudTh>
+                            <MudTh>@L["TotalHours"]</MudTh>
+                            <MudTh>@L["NumberOfVehicles"]</MudTh>
+                            <MudTh>@L["NumberOfSlots"]</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            @if (CultureInfo.CurrentCulture.Name == "en")
+                            {
+                                <MudTd>@context.Package.EnglishName</MudTd>
+                            }
+                            else
+                            {
+                                <MudTd>@context.Package.ArabicName</MudTd>
+                            }
+
+                            <MudTd> @L[@context.Package.PackageCategoryType.ToString()]</MudTd>
+                            <MudTd>@context.Package.Price</MudTd>
+                            <MudTd>@context.Package.PublishFrom</MudTd>
+                            <MudTd>@context.Package.PublishTo</MudTd>
+                            <MudTd>@context.Package.DurationOfPackage</MudTd>
+                            <MudTd>@context.NumberOfVehicles</MudTd>
+                            <MudTd>@context.NumberOfSlots</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+
+            </MudForm>
+        </DialogContent>
+        <DialogActions>
+            <DialogActionComponent ButtonOneColor="MudBlazor.Color.Dark"
+                                   ButtonTwoColor="MudBlazor.Color.Primary"
+                                   ButtonOneLabel="@L["Back"]"
+                                   ButtonTwoLabel="@L["Assign"]"
+                                   ButtonOneClick="CancelEdit"
+                                   ButtonTwoClick="SubmitEdit"
+                                   ButtonOneVariant="MudBlazor.Variant.Filled"
+                                   ButtonTwoVariant="MudBlazor.Variant.Filled" />
+        </DialogActions>
+
+
+    </MudDialog>
+
+
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>

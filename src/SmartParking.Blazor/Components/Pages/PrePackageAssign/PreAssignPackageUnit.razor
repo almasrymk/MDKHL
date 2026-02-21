@@ -1,0 +1,168 @@
+﻿@page "/prepaymentpackageunit"
+@using MudBlazor
+@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Pages.Invoices
+@using SmartParking.Blazor.Components.Pages.LastInvoiceAtCamera
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Blazor.Components.State
+@using SmartParking.Currency
+@using SmartParking.CustomerPackages
+@using SmartParking.CustomerUnitPackages
+@using SmartParking.Cutomers
+@using SmartParking.Enums
+@using SmartParking.Invoices
+@using SmartParking.Localization
+@using SmartParking.Payments
+@using SmartParking.UnitPackages
+@using SmartParking.Utilities
+@using System.Globalization
+@using SmartParking.Validations
+@inject IStringLocalizer<SmartParkingResource> L
+@inject IPaymentAppService paymentAppService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ICustomerUnitPackageAppService CustomerUnitPackageAppService
+@inject PreAssignPackageUnitState preAssignState
+
+<PageTitle>@L["PreInvoice"]</PageTitle>
+
+<MudGrid>
+    <MudItem sm="7" Class="d-flex flex-column">
+        <MudItem sm="8" Class="d-flex flex-row justify-content-between">
+            <MudText Typo="Typo.h6" Class="fw-bold mb-4">@L["PackageCheckout"]</MudText>
+        </MudItem>
+        <div>
+            <LastInvoiceOnGateDetails Key="@L["OrganizationName"]"
+                                      Value="@(CultureInfo.CurrentCulture.Name == "en"
+                                      ? UnitPackageDto?.Package.OrganizationEnglishName
+                                        : UnitPackageDto?.Package?.OrganizationArabicName)" />
+            <LastInvoiceOnGateDetails Key="@L["CustomerName"]"
+                                      Value="@(CultureInfo.CurrentCulture.Name == "en"
+                                      ? CustomerDto?.FullName
+                                      : CustomerDto?.ArabicName)" />
+
+            <LastInvoiceOnGateDetails Key="@L["StartDate"]"
+                                      Value="@(ActivationDate.Date.ToString("yyyy-MM-dd") ?? "" )" />
+
+            <LastInvoiceOnGateDetails Key="@L["EndDate"]"
+                                      Value="@(ExpiryDate.ToString("yyyy-MM-dd") ?? "" )" />
+
+            <LastInvoiceOnGateDetails CurrencyKey="@((MarkupString)$"{L["CountOfDays"]}")"
+                                      Value="@CountOfDays.ToString()"   />
+
+            <LastInvoiceOnGateDetails Key="@L["Published"]"
+                                      Value="@(publishedText ?? "" )" />
+
+            <LastInvoiceOnGateDetails CurrencyKey="@((MarkupString)$"{L["PriceOfPackagePerDay"]}{CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px")}")"
+                                      Value="@PriceOfPackagePerDay.ToString()"   />
+
+            <LastInvoiceOnGateDetails CurrencyKey="@((MarkupString)$"{L["PriceOfPackage2"]}{CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px")}")"
+                                      Value="@packagePrice.ToString()"   />
+        </div>
+    </MudItem>
+
+    <PriceSummaryComponent OnValueSelected="HandleAddDiscount"
+                           OnSelectPaymentMethod="OnSelectPaymentMethod"
+                           ComponentSize="5"
+                           ConfirmSize="12"
+                           HasConfirmPermission="true"
+                           InvoicePrice="@(UnitPackageDto?.Package.Price ??0 )"
+                           PayInvoice="PayPackage"
+                           PaymentMethod="PaymentMethod"
+                           ShowOpenGate="false"
+                           IsPaying="IsPaying" />
+</MudGrid>
+
+@code {
+    public bool IsPaid { get; set; }
+    public bool IsPaying { get; set; } = false;
+    public PaymentMethod PaymentMethod { get; set; }
+    public string publishedText { get; set; }
+    private UnitPackageDto UnitPackageDto { get; set; } = new();
+    private CustomerDto CustomerDto { get; set; } = new();
+    private CustomerUnitPackageAssignationDto CustomerUnitPackage { get; set; } = new();
+    private decimal packagePrice { get; set; } = default;
+    private decimal PriceOfPackagePerDay { get; set; } = default;
+    private int CountOfDays { get; set; } = default;
+    private DateTime ActivationDate { get; set; } = default;
+    private DateTime ExpiryDate { get; set; } = default;
+    private Task HandleAddDiscount(decimal selected)
+    {
+        CustomerUnitPackage.Discount = selected;
+        return Task.CompletedTask;
+
+    }
+
+    private void OnSelectPaymentMethod(PaymentMethod selected) => PaymentMethod = selected;
+
+    protected override void OnInitialized()
+    {
+        if (string.IsNullOrEmpty(preAssignState.Customer.ArabicName))
+            Navigation.NavigateTo("/customers");
+        UnitPackageDto = preAssignState.UnitPackage;
+        CustomerDto = preAssignState.Customer;
+        CustomerUnitPackage.DurationOfPackage = UnitPackageDto.Package.DurationOfPackage;
+
+        packagePrice = UnitPackageDto.Package.Price;
+        if (UnitPackageDto.Package.Published)
+        {
+            publishedText = $"24 {L["Hour"]}";
+        }
+        else
+        {
+
+            var from = UnitPackageDto.Package.PublishFrom.ToString() ?? "-";
+            var to = UnitPackageDto.Package.PublishTo.ToString() ?? "-";
+            publishedText = $"{from} - {to}";
+        }
+        ActivationDate = PackageAssignationLogic.PackageActivationTime(UnitPackageDto.Package.ActivationDate, UnitPackageDto.Package.PublishFrom, UnitPackageDto.Package.PackageCategoryType == PackageCategoryTypes.CustomPackage);
+        ExpiryDate = PackageAssignationLogic.PackageExpirationTime(UnitPackageDto.Package.DectivationDate, UnitPackageDto.Package.DurationOfPackage, UnitPackageDto.Package.PackageCategoryType == PackageCategoryTypes.CustomPackage);
+		CountOfDays = UnitPackageDto.Package.DurationOfPackage;
+        
+		PriceOfPackagePerDay = Math.Round((decimal)(packagePrice / CountOfDays),2);
+
+    }
+    private async Task PayPackage()
+    {
+        try
+        {
+            IsPaying = true;
+            CustomerUnitPackage.Vat = Math.Round((packagePrice - CustomerUnitPackage.Discount) * 0.15m, 2);
+            var assignPackage = await CustomerUnitPackageAppService.AssignPackageToCustomerAsync(UnitPackageDto.Id, CustomerDto.Id , CustomerUnitPackage);
+
+            if (assignPackage.Errors.Count() > 0)
+                throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +
+                                    LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.ASSIGN) + " " +
+                                    LocalizationHelper.GetLocalizedString("Package"));
+            UnitPackageDto.Id = assignPackage.Value.Id;
+            PaymentCheckoutDto payment = await RequestToPaymentCheckout();
+            if (payment != null)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L["PackagePaymentSuccessfully"]}", MudBlazor.Severity.Success);
+                await Task.Delay(1000);
+                Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
+            }
+        }
+        catch (Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
+        }
+        IsPaying = false;
+
+    }
+
+    private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()
+    {
+        var paymentCheckout = new PaymentCheckoutRequestDto
+        {
+            OrganizationId = UnitPackageDto!.Package.OrganizationId,
+            PaymentCategory = PaymentCategory.Package,
+            PackageId = UnitPackageDto.Id,
+            PaymentMethod = PaymentMethod,
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(packagePrice, CustomerUnitPackage.Discount),
+            CustomerId = CustomerDto.Id,
+        };
+
+        return await paymentAppService.CreateCheckoutPackagePaymentWebAsync(paymentCheckout);
+    }
+}

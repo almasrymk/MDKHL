@@ -1,32 +1,34 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
-using MudBlazor;
-using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Localization;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp.Application.Dtos;
-using SmartParking.Vehicles;
-using System.Globalization;
-using Blazorise;
+﻿using Blazorise;
+using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using SmartParking.Blazor.Components.SPComponents;
-using System.Security.Authentication;
-using Volo.Abp;
-using Volo.Abp.MultiTenancy;
-using SmartParking.Entities.Vehicles;
-using System.Text.RegularExpressions;
-using SmartParking.Blazor.Components.Shared;
-using SmartParking.Analysis;
+using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
-using SmartParking.PDF;
-using SmartParking.Utilities;
-using SmartParking.Helpers;
-using SmartParking.Results;
+using MudBlazor;
+using SmartParking.Analysis;
+using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
-using SmartParking.Entities.Customers;
+using SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
+using SmartParking.Blazor.Components.Shared;
+using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Cutomers;
+using SmartParking.Entities.Customers;
+using SmartParking.Entities.Vehicles;
+using SmartParking.Helpers;
+using SmartParking.Localization;
+using SmartParking.Organizations;
+using SmartParking.PDF;
+using SmartParking.Results;
+using SmartParking.Utilities;
+using SmartParking.Vehicles;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Security.Authentication;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Volo.Abp;
+using Volo.Abp.Application.Dtos;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 /// <summary>
@@ -45,7 +47,7 @@ public partial class ViewCustomerVehicleDialog
     public int RowPerPage { get; set; } = 10; 
 
     private TableData itemData = new TableData();
-
+    private OrganizationDto organization = new();
     private string termSearch;
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     private bool ShowEdit;
@@ -58,11 +60,12 @@ public partial class ViewCustomerVehicleDialog
     /// Initializes the component and checks if the current tenant is set.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         if (CurrentTenant.Id is null)
             ShowEdit = true;
-        return base.OnInitializedAsync();
+        organization =await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
+        await base.OnInitializedAsync();
     }
 
     /// <summary>
@@ -222,7 +225,8 @@ public partial class ViewCustomerVehicleDialog
             ["VehicleId"] = vehicleId,
             ["Vehicle"] = vehicleEdit
         };
-        return await DialogService.ShowAsync<EditVehicleDialog>("edit customer vehicle", parameters);
+            return await DialogService.ShowAsync<EditVehicleDialog>("edit customer vehicle", parameters);
+
     }
     /// <summary>
     /// Handles the delete vehicle dialog.
@@ -263,15 +267,21 @@ public partial class ViewCustomerVehicleDialog
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
     }
-    public async Task<IDialogReference> HandleAssign(string vehicleId)
+    public async Task HandleAssign(string vehicleId)
     {
-        var vehicleIdAfterParse = int.Parse(vehicleId);
-        var customer = await CustomerAppService.GetAsync(Guid.Parse(CustomerId));
-        var parameters = new DialogParameters
-        {
-            ["Customer"] = customer,
-            ["VehicleId"] = vehicleIdAfterParse,
-        };
-        return await DialogService.ShowAsync<AssignPackgeDialog>("view customer package", parameters);
+        var vehicleIdParsed = int.Parse(vehicleId);
+        var customerIdParsed = Guid.Parse(CustomerId);
+
+        var vehicle = await VehiclesAppService.GetAsync(vehicleIdParsed);
+        var customer = await CustomerAppService.GetAsync(customerIdParsed);
+
+        var access = (
+            organization.OrganizationSettings.VehcileAccess,
+            organization.OrganizationSettings.UserAccess
+        );
+        await AssignVehiclePackageExtensions.AssignPackgeToVehicleCases(vehicleIdParsed, customerIdParsed, vehicle, customer, access , DialogService);
+
     }
+
+
 }

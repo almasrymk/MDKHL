@@ -71,19 +71,44 @@
 
                         <MudItem sm="4">
                             <MudSwitch Label=@L["DispenserTransaction"] @bind-Value="_createUpdateOrganiztionDto.DispenserTransaction" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
 
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField Required="true"  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.PhoneNumber" Placeholder=@L["Type Here"] Label=@L["Contact Phone"] />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.WhatsAppNum" Placeholder=@L["Type Here"] Label=@L["Whatsapp Num"] />
-                        </MudItem>
-                        <MudItem sm="4">
-                            <MudTextField Required="true"  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.Email" Placeholder=@L["Type Here"] Label=@L["Contact Email"] />
-                        </MudItem>
+                            
+                        <MudGrid Class="ma-2">
+                            <MudItem sm="4">
+                                <MudSwitch Label=@L["UserAccess"] @bind-Value="_organizationSettingsDto.UserAccess" Color="MudBlazor.Color.Primary" />
+                            </MudItem>
+
+                            <MudItem sm="4">
+                                <MudSwitch Label=@L["VhecileAccess"] @bind-Value="_organizationSettingsDto.VehcileAccess" Color="MudBlazor.Color.Primary" />
+                            </MudItem>
+                        </MudGrid> 
+                        
 
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
+
+
+                        <MudGrid Class="ma-1">
+                            <MudItem sm="4">
+                                <MudTextField 
+                                    Required="true"  
+                                    RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" 
+                                    T="string" InputType="InputType.Text" 
+                                    @bind-Value="_createUpdateOrganiztionDto.PhoneNumber" 
+                                    Placeholder=@L["Type Here"] 
+                                    Label=@L["Contact Phone"] />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField Required="true" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.WhatsAppNum" Placeholder=@L["Type Here"] Label=@L["Whatsapp Num"] />
+                            </MudItem>
+                            <MudItem sm="4">
+                                <MudTextField Required="true"  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Text" @bind-Value="_createUpdateOrganiztionDto.Email" Placeholder=@L["Type Here"] Label=@L["Contact Email"] />
+                            </MudItem>
+                        </MudGrid>
+                        
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
+
                             <MudItem sm="4">
                                 <MudSelect T="string" Variant="Variant.Text"
                                            Label=@L["Country"]
@@ -356,6 +381,9 @@
                         <MudItem sm="4">
                             <MudNumericField T="int" @bind-Value="_createUpdateOrganiztionDto.Graceperiod" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label=@($"{L["Graceperiod"]} ({L["Minutes"]})") />
                         </MudItem>
+
+                        
+
                         <MudItem sm="12">
                             <MudSwitch Label="@L["NumberOfHoursExceeded"]" LabelPosition="LabelPosition.End" @bind-Value="_createUpdateOrganiztionDto.IsNumberOfHoursExceeded" Color="MudBlazor.Color.Primary" />
                         </MudItem>
@@ -380,8 +408,11 @@
 
                         }
                                                
+                        
                        
                     </MudGrid>
+
+                    
                    
                     <div class="d-flex justify-content-between mt-5">
                         <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="Cancel">@L["Cancel"]</MudButton>
@@ -446,6 +477,7 @@
                 </MudGrid>
             </MudPaper>
         </MudItem>
+        
 
     </MudGrid>
 </div>

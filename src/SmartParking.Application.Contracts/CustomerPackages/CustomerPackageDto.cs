@@ -4,6 +4,8 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Organizations;
 using SmartParking.Packages;
+using SmartParking.Payments;
+using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,5 +54,34 @@ public class CustomerPackageDto
     public decimal Vat { get; set; }
     public string? LicenseTypeImage { get; set; }
     public string? VehicleModelImage { get; set; }
+
+    public  PaymentCheckoutRequestDto MapToPaymentCheckout(
+    CustomerPackageDto customerPackageDto,
+    Guid tenantId)
+    {
+        if (customerPackageDto == null)
+            throw new ArgumentNullException(nameof(customerPackageDto));
+
+        if (!customerPackageDto.PriceOfPackage.HasValue)
+            throw new InvalidOperationException("PriceOfPackage is required for payment.");
+
+        return new PaymentCheckoutRequestDto
+        {
+            OrganizationId = customerPackageDto.OrganizationId,
+            PaymentCategory = PaymentCategory.Package,
+            CustomerPackageId = customerPackageDto.Id,
+            PackageId = customerPackageDto.PackageId,
+            PaymentMethod = PaymentMethod.Cash,
+
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(
+                customerPackageDto.PriceOfPackage.Value,
+                customerPackageDto.Discount),
+
+            CustomerId = customerPackageDto.CustomerId,
+            ArPlateNumber = customerPackageDto.ArPlateNumber,
+            EnPlateNumber = customerPackageDto.EnPlateNumber,
+            TenantId = tenantId
+        };
+    }
 
 }

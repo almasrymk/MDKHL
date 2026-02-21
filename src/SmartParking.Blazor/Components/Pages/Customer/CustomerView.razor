@@ -92,16 +92,44 @@
                         </MudItem>
                     }
                     
-                    <MudItem sm="6">
-                        <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewVehicle">@L["Cars"]</MudLink>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem sm="6">
-                        <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewPackage">@L["Packages"]</MudLink>
-                        </MudPaper>
-                    </MudItem>
+                        <MudItem sm="6">
+                            <MudPaper class="text-center p-2">
+                                <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewVehicle">@L["Cars"]</MudLink>
+                            </MudPaper>
+                        </MudItem>
+
+                     @if (OrganizationSettings.UserAccess)
+                        {
+                        <MudItem sm="6">
+                            <MudPaper class="text-center p-2">
+                               
+                                    <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewPackage">
+                                    @L["VehiclePackages"]
+                                    </MudLink>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem sm="12">
+                            <MudPaper class="text-center p-2">
+
+                                <MudLink Color="MudBlazor.Color.Dark" OnClick="AssignUnitPackage">
+                                    @L["Packages"]
+                                </MudLink>
+                            </MudPaper>
+                        </MudItem>
+                    }
+                    else
+                    {
+
+                        <MudItem sm="6">
+                            <MudPaper class="text-center p-2">
+
+                                <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewPackage">
+                                    @L["Packages"]
+                                </MudLink>
+                            </MudPaper>
+                        </MudItem>
+                        
+                    }
                 </MudGrid>
             </MudPaper>
         </MudItem>

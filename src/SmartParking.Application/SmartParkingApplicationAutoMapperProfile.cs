@@ -4,6 +4,7 @@ using SmartParking.Cameras;
 using SmartParking.Cameras.Watchers.Dispensers;
 using SmartParking.CustomerCategories;
 using SmartParking.CustomerPackages;
+using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
 using SmartParking.DailyShifts;
 using SmartParking.Discounts;
@@ -12,6 +13,7 @@ using SmartParking.Entities.Authentication;
 using SmartParking.Entities.Banners;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.Customers;
+using SmartParking.Entities.CustomerUnitPackages;
 using SmartParking.Entities.Discounts;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
@@ -46,6 +48,7 @@ using SmartParking.Shifts;
 using SmartParking.StateManagements;
 using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
+using SmartParking.UnitPackages;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
@@ -93,6 +96,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.PaymentCode, opt => opt.MapFrom(src => src.PaymentCode))
             .ForMember(dest => dest.TaxNumber, opt => opt.MapFrom(src => src.TaxIdentificationNumber))
             .ForMember(dest => dest.RegionNameAr, opt => opt.MapFrom(src => src.Region.ArabicName))
+            .ForPath(dest => dest.OrganizationSettings.VehcileAccess, opt => opt.MapFrom(src => src.Settings.VehcilePackage))
+            .ForPath(dest => dest.OrganizationSettings.UserAccess, opt => opt.MapFrom(src => src.Settings.CustomerPackage))
             .ReverseMap();
 
 
@@ -106,13 +111,28 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.TaxIdentificationNumber, opt => opt.MapFrom(src => src.TaxNumber))
             .ForMember(dest => dest.PhoneNum, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForMember(dest => dest.ContactMail, opt => opt.MapFrom(src => src.Email))
+            .ForPath(dest => dest.Settings.VehcilePackage, opt => opt.MapFrom(src => src.OrganizationSettingsDto.VehcileAccess))
+            .ForPath(dest => dest.Settings.CustomerPackage, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UserAccess))
+            .ReverseMap();
+
+        CreateMap<OrganizationSettingsDto, OrganizationSettings>()
             .ReverseMap();
 
         CreateMap<CreateUpdateOrganiztionDto, OrganizationDto>()
              .ForMember(dest => dest.TaxNumber, opt => opt.MapFrom(src => src.TaxNumber))
              .ForMember(dest => dest.PhoneNum , opt => opt.MapFrom(src => src.PhoneNumber))
              .ForMember(dest => dest.ContactMail , opt => opt.MapFrom(src => src.Email))
+             .ForPath(dest => dest.OrganizationSettings.VehcileAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.VehcileAccess))
+            .ForPath(dest => dest.OrganizationSettings.UserAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UserAccess))
             .ReverseMap();
+        CreateMap<OrganizationDto, CreateUpdateOrganiztionDto>()
+    .ForPath(dest => dest.OrganizationSettingsDto.VehcileAccess,
+             opt => opt.MapFrom(src => src.OrganizationSettings.VehcileAccess))
+    .ForPath(dest => dest.OrganizationSettingsDto.UserAccess,
+             opt => opt.MapFrom(src => src.OrganizationSettings.UserAccess));
+
+        //CreateMap<OrganizationSettingsDto, OrganizationSettings>()
+        //    .ReverseMap();
 
         CreateMap<CustomerCategory, CustomerCategoryDto>()
             .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.EnglishName)).ReverseMap();
@@ -406,6 +426,15 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         .ForMember(d => d.PaymentId, o => o.MapFrom(s => s.Id))
         .ForMember(d => d.PaymentNumber, o => o.MapFrom(s => s.PaymentNumber));
 
+        CreateMap<CreateUpdateUnitPackageDto, UnitPackage>()
+            .ForMember(d => d.Package, o => o.MapFrom(s => s.Package));
+
+        CreateMap<UnitPackage, UnitPackageDto>()
+            .ForMember(d => d.Package, o => o.MapFrom(s => s.Package));
+
+        CreateMap<CustomerUnitPackage, CustomerUnitPackageDto>();
+
+        CreateMap<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>();
 
     }
 
