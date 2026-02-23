@@ -6,6 +6,7 @@ using SmartParking.Entities.Payments;
 using SmartParking.Enums;
 using SmartParking.Filters;
 using SmartParking.Localization;
+using SmartParking.Organizations;
 using SmartParking.QRCode;
 using SmartParking.Results;
 using SmartParking.Validations;
@@ -27,17 +28,19 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
     private readonly IDataFilter _dataFilter;
     private readonly IRepository<Invoice, int> _invoiceRepository;
     private readonly IRepository<Organization, int> _organizationsRepository;
+    private readonly IOrganizationsAppService _organizationsAppService;
     private readonly IQRCodeAppService _qrCodeAppService;
     private readonly IRepository<Payment, Guid> _paymentRepository;
 
 
 
-    public InvoiceAppService(IRepository<Invoice, int> repository, 
-        IDataFilter dataFilter, 
-        IRepository<Organization, int> organizationsRepository, 
-        IRepository<Payment, Guid> paymentRepository, 
+    public InvoiceAppService(IRepository<Invoice, int> repository,
+        IDataFilter dataFilter,
+        IRepository<Organization, int> organizationsRepository,
+        IRepository<Payment, Guid> paymentRepository,
         IQRCodeAppService qrCodeAppService
-   )
+,
+        IOrganizationsAppService organizationsAppService)
     : base(repository)
     {
         _dataFilter = dataFilter;
@@ -45,7 +48,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         _organizationsRepository = organizationsRepository;
         _paymentRepository = paymentRepository;
         _qrCodeAppService = qrCodeAppService;
-
+        _organizationsAppService = organizationsAppService;
     }
     #region public methods 
     /// <inheritdoc/>
@@ -370,9 +373,11 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
     public async Task<InvoiceDto?> GetLatestInvoiceForOrganization()
     {
+        var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
         var query = await _invoiceRepository.GetQueryableAsync();
         query = query.Where(x => x.InvoiceType == InvoiceType.UnPaid
-        && x.InvoicePrice > 0);
+        && x.InvoicePrice > 0
+        && x.OrganizationId == organization.Id);
 
         query = query.OrderByDescending(x => x.CreationTime);
 
