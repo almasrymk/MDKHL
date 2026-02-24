@@ -181,7 +181,7 @@ public partial class UserShifts
             Name = L["UsersCanAssignShifts"],
             ShowHeader = true
         };
-
+        // Remote
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "User.Id", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserName"], Name = "UserName", IsFilterable = true, PropertyName = "User.UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserFullName"], Name = "Name", IsFilterable = true, PropertyName = "User.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
