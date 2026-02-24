@@ -2,19 +2,13 @@
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.Shared.Utilities;
-using SmartParking.Currency;
-using SmartParking.CustomerPackages;
-using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Shifts;
 using SmartParking.Shifts.ShiftDetail;
 using SmartParking.Shifts.ShiftsMangers;
 using SmartParking.Shifts.ShiftZones;
 using System.Globalization;
-using System.Runtime.Intrinsics.Arm;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Blazor.Components.Pages.Shifts.ShiftZones;
 
@@ -60,13 +54,11 @@ public partial class ViewShiftZoneDialog
             Sorting = pageInfo.SortColumn
         };
 
-        PagedResultDto<ShiftDetailsDto> StaffDevice = new();
+        PagedResultDto<ShiftDetailsDto> StaffDevice = await ShiftDetailsAppService.GetPaginatedByShiftZoneAsync(ShiftZone.Id, input);
 
-        var x = ShiftZone.ShiftDetailsDto;
-        StaffDevice = 
-
+        var shiftDetails = StaffDevice.Items.ToList();
         TotalItem = (int)StaffDevice.TotalCount;
-        CreateTable(StaffDevice.Items.ToList());
+        CreateTable(shiftDetails);
     }
 
 

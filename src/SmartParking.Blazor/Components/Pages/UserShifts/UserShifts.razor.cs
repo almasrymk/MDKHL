@@ -1,21 +1,250 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿//using Microsoft.AspNetCore.Components;
+//using Microsoft.Extensions.Localization;
+//using MudBlazor;
+//using SmartParking.Blazor.Components.DataGrid;
+//using SmartParking.Blazor.Components.Pages.User;
+//using SmartParking.Localization;
+//using SmartParking.UserShifts;
+//using System.Globalization;
+//using Volo.Abp.Application.Dtos;
+//using Volo.Abp.Identity;
+//using Volo.Abp.Users;
+
+//namespace SmartParking.Blazor.Components.Pages.UserShifts;
+
+//public partial class UserShifts
+//{
+//    protected PermissionManagementModal PermissionManagementModal;
+//    private List<MudMenuData> MenuDatas = new List<MudMenuData>();
+//    private int TotalItem;
+//    public int CurrentPage { get; set; } = 1;
+//    public int RowPerPage { get; set; } = 10;
+//    public Guid? TenantId { get; private set; }
+//    private string sortColumn;
+//    private string ValueOfMenue = "";
+//    private TableData itemData = new TableData();
+
+//    // Kept so OnClickViewShiftDetails can look up Role / Device / Garage / Name
+//    // without needing extra hidden cells in the table.
+//    private IReadOnlyList<ShiftZoneUserViewDto> _lastUsers = new List<ShiftZoneUserViewDto>();
+
+//    public bool ViewAdd { get; set; } = true;
+//    protected bool HasManagePermissionsPermission { get; set; } = true;
+
+//    private string termSearch;
+//    private readonly IStringLocalizer<SmartParkingResource> _localizer;
+//    private readonly ICurrentUser _currentUser;
+//    protected string ManagePermissionsPolicyName;
+
+//    public UserShifts(IStringLocalizer<SmartParkingResource> localizer, ICurrentUser currentUser)
+//    {
+//        _localizer = localizer;
+//        _currentUser = currentUser;
+//        ManagePermissionsPolicyName = IdentityPermissions.Users.ManagePermissions;
+//    }
+
+//    protected async override Task OnInitializedAsync()
+//    {
+//        await CreateMenue();
+//        await base.OnInitializedAsync();
+//    }
+
+//    private async Task CreateMenue()
+//    {
+//        var itemsOrganizations = new List<MenuItem>();
+//        var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+
+//        itemsOrganizations.Add(new MenuItem
+//        {
+//            MenueName = "Organization",
+//            Label = @L["All"],
+//            OnClick = EventCallback.Factory.Create<string>(this,
+//                async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null))
+//        });
+
+//        bool isArabic = CultureInfo.CurrentCulture.Name == "ar";
+//        foreach (var org in organizations.Items)
+//        {
+//            itemsOrganizations.Add(new MenuItem
+//            {
+//                MenueName = "Organization",
+//                Label = isArabic ? org.ArabicName : org.EnglishName,
+//                OnClick = EventCallback.Factory.Create<string>(this,
+//                    async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId))
+//            });
+//        }
+
+//        MenuDatas = new List<MudMenuData>
+//        {
+//            new MudMenuData
+//            {
+//                Name = @L["Organizations"],
+//                Label = @L[ValueOfMenue],
+//                Items = itemsOrganizations
+//            }
+//        };
+//    }
+
+//    public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
+//    {
+//        TenantId = tenantId;
+//        ValueOfMenue = selectedValue;
+
+//        if (sortColumn == "Id") sortColumn = "UserId";
+
+//        var request = new PagedAndSortedAndSearchResultRequestDto
+//        {
+//            MaxResultCount = RowPerPage,
+//            SkipCount = (CurrentPage - 1) * RowPerPage,
+//            Sorting = sortColumn,
+//            SearchingTerm = termSearch
+//        };
+
+//        PagedResultDto<ShiftZoneUserViewDto> userDto =
+//            await ShiftZoneActionAppService.GetShiftZoneUsersAsync(TenantId, request);
+
+//        TotalItem = (int)userDto.TotalCount;
+//        await CreateTable(userDto.Items);
+//    }
+
+//    private async Task FetchTableData(PageChangeEventArgs pageInfo)
+//    {
+//        termSearch = pageInfo.SearchTerm;
+//        CurrentPage = pageInfo.PageNumber;
+//        RowPerPage = pageInfo.RowsPerPage;
+//        sortColumn = pageInfo.SortColumn;
+
+//        if (sortColumn == "Id") sortColumn = "UserId";
+
+//        var input = new PagedAndSortedAndSearchResultRequestDto
+//        {
+//            MaxResultCount = RowPerPage,
+//            SkipCount = (CurrentPage - 1) * RowPerPage,
+//            Sorting = sortColumn,
+//            SearchingTerm = termSearch
+//        };
+
+//        PagedResultDto<ShiftZoneUserViewDto> userDto =
+//            await ShiftZoneActionAppService.GetShiftZoneUsersAsync(TenantId, input);
+
+//        TotalItem = (int)userDto.TotalCount;
+//        await CreateTable(userDto.Items);
+//    }
+
+//    /// <summary>
+//    /// Opens the Shift Details dialog, enriching it with the ShiftZoneUserViewDto
+//    /// data (Role, Device, Garage, Name) that KeeperShiftDto does not carry.
+//    /// </summary>
+//    public async Task<IDialogReference> OnClickViewShiftDetails(RowDef row)
+//    {
+//        // Cell 0 is always the hidden UserId (see CreateTable below)
+//        var userId = Guid.Parse(row.Cells[0].Value);
+
+//        // Look up the full DTO so we can forward fields not in KeeperShiftDto
+//        var user = _lastUsers.FirstOrDefault(u => u.UserId == userId);
+
+//        var parameters = new DialogParameters
+//        {
+//            ["UserId"] = userId,
+//            ["UserFullName"] = user?.Name ?? string.Empty,
+//            ["Role"] = user?.Role ?? string.Empty,
+//            ["Device"] = user?.Device ?? string.Empty,
+//            ["Garage"] = user?.Garage ?? string.Empty,
+//        };
+
+//        return await Dialog.ShowAsync<ViewUserShiftsDialog>(
+//            L["ShiftDetails"],
+//            parameters,
+//            new DialogOptions
+//            {
+//                MaxWidth = MaxWidth.Large,
+//                FullWidth = true,
+//                CloseOnEscapeKey = true
+//            });
+//    }
+
+//    private async Task CreateTable(IReadOnlyList<ShiftZoneUserViewDto> users)
+//    {
+//        _lastUsers = users;   // ← retained so the dialog lookup works
+
+//        var tableData = new TableData
+//        {
+//            Name = L["UsersCanAssignShifts"],
+//            ShowHeader = true
+//        };
+
+//        // Hidden Id column – index 0, used by OnClickViewShiftDetails
+//        tableData.Columns.Add(new ColumnDef
+//        {
+//            DisplayName = _localizer["Id"],
+//            Name = "Id",
+//            IsFilterable = false,
+//            PropertyName = "UserId",
+//            IsSortable = false,
+//            TypeFilter = TypeFilter.Text,
+//            IsColumnVisible = false
+//        });
+
+//        tableData.Columns.Add(new ColumnDef { DisplayName = _localizer["UserName"], Name = "UserName", IsFilterable = true, PropertyName = "User.UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
+//        tableData.Columns.Add(new ColumnDef { DisplayName = _localizer["UserFullName"], Name = "Name", IsFilterable = true, PropertyName = "User.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
+//        tableData.Columns.Add(new ColumnDef { DisplayName = _localizer["Device"], Name = "Device", IsFilterable = true, PropertyName = "User.Device", IsSortable = true, TypeFilter = TypeFilter.Text });
+//        tableData.Columns.Add(new ColumnDef { DisplayName = _localizer["Garage"], Name = "Garage", IsFilterable = true, PropertyName = "User.Garage", IsSortable = true, TypeFilter = TypeFilter.Text });
+
+//        bool isHost = currrentTenant?.Id is null;
+//        bool isArabic = CultureInfo.CurrentCulture.Name == "ar";
+
+//        if (isHost)
+//        {
+//            tableData.Columns.Add(new ColumnDef
+//            {
+//                DisplayName = _localizer["OrganizationName"],
+//                Name = "Organization Name",
+//                IsFilterable = false,
+//                PropertyName = isArabic ? "OrganizationArabicName" : "OrganizationEnglishName",
+//                IsSortable = true,
+//                TypeFilter = TypeFilter.Text
+//            });
+//        }
+
+//        foreach (var item in users)
+//        {
+//            var rowDef = new RowDef();
+
+//            // Cell 0 – hidden UserId (must stay first)
+//            rowDef.Cells.Add(new KeyValuePair<string, string>("Id", item.UserId.ToString()));
+
+//            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserName"], item.UserName));
+//            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserFullName"], item.Name));
+//            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Device"], item.Device));
+//            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Garage"], item.Garage));
+
+//            if (isHost)
+//            {
+//                rowDef.Cells.Add(new KeyValuePair<string, string>(
+//                    _localizer["OrganizationName"],
+//                    isArabic ? item.OrganizationArabicName : item.OrganizationEnglishName));
+//            }
+
+//            tableData.Rows.Add(rowDef);
+//        }
+
+//        itemData = tableData;
+//        await Task.Yield();
+//    }
+//}
+
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
-using SmartParking.Authentication;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.User;
-using SmartParking.Entities;
 using SmartParking.Localization;
+using SmartParking.UserShifts;
 using System.Globalization;
-using System.Security.Authentication;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Identity;
 using Volo.Abp.Users;
-using Volo.Abp;
-using Volo.Abp.Application.Dtos;
-using SmartParking.Blazor.Components.Pages.Cameras;
-using SmartParking.Cameras;
-using SmartParking.KeeperShifts;
 
 namespace SmartParking.Blazor.Components.Pages.UserShifts;
 
@@ -31,6 +260,10 @@ public partial class UserShifts
     private string ValueOfMenue = "";
     private TableData itemData = new TableData();
 
+    // Kept so OnClickViewShiftDetails can look up Role / Device / Garage / Name
+    // without needing extra hidden cells in the table.
+    private IReadOnlyList<ShiftZoneUserViewDto> _lastUsers = new List<ShiftZoneUserViewDto>();
+
     public bool ViewAdd { get; set; } = true;
     protected bool HasManagePermissionsPermission { get; set; } = true;
 
@@ -43,19 +276,11 @@ public partial class UserShifts
     {
         _localizer = localizer;
         _currentUser = currentUser;
-        //CreatePolicyName = IdentityPermissions.Users.Create;
-        //UpdatePolicyName = IdentityPermissions.Users.Update;
-        //DeletePolicyName = IdentityPermissions.Users.Delete;
         ManagePermissionsPolicyName = IdentityPermissions.Users.ManagePermissions;
-
     }
 
     protected async override Task OnInitializedAsync()
     {
-        //if (!await AuthorizationService.IsGrantedAsync(IdentityPermissions.Users.Default))
-        //{
-        //    Navigation.NavigateTo("/Account/AccessDenied", true);
-        //}
         await CreateMenue();
         await base.OnInitializedAsync();
     }
@@ -64,20 +289,25 @@ public partial class UserShifts
     {
         var itemsOrganizations = new List<MenuItem>();
         var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
-        if (CultureInfo.CurrentCulture.Name == "ar")
+
+        itemsOrganizations.Add(new MenuItem
         {
-            foreach (var org in organizations.Items)
-            {
-                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
-            }
-        }
-        else
+            MenueName = "Organization",
+            Label = @L["All"],
+            OnClick = EventCallback.Factory.Create<string>(this,
+                async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null))
+        });
+
+        bool isArabic = CultureInfo.CurrentCulture.Name == "ar";
+        foreach (var org in organizations.Items)
         {
-            foreach (var org in organizations.Items)
+            itemsOrganizations.Add(new MenuItem
             {
-                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
-            }
+                MenueName = "Organization",
+                Label = isArabic ? org.ArabicName : org.EnglishName,
+                OnClick = EventCallback.Factory.Create<string>(this,
+                    async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId))
+            });
         }
 
         MenuDatas = new List<MudMenuData>
@@ -85,17 +315,19 @@ public partial class UserShifts
             new MudMenuData
             {
                 Name = @L["Organizations"],
-            Label = @L[ValueOfMenue],
-                Items =itemsOrganizations
-            },
+                Label = @L[ValueOfMenue],
+                Items = itemsOrganizations
+            }
         };
     }
+
     public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
     {
         TenantId = tenantId;
         ValueOfMenue = selectedValue;
-        if (sortColumn == "Id")
-            sortColumn = "User.Id";
+
+        if (sortColumn == "Id") sortColumn = "UserId";
+
         var request = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = RowPerPage,
@@ -104,130 +336,141 @@ public partial class UserShifts
             SearchingTerm = termSearch
         };
 
-        PagedResultDto<UserWithRole> userDto = await KeeperShiftsAppService.GetListUserCanAssignShiftsMdkhlAsync(TenantId, request);
+        PagedResultDto<ShiftZoneUserViewDto> userDto =
+            await ShiftZoneActionAppService.GetShiftZoneUsersAsync(TenantId, request);
 
         TotalItem = (int)userDto.TotalCount;
         await CreateTable(userDto.Items);
     }
+
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
         termSearch = pageInfo.SearchTerm;
         CurrentPage = pageInfo.PageNumber;
         RowPerPage = pageInfo.RowsPerPage;
         sortColumn = pageInfo.SortColumn;
+
+        if (sortColumn == "Id") sortColumn = "UserId";
+
         var input = new PagedAndSortedAndSearchResultRequestDto
         {
-            MaxResultCount = pageInfo.RowsPerPage,
-            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn,
-            SearchingTerm = pageInfo.SearchTerm
+            MaxResultCount = RowPerPage,
+            SkipCount = (CurrentPage - 1) * RowPerPage,
+            Sorting = sortColumn,
+            SearchingTerm = termSearch
         };
-        if (pageInfo.SortColumn == "Id")
-            input.Sorting = "User.Id";
 
-        PagedResultDto<UserWithRole> usersDto;
-        if (currrentTenant.Id is not null)
-            usersDto = await KeeperShiftsAppService.GetListUserCanAssignShiftsOrganizationAsync(input);
-        else
-            usersDto = await KeeperShiftsAppService.GetListUserCanAssignShiftsMdkhlAsync(null, input);
-        TotalItem = (int)usersDto.TotalCount;
-        await CreateTable(usersDto.Items);
+        PagedResultDto<ShiftZoneUserViewDto> userDto =
+            await ShiftZoneActionAppService.GetShiftZoneUsersAsync(TenantId, input);
 
+        TotalItem = (int)userDto.TotalCount;
+        await CreateTable(userDto.Items);
     }
 
-    public async Task<IDialogReference> AssignShiftDialog(string userId)
+    /// <summary>
+    /// Opens the Shift Details dialog, enriching it with the ShiftZoneUserViewDto
+    /// data (Role, Device, Garage, Name) that KeeperShiftDto does not carry.
+    /// Lookup is by UserName because UserId is never populated by GetShiftZoneUsersAsync.
+    /// </summary>
+    public async Task<IDialogReference> OnClickViewShiftDetails(RowDef row)
     {
+        // Cell 0 is the hidden UserName key (see CreateTable below)
+        var userName = row.Cells[0].Value;
 
+        // Look up the full DTO by UserName – the only reliable unique key available
+        var user = _lastUsers.FirstOrDefault(u =>
+            string.Equals(u.UserName, userName, StringComparison.OrdinalIgnoreCase));
 
         var parameters = new DialogParameters
         {
-            ["UserId"] = userId
+            // UserId is Guid.Empty because the service never sets it;
+            // pass it through but also expose UserName so the dialog can filter correctly.
+            ["UserId"] = user?.UserId ?? Guid.Empty,
+            ["UserName"] = userName,
+            ["UserFullName"] = user?.Name ?? string.Empty,
+            ["Role"] = user?.Role ?? string.Empty,
+            ["Device"] = user?.Device ?? string.Empty,
+            ["Garage"] = user?.Garage ?? string.Empty,
         };
 
-        return await Dialog.ShowAsync<AssignShiftDialog>("Assign Shift", parameters);
-
-    }
-    public async Task<IDialogReference> OnClickViewUserShifts(RowDef row)
-    {
-        
-        var parameters = new DialogParameters
-        {
-            ["UserId"] = Guid.Parse(row.Cells[0].Value)
-        };
-
-        return await Dialog.ShowAsync<ViewUserShiftsDialog>("View User Shifts", parameters);
-
+        return await Dialog.ShowAsync<ViewUserShiftsDialog>(
+            L["ShiftDetails"],
+            parameters,
+            new DialogOptions
+            {
+                MaxWidth = MaxWidth.Large,
+                FullWidth = true,
+                CloseOnEscapeKey = true
+            });
     }
 
-    
-    public async Task<IDialogReference> ShowUserLogs(RowDef row)
+    private async Task CreateTable(IReadOnlyList<ShiftZoneUserViewDto> users)
     {
+        _lastUsers = users;   // ← retained so the dialog lookup works
 
-
-        var parameters = new DialogParameters
-        {
-            ["userId"] = row.Cells[0].Value
-        };
-
-        return await Dialog.ShowAsync<ViewLogsDialog>("Logs Of User Shift Dialog", parameters);
-
-    }
-
-    private async Task CreateTable(IReadOnlyList<UserWithRole> users)
-    {
-
-        var tableData = new TableData()
+        var tableData = new TableData
         {
             Name = L["UsersCanAssignShifts"],
             ShowHeader = true
         };
-        // Remote
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "User.Id", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserName"], Name = "UserName", IsFilterable = true, PropertyName = "User.UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserFullName"], Name = "Name", IsFilterable = true, PropertyName = "User.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Email"], Name = "Email", IsFilterable = true, PropertyName = "User.Email", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PhoneNumber"], Name = "PhoneNumber", IsFilterable = true, PropertyName = "User.PhoneNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["UserRole"], Name = "UserRole", IsFilterable = false, PropertyName = "Role.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
-        switch (currrentTenant?.Id is null, CultureInfo.CurrentCulture.Name)
+
+        // Hidden UserName column – index 0, used as the lookup key in OnClickViewShiftDetails.
+        // We cannot use UserId because GetShiftZoneUsersAsync never populates it.
+        tableData.Columns.Add(new ColumnDef
         {
-            case (true, "ar"):
-                tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "Organization Name", IsFilterable = false, PropertyName = "OrganizationEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-                break;
+            DisplayName = _localizer["UserName"],
+            Name = "HiddenUserName",
+            IsFilterable = false,
+            PropertyName = "UserName",
+            IsSortable = false,
+            TypeFilter = TypeFilter.Text,
+            IsColumnVisible = false
+        });
 
-            case (true, "en"):
-                tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["OrganizationName"], Name = "Organization Name", IsFilterable = false, PropertyName = "OrganizationArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-                break;
+        tableData.Columns.Add(new ColumnDef { DisplayName = _localizer["UserName"], Name = "UserName", IsFilterable = true, PropertyName = "User.UserName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef { DisplayName = _localizer["UserFullName"], Name = "Name", IsFilterable = true, PropertyName = "User.Name", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef { DisplayName = _localizer["Device"], Name = "Device", IsFilterable = true, PropertyName = "User.Device", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef { DisplayName = _localizer["Garage"], Name = "Garage", IsFilterable = true, PropertyName = "User.Garage", IsSortable = true, TypeFilter = TypeFilter.Text });
+
+        bool isHost = currrentTenant?.Id is null;
+        bool isArabic = CultureInfo.CurrentCulture.Name == "ar";
+
+        if (isHost)
+        {
+            tableData.Columns.Add(new ColumnDef
+            {
+                DisplayName = _localizer["OrganizationName"],
+                Name = "Organization Name",
+                IsFilterable = false,
+                PropertyName = isArabic ? "OrganizationArabicName" : "OrganizationEnglishName",
+                IsSortable = true,
+                TypeFilter = TypeFilter.Text
+            });
         }
-
 
         foreach (var item in users)
         {
             var rowDef = new RowDef();
-            rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.User.Id), item.User.Id.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserName"], item.User.UserName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserFullName"], item.User.Name));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Email"], item.User.Email));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PhoneNumber"], item.User.PhoneNumber));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserRole"], item.Role?.Name));
 
-            switch (currrentTenant?.Id is null, CultureInfo.CurrentCulture.Name)
+            // Cell 0 – hidden UserName (must stay first, used as lookup key)
+            rowDef.Cells.Add(new KeyValuePair<string, string>("HiddenUserName", item.UserName ?? string.Empty));
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserName"], item.UserName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["UserFullName"], item.Name));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Device"], item.Device));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Garage"], item.Garage));
+
+            if (isHost)
             {
-                case (true, "ar"):
-                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.OrganizationArabicName));
-                    break;
-
-                case (true, "en"):
-                    rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["OrganizationName"], item.OrganizationEnglishName));
-                    break;
+                rowDef.Cells.Add(new KeyValuePair<string, string>(
+                    _localizer["OrganizationName"],
+                    isArabic ? item.OrganizationArabicName : item.OrganizationEnglishName));
             }
-
-
-
 
             tableData.Rows.Add(rowDef);
         }
+
         itemData = tableData;
         await Task.Yield();
     }
-
 }

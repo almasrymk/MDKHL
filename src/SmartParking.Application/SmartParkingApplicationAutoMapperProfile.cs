@@ -10,6 +10,7 @@ using SmartParking.Cutomers;
 using SmartParking.DailyShifts;
 using SmartParking.Discounts;
 using SmartParking.DispenserEndPoint;
+using SmartParking.Entities;
 using SmartParking.Entities.Authentication;
 using SmartParking.Entities.Banners;
 using SmartParking.Entities.Cameras.Watchers;
@@ -56,6 +57,7 @@ using SmartParking.StateManagements;
 using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
 using SmartParking.UnitPackages;
+using SmartParking.UserShifts;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
@@ -538,6 +540,12 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>();
         #endregion
+
+        CreateMap<UserWithRole, ShiftZoneUserViewDto>()
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User))
+            .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
+            .ForMember(dest => dest.OrganizationEnglishName, opt => opt.MapFrom(src => src.OrganizationEnglishName))
+            .ForMember(dest => dest.OrganizationArabicName, opt => opt.MapFrom(src => src.OrganizationArabicName));
     }
 
 }

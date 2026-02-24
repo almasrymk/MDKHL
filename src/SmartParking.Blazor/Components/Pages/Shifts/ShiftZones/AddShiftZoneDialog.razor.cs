@@ -136,55 +136,31 @@ public partial class AddShiftZoneDialog
                 return;
             }
 
-            var createdId = created.Id;
-
-            var deviceDtos = UiAssignments
-                .Where(r => r.DeviceId != null && r.DeviceId > 0)
+            // Build one SyncShiftZoneAssignmentDto per UI row
+            var assignmentRows = UiAssignments
+                .Where(r => (r.StaffId != null && r.StaffId != Guid.Empty && r.StaffId != SelectedManagerId)
+                         || (r.DeviceId != null && r.DeviceId > 0))
                 .Select(r =>
                 {
-                    var dev = Devices.FirstOrDefault(d => d.Id == r.DeviceId);
-                    return new CreateUpdateShiftDeviceDto
+                    var keeper = Keepers.FirstOrDefault(x => x.Id == r.StaffId);
+                    var device = Devices.FirstOrDefault(d => d.Id == r.DeviceId);
+                    return new SyncShiftZoneAssignmentDto
                     {
-                        DeviceId = r.DeviceId ?? 0,
-                        DeviceCode = dev?.DeviceId,
-                        DeviceUserName = dev?.Name,
+                        ExistingShiftDetailsId = null, // always new on create
+                        StaffId = (r.StaffId != Guid.Empty && r.StaffId != SelectedManagerId) ? r.StaffId : null,
+                        StaffUserName = keeper?.UserName,
+                        StaffEnName = keeper?.EnglishName,
+                        StaffPhoneNumber = keeper?.PhoneNumber,
+                        DeviceId = r.DeviceId,
+                        DeviceCode = device?.DeviceId,
+                        DeviceUserName = device?.Name,
                         DevicePassword = "P@ssw0rd"
                     };
                 })
                 .ToList();
 
-            var staffDtos = UiAssignments
-                .Where(r => r.StaffId != null && r.StaffId != Guid.Empty && r.StaffId != SelectedManagerId)
-                .Select(r =>
-                {
-                    var k = Keepers.FirstOrDefault(x => x.Id == r.StaffId);
-                    return new CreateUpdateShiftStaffDetailsDto
-                    {
-                        StaffId = r.StaffId ?? Guid.Empty,
-                        StaffUserName = k?.UserName,
-                        StaffEnName = k?.EnglishName,
-                        StaffPhoneNumber = k?.PhoneNumber
-                    };
-                })
-                .ToList();
-
-            if (deviceDtos.Any())
-            {
-                var deviceRes = await AssignShiftZoneAppService.AssignDeviceToShiftZone(createdId, deviceDtos);
-                if (deviceRes == null)
-                {
-                    Snackbar.Add(L["AssignDevicesFailed"], Severity.Error);
-                }
-            }
-
-            if (staffDtos.Any())
-            {
-                var staffRes = await AssignShiftZoneAppService.AssignStaffToShiftZone(createdId, staffDtos);
-                if (staffRes == null)
-                {
-                    Snackbar.Add(L["AssignStaffFailed"], Severity.Error);
-                }
-            }
+            if (assignmentRows.Any())
+                await AssignShiftZoneAppService.SyncShiftZoneAssignments(created.Id, assignmentRows);
 
             Snackbar.Add(L["ShiftZoneCreated"], Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
@@ -200,6 +176,5 @@ public partial class AddShiftZoneDialog
             _isSubmitting = false;
         }
     }
-
     public void Cancel() => MudDialog.Cancel();
 }

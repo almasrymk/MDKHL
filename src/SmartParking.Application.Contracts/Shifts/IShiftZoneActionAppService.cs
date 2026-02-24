@@ -1,7 +1,8 @@
-﻿using SmartParking.Cameras.Watchers;
-using SmartParking.Shifts.ShiftZones;
+﻿using SmartParking.UserShifts;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Shifts;
 
@@ -21,4 +22,6 @@ public interface IShiftZoneActionAppService
     /// allowed midnight-shift, and status filters.
     /// </returns>
     Task<ICollection<ShiftWatcherActionDto>> GetShiftZoneDevicesDataAsync();
+
+    Task<PagedResultDto<ShiftZoneUserViewDto>> GetShiftZoneUsersAsync(Guid? tenantId, PagedAndSortedAndSearchResultRequestDto input);
 }

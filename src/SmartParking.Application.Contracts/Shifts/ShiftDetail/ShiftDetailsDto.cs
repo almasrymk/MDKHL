@@ -2,7 +2,6 @@
 using SmartParking.Shifts.ShiftDevices;
 using SmartParking.Shifts.ShiftStaffDetail;
 using System;
-using System.Collections.Generic;
 
 namespace SmartParking.Shifts.ShiftDetail;
 

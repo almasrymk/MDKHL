@@ -15,10 +15,14 @@ public interface IAssignShiftZoneAppService
     /// <param name="ShiftzoneId"></param>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<Result<bool>> AssignStaffToShiftZone(Guid ShiftzoneId, ICollection<CreateUpdateShiftStaffDetailsDto> dto);
-    Task<Result<bool>> AssignDeviceToShiftZone(Guid ShiftzoneId, ICollection<CreateUpdateShiftDeviceDto> dtos);
+    //Task<Result<bool>> AssignStaffToShiftZone(Guid ShiftzoneId, ICollection<CreateUpdateShiftStaffDetailsDto> dto);
+    //Task<Result<bool>> AssignDeviceToShiftZone(Guid ShiftzoneId, ICollection<CreateUpdateShiftDeviceDto> dtos);
 
-    Task<Result<bool>> SyncStaffForShiftZone(Guid shiftZoneId, ICollection<CreateUpdateShiftStaffDetailsDto> incomingDtos);
-    Task<Result<bool>> SyncDevicesForShiftZone(Guid shiftZoneId, ICollection<CreateUpdateShiftDeviceDto> incomingDtos);
+    //Task<Result<bool>> SyncStaffForShiftZone(Guid shiftZoneId, ICollection<CreateUpdateShiftStaffDetailsDto> incomingDtos);
+    //Task<Result<bool>> SyncDevicesForShiftZone(Guid shiftZoneId, ICollection<CreateUpdateShiftDeviceDto> incomingDtos);
+
+    Task<Result<bool>> SyncShiftZoneAssignments(
+    Guid shiftZoneId,
+    ICollection<SyncShiftZoneAssignmentDto> rows);
 
 }

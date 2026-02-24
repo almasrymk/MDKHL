@@ -218,33 +218,36 @@ public class ShiftZoneAppService :
         }
     }
 
-    public override async Task DeleteAsync(Guid id)
-    {
-        var query = await _shiftZoneRepository.WithDetailsAsync(
-            x => x.ShiftDetails!.ShiftDevices,
-            x => x.ShiftDetails!.ShiftStaffDetails
-        );
+    //public override async Task DeleteAsync(Guid id)
+    //{
+    //    var shiftZone = await _shiftZoneRepository.FindAsync(id);
+    //    if (shiftZone == null)
+    //        throw new EntityNotFoundException(typeof(ShiftZone), id);
 
-        var shiftZone = await AsyncExecuter.FirstOrDefaultAsync(
-            query.Where(x => x.Id == id)
-        );
+    //    var detailsQuery = await _shiftDetailsRepository.WithDetailsAsync(
+    //        d => d.ShiftDevices,
+    //        d => d.ShiftStaffDetails
+    //    );
 
-        if (shiftZone == null)
-            throw new EntityNotFoundException(typeof(ShiftZone), id);
+    //    var detailsForZone = await AsyncExecuter.ToListAsync(
+    //        detailsQuery.Where(d => d.ShiftZoneId == id)
+    //    );
 
-        if (shiftZone.ShiftDetails != null)
-        {
-            foreach (var device in shiftZone.ShiftDetails.ShiftDevices ?? new())
-                await _shiftDeviceRepository.HardDeleteAsync(device, autoSave: false);
+    //    foreach (var detail in detailsForZone)
+    //    {
+    //        if (detail.ShiftDevices != null)
+    //        {
+    //            await _shiftDeviceRepository.HardDeleteAsync(detail.ShiftDevices, autoSave: false);
+    //        }
 
-            foreach (var staff in shiftZone.ShiftDetails.ShiftStaffDetails ?? new())
-                await _shiftStaffDetailsRepository.HardDeleteAsync(staff, autoSave: false);
+    //        if (detail.ShiftStaffDetails != null)
+    //        {
+    //            await _shiftStaffDetailsRepository.HardDeleteAsync(detail.ShiftStaffDetails, autoSave: false);
+    //        }
 
-            await _shiftDetailsRepository.HardDeleteAsync(
-                shiftZone.ShiftDetails, autoSave: false
-            );
-        }
+    //        await _shiftDetailsRepository.HardDeleteAsync(detail, autoSave: false);
+    //    }
 
-        await _shiftZoneRepository.HardDeleteAsync(shiftZone, autoSave: true);
-    }
+    //    await _shiftZoneRepository.HardDeleteAsync(shiftZone, autoSave: true);
+    //}
 }

@@ -40,6 +40,7 @@ public partial class UpdateShiftZoneDialog
 
     public class AssignmentRow
     {
+        public Guid? ExistingShiftDetailsId { get; set; } 
         public Guid? StaffId { get; set; }
         public Guid? StaffEntityId { get; set; }
         public int? DeviceId { get; set; }
@@ -117,27 +118,24 @@ public partial class UpdateShiftZoneDialog
     Keepers.FirstOrDefault(x => x.UserName == managerDto?.ManagerUserName)?.Id
     ?? Guid.Empty;
 
-        //var staffList = ShiftZone.ShiftDetailsDto ?? new List<ShiftStaffDetailsDto>();
-        //var deviceList = ShiftDetails.ShiftDevices ?? new List<ShiftDeviceDto>();
 
         UiAssignments = new();
-
-        for (int i = 0; i < ShiftZone.ShiftDetailsDto.Count; i++)
+        foreach (var detail in ShiftZone.ShiftDetailsDto ?? new List<ShiftDetailsDto>())
         {
             UiAssignments.Add(new AssignmentRow
             {
-                StaffId = i < ShiftZone.ShiftDetailsDto.Count ? ShiftZone.ShiftDetailsDto[i].ShiftStaffDetails.StaffId : null,
-                StaffEntityId = i < ShiftZone.ShiftDetailsDto.Count ? ShiftZone.ShiftDetailsDto[i].ShiftStaffDetails.Id : null, 
-                DeviceId = i < ShiftZone.ShiftDetailsDto.Count ? ShiftZone.ShiftDetailsDto[i].ShiftDevices.DeviceId : null,
-                DeviceEntityId = i < ShiftZone.ShiftDetailsDto.Count ? ShiftZone.ShiftDetailsDto[i].ShiftDevices.Id : null 
+                ExistingShiftDetailsId = detail.Id,                       
+                StaffId = detail.ShiftStaffDetails?.StaffId,
+                StaffEntityId = detail.ShiftStaffDetails?.Id,
+                DeviceId = detail.ShiftDevices?.DeviceId,
+                DeviceEntityId = detail.ShiftDevices?.Id
             });
         }
-
 
         if (!UiAssignments.Any())
             UiAssignments.Add(new AssignmentRow());
 
-       
+
 
         _isLoaded = true;
         StateHasChanged();
@@ -190,32 +188,32 @@ public partial class UpdateShiftZoneDialog
 
             await ShiftZoneAppService.UpdateAsync(Id, CreateUpdateShiftZone);
 
-
-            var deviceDtos = UiAssignments
-                .Where(r => r.DeviceId != null || r.DeviceEntityId != null) 
-                .Select(r => new CreateUpdateShiftDeviceDto
+            // Build one SyncShiftZoneAssignmentDto per UI row
+            var assignmentRows = UiAssignments
+                .Where(r => (r.StaffId != null && r.StaffId != Guid.Empty)
+                         || (r.DeviceId != null && r.DeviceId > 0)
+                         || r.ExistingShiftDetailsId != null) // include existing rows even if cleared
+                .Select(r =>
                 {
-                    Id = r.DeviceEntityId,
-                    DeviceId = r.DeviceId ?? 0,
-                    DeviceCode = Devices.FirstOrDefault(d => d.Id == r.DeviceId)?.DeviceId,
-                    DeviceUserName = Devices.FirstOrDefault(d => d.Id == r.DeviceId)?.Name,
-                    DevicePassword = "P@ssw0rd",
-                }).ToList();
+                    var keeper = r.StaffId != null ? Keepers.FirstOrDefault(k => k.Id == r.StaffId) : null;
+                    var device = r.DeviceId != null ? Devices.FirstOrDefault(d => d.Id == r.DeviceId) : null;
+                    return new SyncShiftZoneAssignmentDto
+                    {
+                        ExistingShiftDetailsId = r.ExistingShiftDetailsId, // null = new row, Guid = update existing
+                        StaffId = r.StaffId,
+                        StaffUserName = keeper?.UserName,
+                        StaffEnName = keeper?.EnglishName,
+                        StaffPhoneNumber = keeper?.PhoneNumber,
+                        DeviceId = r.DeviceId,
+                        DeviceCode = device?.DeviceId,
+                        DeviceUserName = device?.Name,
+                        DevicePassword = "P@ssw0rd"
+                    };
+                })
+                .ToList();
 
-            var staffDtos = UiAssignments
-                .Where(r => r.StaffId != null || r.StaffEntityId != null)
-                .Select(r => new CreateUpdateShiftStaffDetailsDto
-                {
-                    Id = r.StaffEntityId,
-                    StaffId = r.StaffId ?? Guid.Empty,
-                    StaffUserName = r.StaffId != null ? Keepers.First(k => k.Id == r.StaffId).UserName : "",
-                    StaffEnName = r.StaffId != null ? Keepers.First(k => k.Id == r.StaffId).EnglishName : "",
-                    StaffPhoneNumber = r.StaffId != null ? Keepers.First(k => k.Id == r.StaffId).PhoneNumber : "",
-                }).ToList();
-
-
-            await AssignShiftZoneAppService.SyncDevicesForShiftZone(Id, deviceDtos);
-            await AssignShiftZoneAppService.SyncStaffForShiftZone(Id, staffDtos);
+            if (assignmentRows.Any())
+                await AssignShiftZoneAppService.SyncShiftZoneAssignments(Id, assignmentRows);
 
             Snackbar.Add(L["ShiftZoneSaved"], Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
@@ -231,6 +229,5 @@ public partial class UpdateShiftZoneDialog
             _isSubmitting = false;
         }
     }
-
     public void Cancel() => MudDialog.Cancel();
 }

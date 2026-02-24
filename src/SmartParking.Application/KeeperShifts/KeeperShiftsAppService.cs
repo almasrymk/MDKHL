@@ -535,16 +535,36 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
     /// <param name="input">The request input containing the sorting parameter.</param>
     /// <param name="result">The queryable to apply sorting on.</param>
     /// <returns>The sorted queryable.</returns>
+    //private static IQueryable<KeeperShiftDto> ApplySorting(PagedAndSortedResultRequestDto input, IQueryable<KeeperShiftDto> result)
+    //{
+    //    var sorting = input.Sorting;
+    //    if (!string.IsNullOrEmpty(sorting) && sorting.Contains("DESC"))
+    //    {
+    //        var sortingSplit = sorting.Split(' ').ToList();
+    //        sorting = sortingSplit[0] + " descending";
+    //    }
+    //    result = result.OrderBy(sorting);
+    //    return result;
+    //}
+
     private static IQueryable<KeeperShiftDto> ApplySorting(PagedAndSortedResultRequestDto input, IQueryable<KeeperShiftDto> result)
     {
         var sorting = input.Sorting;
-        if (!string.IsNullOrEmpty(sorting) && sorting.Contains("DESC"))
+
+        // Guard: Dynamic LINQ throws if sorting is null or whitespace.
+        // Fall back to a stable default column that always exists on KeeperShiftDto.
+        if (string.IsNullOrWhiteSpace(sorting))
         {
-            var sortingSplit = sorting.Split(' ').ToList();
-            sorting = sortingSplit[0] + " descending";
+            return result.OrderBy(x => x.StartDate);
         }
-        result = result.OrderBy(sorting);
-        return result;
+
+        if (sorting.Contains("DESC", StringComparison.OrdinalIgnoreCase))
+        {
+            var parts = sorting.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            sorting = parts[0] + " descending";
+        }
+
+        return result.OrderBy(sorting);
     }
 
     #endregion
