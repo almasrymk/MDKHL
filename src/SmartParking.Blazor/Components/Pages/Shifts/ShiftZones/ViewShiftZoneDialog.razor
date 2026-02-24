@@ -27,7 +27,7 @@
 		<DialogContent>
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
 				<MudGrid>
-					<MudItem sm="6">
+					<MudItem sm="4">
 						<MudTextField Value="@(GetLocalized(ShiftZone?.ShiftDto?.EnglishName, ShiftZone?.ShiftDto?.ArabicName))"
 									  For="@(() => ShiftZone.ShiftDto.EnglishName)"
 									  Immediate="true"
@@ -36,16 +36,16 @@
 									  Disabled />
 					</MudItem>
 
-					<MudItem sm="6">
+					<MudItem sm="4">
 						<MudTextField Value="@(GetLocalized(ShiftZone?.ShiftDto?.GarageEnglishName, ShiftZone?.ShiftDto?.GarageArabicName))"
 									  For="@(() => ShiftZone.ShiftDto.GarageEnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
-									  Label=@L["Garage Name"]
+									  Label=@L["ZoneName"]
 									  Disabled />
 					</MudItem>
 
-					<MudItem sm="6">
+					<MudItem sm="4">
 						<MudTextField Value="@(GetLocalized(ShiftZone?.ShiftMangerDto?.ManagerEnName, ShiftZone?.ShiftMangerDto?.ManagerUserName))"
 									  For="@(() => ShiftZone.ShiftMangerDto.ManagerEnName)"
 									  Immediate="true"
@@ -54,47 +54,46 @@
 									  Disabled />
 					</MudItem>
 
-					<MudItem sm="12" Class="mt-4">
-						<MudText Typo="Typo.h6">@L["ShiftDevices"]</MudText>
+					
+						<MudItem sm="3" md="3">
+							<MudTextField Value="ShiftZone.ShiftDto.StartDate.ToString()"
+										  Disabled=true
+										  Label="@L["StartDate"]" />
+						</MudItem>
+						<MudItem sm="3" md="3">
+							<MudTextField Value="ShiftZone.ShiftDto.EndDate.ToString()"
+										  Disabled=true
+										   Label="@L["EndDate"]" />
+						</MudItem>
+						@if (ShiftZone.ShiftDto.IsFullDay == true)
+						{
+							<MudItem sm="4" md="4">
+								<MudTextField T="string"
+											  Text="@(24+L["Hour"])"
+											  Immediate="true"
+											  Disabled=true
+											  Label=@L["Published"] />
+							</MudItem>
 
-						@if (ShiftZone?.ShiftDetailsDto?.ShiftDevices != null &&
-												ShiftZone.ShiftDetailsDto.ShiftDevices.Any())
-						{
-							<MudList T="ShiftDeviceDto" Dense="true">
-								@foreach (var device in ShiftZone.ShiftDetailsDto.ShiftDevices)
-								{
-									<MudListItem T="ShiftDeviceDto" Value="@device">
-										@device.DeviceCode
-									</MudListItem>
-								}
-							</MudList>
-						}
-						else
-						{
-							<MudText>@L["NoDevicesFound"]</MudText>
-						}
-					</MudItem>
 
-					<MudItem sm="12" Class="mt-4">
-						<MudText Typo="Typo.h6">@L["ShiftStaffDetails"]</MudText>
+						}
+						else{
 
-						@if (ShiftZone?.ShiftDetailsDto?.ShiftStaffDetails != null &&
-												ShiftZone.ShiftDetailsDto.ShiftStaffDetails.Any())
-						{
-							<MudList T="ShiftStaffDetailsDto" Dense="true">
-								@foreach (var staff in ShiftZone.ShiftDetailsDto.ShiftStaffDetails)
-								{
-									<MudListItem T="ShiftStaffDetailsDto" Value="@staff">
-										@GetLocalized(staff?.StaffEnName, staff?.StaffArName)
-									</MudListItem>
-								}
-							</MudList>
+					
+							<MudItem sm="3" md="3">
+								<MudTextField Value="ShiftZone.ShiftDto.StartTime.ToString()"
+											  Disabled=true
+											   Label="@L["StartTime"]" />
+							</MudItem>
+							<MudItem sm="3" md="3">
+								<MudTextField Value="ShiftZone.ShiftDto.EndTime.ToString()"
+											  Disabled=true
+											   Label="@L["EndTime"]" />
+							</MudItem>
 						}
-						else
-						{
-							<MudText>@L["NoStaffFound"]</MudText>
-						}
-					</MudItem>
+					
+
+					<SPDataGrid PageName=@L["StaffDevices"] ></SPDataGrid>
 
 				</MudGrid>
 			</MudForm>

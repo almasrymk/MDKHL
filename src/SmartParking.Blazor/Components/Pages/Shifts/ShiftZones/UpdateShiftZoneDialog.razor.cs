@@ -24,12 +24,11 @@ public partial class UpdateShiftZoneDialog
     private List<GarageDto> Garages = new();
     private List<AssignStaffDataDto> Keepers = new();
     private List<AssignStaffDataDto> Managers = new();
-    private List<AssignStaffDataDto> Staffs = new();
     private List<Watcher> Devices = new();
 
     private List<CreateUpdateShiftDeviceDto> ShiftDeviceDtos = new();
     private List<CreateUpdateShiftStaffDetailsDto> ShiftStaffDetailsDtos = new();
-    private ShiftDetailsDto ShiftDetails = new();
+    private List<ShiftDetailsDto> ShiftDetails = new();
     private Guid _selectedManagerId = Guid.Empty;
 
 
@@ -85,11 +84,10 @@ public partial class UpdateShiftZoneDialog
         Devices = (await watchersTask).ToList();
 
         ShiftZone = await ShiftZoneAppService.GetAsync(Id);
-        ShiftDetails = ShiftZone.ShiftDetailsDto ?? new ShiftDetailsDto();
+        ShiftDetails = ShiftZone.ShiftDetailsDto ?? new List<ShiftDetailsDto>();
 
         CreateUpdateShiftZone.ShiftId = ShiftZone.ShiftDto?.Id ?? 0;
         CreateUpdateShiftZone.ZoneId = ShiftZone.ZoneId;
-        CreateUpdateShiftZone.ShiftDetailsId = ShiftZone.ShiftDetailsDto?.Id;
         CreateUpdateShiftZone.ZoneArName = ShiftZone.ZoneArName;
         CreateUpdateShiftZone.ZoneEnName = ShiftZone.ZoneEnName;
 
@@ -119,20 +117,19 @@ public partial class UpdateShiftZoneDialog
     Keepers.FirstOrDefault(x => x.UserName == managerDto?.ManagerUserName)?.Id
     ?? Guid.Empty;
 
-        var staffList = ShiftDetails.ShiftStaffDetails ?? new List<ShiftStaffDetailsDto>();
-        var deviceList = ShiftDetails.ShiftDevices ?? new List<ShiftDeviceDto>();
+        //var staffList = ShiftZone.ShiftDetailsDto ?? new List<ShiftStaffDetailsDto>();
+        //var deviceList = ShiftDetails.ShiftDevices ?? new List<ShiftDeviceDto>();
 
         UiAssignments = new();
-        int max = Math.Max(staffList.Count, deviceList.Count);
 
-        for (int i = 0; i < max; i++)
+        for (int i = 0; i < ShiftZone.ShiftDetailsDto.Count; i++)
         {
             UiAssignments.Add(new AssignmentRow
             {
-                StaffId = i < staffList.Count ? staffList[i].StaffId : null,
-                StaffEntityId = i < staffList.Count ? staffList[i].Id : null, 
-                DeviceId = i < deviceList.Count ? deviceList[i].DeviceId : null,
-                DeviceEntityId = i < deviceList.Count ? deviceList[i].Id : null 
+                StaffId = i < ShiftZone.ShiftDetailsDto.Count ? ShiftZone.ShiftDetailsDto[i].ShiftStaffDetails.StaffId : null,
+                StaffEntityId = i < ShiftZone.ShiftDetailsDto.Count ? ShiftZone.ShiftDetailsDto[i].ShiftStaffDetails.Id : null, 
+                DeviceId = i < ShiftZone.ShiftDetailsDto.Count ? ShiftZone.ShiftDetailsDto[i].ShiftDevices.DeviceId : null,
+                DeviceEntityId = i < ShiftZone.ShiftDetailsDto.Count ? ShiftZone.ShiftDetailsDto[i].ShiftDevices.Id : null 
             });
         }
 
@@ -140,9 +137,7 @@ public partial class UpdateShiftZoneDialog
         if (!UiAssignments.Any())
             UiAssignments.Add(new AssignmentRow());
 
-        Staffs = ObjectMapper.Map<List<ShiftStaffDetailsDto>, List<AssignStaffDataDto>>(staffList)
-            .Where(s => s.Id != SelectedManagerId)
-            .ToList();
+       
 
         _isLoaded = true;
         StateHasChanged();
@@ -205,7 +200,6 @@ public partial class UpdateShiftZoneDialog
                     DeviceCode = Devices.FirstOrDefault(d => d.Id == r.DeviceId)?.DeviceId,
                     DeviceUserName = Devices.FirstOrDefault(d => d.Id == r.DeviceId)?.Name,
                     DevicePassword = "P@ssw0rd",
-                    ShiftDetailsId = ShiftZone.ShiftDetailsDto?.Id
                 }).ToList();
 
             var staffDtos = UiAssignments
@@ -217,7 +211,6 @@ public partial class UpdateShiftZoneDialog
                     StaffUserName = r.StaffId != null ? Keepers.First(k => k.Id == r.StaffId).UserName : "",
                     StaffEnName = r.StaffId != null ? Keepers.First(k => k.Id == r.StaffId).EnglishName : "",
                     StaffPhoneNumber = r.StaffId != null ? Keepers.First(k => k.Id == r.StaffId).PhoneNumber : "",
-                    ShiftDetailsId = ShiftZone.ShiftDetailsDto?.Id
                 }).ToList();
 
 
