@@ -54,7 +54,7 @@ public class CustomerPackageCreationValidationsAppService : ApplicationService, 
                 return await query
                 .Where(x =>
                     x.CustomerId == customerId &&
-                    x.OrganizationId == organizationId )
+                    x.OrganizationId == organizationId && x.CustomerPackageStatus!= Enums.CustomerPackageStatus.Deleted)
                 .CountAsync();
         }
     }
