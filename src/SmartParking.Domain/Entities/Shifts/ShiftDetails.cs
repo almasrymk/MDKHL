@@ -7,8 +7,8 @@ namespace SmartParking.Entities.Shifts;
 
 public class ShiftDetails : FullAuditedEntity<Guid>, IMultiTenant
 {
-    public virtual List<ShiftStaffDetails> ShiftStaffDetails { get; set; } = new List<ShiftStaffDetails>();
-    public virtual List<ShiftDevice> ShiftDevices { get; set; } = new List<ShiftDevice>();
+    public virtual ShiftStaffDetails ShiftStaffDetails { get; set; } = new ShiftStaffDetails();
+    public virtual ShiftDevice ShiftDevices { get; set; } = new ShiftDevice();
 
     public Guid? TenantId { get; set; }
 }
