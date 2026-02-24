@@ -8,6 +8,6 @@ namespace SmartParking.Shifts.ShiftDetail;
 
 public class ShiftDetailsDto : AuditedEntityDto<Guid>
 {
-    public List<ShiftStaffDetailsDto> ShiftStaffDetails { get; set; }
-    public List<ShiftDeviceDto> ShiftDevices { get; set; }
+    public ShiftStaffDetailsDto ShiftStaffDetails { get; set; }
+    public ShiftDeviceDto ShiftDevices { get; set; }
 }

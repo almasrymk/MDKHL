@@ -1,4 +1,5 @@
-﻿using SmartParking.Shifts.ShiftsMangers;
+﻿using SmartParking.Shifts.ShiftDetail;
+using SmartParking.Shifts.ShiftsMangers;
 using System;
 using System.Collections.Generic;
 
@@ -10,6 +11,6 @@ public class CreateUpdateShiftZoneDto
     public int ZoneId { get; set; }
     public string ZoneArName { get; set; }
     public string ZoneEnName { get; set; }
-    public Guid? ShiftDetailsId { get; set; }
+    public List<CreateUpdateShiftDetailsDto>? ShiftDetails { get; set; }
     public CreateUpdateShiftMangerDto Manager { get; set; }
 }

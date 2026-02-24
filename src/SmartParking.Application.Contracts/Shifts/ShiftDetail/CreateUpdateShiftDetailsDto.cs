@@ -6,6 +6,6 @@ namespace SmartParking.Shifts.ShiftDetail;
 
 public class CreateUpdateShiftDetailsDto
 {
-    public List<CreateUpdateShiftStaffDetailsDto>? ShiftStaffDetails { get; set; }
-    public List<CreateUpdateShiftDeviceDto>? ShiftDevices { get; set; }
+    public CreateUpdateShiftStaffDetailsDto? ShiftStaffDetails { get; set; }
+    public CreateUpdateShiftDeviceDto? ShiftDevices { get; set; }
 }
