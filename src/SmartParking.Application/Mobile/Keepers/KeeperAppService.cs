@@ -16,6 +16,7 @@ using SmartParking.Permissions.CheckoutPermissions;
 using SmartParking.QRCode;
 using SmartParking.Repositories;
 using SmartParking.Results;
+using SmartParking.Shifts;
 using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
@@ -53,6 +54,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IVehicleAppService _vehicleAppService;
     private readonly IQRCodeAppService _qrCodeAppService;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IShiftZoneActionAppService _shiftZoneActionAppService;
     private string _notFound = "Not found";
 
 
@@ -71,6 +73,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IAuthenticationUtility authenticationUtility,
          IVehicleAppService vehicleAppService,
          IPaymentWebAppService paymentWebAppService,
+         IShiftZoneActionAppService shiftZoneActionAppService,
          IQRCodeAppService qrCodeAppService,
          IAuthorizationService authorizationService)
     {
@@ -90,6 +93,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _paymentWebAppService = paymentWebAppService;
         _qrCodeAppService = qrCodeAppService;
         _authorizationService = authorizationService;
+        _shiftZoneActionAppService = shiftZoneActionAppService;
     }
 
     #region Public Methods
@@ -267,6 +271,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
 
             bool canCheckout = await _authorizationService.IsGrantedAsync(CheckoutPermissions.CancelTransaction);
 
+
             return Result<LoginResponseDto>.Success(new LoginResponseDto
             {
                 AccessToken = await _authenticationUtility.GenerateTokenAsync(user) ?? string.Empty,
@@ -279,6 +284,16 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 CanCancelTransaction = canCheckout
             });
         }
+    }
+    /// <inheritdoc/>
+    public async Task<Result<ShiftWatcherActionDto>> GetShiftWatcherActionAsync()
+    {
+        var result = await _shiftZoneActionAppService.GetShiftZoneDevicesDataAsync();
+        if (result.Count == 0)
+        {
+            return Result<ShiftWatcherActionDto>.NotFound("No shift watcher actions found for the user.");
+        }
+        return Result<ShiftWatcherActionDto>.Success(result.SingleOrDefault());
     }
     /// <inheritdoc/>
 

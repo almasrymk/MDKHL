@@ -1,11 +1,4 @@
-﻿using SmartParking.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Volo.Abp.Domain.Entities.Auditing;
-using Volo.Abp.MultiTenancy;
+﻿using System;
 
 namespace SmartParking.Entities.Shifts;
 

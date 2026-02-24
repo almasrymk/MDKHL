@@ -42,6 +42,7 @@
     "My Profile": "My Profile",
     "Edit Profile": "Edit Profile",
     "Garages": "Garages",
+    "SelectGarage": "Select Garage",
     "Subscriptions": "Subscriptions",
     "Categories": "Categories",
     "Packages": "Packages",
@@ -895,6 +896,28 @@
     "Check-out": "Check-out",
     "ThankyouforusingMadkhal": "Thank you for using the 'Madkhal' smart parking system.",
     "PrintInvoice": "Print Invoice",
+    "ShiftZone": "Shift Zone",
+    "ShiftDetailsNull": "Shift Details is Null",
+    "ShiftManagers": "Shift Managers",
+    "NoManagersFound": "No Managers Found",
+    "ShiftDevices": "Shift Devices",
+    "NoDevicesFound": "No Devices Found",
+    "ShiftStaffDetails": "Shift Staff Details",
+    "NoStaffFound": "No Staff Found",
+    "ShiftZones": "Shift Zones",
+    "StaffAndDeviceAssignment": "Staff and device assignment",
+    "SelectShift": "Select Shift",
+    "SelectManager": "Select Manager",
+    "AddRow": "Add Row",
+    "Staff": "Staff",
+    "Device": "Device",
+    "AddShiftZone": "Add Shift Zone",
+    "Zone": "Zone",
+    "Manager": "Manager",
+    "UpdateShiftZone": "Update Shift Zone",
+    "Manager Name": "Manager Name",
+    "ShiftZoneDetails": "Shift Zone Details",
+    "SelectZone":  "Select Zone",
     "VhecileAccess": "Vehicle Access",
     "UserAccess": "User Access",
     "UnitPackages": "Packages",
@@ -906,8 +929,5 @@
     "OnlyOnePackageTypeAllowed": "Only one package type can be enabled.",
     "CustomerHasActivePackage": "Customer already package",
     "PackgeVehiclesLimitationsExceeded": "Number of vehicles allowed for that package exceeded"
-
-
-
   }
 }

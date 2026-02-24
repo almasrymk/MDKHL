@@ -1,12 +1,13 @@
-﻿
-
-using Volo.Abp.Domain.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Cameras.Watchers;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Volo.Abp.Application.Services;
-using Volo.Abp.MultiTenancy;
+using SmartParking.Entities.Shifts;
+using SmartParking.Enums;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Watchers;
 
@@ -24,6 +25,7 @@ public class WatcherAppService : ApplicationService, IWatcherAppService
         _dispenserRepository = dispenserRepository;
         _watcherRepository = watcherRepository;
     }
+    /// <inheritdoc/>
     public async Task<Camera> GetcameraByWatherCodeAsync(string watcherCode)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -33,7 +35,7 @@ public class WatcherAppService : ApplicationService, IWatcherAppService
             return camera;
         }
     }
-
+    /// <inheritdoc/>
     public Task<Dispenser> GetDispenserByWatherCodeAsync(string watcherCode)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -42,14 +44,14 @@ public class WatcherAppService : ApplicationService, IWatcherAppService
             return dispenser!;
         }
     }
-
+    /// <inheritdoc/>
     public async Task<ICollection<Watcher>> GetAllWatchersAsync()
     {
         
             return await _watcherRepository.GetListAsync();
         
     }
-
+    /// <inheritdoc/>
     public async Task<string> GetWatcherCodeByWatcherIdAsync(int watcherId)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -58,4 +60,32 @@ public class WatcherAppService : ApplicationService, IWatcherAppService
             return watcher!.DeviceId;
         }
     }
+    //public async Task<ICollection<Watcher>> GetAllWatchersByShiftZoneAsync()
+    //{
+    //    var shiftZones = await _shiftZoneRepository.GetListAsync();
+    //    if(shiftZones == null)
+    //    {
+    //        return await GetAllWatchersAsync();
+    //    }
+    //    var currentDateOnly = DateOnly.FromDateTime(DateTime.Now);
+    //    var currentTimeOnly = TimeOnly.FromDateTime(DateTime.Now);
+
+    //    foreach (var shiftZone in shiftZones)
+    //    {
+    //        bool isDateValid = shiftZone.Shift.StartDate <= currentDateOnly &&
+    //                           shiftZone.Shift.EndDate >= currentDateOnly;
+
+    //        bool isTimeValid = shiftZone.Shift.StartTime <= currentTimeOnly &&
+    //                           shiftZone.Shift.EndTime >= currentTimeOnly;
+
+    //        bool isActive = shiftZone.Shift.Status == Status.Active;
+
+    //        if (isActive && isDateValid && (shiftZone.Shift.IsFullDay || isTimeValid))
+    //        {
+    //            var watchers = await _watcherRepository.GetListAsync(x => x.GarageId == shiftZone.ZoneId);
+    //            return watchers;
+    //        }
+    //    }
+    //    return await GetAllWatchersAsync();
+    //}
 }

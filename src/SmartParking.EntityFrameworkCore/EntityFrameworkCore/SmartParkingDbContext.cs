@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using SmartParking.Configurations;
 using SmartParking.Entities;
 using SmartParking.Entities.Banners;
 using SmartParking.Entities.Cameras.Watchers;
@@ -17,12 +16,10 @@ using SmartParking.Entities.Shifts;
 using SmartParking.Entities.StateManagements;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Vehicles;
-using SmartParking.Localization;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Reflection.Emit;
 using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -33,7 +30,6 @@ using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
-using Volo.Abp.Localization;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
@@ -117,6 +113,10 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<Shift> Shifts { get; set; }
     public DbSet<DailyShift> DailyShifts { get; set; }
     public DbSet<Discount> Discounts { get; set; }
+    public DbSet<ShiftStaffDetails> ShiftStaffDetails { get; set; }
+    public DbSet<ShiftDevice> ShiftDevices { get; set; }
+    public DbSet<ShiftDetails> ShiftDetails { get; set; }
+    public DbSet<ShiftZone> ShiftZones { get; set; }
     public DbSet<UnitPackage> UnitPackages { get; set; }
     public DbSet<CustomerUnitPackage> CustomerUnitPackages { get; set; }
 

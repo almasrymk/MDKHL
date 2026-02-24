@@ -1,0 +1,19 @@
+﻿@page "/shift-zone"
+@using SmartParking.Localization
+@using Microsoft.Extensions.Localization
+@using SmartParking.Shifts.ShiftZones
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
+@inject IDialogService Dialog
+@inject IShiftZoneAppService ShiftZoneAppService
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager Navigation
+@inject ICurrentTenant currrentTenant
+@inherits AbpCrudPageBase<IShiftZoneAppService, ShiftZoneDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateShiftZoneDto>
+@inject IJSRuntime JSRuntime
+
+<PageTitle>@L["ShiftZone"]</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-2">@L["ShiftZone"]</MudText>
+
+<SPDataGrid PageName=@L["ShiftStaffDetails"] Data="@itemData" OnClickRowView="OnClickRowView" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnSearching="HandleSearch" OnPageChanged="FetchTableData" ShowAdd="ShowAdd" OnClickRowDelete="OnClickRowDelete" OnAdd="CreateNewShiftStaff" OnClickRowEdit="OnClickRowEdit" />

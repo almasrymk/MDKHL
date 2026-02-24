@@ -4,6 +4,7 @@ using SmartParking.Invoices;
 using SmartParking.Mobile.Invoices;
 using SmartParking.Payments;
 using SmartParking.Results;
+using SmartParking.Shifts;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -50,13 +51,13 @@ public interface IKeeperAppService
     /// </summary>
     /// <param name="garageTransactionId">id of specific garageTransaction</param>
     /// <param name="plateNumber">plate number</param>
-    Task<Result> CorrectTransactionByPlateNumberAsync(int garageTransactionId , string plateNumber);
+    Task<Result> CorrectTransactionByPlateNumberAsync(int garageTransactionId, string plateNumber);
 
     /// <summary>
 	/// Retrieves a list of all existing transaction  asynchronously.
 	/// </summary>
 	/// <returns>list of GarageTransactionDto</returns>
-	Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId, Guid userId ,PagedAndSortedAndSearchResultRequestDto paged);
+	Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId, Guid userId, PagedAndSortedAndSearchResultRequestDto paged);
 
     /// <summary>
     /// Retrieves the tenant associated with the given phone number.
@@ -71,7 +72,7 @@ public interface IKeeperAppService
     /// <param name="invoiceId">The unique identifier of the invoice to be processed.</param>
     /// <param name="DiscountValue">The discount value to be applied to the invoice (optional, defaults to 0).</param>
     /// <returns>A task representing the asynchronous operation, containing the result of type <see cref="InvoiceMobileDto"/>.</returns>
-    Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId,int paymentMethodType ,decimal DiscountValue = default);
+    Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId, int paymentMethodType, decimal DiscountValue = default);
 
     /// <summary>
     /// Processes a cash payment for the customer request for a specific invoice, including the option for a discount value.
@@ -91,4 +92,9 @@ public interface IKeeperAppService
 
 
     Task<Result<string>> GetPaymentQrCodeByInvoiceId(int InvoiceId);
+    /// <summary>
+    /// Retrieves the shift watcher action data asynchronously.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, containing the result of type <see cref="ShiftWatcherActionDto"/> for the shift watcher action data.</returns>
+    Task<Result<ShiftWatcherActionDto>> GetShiftWatcherActionAsync();
 }

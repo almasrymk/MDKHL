@@ -39,3 +39,32 @@ input:-webkit-autofill {
     left: unset;
     right: 0;
 }
+
+/* Panel wrapper styles (safe & namespaced to avoid Lepton conflicts) */
+.sp-panel-root {
+    margin-top: 8px;
+}
+
+/* chevron rotation */
+.sp-panel-chevron {
+    transition: transform 0.22s ease;
+}
+
+    .sp-panel-chevron.open {
+        transform: rotate(180deg);
+    }
+
+/* collapse animation (simple, no JS) */
+.sp-panel-content {
+    overflow: hidden;
+    transition: max-height 0.28s ease, opacity 0.18s ease;
+    max-height: 0;
+    opacity: 0;
+}
+
+.sp-panel-content.open {
+    max-height: 1200px; /* large enough for content; avoids needing exact height */
+    opacity: 1;
+}
+
+

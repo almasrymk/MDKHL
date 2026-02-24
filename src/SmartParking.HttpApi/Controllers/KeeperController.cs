@@ -10,6 +10,7 @@ using SmartParking.Mobile.Keepers;
 using SmartParking.OpeningGate;
 using SmartParking.Organizations;
 using SmartParking.Results;
+using SmartParking.Shifts;
 using SmartParking.Utilities;
 using SmartParking.Watchers;
 using System;
@@ -87,6 +88,13 @@ public class KeeperController : AbpController
             });
         }
     }
+
+    [HttpGet("getshiftwatcheraction")]
+    public async Task<Result<ShiftWatcherActionDto>> GetShiftWatcherActionAsync()
+    {
+        return await _keeperAppService.GetShiftWatcherActionAsync();
+    }
+
     [HttpPost("Mdkhl/login")]
 
     public async Task<Result<LoginAppResultDto>> LoginMdkhlKeeper(LoginMobileInputDto input)

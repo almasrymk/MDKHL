@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SmartParking.Authentication;
 using SmartParking.Cameras;
+using SmartParking.Cameras.Watchers;
 using SmartParking.Cameras.Watchers.Dispensers;
 using SmartParking.CustomerCategories;
 using SmartParking.CustomerPackages;
@@ -24,6 +25,7 @@ using SmartParking.Entities.Shifts;
 using SmartParking.Entities.StateManagements;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Vehicles;
+using SmartParking.Enums;
 using SmartParking.Garages;
 using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
@@ -45,6 +47,11 @@ using SmartParking.PackageCodeEndPoint;
 using SmartParking.Packages;
 using SmartParking.Payments;
 using SmartParking.Shifts;
+using SmartParking.Shifts.ShiftDetail;
+using SmartParking.Shifts.ShiftDevices;
+using SmartParking.Shifts.ShiftsMangers;
+using SmartParking.Shifts.ShiftStaffDetail;
+using SmartParking.Shifts.ShiftZones;
 using SmartParking.StateManagements;
 using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
@@ -426,8 +433,103 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         .ForMember(d => d.PaymentId, o => o.MapFrom(s => s.Id))
         .ForMember(d => d.PaymentNumber, o => o.MapFrom(s => s.PaymentNumber));
 
+        #region Shift Mapping
+        CreateMap<CreateUpdateShiftMangerDto, ShiftManager>().ReverseMap();
+        CreateMap<ShiftManager, ShiftMangerDto>().ReverseMap();
+
+        CreateMap<ShiftZoneDto, ShiftMangerDto>().ReverseMap();
+
+        CreateMap<ShiftDevice, ShiftDeviceDto>().ReverseMap();
+
+        CreateMap<ShiftDeviceDto, CreateUpdateShiftDeviceDto>().ReverseMap();
+
+        CreateMap<ShiftStaffDetails, ShiftStaffDetailsDto>().ReverseMap();
+        CreateMap<CreateUpdateShiftStaffDetailsDto, ShiftStaffDetails>().ReverseMap();
+        CreateMap<ShiftStaffDetailsDto, CreateUpdateShiftStaffDetailsDto>().ReverseMap();
+
+        CreateMap<CreateUpdateShiftDeviceDto, ShiftDevice>()
+    .ReverseMap();
+
+
+        CreateMap<ShiftZone, ShiftZoneDto>()
+            .ForMember(dest => dest.ShiftDto, opt => opt.MapFrom(src => src.Shift))
+            .ForMember(d => d.ShiftDetailsDto, opt => opt.MapFrom(s => s.ShiftDetails))
+            .ForMember(d => d.ShiftMangerDto, opt => opt.MapFrom(s => s.ShiftManager)) 
+            .ForMember(d => d.ZoneArName, opt => opt.MapFrom(s => s.ZoneArName))
+            .ForMember(d => d.ZoneEnName, opt => opt.MapFrom(s => s.ZoneEnName))
+            .ReverseMap();
+
+        CreateMap<CreateUpdateShiftZoneDto, ShiftZone>()
+            .ForPath(d => d.ShiftManager.ManagerUserName, o => o.MapFrom(s => s.Manager.ManagerUserName))
+            .ForPath(d => d.ShiftManager.ManagerEnName, o => o.MapFrom(s => s.Manager.ManagerEnName))
+            .ForPath(d => d.ShiftManager.ManagerPhoneNumber, o => o.MapFrom(s => s.Manager.ManagerPhoneNumber))
+            .ForMember(d => d.ZoneArName, o => o.MapFrom(s => s.ZoneArName))
+            .ForMember(d => d.ZoneEnName, o => o.MapFrom(s => s.ZoneEnName));
+
+        CreateMap<ShiftDetails, ShiftDetailsDto>().ReverseMap();
+        CreateMap<CreateUpdateShiftDetailsDto, ShiftDetails>().ReverseMap();
+        #endregion
+
+        #region Assign Shift Mapping
+        CreateMap<IdentityUser, AssignStaffDataDto>()
+            .ForMember(d => d.UserName, o => o.MapFrom(s => s.UserName))
+            .ForMember(d => d.EnglishName, o => o.MapFrom(s => s.Name))
+            .ForMember(d => d.PhoneNumber, o => o.MapFrom(s => s.PhoneNumber))
+            .ReverseMap();
+
+        CreateMap<AssignStaffDataDto, CreateUpdateShiftMangerDto>()
+            .ForMember(d => d.ManagerUserName, o => o.MapFrom(s => s.UserName))
+            .ForMember(d => d.ManagerEnName, o => o.MapFrom(s => s.EnglishName))
+            .ForMember(d => d.ManagerPhoneNumber, o => o.MapFrom(s => s.PhoneNumber))
+            .ReverseMap();
+
+        CreateMap<AssignStaffDataDto, ShiftMangerDto>()
+            .ForMember(d => d.ManagerUserName, o => o.MapFrom(s => s.UserName))
+            .ForMember(d => d.ManagerEnName, o => o.MapFrom(s => s.EnglishName))
+            .ForMember(d => d.ManagerPhoneNumber, o => o.MapFrom(s => s.PhoneNumber))
+            .ReverseMap();
+
+        CreateMap<ShiftStaffDetailsDto, AssignStaffDataDto>()
+            .ForMember(d => d.EnglishName, o => o.MapFrom(s => s.StaffEnName))
+            .ForMember(d => d.UserName, o => o.MapFrom(s => s.StaffArName))
+            .ForMember(d => d.PhoneNumber, o => o.MapFrom(s => s.StaffPhoneNumber));
+
+
+        CreateMap<AssignStaffDataDto, ShiftStaffDetailsDto>()
+            .ForMember(d => d.StaffArName, o => o.MapFrom(s => s.UserName))
+            .ForMember(d => d.StaffEnName, o => o.MapFrom(s => s.EnglishName))
+            .ForMember(d => d.StaffPhoneNumber, o => o.MapFrom(s => s.PhoneNumber));
+
+        CreateMap<AssignStaffDataDto, CreateUpdateShiftStaffDetailsDto>()
+            .ForMember(d => d.StaffUserName, o => o.MapFrom(s => s.UserName))
+            .ForMember(d => d.StaffEnName, o => o.MapFrom(s => s.EnglishName))
+            .ForMember(d => d.StaffPhoneNumber, o => o.MapFrom(s => s.PhoneNumber));
+
+        CreateMap<Watcher, ShiftDeviceDto>()
+            .ForMember(d => d.DeviceCode, o => o.MapFrom(s => s.DeviceId))
+            .ForMember(d => d.DeviceId, o => o.MapFrom(s => s.Id))
+            .ForMember(d => d.DeviceUserName, o => o.MapFrom(s => s.Name))
+            .ForMember(d => d.DevicePassword, o => o.MapFrom(s => "P@ssw0rd"));
+
+        CreateMap<Watcher, CreateUpdateShiftDeviceDto>()
+            .ForMember(d => d.DeviceCode, o => o.MapFrom(s => s.DeviceId))
+            .ForMember(d => d.DeviceId, o => o.MapFrom(s => s.Id))
+            .ForMember(d => d.DeviceUserName, o => o.MapFrom(s => s.Name))
+            .ForMember(d => d.DevicePassword, o => o.MapFrom(s => "P@ssw0rd"));
+
+        CreateMap<Watcher, WatcherDto>().ReverseMap();
+
+        CreateMap<Watcher, ShiftWatcherActionDto>()
+            .ForMember(d => d.WatcherCode, o => o.MapFrom(s => s.DeviceId))
+            .ReverseMap();
+
+
+        #endregion
+
+
+        #region Unit Package Mapping
         CreateMap<CreateUpdateUnitPackageDto, UnitPackage>()
-            .ForMember(d => d.Package, o => o.MapFrom(s => s.Package));
+    .ForMember(d => d.Package, o => o.MapFrom(s => s.Package));
 
         CreateMap<UnitPackage, UnitPackageDto>()
             .ForMember(d => d.Package, o => o.MapFrom(s => s.Package));
@@ -435,8 +537,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CustomerUnitPackage, CustomerUnitPackageDto>();
 
         CreateMap<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>();
-
+        #endregion
     }
 
 }
-
