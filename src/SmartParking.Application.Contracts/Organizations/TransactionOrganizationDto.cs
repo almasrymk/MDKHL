@@ -30,4 +30,8 @@ public class TransactionOrganizationDto
     public string PaymentCode { get; set; }
     public bool DispenserTransaction { get; set; }
     public bool CameraTransaction { get; set; }
+    public bool UserAccess { get; set; }
+    public bool VehicleAccess { get; set; }
+
+
 }

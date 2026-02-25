@@ -8,6 +8,7 @@ using SmartParking.Currency;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
 using SmartParking.Localization;
+using SmartParking.Organizations;
 using SmartParking.UnitPackages;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,8 @@ public partial class CustomerUnitPackageDialog
 
     [Inject]
     public ICustomerUnitPackageAppService CustomerUnitPackageAppService { get; set; }
+    [Inject]
+    public IOrganizationsAppService OrganizationsAppService { get; set; }
 
 
     [Inject]
@@ -39,9 +42,13 @@ public partial class CustomerUnitPackageDialog
     private int TotalItem;
     private TableData itemData = new TableData();
     private CustomerDto customer = new CustomerDto();
-
+    private OrganizationDto organization = new OrganizationDto();
     private void Cancel() => MudDialog.Cancel();
 
+    protected async override Task OnInitializedAsync()
+    {
+
+    }
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
         var input = new PagedAndSortedResultRequestDto
@@ -51,7 +58,8 @@ public partial class CustomerUnitPackageDialog
             Sorting = pageInfo.SortColumn
         };
         customer = await CustomersAppService.GetAsync(Guid.Parse(CustomerId));
-        var result = await CustomerUnitPackageAppService.GetUnitPackageByCustomer(Guid.Parse(CustomerId));
+        organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
+        var result = await CustomerUnitPackageAppService.GetListOfUnitPackageByCustomer(Guid.Parse(CustomerId) , organization.Id);
         await CreateTable(result);
     }
 
@@ -78,6 +86,8 @@ public partial class CustomerUnitPackageDialog
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["PackageDuration"], Name = "DurationOfPackage", IsFilterable = false, PropertyName = "DurationOfPackage", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["ActivationDate"], Name = "ActivationDate", IsFilterable = false, PropertyName = "ActivationDate", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["ExpiryDate"], Name = "ExpiryDate", IsFilterable = false, PropertyName = "ExpiryDate", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["NumberOfVehicles"], Name = "NumberOfVehicles", IsFilterable = false, PropertyName = "NumberOfVehicles", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["NumberOfSlots"], Name = "NumberOfSlots", IsFilterable = false, PropertyName = "NumberOfSlots", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["Published"], Name = "published", IsFilterable = false, PropertyName = "published", IsSortable = false, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["Status"], Name = "Status", IsFilterable = false, PropertyName = "CustomerCategory", IsSortable = false, TypeFilter = TypeFilter.Text });
 
@@ -100,8 +110,10 @@ public partial class CustomerUnitPackageDialog
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["PackageDuration"], item.DurationOfPackage.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["ActivationDate"], item.ActivationDate.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["ExpiryDate"], item.DectivationDate.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["NumberOfVehicles"], item.NumberOfVehicles.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["NumberOfSlots"], item.NumberOfSlots.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Published"], item.PublishTo==item.PublishFrom ? 24 + L["Hour"] : $" {item.PublishFrom} " + " - " + $" {item.PublishTo}"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], item.CustomerPackageStatus.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], L[item.CustomerPackageStatus.ToString()]));
 
             tableData.Rows.Add(rowDef);
         }

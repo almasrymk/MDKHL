@@ -5,6 +5,7 @@ using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Currency;
 using SmartParking.CustomerUnitPackages;
+using SmartParking.Organizations;
 using SmartParking.Vehicles;
 using System.Globalization;
 
@@ -21,6 +22,8 @@ public partial class AssignVehicleToPackageDialog
         private void Cancel() => MudDialog.Cancel();
 
         private int TotalItem;
+
+    private OrganizationDto organizationDto = new();
     public int CurrentPage { get; set; } = 1;
         public int RowPerPage { get; set; } = 10;
 
@@ -34,7 +37,7 @@ public partial class AssignVehicleToPackageDialog
     /// <returns>A task that represents the asynchronous operation.</returns>
      protected override async Task OnInitializedAsync()
      {
-          await base.OnInitializedAsync();
+        await base.OnInitializedAsync();
      }
 
         /// <summary>
@@ -45,8 +48,9 @@ public partial class AssignVehicleToPackageDialog
         private async Task FetchTableData(PageChangeEventArgs pageInfo)
         {
 
+        organizationDto = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
 
-            customerUnitPackages = await CustomerUnitPackageAppService.GetUnitPackageByCustomer(CustomerId);
+        customerUnitPackages = await CustomerUnitPackageAppService.GetListOfUnitPackageByCustomer(CustomerId , organizationDto.Id);
 
 
             CreateTable(customerUnitPackages);
@@ -79,6 +83,8 @@ public partial class AssignVehicleToPackageDialog
             tableData.Columns.Add(new ColumnDef() { DisplayName = L["PackageDuration"], Name = "DurationOfPackage", IsFilterable = false, PropertyName = "DurationOfPackage", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = L["ActivationDate"], Name = "ActivationDate", IsFilterable = false, PropertyName = "ActivationDate", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = L["ExpiryDate"], Name = "ExpiryDate", IsFilterable = false, PropertyName = "ExpiryDate", IsSortable = false, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = L["NumberOfVehicles"], Name = "NumberOfVehicles", IsFilterable = false, PropertyName = "NumberOfVehicles", IsSortable = false, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = L["NumberOfSlots"], Name = "NumberOfSlots", IsFilterable = false, PropertyName = "NumberOfSlots", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = L["Published"], Name = "published", IsFilterable = false, PropertyName = "published", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = L["Status"], Name = "Status", IsFilterable = false, PropertyName = "CustomerCategory", IsSortable = false, TypeFilter = TypeFilter.Text });
 
@@ -101,8 +107,10 @@ public partial class AssignVehicleToPackageDialog
                 rowDef.Cells.Add(new KeyValuePair<string, string>(L["PackageDuration"], item.DurationOfPackage.ToString()));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(L["ActivationDate"], item.ActivationDate.ToString()));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(L["ExpiryDate"], item.DectivationDate.ToString()));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(L["NumberOfVehicles"], item.NumberOfVehicles.ToString()));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(L["NumberOfSlots"], item.NumberOfSlots.ToString()));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(L["Published"], item.PublishTo == item.PublishFrom ? 24 + L["Hour"] : $" {item.PublishFrom} " + " - " + $" {item.PublishTo}"));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], item.CustomerPackageStatus.ToString()));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], L[item.CustomerPackageStatus.ToString()]));
 
                 tableData.Rows.Add(rowDef);
             }
