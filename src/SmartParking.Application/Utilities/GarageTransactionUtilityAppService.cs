@@ -283,7 +283,9 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
                                     PaymentCode = x.PaymentCode,
                                     DispenserTransaction = x.DispenserTransaction,
                                     CameraTransaction = x.CameraTransaction  ,
-                                    TenantId = x.TenantId!.Value
+                                    TenantId = x.TenantId!.Value,
+                                    UserAccess=x.Settings.CustomerPackage,
+                                    VehicleAccess=x.Settings.VehcilePackage  
                                 }).FirstOrDefaultAsync();
 
             return result; 

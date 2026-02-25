@@ -97,7 +97,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
                     return await HandleExit(GarageTransaction, organization, input  , packageDto);
 
                 case WatcherType.Entry:
-                    return await HandleEntrance(input, _hasFreeSlots, _hasPackageOnly , GarageTransaction  , packageDto);
+                    return await HandleEntrance(input, new OrganizationTransactionSettingsDto { HasFreeSlots=organization.HasFreeSlots,HasPackageOnly= organization.HasPackageOnly,HasUserAccess=organization.UserAccess,HasVehicleAccess=organization.VehicleAccess } , GarageTransaction  , packageDto);
             }
         }
         catch (Exception ex)
@@ -125,14 +125,14 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
     #endregion
     #region public methods to handle entrance and exit 
 
-    public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, bool _hasFreeSlots, bool _hasPackageOnly, CreateUpdateGarageTransactionDto GarageTransaction, CustomerPackageTransactionDto? customerPackageDto = null)
+    public async Task<bool> HandleEntrance(CreateUpdateGarageTransactionEndPointDto input, OrganizationTransactionSettingsDto organizationTransactionSettings, CreateUpdateGarageTransactionDto GarageTransaction, CustomerPackageTransactionDto? customerPackageDto = null)
     {
-        bool _hasActivePackage = customerPackageDto is not null;
-        GarageTransaction.CustomerCategory = customerPackageDto is not null ? customerPackageDto.CustomerCategory : CustomerCategoryStatus.Customer;
+        bool _hasActivePackage = customerPackageDto?.EnPlateNumber != null;
+        GarageTransaction.CustomerCategory = customerPackageDto?.EnPlateNumber != null ? customerPackageDto.CustomerCategory : CustomerCategoryStatus.Customer;
 
-        bool canEnter = await _garageTransactionUtilityAppService.ReserverSlotsOfGarageDependsOnCategoryAsync(GarageTransaction.GarageId , _hasFreeSlots,  GarageTransaction.CustomerCategory);
+        bool canEnter = await _garageTransactionUtilityAppService.ReserverSlotsOfGarageDependsOnCategoryAsync(GarageTransaction.GarageId , organizationTransactionSettings.HasFreeSlots,  GarageTransaction.CustomerCategory);
      
-        bool finalResult = (_hasPackageOnly, _hasFreeSlots, canEnter, _hasActivePackage) switch
+        bool finalResult = (organizationTransactionSettings.HasPackageOnly, organizationTransactionSettings.HasFreeSlots, canEnter, _hasActivePackage) switch
         {
             (true, _, _, false) => false,
             (true, true, _, true) => true,
@@ -143,6 +143,13 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             (false, false, true, _) => true,
             (false, false, false, _) => false,
         };
+        if (organizationTransactionSettings.HasUserAccess && customerPackageDto?.EnPlateNumber != null)
+        {
+            var vehiclelimitations = await _customerPackagesHandlerAppService.CheckIfCustomerPackageHasAvailableSlots(customerPackageDto.CustomerId, GarageTransaction.OrganizationID);
+            finalResult &= vehiclelimitations;
+        }
+
+
         if (finalResult)
         {
             await _garageTransactionsAppService.CreateAsync(GarageTransaction);
@@ -152,7 +159,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             await _unlinkedGarageTransactionsAppService.CreateAsync(input);
             if (canEnter)
             {
-                await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(GarageTransaction.GarageId, _hasFreeSlots, GarageTransaction.CustomerCategory);
+                await _garageTransactionUtilityAppService.FreeSlotsOfGarageDependsOnCategoryAsync(GarageTransaction.GarageId, organizationTransactionSettings.HasFreeSlots, GarageTransaction.CustomerCategory);
             }
         }
         await CurrentUnitOfWork.SaveChangesAsync();
