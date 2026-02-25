@@ -16,4 +16,4 @@
 <PageTitle>@L["ShiftZone"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["ShiftZone"]</MudText>
 
-<SPDataGrid PageName=@L["ShiftStaffDetails"] Data="@itemData" OnClickRowView="OnClickRowView" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnSearching="HandleSearch" OnPageChanged="FetchTableData" ShowAdd="ShowAdd" OnClickRowDelete="OnClickRowDelete" OnAdd="CreateNewShiftStaff" OnClickRowEdit="OnClickRowEdit" />
+<SPDataGrid @ref="spDataGrid" PageName=@L["ShiftStaffDetails"] Data="@itemData" OnClickRowView="OnClickRowView" TotalItemsInTable="TotalItem" OnFiltering="HandleFilter" OnSearching="HandleSearch" OnPageChanged="FetchTableData" ShowAdd="ShowAdd" OnClickRowDelete="OnClickRowDelete" OnAdd="CreateNewShiftStaff" OnClickRowEdit="OnClickRowEdit" />

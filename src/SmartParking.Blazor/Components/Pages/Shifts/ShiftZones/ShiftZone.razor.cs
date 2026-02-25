@@ -23,6 +23,8 @@ public partial class ShiftZone
 
     private string termSearch;
     public bool ShowAdd { get; set; } = true;
+    private SPDataGrid spDataGrid;
+
 
     private DialogOptions options = new DialogOptions { CloseOnEscapeKey = true };
 
@@ -164,12 +166,54 @@ public partial class ShiftZone
 
     private async Task CreateNewShiftStaff()
     {
-        var result = await Dialog.ShowAsync<AddShiftZoneDialog>(L["AddShiftZone"], options);
-        var dialogResult = await result.Result;
-        if (!dialogResult.Canceled)
+        var dialogRef = await Dialog.ShowAsync<AddShiftZoneDialog>(L["AddShiftZone"], options);
+        var dialogResult = await dialogRef.Result;
+
+        if (dialogResult.Canceled) return;
+
+        if (dialogResult.Data is Guid newId)
         {
-            await FetchTableData(new PageChangeEventArgs { PageNumber = CurrentPage, RowsPerPage = RowPerPage, SortColumn = "Id", SearchTerm = termSearch });
+            var created = await ShiftZoneAppService.GetAsync(newId);
+            if (created != null)
+            {
+                var newRow = new RowDef();
+                newRow.Cells.Add(new(nameof(created.Id), created.Id.ToString()));
+                newRow.Cells.Add(
+                    CultureInfo.CurrentCulture.Name == "ar"
+                    ? new(_localizer["ArabicName"], created.ShiftDto?.ArabicName ?? "")
+                    : new(_localizer["EnglishName"], created.ShiftDto?.EnglishName ?? "")
+                );
+                newRow.Cells.Add(new(L["StartDate"], created.ShiftDto?.StartDate.ToString() ?? ""));
+                newRow.Cells.Add(new(L["EndDate"], created.ShiftDto?.EndDate.ToString() ?? ""));
+                newRow.Cells.Add(new(L["StartTime"], created.ShiftDto?.IsFullDay == true ? 24 + L["Hour"] : $"{created.ShiftDto?.StartTime}"));
+                newRow.Cells.Add(new(L["EndTime"], created.ShiftDto?.IsFullDay == true ? 24 + L["Hour"] : $"{created.ShiftDto?.EndTime}"));
+
+                var newTable = new TableData
+                {
+                    Name = itemData.Name,
+                    ShowHeader = itemData.ShowHeader,
+                    Columns = itemData.Columns.ToList(),
+                    Rows = itemData.Rows.ToList()
+                };
+                newTable.Rows.Insert(0, newRow);
+                itemData = newTable;
+                TotalItem++;
+
+                // ✅ This tells MudDataGrid to re-invoke ServerReload with the new itemData
+                await spDataGrid.Reload();
+                return;
+            }
         }
+
+        // fallback
+        await FetchTableData(new PageChangeEventArgs
+        {
+            PageNumber = CurrentPage,
+            RowsPerPage = RowPerPage,
+            SortColumn = "Id",
+            SearchTerm = termSearch
+        });
+        await spDataGrid.Reload();
     }
 
     private async Task<IDialogReference> OnClickRowEdit(RowDef row)
@@ -187,6 +231,7 @@ public partial class ShiftZone
         if (!result.Canceled)
         {
             await FetchTableData(new PageChangeEventArgs { PageNumber = CurrentPage, RowsPerPage = RowPerPage, SortColumn = "Id", SearchTerm = termSearch });
+            await spDataGrid.Reload();
         }
 
         return dialog;
@@ -222,10 +267,16 @@ public partial class ShiftZone
             if (!result.Canceled)
             {
                 await ShiftZoneAppService.DeleteAsync(id);
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.DELETE]} {Name}", Severity.Success);
-                await Task.Delay(1000);
+                SnackBar.ShowSnackbar(Snackbar, $"...", Severity.Success);
 
-                Navigation.NavigateTo("/shift-zone", forceLoad: true);
+                await FetchTableData(new PageChangeEventArgs
+                {
+                    PageNumber = CurrentPage,
+                    RowsPerPage = RowPerPage,
+                    SortColumn = "Id",
+                    SearchTerm = termSearch
+                });
+                await spDataGrid.Reload();
             }
         }
         catch (BusinessException ex)

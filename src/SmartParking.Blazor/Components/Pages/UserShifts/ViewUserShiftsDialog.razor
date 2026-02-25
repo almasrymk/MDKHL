@@ -1,41 +1,4 @@
-﻿@* @using Microsoft.Extensions.Localization
-@using SmartParking.KeeperShifts
-@using SmartParking.Localization
-@using Volo.Abp.MultiTenancy
-@inject IDialogService Dialog
-@inject IStringLocalizer<SmartParkingResource> L
-@inject IDialogService DialogService
-@inject ISnackbar Snackbar
-@inject NavigationManager Navigation
-@inject ICurrentTenant CurrentTenant
-@inject IAuthorizationService AuthorizationService
-@inject IJSRuntime JSRuntime;
-@inject IKeeperShiftsAppService KeeperShiftsAppService
-
-<PageTitle>@L["UserShifts"]</PageTitle>
-<div class="modal-wrapper ">
-    <MudDialog class="mud-modal w-100" Style="min-width:auto !important">
-        <TitleContent>
-            <MudText Class="fw-bold">@L["UserShifts"]</MudText>
-        </TitleContent>
-        <DialogContent>
-            <SPDataGrid PageName=@L["UserShifts"] Data="@itemData" TotalItemsInTable="TotalItem" ShowDelete="true" OnClickRowDelete="OnClickRowDelete" OnSearching="FetchTableData" OnPageChanged="FetchTableData"></SPDataGrid>
-        </DialogContent>
-        <DialogActions>
-            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
-        </DialogActions>
-    </MudDialog>
-</div>
-
-<style>
-    .mud-modal {
-        border-radius: 0 20px 0 20px;
-    }
-</style> *@
-
-
-
-@using Microsoft.Extensions.Localization
+﻿@using Microsoft.Extensions.Localization
 @using SmartParking.KeeperShifts
 @using SmartParking.Localization
 @using Volo.Abp.MultiTenancy
@@ -78,12 +41,42 @@
                         </MudField>
                     </MudItem>
 
-                    <MudItem xs="12" sm="6" md="3">
-                        <MudField Label="@L["Device"]" Variant="Variant.Outlined">
-                            <MudIcon Icon="@Icons.Material.Filled.Devices" Size="MudBlazor.Size.Small" Class="me-1" />
-                            @DeviceLabel
+                @if (IsManager)
+                {
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudField Label="@L["Device"]">
+                            <MudIcon Icon="@Icons.Material.Filled.Devices"
+                                     Size="MudBlazor.Size.Small" Class="me-1" />
+
+                            @if (Devices != null && Devices.Any())
+                            {
+                                @foreach (var device in Devices)
+                                {
+                                    <MudChip T="string"
+                                             Color="MudBlazor.Color.Secondary"
+                                             Size="MudBlazor.Size.Small"
+                                             Class="me-1 mb-1">
+                                        @device
+                                    </MudChip>
+                                }
+                            }
+                            else
+                            {
+                                <span>—</span>
+                            }
                         </MudField>
                     </MudItem>
+                }
+                else
+                {
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudField Label="@L["Device"]">
+                            <MudIcon Icon="@Icons.Material.Filled.Devices"
+                                     Size="MudBlazor.Size.Small" Class="me-1" />
+                            @SingleDeviceLabel
+                        </MudField>
+                    </MudItem>
+                }
 
                     <MudItem xs="12" sm="6" md="4">
                         <MudField Label="@L["Garage"]" Variant="Variant.Outlined">
@@ -94,97 +87,6 @@
 
                 </MudGrid>
 
-            @* ── Per-shift cards (data from KeeperShiftDto) ───────────────────────── *@
-
-                @foreach (var shift in _shifts)
-                {
-                    <MudCard Class="mb-3" Elevation="2">
-
-                        <MudCardHeader>
-                            <CardHeaderContent>
-                                <MudText Typo="Typo.subtitle2" Class="fw-bold">
-                                    <MudIcon Icon="@Icons.Material.Filled.Garage" Size="MudBlazor.Size.Small" Class="me-1" />
-                                    @GarageName(shift)
-                                </MudText>
-                                @if (IsHost)
-                                {
-                                    <MudText Typo="Typo.caption" Color="MudBlazor.Color.Secondary">
-                                        <MudIcon Icon="@Icons.Material.Filled.Business" Size="MudBlazor.Size.Small" Class="me-1" />
-                                        @OrgName(shift)
-                                    </MudText>
-                                }
-                            </CardHeaderContent>
-                            <CardHeaderActions>
-                                @if (shift.IsFullDay)
-                                {
-                                    <MudChip T="string" Color="MudBlazor.Color.Success" Size="MudBlazor.Size.Small"
-                                             Icon="@Icons.Material.Filled.WbSunny">
-                                        @L["FullDay"]
-                                    </MudChip>
-                                }
-                            </CardHeaderActions>
-                        </MudCardHeader>
-
-                        <MudDivider />
-
-                        <MudCardContent>
-                            <MudGrid Spacing="2">
-
-                                <!-- Keeper name (from KeeperShiftDto) -->
-                                <MudItem xs="12" sm="6" md="6">
-                                    <MudField Label="@L["KeeperName"]" Variant="Variant.Outlined">
-                                        <MudIcon Icon="@Icons.Material.Filled.Person" Size="MudBlazor.Size.Small" Class="me-1" />
-                                        @KeeperDisplayName(shift)
-                                    </MudField>
-                                </MudItem>
-
-                                <!-- Start Date -->
-                                <MudItem xs="12" sm="6" md="3">
-                                    <MudField Label="@L["StartDate"]" Variant="Variant.Outlined">
-                                        <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="MudBlazor.Size.Small" Class="me-1" />
-                                        @shift.StartDate.ToString("yyyy-MM-dd")
-                                    </MudField>
-                                </MudItem>
-
-                                <!-- End Date -->
-                                <MudItem xs="12" sm="6" md="3">
-                                    <MudField Label="@L["EndDate"]" Variant="Variant.Outlined">
-                                        <MudIcon Icon="@Icons.Material.Filled.EventBusy" Size="MudBlazor.Size.Small" Class="me-1" />
-                                        @shift.EndDate.ToString("yyyy-MM-dd")
-                                    </MudField>
-                                </MudItem>
-
-                                <!-- Start Time -->
-                                <MudItem xs="12" sm="6" md="3">
-                                    <MudField Label="@L["StartTime"]" Variant="Variant.Outlined">
-                                        <MudIcon Icon="@Icons.Material.Filled.AccessTime" Size="MudBlazor.Size.Small" Class="me-1" />
-                                        @shift.StartTime.ToString("HH:mm")
-                                    </MudField>
-                                </MudItem>
-
-                                <!-- End Time -->
-                                <MudItem xs="12" sm="6" md="3">
-                                    <MudField Label="@L["EndTime"]" Variant="Variant.Outlined">
-                                        <MudIcon Icon="@Icons.Material.Filled.TimerOff" Size="MudBlazor.Size.Small" Class="me-1" />
-                                        @shift.EndTime.ToString("HH:mm")
-                                    </MudField>
-                                </MudItem>
-
-                            </MudGrid>
-                        </MudCardContent>
-                    </MudCard>
-
-                <!-- Pager -->
-                <div class="d-flex justify-content-end align-items-center mt-2 gap-3">
-                    <MudText Typo="Typo.body2">@L["TotalItems"]: @TotalItem</MudText>
-                    <MudPagination Count="@TotalPages"
-                                   Selected="@CurrentPage"
-                                   SelectedChanged="OnPageChanged"
-                                   Color="MudBlazor.Color.Primary"
-                                   BoundaryCount="1"
-                                   MiddleCount="3" />
-                </div>
-            }
 
         </DialogContent>
 
