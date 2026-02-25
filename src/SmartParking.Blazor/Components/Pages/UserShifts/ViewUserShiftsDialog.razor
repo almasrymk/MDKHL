@@ -1,101 +1,67 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Blazor.Customs
 @using SmartParking.KeeperShifts
 @using SmartParking.Localization
 @using Volo.Abp.MultiTenancy
 @using System.Globalization
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
-@inject NavigationManager Navigation
 @inject ICurrentTenant CurrentTenant
-@inject IKeeperShiftsAppService KeeperShiftsAppService
-
-<PageTitle>@L["UserShifts"]</PageTitle>
 
 <div class="modal-wrapper">
     <MudDialog Class="mud-modal w-100" Style="min-width: auto !important">
-
         <TitleContent>
             <MudText Class="fw-bold" Typo="Typo.h6">@L["UserShifts"]</MudText>
         </TitleContent>
 
         <DialogContent>
-
-            @* ── User summary banner (data from ShiftZoneUserViewDto) ─────────────── *@
-                <MudGrid Spacing="2" AlignItems="Center">
-
-                    <MudItem xs="12" sm="6" md="3">
-                        <MudField Label="@L["UserFullName"]" Variant="Variant.Outlined">
-                            <MudIcon Icon="@Icons.Material.Filled.Person" Size="MudBlazor.Size.Small" Class="me-1" />
-                            @(string.IsNullOrWhiteSpace(UserFullName) ? "—" : UserFullName)
-                        </MudField>
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
+                <MudGrid Spacing="2">
+                    <MudItem sm="6" md="6">
+                        <MudTextField T="string"
+                                      Value="@(string.IsNullOrWhiteSpace(UserFullName) ? "—" : UserFullName)"
+                                      Disabled="true"
+                                      Label="@L["UserFullName"]" />
                     </MudItem>
 
-                    <MudItem xs="12" sm="6" md="2">
-                        <MudField Label="@L["Role"]" Variant="Variant.Outlined">
-                            <MudChip T="string"
-                                     Color="@(IsManager ? MudBlazor.Color.Warning : MudBlazor.Color.Info)"
-                                     Size="MudBlazor.Size.Small"
-                                     Icon="@(IsManager ? Icons.Material.Filled.ManageAccounts : Icons.Material.Filled.Badge)">
-                                @(string.IsNullOrWhiteSpace(Role) ? L["Staff"] : L[Role])
-                            </MudChip>
-                        </MudField>
+                    <MudItem sm="6" md="6">
+                        <MudTextField T="string"
+                                      Value="@(string.IsNullOrWhiteSpace(Role) ? L["Staff"].Value : (L[Role].Value ?? Role))"
+                                      Disabled="true"
+                                      Label="@L["Role"]" />
                     </MudItem>
 
-                @if (IsManager)
-                {
-                    <MudItem xs="12" sm="12" md="12">
-                        <MudField Label="@L["Device"]">
-                            <MudIcon Icon="@Icons.Material.Filled.Devices"
-                                     Size="MudBlazor.Size.Small" Class="me-1" />
+                    <DeviceDisplayComponent Role="@Role"
+                                            Device="@Device"
+                                            Devices="@Devices" />
 
-                            @if (Devices != null && Devices.Any())
-                            {
-                                @foreach (var device in Devices)
-                                {
-                                    <MudChip T="string"
-                                             Color="MudBlazor.Color.Secondary"
-                                             Size="MudBlazor.Size.Small"
-                                             Class="me-1 mb-1">
-                                        @device
-                                    </MudChip>
-                                }
-                            }
-                            else
-                            {
-                                <span>—</span>
-                            }
-                        </MudField>
-                    </MudItem>
-                }
-                else
-                {
-                    <MudItem xs="12" sm="6" md="3">
-                        <MudField Label="@L["Device"]">
-                            <MudIcon Icon="@Icons.Material.Filled.Devices"
-                                     Size="MudBlazor.Size.Small" Class="me-1" />
-                            @SingleDeviceLabel
-                        </MudField>
-                    </MudItem>
-                }
-
-                    <MudItem xs="12" sm="6" md="4">
-                        <MudField Label="@L["Garage"]" Variant="Variant.Outlined">
-                            <MudIcon Icon="@Icons.Material.Filled.Garage" Size="MudBlazor.Size.Small" Class="me-1" />
-                            @(string.IsNullOrWhiteSpace(Garage) ? "—" : Garage)
-                        </MudField>
+                    <MudItem xs="12" sm="6" md="6">
+                        <MudTextField T="string"
+                                      Value="@(string.IsNullOrWhiteSpace(Garage) ? "—" : Garage)"
+                                      Disabled="true"
+                                      Label="@L["Garage"]" />
                     </MudItem>
 
+                    @if (CurrentTenant.Id is null)
+                    {
+                        <MudItem xs="12" sm="6" md="6">
+                            <MudTextField T="string"
+                                          Disabled="true"
+                                          Label="@L["Organization"]" />
+                        </MudItem>
+                    }
                 </MudGrid>
-
-
+            </MudForm>
         </DialogContent>
 
         <DialogActions>
-            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">
-                @L["Cancel"]
-            </MudButton>
+            <DialogActionComponent
+                ButtonTwoColor="MudBlazor.Color.Dark"
+                ButtonTwoLabel="@L["Back"]"
+                ButtonTwoClick="Cancel"
+                ButtonTwoVariant="MudBlazor.Variant.Filled" />
         </DialogActions>
-
     </MudDialog>
 </div>
 

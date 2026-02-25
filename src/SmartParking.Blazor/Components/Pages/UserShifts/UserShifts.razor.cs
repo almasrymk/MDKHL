@@ -157,7 +157,7 @@ public partial class UserShifts
             parameters,
             new DialogOptions
             {
-                MaxWidth = MaxWidth.Medium,
+                MaxWidth = MaxWidth.Small,
                 FullWidth = true,
                 CloseOnEscapeKey = true
             });
