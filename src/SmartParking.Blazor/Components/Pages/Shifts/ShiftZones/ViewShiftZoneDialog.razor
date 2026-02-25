@@ -92,8 +92,14 @@
 							</MudItem>
 						}
 					
+						<MudItem sm="12">
 
-					<SPDataGrid PageName=@L["StaffDevices"] >    </SPDataGrid>
+							<SPDataGrid PageName=@L["StaffDevices"] 
+								TotalItemsInTable="@TotalItem" 
+								Data="@itemData" 
+								OnPageChanged="FetchTableData"
+								ShowExport=false></SPDataGrid>
+						</MudItem>
 
 				</MudGrid>
 			</MudForm>

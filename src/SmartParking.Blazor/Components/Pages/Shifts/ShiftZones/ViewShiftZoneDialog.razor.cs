@@ -19,8 +19,7 @@ public partial class ViewShiftZoneDialog
     private bool IsArabic => CultureInfo.CurrentCulture.Name.StartsWith("ar", StringComparison.OrdinalIgnoreCase);
     private int TotalItem;
     private TableData itemData = new TableData();
-    private readonly IStringLocalizer<SmartParkingResource> _localizer;
-
+    private PagedResultDto<ShiftDetailsDto> StaffDevice = new();
 
     private string GetLocalized(string en, string ar)
     {
@@ -54,7 +53,7 @@ public partial class ViewShiftZoneDialog
             Sorting = pageInfo.SortColumn
         };
 
-        PagedResultDto<ShiftDetailsDto> StaffDevice = await ShiftDetailsAppService.GetPaginatedByShiftZoneAsync(ShiftZone.Id, input);
+        StaffDevice = await ShiftDetailsAppService.GetPaginatedByShiftZoneAsync(ShiftZone.Id, input);
 
         var shiftDetails = StaffDevice.Items.ToList();
         TotalItem = (int)StaffDevice.TotalCount;
@@ -66,13 +65,13 @@ public partial class ViewShiftZoneDialog
     {
         var tableData = new TableData()
         {
-            Name = L["CustomerPackageHeader"],
+            Name = L["ShiftZoneDetails"],
             ShowHeader = true
         };
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Staff"], Name = "Staff", IsFilterable = false, PropertyName = "Staff", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["Staff"], Name = "Staff", IsFilterable = false, PropertyName = "Staff", IsSortable = false, TypeFilter = TypeFilter.Text });
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Device"], Name = "Device", IsFilterable = false, PropertyName = "Device", IsSortable = false, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["Device"], Name = "Device", IsFilterable = false, PropertyName = "Device", IsSortable = false, TypeFilter = TypeFilter.Text });
         
         
         foreach (var item in shiftDetails)
@@ -80,9 +79,9 @@ public partial class ViewShiftZoneDialog
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Staff"], item.ShiftStaffDetails.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Staff"], item.ShiftStaffDetails.StaffEnName.ToString()));
             
-            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Device"], item!.ShiftDevices.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Device"], item!.ShiftDevices.DeviceCode.ToString()));
             
 
 
