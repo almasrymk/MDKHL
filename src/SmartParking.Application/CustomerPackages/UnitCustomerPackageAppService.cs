@@ -69,37 +69,7 @@ public class UnitCustomerPackageAppService : BaseCustomerPackagesAssigingAppServ
 
     public async Task<bool> HandleExistingPackagesForVehicleAsync(CreateUpdateCustomerPackageDto customerPackageDto)
     {
-        var newExpiryDate = customerPackageDto.ActivationDateOfPackage.Value.AddDays(-1);
-        var newActivationDate = customerPackageDto.ExpiryDate.AddDays(1);
-
-        var query = await _repository.GetQueryableAsync();
-
-        await query
-            .Where(p =>
-                p.OrganizationId == customerPackageDto.OrganizationId &&
-                p.EnPlateNumber == customerPackageDto.EnPlateNumber &&
-                (
-                    (p.ActivationDateOfPackage < customerPackageDto.ActivationDateOfPackage) || // new after current
-                    (p.ActivationDateOfPackage == customerPackageDto.ActivationDateOfPackage && p.ExpiryDate == customerPackageDto.ExpiryDate) || // equal
-                    (p.ActivationDateOfPackage >= customerPackageDto.ActivationDateOfPackage) // new before current
-                )
-            )
-            .ExecuteUpdateAsync(p => p
-                .SetProperty(x => x.ExpiryDate,
-                    x => x.ActivationDateOfPackage < customerPackageDto.ActivationDateOfPackage
-                        ? newExpiryDate
-                        : x.ExpiryDate) // only update if new is after current
-                .SetProperty(x => x.Status,
-                    x => x.ActivationDateOfPackage == customerPackageDto.ActivationDateOfPackage &&
-                         x.ExpiryDate == customerPackageDto.ExpiryDate
-                        ? Status.Inactive
-                        : x.Status) // only update if equal
-                .SetProperty(x => x.ActivationDateOfPackage,
-                    x => x.ActivationDateOfPackage >= customerPackageDto.ActivationDateOfPackage
-                        ? newActivationDate
-                        : x.ActivationDateOfPackage) // only update if new is before current
-            );
-        return true;
+        return await base.HandleExistingPackagesForVehicleAsync(customerPackageDto);
     }
 
     #region Private Methods
