@@ -23,7 +23,9 @@ public partial class UpdateShiftZoneDialog
     private List<ShiftDto> ShiftDtos = new();
     private List<GarageDto> Garages = new();
     private List<AssignStaffDataDto> Keepers = new();
+
     private List<AssignStaffDataDto> Managers = new();
+
     private List<Watcher> Devices = new();
 
     private List<CreateUpdateShiftDeviceDto> ShiftDeviceDtos = new();
@@ -188,18 +190,17 @@ public partial class UpdateShiftZoneDialog
 
             await ShiftZoneAppService.UpdateAsync(Id, CreateUpdateShiftZone);
 
-            // Build one SyncShiftZoneAssignmentDto per UI row
             var assignmentRows = UiAssignments
                 .Where(r => (r.StaffId != null && r.StaffId != Guid.Empty)
                          || (r.DeviceId != null && r.DeviceId > 0)
-                         || r.ExistingShiftDetailsId != null) // include existing rows even if cleared
+                         || r.ExistingShiftDetailsId != null) 
                 .Select(r =>
                 {
                     var keeper = r.StaffId != null ? Keepers.FirstOrDefault(k => k.Id == r.StaffId) : null;
                     var device = r.DeviceId != null ? Devices.FirstOrDefault(d => d.Id == r.DeviceId) : null;
-                    return new SyncShiftZoneAssignmentDto
+                    return new CreateUpdateZoneAssignmentDto
                     {
-                        ExistingShiftDetailsId = r.ExistingShiftDetailsId, // null = new row, Guid = update existing
+                        ExistingShiftDetailsId = r.ExistingShiftDetailsId,
                         StaffId = r.StaffId,
                         StaffUserName = keeper?.UserName,
                         StaffEnName = keeper?.EnglishName,
@@ -213,7 +214,7 @@ public partial class UpdateShiftZoneDialog
                 .ToList();
 
             if (assignmentRows.Any())
-                await AssignShiftZoneAppService.SyncShiftZoneAssignments(Id, assignmentRows);
+                await AssignShiftZoneAppService.UpdateShiftZoneAssignmentsAsync(Id, assignmentRows);
 
             Snackbar.Add(L["ShiftZoneSaved"], Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));

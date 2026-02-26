@@ -4,27 +4,38 @@
 
 @if (IsManager)
 {
-    <MudItem xs="12" sm="12" md="12">
-        <MudText Typo="Typo.caption" Class="text-muted">@L["Devices"]</MudText>
-
-        @if (Devices != null && Devices.Any())
-        {
-            <MudGrid Style="margin-top:unset !important" Class="mt-2">
-                @foreach (var device in Devices)
-                {
-                    <MudItem Style="padding-top:unset !important" xs="12" sm="6" md="6">
-                        <MudTextField T="string"
-                                      Value="@(string.IsNullOrWhiteSpace(device) ? "—" : device)"
-                                      Disabled="true" />
-                    </MudItem>
-                }
-            </MudGrid>
-        }
-        else
-        {
-            <div class="mt-2">—</div>
-        }
-    </MudItem>
+    @if (_devices.Count <= 1)
+    {
+        <MudItem xs="12" sm="6" md="6">
+            <MudTextField T="string"
+                          Value="@(_devices.Count == 0 || string.IsNullOrWhiteSpace(_devices[0]) ? "—" : _devices[0])"
+                          Disabled="true"
+                          Label="@L["Device"]" />
+        </MudItem>
+    }
+    else
+    {
+        <MudItem xs="12" sm="12" md="12">
+            <MudText Typo="Typo.caption" Class="text-muted">@L["Devices"]</MudText>
+            @if (_devices.Any())
+            {
+                <MudGrid Style="margin-top:unset !important" Class="mt-2">
+                    @foreach (var device in _devices)
+                    {
+                        <MudItem Style="padding-top:unset !important" xs="12" sm="6" md="6">
+                            <MudTextField T="string"
+                                          Value="@(string.IsNullOrWhiteSpace(device) ? "—" : device)"
+                                          Disabled="true" />
+                        </MudItem>
+                    }
+                </MudGrid>
+            }
+            else
+            {
+                <div class="mt-2">—</div>
+            }
+        </MudItem>
+    }
 }
 else
 {

@@ -4,9 +4,7 @@ using SmartParking.Authentication;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Garages;
 using SmartParking.Shifts;
-using SmartParking.Shifts.ShiftDevices;
 using SmartParking.Shifts.ShiftsMangers;
-using SmartParking.Shifts.ShiftStaffDetail;
 using SmartParking.Shifts.ShiftZones;
 using Volo.Abp.Application.Dtos;
 
@@ -22,7 +20,6 @@ public partial class AddShiftZoneDialog
 
     private List<AssignStaffDataDto> Keepers = new();
     private List<AssignStaffDataDto> Managers { get; set; } = new();
-    private List<AssignStaffDataDto> Staffs { get; set; } = new();
     private List<Watcher> Devices { get; set; } = new();
 
     private bool _isLoaded = false;
@@ -136,7 +133,6 @@ public partial class AddShiftZoneDialog
                 return;
             }
 
-            // Build one SyncShiftZoneAssignmentDto per UI row
             var assignmentRows = UiAssignments
                 .Where(r => (r.StaffId != null && r.StaffId != Guid.Empty && r.StaffId != SelectedManagerId)
                          || (r.DeviceId != null && r.DeviceId > 0))
@@ -144,9 +140,9 @@ public partial class AddShiftZoneDialog
                 {
                     var keeper = Keepers.FirstOrDefault(x => x.Id == r.StaffId);
                     var device = Devices.FirstOrDefault(d => d.Id == r.DeviceId);
-                    return new SyncShiftZoneAssignmentDto
+                    return new CreateUpdateZoneAssignmentDto
                     {
-                        ExistingShiftDetailsId = null, // always new on create
+                        ExistingShiftDetailsId = null, 
                         StaffId = (r.StaffId != Guid.Empty && r.StaffId != SelectedManagerId) ? r.StaffId : null,
                         StaffUserName = keeper?.UserName,
                         StaffEnName = keeper?.EnglishName,
@@ -160,7 +156,7 @@ public partial class AddShiftZoneDialog
                 .ToList();
 
             if (assignmentRows.Any())
-                await AssignShiftZoneAppService.SyncShiftZoneAssignments(created.Id, assignmentRows);
+                await AssignShiftZoneAppService.AddShiftZoneAssignmentsAsync(created.Id, assignmentRows);
 
             Snackbar.Add(L["ShiftZoneCreated"], Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));

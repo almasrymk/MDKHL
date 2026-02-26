@@ -3,6 +3,7 @@ using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.GarageTransactions;
 using SmartParking.Localization;
 using SmartParking.Shifts.ShiftZones;
 using System.Globalization;
@@ -16,8 +17,8 @@ namespace SmartParking.Blazor.Components.Pages.Shifts.ShiftZones;
 public partial class ShiftZone
 {
     private int TotalItem;
-    public int CurrentPage { get; set; } = 1; // Default current page value is 10
-    public int RowPerPage { get; set; } = 10; // Default value is 10
+    public int CurrentPage { get; set; } = 1; 
+    public int RowPerPage { get; set; } = 10; 
 
     private TableData itemData = new TableData();
 
@@ -43,25 +44,31 @@ public partial class ShiftZone
     /// <returns>Returns a task that represents the asynchronous operation.</returns>
     private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
 
-        // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndFilteredResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch, // The term to use for filtering results
+            SearchingTerm = termSearch, 
             filters = pageInfo.Filters
         };
-        // Call the service to perform the search based on the input parameters
-        var subscriptionTypeDto = await ShiftZoneAppService.FilterForMDKHL(input);
 
-        // Calculate the total number of pages required to display all results
-        TotalItem = (int)subscriptionTypeDto.TotalCount;
-        CreateTable(subscriptionTypeDto);
+        if (CurrentTenant.Id != null)
+        {
+            var subscriptionTypeDto = await ShiftZoneAppService.FilterForMDKHL(input);
 
 
+            TotalItem = (int)subscriptionTypeDto.TotalCount;
+            await CreateTable(subscriptionTypeDto);
+        }
+        else
+        {
+            var subscriptionTypeDto = await ShiftZoneAppService.Filter(input);
+
+            TotalItem = (int)subscriptionTypeDto.TotalCount;
+            await CreateTable(subscriptionTypeDto);
+        }
     }
 
     ///// <summary>
@@ -71,27 +78,29 @@ public partial class ShiftZone
     ///// <returns>Returns a task that represents the asynchronous operation.</returns>
     private async Task HandleSearch(PageChangeEventArgs pageInfo)
     {
-        // Log the search term to the console for debugging purposes
-        Console.WriteLine(pageInfo.SearchTerm);
 
-        // Update the term used for searching with the provided search term
         termSearch = pageInfo.SearchTerm;
 
-        // Create a new search input object with pagination, sorting, and search term parameters
         var input = new PagedAndSortedAndSearchResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch // The term to use for filtering results
+            SearchingTerm = termSearch 
         };
 
-        // Call the service to perform the search based on the input parameters
-        var SubscriptionTypeDto = await ShiftZoneAppService.SearchForMDKHL(input);
-
-        // Calculate the total number of pages required to display all results
-        TotalItem = (int)SubscriptionTypeDto.TotalCount;
-        CreateTable(SubscriptionTypeDto);
+        if(CurrentTenant.Id != null)
+        {
+            var subscriptionTypeDto = await ShiftZoneAppService.SearchForMDKHL(input);
+            TotalItem = (int)subscriptionTypeDto.TotalCount;
+            await CreateTable(subscriptionTypeDto);
+        }
+        else
+        {
+            var subscriptionTypeDto = await ShiftZoneAppService.Search(input);
+            TotalItem = (int)subscriptionTypeDto.TotalCount;
+            await CreateTable(subscriptionTypeDto);
+        }
     }
 
     /// <summary>
@@ -122,11 +131,11 @@ public partial class ShiftZone
 
         var ShiftStaffDetailDto = await ShiftZoneAppService.GetListAsync(input);
         TotalItem = (int)ShiftStaffDetailDto.TotalCount;
-        CreateTable(ShiftStaffDetailDto);
+        await CreateTable(ShiftStaffDetailDto);
 
     }
 
-    private void CreateTable(PagedResultDto<ShiftZoneDto> shiftStaffDetail)
+    private async Task CreateTable(PagedResultDto<ShiftZoneDto> shiftStaffDetail)
     {
         var tableData = new TableData()
         {
@@ -162,6 +171,7 @@ public partial class ShiftZone
 
 
         itemData = tableData;
+        await Task.Yield();
     }
 
     private async Task CreateNewShiftStaff()
@@ -199,20 +209,11 @@ public partial class ShiftZone
                 itemData = newTable;
                 TotalItem++;
 
-                // ✅ This tells MudDataGrid to re-invoke ServerReload with the new itemData
                 await spDataGrid.Reload();
                 return;
             }
         }
 
-        // fallback
-        await FetchTableData(new PageChangeEventArgs
-        {
-            PageNumber = CurrentPage,
-            RowsPerPage = RowPerPage,
-            SortColumn = "Id",
-            SearchTerm = termSearch
-        });
         await spDataGrid.Reload();
     }
 
@@ -230,7 +231,6 @@ public partial class ShiftZone
 
         if (!result.Canceled)
         {
-            await FetchTableData(new PageChangeEventArgs { PageNumber = CurrentPage, RowsPerPage = RowPerPage, SortColumn = "Id", SearchTerm = termSearch });
             await spDataGrid.Reload();
         }
 
@@ -267,15 +267,8 @@ public partial class ShiftZone
             if (!result.Canceled)
             {
                 await ShiftZoneAppService.DeleteAsync(id);
-                SnackBar.ShowSnackbar(Snackbar, $"...", Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L["ShiftZoneDeleted"]}", Severity.Success);
 
-                await FetchTableData(new PageChangeEventArgs
-                {
-                    PageNumber = CurrentPage,
-                    RowsPerPage = RowPerPage,
-                    SortColumn = "Id",
-                    SearchTerm = termSearch
-                });
                 await spDataGrid.Reload();
             }
         }
@@ -292,7 +285,7 @@ public partial class ShiftZone
         {
             if (ex.Message == "")
             {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {L["SubscriptionDeleteMessage"]} ", Severity.Error);
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {L["ShiftZoneDeleteMessage"]} ", Severity.Error);
 
             }
             else
