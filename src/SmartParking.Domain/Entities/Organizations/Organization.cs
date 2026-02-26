@@ -63,4 +63,5 @@ public class Organization : BaseEntity
     public string PasswordZatca { get; set; }
     public Status StatusZatca { get; set; }
     public OrganizationSettings Settings { get; set; }
+    public bool UseShifts { get; set; }
 }
