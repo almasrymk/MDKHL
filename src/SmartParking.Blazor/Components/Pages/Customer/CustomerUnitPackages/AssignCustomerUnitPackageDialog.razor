@@ -59,7 +59,8 @@
                                 }
                             </MudSelect>
                         </MudItem>
-
+                            
+                        
 
 
                     }
@@ -84,6 +85,11 @@
                                 }
                             </MudSelect>
 
+                        </MudItem>
+
+                        <MudItem>
+                            <MudCheckBox @bind-Value="IsCustom"
+                             Label="Custom"></MudCheckBox>
                         </MudItem>
                     }
                     @if (Packages.Count > 0 && !IsCustom)
@@ -128,6 +134,11 @@
                             {
                                 <MudTextField T="string" Label="@L["CustomPackage"]" Placeholder="@L["CustomPackage"]" ReadOnly @bind-Value="_customerPackageDto.EnglishName"> @L["CustomPackage"] </MudTextField>
                             }
+                        </MudItem>
+                        <MudItem sm="12">
+                            <CustomUnitPackage UnitPackageDto="_createUpdateUnitPackageDto">
+
+                            </CustomUnitPackage>
                         </MudItem>
 
                     }

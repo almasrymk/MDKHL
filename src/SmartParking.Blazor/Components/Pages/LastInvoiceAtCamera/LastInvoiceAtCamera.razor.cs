@@ -45,7 +45,7 @@ public partial class LastInvoiceAtCamera
             
             _organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
 
-            Invoice = await InvoiceAppService.GetLatestInvoiceForOrganization();
+            Invoice = await KeeperAppService.GetLastInvoiceByOrganizationIdAsync(_organization.Id);
             InvoicePrice = Invoice.InvoicePrice;
         }
         catch (Exception ex)

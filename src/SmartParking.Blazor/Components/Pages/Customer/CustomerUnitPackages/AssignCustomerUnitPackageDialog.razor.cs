@@ -16,6 +16,7 @@ public partial class AssignCustomerUnitPackageDialog
     private IMudDialogInstance MudDialogAdd { get; set; }
     public UnitPackageDto CustomerPackage = new UnitPackageDto();
     public CustomerUnitPackageDto _customerPackageDto = new CustomerUnitPackageDto();
+    public CreateUpdateUnitPackageDto _createUpdateUnitPackageDto = new CreateUpdateUnitPackageDto();
     [Parameter]
     public CustomerDto Customer { get; set; } = new();
 
@@ -29,7 +30,7 @@ public partial class AssignCustomerUnitPackageDialog
     private MudForm form;
     public List<UnitPackageDto> selectedPackageDto { get; set; } = new List<UnitPackageDto>();
     private bool IsCustom { get; set; } = false;
-
+    private OrganizationDto OrganizationDto { get; set; }
 
     /// <summary>
     /// Retrieves the available packages based on the customer's category.
@@ -52,6 +53,7 @@ public partial class AssignCustomerUnitPackageDialog
     {
         var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         Organizations = result.Items;
+        OrganizationDto = await OrganizationAppService.GetOrganizationForCurrentTenatAsync(); 
         await base.OnInitializedAsync();
     }
 
@@ -66,10 +68,25 @@ public partial class AssignCustomerUnitPackageDialog
             SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"],Severity.Error);
             return;
         }
-        var package = selectedPackageDto.FirstOrDefault();
 
-
-        preAssignState.UnitPackage=package;
+        if (IsCustom)
+        {
+            _createUpdateUnitPackageDto.Package.EnglishName = "Custom Package";
+            _createUpdateUnitPackageDto.Package.ArabicName = "باقة مخصصة";
+            _createUpdateUnitPackageDto.Package.Description = "Custom Package";
+            _createUpdateUnitPackageDto.Package.PackageStatus = SubscriptionStatus.Active;
+            _createUpdateUnitPackageDto.Package.CustomerCategory = CustomerCategoryStatus.None;
+            _createUpdateUnitPackageDto.Package.Status = Status.Active;
+            _createUpdateUnitPackageDto.Package.PackageCategoryType = PackageCategoryTypes.CustomPackage;
+            _createUpdateUnitPackageDto.Package.OrganizationId = OrganizationDto.Id;
+            var packageDto = await PackageAppService.CreateAsync(_createUpdateUnitPackageDto);
+            preAssignState.UnitPackage = packageDto;
+        }
+        else
+        {
+            var package = selectedPackageDto.FirstOrDefault();
+            preAssignState.UnitPackage = package;
+        }
         preAssignState.Customer = Customer;
         Navigation.NavigateTo("/prepaymentpackageunit");
 

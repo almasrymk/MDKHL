@@ -10,6 +10,7 @@
 @using SmartParking.Invoices
 @using SmartParking.Localization
 @using System.Globalization
+@using SmartParking.Mobile.Keepers
 @using SmartParking.OpeningGate
 @using SmartParking.Organizations
 @using SmartParking.Payments
@@ -18,6 +19,7 @@
 @using SmartParking.Watchers
 @page "/lastinvoice"
 @inject IInvoiceAppService InvoiceAppService
+@inject IKeeperAppService KeeperAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IPaymentAppService PaymentAppService
 @inject ISnackbar Snackbar
