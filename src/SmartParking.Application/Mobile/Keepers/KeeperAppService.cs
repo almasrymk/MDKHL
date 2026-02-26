@@ -286,15 +286,19 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         }
     }
     /// <inheritdoc/>
-    public async Task<Result<ShiftWatcherActionDto>> GetShiftWatcherActionAsync()
+
+    public async Task<Result<ICollection<ShiftWatcherActionDto>>> GetShiftWatcherActionAsync()
     {
         var result = await _shiftZoneActionAppService.GetShiftZoneDevicesDataAsync();
-        if (result.Count == 0)
+
+        if (result == null || result.Count == 0)
         {
-            return Result<ShiftWatcherActionDto>.NotFound("No shift watcher actions found for the user.");
+            return Result<ICollection<ShiftWatcherActionDto>>.Success(new List<ShiftWatcherActionDto>());
         }
-        return Result<ShiftWatcherActionDto>.Success(result.SingleOrDefault());
+
+        return Result<ICollection<ShiftWatcherActionDto>>.Success(result);
     }
+
     /// <inheritdoc/>
 
     public async Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId, Guid userId, PagedAndSortedAndSearchResultRequestDto paged)
