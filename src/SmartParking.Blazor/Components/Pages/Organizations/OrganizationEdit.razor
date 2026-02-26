@@ -65,25 +65,26 @@
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
-                        <MudItem sm="4">
+                        <MudItem sm="5">
                             <MudSwitch Label=@L["CameraTransaction"] @bind-Value="_createUpdateOrganiztionDto.CameraTransaction" Color="MudBlazor.Color.Primary" />
                         </MudItem>
 
-                        <MudItem sm="4">
+                        <MudItem sm="5">
                             <MudSwitch Label=@L["DispenserTransaction"] @bind-Value="_createUpdateOrganiztionDto.DispenserTransaction" Color="MudBlazor.Color.Primary" />
                         </MudItem>
-
                             
-                        <MudGrid Class="ma-2">
-                            <MudItem sm="4">
-                                <MudSwitch Label=@L["UserAccess"] @bind-Value="_organizationSettingsDto.UserAccess" Color="MudBlazor.Color.Primary" />
-                            </MudItem>
+                        <MudItem sm="5">
+                            <MudSwitch Label=@L["UserAccess"] @bind-Value="_organizationSettingsDto.UserAccess" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
 
-                            <MudItem sm="4">
-                                <MudSwitch Label=@L["VhecileAccess"] @bind-Value="_organizationSettingsDto.VehcileAccess" Color="MudBlazor.Color.Primary" />
-                            </MudItem>
-                        </MudGrid> 
+                        <MudItem sm="5">
+                            <MudSwitch Label=@L["VhecileAccess"] @bind-Value="_organizationSettingsDto.VehcileAccess" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
                         
+                        
+                         <MudItem sm="6">
+                            <MudSwitch Label=@L["Shift"] @bind-Value="_createUpdateOrganiztionDto.UseShifts" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
 
