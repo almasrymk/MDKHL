@@ -369,26 +369,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
             return Result.Success(invDtos);
         }
     }
-    /// <inheritdoc/>
-
-    public async Task<InvoiceDto?> GetLatestInvoiceForOrganization()
-    {
-        var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
-        var query = await _invoiceRepository.GetQueryableAsync();
-        query = query.Where(x => x.InvoiceType == InvoiceType.UnPaid
-        && x.InvoicePrice > 0
-        && x.OrganizationId == organization.Id);
-
-        query = query.OrderByDescending(x => x.CreationTime);
-
-
-        var invoice = await query.FirstOrDefaultAsync();
-        if (invoice == null)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("VehicleNotFoundAtGate"));
-        }
-        return ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
-    }
+   
     
     /// <inheritdoc/>
 
