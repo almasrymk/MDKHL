@@ -90,7 +90,7 @@ public class KeeperController : AbpController
     }
 
     [HttpGet("getshiftwatcheraction")]
-    public async Task<Result<ShiftWatcherActionDto>> GetShiftWatcherActionAsync()
+    public async Task<Result<ICollection<ShiftWatcherActionDto>>> GetShiftWatcherActionAsync()
     {
         return await _keeperAppService.GetShiftWatcherActionAsync();
     }
