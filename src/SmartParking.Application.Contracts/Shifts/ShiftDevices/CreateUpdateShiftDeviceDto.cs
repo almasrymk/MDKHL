@@ -9,6 +9,8 @@ public class CreateUpdateShiftDeviceDto
     public string DeviceCode { get; set; }
     public string DeviceUserName { get; set; }
     public string DevicePassword { get; set; }
+    public int OrganizationId { get; set; }
+
 
     public Guid? ShiftDetailsId { get; set; }
 }

@@ -9,7 +9,10 @@ namespace SmartParking.Shifts.ShiftStaffDetail;
 public interface IShiftStaffDetailsAppService : 
     ICrudAppService<ShiftStaffDetailsDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateShiftStaffDetailsDto>
 {
-    //Task<Result<bool>> CreateShiftStaffListAsync(List<CreateUpdateShiftStaffDetailsDto> dtos);
-    Task<List<Guid>> CreateShiftStaffListAsync(List<CreateUpdateShiftStaffDetailsDto> dtos);
-
+    /// <summary>
+    /// Creates multiple <see cref="ShiftStaffDetails"/> records in bulk.
+    /// </summary>
+    /// <param name="dtos">List of <see cref="CreateUpdateShiftStaffDetailsDto"/> to insert.</param>
+    /// <returns>A list of created <see cref="ShiftStaffDetailsDto"/> with all populated fields including generated IDs.</returns>
+    Task<List<ShiftStaffDetailsDto>> CreateShiftStaffListAsync(List<CreateUpdateShiftStaffDetailsDto> dtos);
 }

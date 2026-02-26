@@ -9,6 +9,7 @@ public class CreateUpdateShiftStaffDetailsDto
     public string StaffEnName { get; set; }
     public string StaffUserName { get; set; }
     public string StaffPhoneNumber { get; set; }
+    public int OrganizationId { get; set; }
 
     public Guid? ShiftDetailsId { get; set; }
 }

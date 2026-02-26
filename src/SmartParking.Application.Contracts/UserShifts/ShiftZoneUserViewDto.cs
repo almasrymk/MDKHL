@@ -10,10 +10,8 @@ public class ShiftZoneUserViewDto
     public string Name { get; set; }
     public string Role { get; set; }
 
-    // Single device for Staff; kept for backward-compat
     public string Device { get; set; }
 
-    // All devices under the zone — populated only when Role == "Manager"
     public List<string> Devices { get; set; } = new();
 
     public string Garage { get; set; }

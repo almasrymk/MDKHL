@@ -9,4 +9,6 @@ public class ShiftStaffDetailsDto : AuditedEntityDto<Guid>
     public string StaffEnName { get; set; }
     public string StaffArName { get; set; }
     public string StaffPhoneNumber { get; set; }
+    public int OrganizationId { get; set; }
+
 }

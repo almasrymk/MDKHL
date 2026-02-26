@@ -1,8 +1,6 @@
-﻿using SmartParking.Entities.Organizations;
-using SmartParking.GarageTransactions;
+﻿using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Invoices;
-using SmartParking.Payments;
 using SmartParking.Results;
 using SmartParking.Shifts;
 using System;
@@ -21,7 +19,6 @@ public interface IKeeperAppService
     /// <param name="input">The login input containing username and password.</param>
     /// <returns>A <see cref="LoginResponseDto"/> containing the result of the login attempt.</returns>
     Task<Result<LoginResponseDto>> LoginAsync(LoginRequestDto input);
-
     /// <summary>
     /// Retrieves a list of all invoices by organization id asynchronously.
     /// </summary>
@@ -34,13 +31,11 @@ public interface IKeeperAppService
     /// <param name="organizationId">id of specific organization</param>
     /// <returns> InvoiceDto</returns>
     Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationIdAsync(int organizationId);
-
     /// <summary>
     /// Retrieves a list of all garage transaction with no plate number  asynchronously.
     /// </summary>
     /// <returns>list of GarageTransactionDto</returns>
 	Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumberAsync(int organizationId, Guid userId);
-
     /// <summary>
 	/// Retrieves a list of all garage transaction  asynchronously.
 	/// </summary>
@@ -52,20 +47,17 @@ public interface IKeeperAppService
     /// <param name="garageTransactionId">id of specific garageTransaction</param>
     /// <param name="plateNumber">plate number</param>
     Task<Result> CorrectTransactionByPlateNumberAsync(int garageTransactionId, string plateNumber);
-
     /// <summary>
 	/// Retrieves a list of all existing transaction  asynchronously.
 	/// </summary>
 	/// <returns>list of GarageTransactionDto</returns>
 	Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllExistingTransactionsAsync(int organizationId, Guid userId, PagedAndSortedAndSearchResultRequestDto paged);
-
     /// <summary>
     /// Retrieves the tenant associated with the given phone number.
     /// </summary>
     /// <param name="phoneNum">The phone number to search for the tenant.</param>
     /// <returns>A task representing the asynchronous operation, containing the <see cref="Tenant"/> for the provided phone number.</returns>
     Task<Tenant> GetTenantByPhoneNumberDtoAsync(string phoneNum);
-
     /// <summary>
     /// Initiates the checkout process for a specific invoice, including the application of a discount value.
     /// </summary>
@@ -73,7 +65,6 @@ public interface IKeeperAppService
     /// <param name="DiscountValue">The discount value to be applied to the invoice (optional, defaults to 0).</param>
     /// <returns>A task representing the asynchronous operation, containing the result of type <see cref="InvoiceMobileDto"/>.</returns>
     Task<Result<InvoiceMobileDto>> CheckoutAsync(int invoiceId, int paymentMethodType, decimal DiscountValue = default);
-
     /// <summary>
     /// Processes a cash payment for the customer request for a specific invoice, including the option for a discount value.
     /// </summary>
@@ -82,19 +73,27 @@ public interface IKeeperAppService
     /// <param name="DiscountValue">The discount value to be applied to the invoice (optional, defaults to 0).</param>
     /// <returns>A task representing the asynchronous operation, containing the result of type <see cref="InvoiceMobileDto"/> for the payment request.</returns>
     Task<Result<InvoiceMobileDto>> PayCashForCustomerRequestAsync(int invoiceId, string PaymentType, decimal DiscountValue = default);
-
     /// <summary>
     /// Retrieves all invoices associated with a specific organization that have been paid.
     /// </summary>
     /// <param name="organizationId">The unique identifier of the organization.</param>
     /// <returns>A task representing the asynchronous operation, containing the result of type <see cref="List{InvoiceDto}"/> for all paid invoices in the organization.</returns>
     Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationIdPaidAsync(int organizationId);
-
-
+    /// <summary>
+    /// Retrieves the payment QR code associated with the specified invoice.
+    /// </summary>
+    /// <param name="InvoiceId">The unique identifier of the invoice.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation, containing a <see cref="Result{String}"/> with the QR code string if successful.
+    /// If not found or an error occurs, returns an appropriate error Result.
+    /// </returns>
     Task<Result<string>> GetPaymentQrCodeByInvoiceId(int InvoiceId);
     /// <summary>
-    /// Retrieves the shift watcher action data asynchronously.
+    /// Retrieves shift watcher actions.
     /// </summary>
-    /// <returns>A task representing the asynchronous operation, containing the result of type <see cref="ShiftWatcherActionDto"/> for the shift watcher action data.</returns>
-    Task<Result<ShiftWatcherActionDto>> GetShiftWatcherActionAsync();
+    /// <returns>
+    /// A task representing the asynchronous operation, containing a <see cref="Result{ICollection{ShiftWatcherActionDto}}"/>
+    /// with the collection of shift watcher actions. If none are found, returns a successful Result with an empty collection.
+    /// </returns>
+    Task<Result<ICollection<ShiftWatcherActionDto>>> GetShiftWatcherActionAsync();
 }

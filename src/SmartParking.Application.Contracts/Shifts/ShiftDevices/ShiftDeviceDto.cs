@@ -9,4 +9,6 @@ public class ShiftDeviceDto : FullAuditedEntityDto<Guid>
     public string DeviceCode { get; set; }
     public string DeviceUserName { get; set; }
     public string DevicePassword { get; set; }
+    public int OrganizationId { get; set; }
+
 }

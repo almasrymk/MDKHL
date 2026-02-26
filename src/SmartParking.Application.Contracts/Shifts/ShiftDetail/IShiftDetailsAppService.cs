@@ -12,33 +12,50 @@ namespace SmartParking.Shifts.ShiftDetail;
 public interface IShiftDetailsAppService : ICrudAppService<ShiftDetailsDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateShiftDetailsDto>
 {
     /// <summary>
-    /// Retrieves a <see cref="ShiftDetailsDto"/> that represents all available shift details.
+    /// Retrieves a single <see cref="ShiftDetailsDto"/> for MDKHL context.
+    /// The multi-tenant filter is disabled, allowing cross-tenant access.
     /// </summary>
-    /// <remarks>
-    /// Implementation may return a single aggregated result representing all shift zones,
-    /// or the first/only available shift details record depending on business logic.
-    /// </remarks>
-    /// <returns>
-    /// A <see cref="ShiftDetailsDto"/> if any shift details exist; otherwise <c>null</c>.
-    /// </returns>
+    /// <returns>A <see cref="ShiftDetailsDto"/> if any shift details exist; otherwise <c>null</c>.</returns>
     Task<ShiftDetailsDto?> GetAllListAsync();
 
     /// <summary>
-    /// Retrieves the shift details for the specified shift zone.
+    /// Retrieves a single <see cref="ShiftDetailsDto"/> for Organization context.
+    /// The multi-tenant filter remains active, so results are scoped to the current tenant.
     /// </summary>
-    /// <param name="shiftZoneId">The unique identifier of the shift zone to retrieve details for.</param>
-    /// <returns>
-    /// A <see cref="ShiftDetailsDto"/> for the specified shift zone if found; otherwise <c>null</c>.
-    /// </returns>
+    /// <returns>A <see cref="ShiftDetailsDto"/> if any shift details exist within the tenant; otherwise <c>null</c>.</returns>
+    Task<ShiftDetailsDto?> GetAllListForOrganizationAsync();
+
+    /// <summary>
+    /// Retrieves shift details for the specified shift zone for MDKHL context.
+    /// The multi-tenant filter is disabled, allowing cross-tenant access.
+    /// </summary>
+    /// <param name="shiftZoneId">The unique identifier of the shift zone.</param>
+    /// <returns>A <see cref="ShiftDetailsDto"/> if found; otherwise <c>null</c>.</returns>
     Task<ShiftDetailsDto?> GetByShiftZoneAsync(Guid shiftZoneId);
 
     /// <summary>
-    /// Retrieves a paginated list of shift details for the specified shift zone.
+    /// Retrieves shift details for the specified shift zone for Organization context.
+    /// The multi-tenant filter remains active, so results are scoped to the current tenant.
+    /// </summary>
+    /// <param name="shiftZoneId">The unique identifier of the shift zone.</param>
+    /// <returns>A <see cref="ShiftDetailsDto"/> if found within the tenant; otherwise <c>null</c>.</returns>
+    Task<ShiftDetailsDto?> GetByShiftZoneForOrganizationAsync(Guid shiftZoneId);
+
+    /// <summary>
+    /// Retrieves a paginated list of shift details for the specified shift zone for MDKHL context.
+    /// The multi-tenant filter is disabled, allowing cross-tenant access.
     /// </summary>
     /// <param name="shiftZoneId">The unique identifier of the shift zone to filter results by.</param>
     /// <param name="input">Paging and sorting parameters.</param>
-    /// <returns>
-    /// A <see cref="PagedResultDto{ShiftDetailsDto}"/> containing the paginated shift details for the specified shift zone.
-    /// </returns>
+    /// <returns>A <see cref="PagedResultDto{ShiftDetailsDto}"/> containing the paginated results.</returns>
     Task<PagedResultDto<ShiftDetailsDto>> GetPaginatedByShiftZoneAsync(Guid shiftZoneId, PagedAndSortedResultRequestDto input);
+
+    /// <summary>
+    /// Retrieves a paginated list of shift details for the specified shift zone for Organization context.
+    /// The multi-tenant filter remains active, so results are scoped to the current tenant.
+    /// </summary>
+    /// <param name="shiftZoneId">The unique identifier of the shift zone to filter results by.</param>
+    /// <param name="input">Paging and sorting parameters.</param>
+    /// <returns>A <see cref="PagedResultDto{ShiftDetailsDto}"/> containing the paginated tenant-scoped results.</returns>
+    Task<PagedResultDto<ShiftDetailsDto>> GetPaginatedByShiftZoneForOrganizationAsync(Guid shiftZoneId, PagedAndSortedResultRequestDto input);
 }
