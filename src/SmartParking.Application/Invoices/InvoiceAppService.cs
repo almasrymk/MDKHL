@@ -219,7 +219,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("Invoice") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
-        if (invoice.InvoiceType == InvoiceType.Paid)
+        if (invoice.InvoiceType == InvoiceType.Paid || !string.IsNullOrEmpty(invoice.InvoiceNumber))
         {
             throw new Exception("This Invoice Is already paid");
         }
