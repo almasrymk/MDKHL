@@ -28,13 +28,6 @@ public class PaymentController : ControllerBase
     }
 
 
-    [HttpGet("CheckPaymentStatus/{entityId}")]
-    //[Authorize]
-    [IgnoreAntiforgeryToken]
-    public async Task<Result<PaymentDto>> CheckPaymentStatus(string input, string entityId,string ArabicPlateNumber , string EnglishPlateNumber)
-    {
-        return await _paymentAppService.GetPaymentStatus(input, entityId,ArabicPlateNumber,EnglishPlateNumber);
-    }
 
     [HttpGet("GetInvoicePayementDetails/{oragnizationId}/{CustomerId}/{PaymentId}")]
     [Authorize]

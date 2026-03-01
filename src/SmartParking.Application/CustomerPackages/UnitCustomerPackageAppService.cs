@@ -138,7 +138,7 @@ public class UnitCustomerPackageAppService : BaseCustomerPackagesAssigingAppServ
             EnPlateNumber = customerPackageDto.EnPlateNumber,
             Vat = customerPackageDto.Vat,
             Discount = customerPackageDto.Discount,
-
+            
         };
     }
 

@@ -123,7 +123,7 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
             NumberOfSlots = package.NumberOfSlots,
             NumberOfVehicles = package.NumberOfVehicles,
             CustomerId = customer.Id,
-            UnitPackageId = package.Id,
+            UnitPackageId = package.Package.Id,
             DurationOfPackage=customerUnitPackageAssignationDto.DurationOfPackage,
             Vat=customerUnitPackageAssignationDto.Vat,
             OrganizationId=package.Package.OrganizationId,

@@ -123,7 +123,7 @@ public partial class AssignVehicleToPackageDialog
           
             try
             {
-            var customerUnitPackage = customerUnitPackages.FirstOrDefault(x => x.Id == int.Parse(customerUnitId));
+              var customerUnitPackage = customerUnitPackages.FirstOrDefault(x => x.Id == int.Parse(customerUnitId));
               var vehicleCounts = await customerPackagesValidations.GetNumberOfVehiclesPackagesInOrganizationForCustomer(CustomerId, customerUnitPackage.OrganizationId);
               var result1 = await CustomerUnitPackageAppService.CheckCustomerUnitPackageVehicleLimitations(CustomerId, vehicleCounts);
               if (!result1)
