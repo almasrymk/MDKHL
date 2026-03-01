@@ -936,7 +936,9 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
         using (_datafilter.Disable<IMultiTenant>())
         {
             var filterExpression = BuildExpression<PaymentUserShift>.BuildFilterExpression(input.filters);
-            var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyWithKeeperAndShiftAnalysis(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
+            //var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyWithKeeperAndShiftAnalysis(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
+            var result = await _shiftAnalysisRepository.ReportPaymentCollectedMoneyWithShiftZone(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
+
 
             return new PagedResultDto<PaymentUserShift>
             {

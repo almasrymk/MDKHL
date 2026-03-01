@@ -118,47 +118,19 @@ public partial class AddShiftZoneDialog
 
         try
         {
-            if (CreateUpdateShiftZone.ZoneId == 0)
+            var (flowControl, created) = await CreatingShiftZone();
+            if (!flowControl)
             {
-                Snackbar.Add(L["PleaseSelectZone"], Severity.Warning);
-                _isSubmitting = false;
                 return;
             }
-            CreateUpdateShiftZone.OrganizationId = Garages[0].Id;
-            CreateUpdateShiftZone.OrganizationEnName = Garages[0].OrganizationNameEn;
-            CreateUpdateShiftZone.OrganizationArName = Garages[0].OrganizationNameAr;
-            var created = await ShiftZoneAppService.CreateAsync(CreateUpdateShiftZone);
+
             if (created == null)
             {
                 Snackbar.Add(L["CreateFailed"], Severity.Error);
-                _isSubmitting = false;
                 return;
             }
 
-            var assignmentRows = UiAssignments
-                .Where(r => (r.StaffId != null && r.StaffId != Guid.Empty && r.StaffId != SelectedManagerId)
-                         || (r.DeviceId != null && r.DeviceId > 0))
-                .Select(r =>
-                {
-                    var keeper = Keepers.FirstOrDefault(x => x.Id == r.StaffId);
-                    var device = Devices.FirstOrDefault(d => d.Id == r.DeviceId);
-                    return new CreateUpdateZoneAssignmentDto
-                    {
-                        ExistingShiftDetailsId = null, 
-                        StaffId = (r.StaffId != Guid.Empty && r.StaffId != SelectedManagerId) ? r.StaffId : null,
-                        StaffUserName = keeper?.UserName,
-                        StaffEnName = keeper?.EnglishName,
-                        StaffPhoneNumber = keeper?.PhoneNumber,
-                        DeviceId = r.DeviceId,
-                        DeviceCode = device?.DeviceId,
-                        DeviceUserName = device?.Name,
-                        DevicePassword = "P@ssw0rd"
-                    };
-                })
-                .ToList();
-
-            if (assignmentRows.Any())
-                await AssignShiftZoneAppService.AddShiftZoneAssignmentsAsync(created.Id, assignmentRows);
+            await AssignShiftZoneDetails(created);
 
             Snackbar.Add(L["ShiftZoneCreated"], Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
@@ -174,5 +146,59 @@ public partial class AddShiftZoneDialog
             _isSubmitting = false;
         }
     }
+
+    private async Task AssignShiftZoneDetails(ShiftZoneDto created)
+    {
+        var assignmentRows = UiAssignments
+            .Where(r => (r.StaffId != null && r.StaffId != Guid.Empty && r.StaffId != SelectedManagerId)
+                     || (r.DeviceId != null && r.DeviceId > 0))
+            .Select(r =>
+            {
+                var keeper = Keepers.FirstOrDefault(x => x.Id == r.StaffId);
+                var device = Devices.FirstOrDefault(d => d.Id == r.DeviceId);
+                return new CreateUpdateZoneAssignmentDto
+                {
+                    ExistingShiftDetailsId = null,
+                    StaffId = (r.StaffId != Guid.Empty && r.StaffId != SelectedManagerId) ? r.StaffId : null,
+                    StaffUserName = keeper?.UserName,
+                    StaffEnName = keeper?.EnglishName,
+                    StaffPhoneNumber = keeper?.PhoneNumber,
+                    DeviceId = r.DeviceId,
+                    DeviceCode = device?.DeviceId,
+                    DeviceUserName = device?.Name,
+                    DevicePassword = "P@ssw0rd"
+                };
+            })
+            .ToList();
+
+        if (assignmentRows.Any())
+            await AssignShiftZoneAppService.AddShiftZoneAssignmentsAsync(created.Id, assignmentRows);
+    }
+
+    private async Task<(bool Success, ShiftZoneDto? Created)> CreatingShiftZone()
+    {
+        ShiftZoneDto? created = null;
+
+        if (CreateUpdateShiftZone.ZoneId == 0)
+        {
+            Snackbar.Add(L["PleaseSelectZone"], Severity.Warning);
+            _isSubmitting = false;
+            return (false, null);
+        }
+
+        CreateUpdateShiftZone.OrganizationId = Garages[0].Id;
+        CreateUpdateShiftZone.OrganizationEnName = Garages[0].OrganizationNameEn;
+        CreateUpdateShiftZone.OrganizationArName = Garages[0].OrganizationNameAr;
+        created = await ShiftZoneAppService.CreateAsync(CreateUpdateShiftZone);
+        if (created == null)
+        {
+            Snackbar.Add(L["CreateFailed"], Severity.Error);
+            _isSubmitting = false;
+            return (false, null);
+        }
+
+        return (true, created);
+    }
+
     public void Cancel() => MudDialog.Cancel();
 }

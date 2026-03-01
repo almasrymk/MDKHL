@@ -11,5 +11,8 @@ namespace SmartParking.Repositories;
 public interface IShiftAnalysisRepository
 {
     Task<PagedResult<ShiftAnalysis>> ReportNumberOfTransactionsWhileKeeperShift(Guid? tenantId, int skipCount, int maxResultCount, string sorting, Expression<Func<ShiftAnalysis, bool>> filterRequests);
-   // Task<PagedResult<ShiftAnalysis>> ReportForTotalAmountWhileKeeperShift(Guid? tenantId, int skipCount, int maxResultCount, string sorting, Expression<Func<ShiftAnalysis, bool>> filterRequests);
+    Task<PagedResult<PaymentUserShift>> ReportPaymentCollectedMoneyWithShiftZone(
+     Guid? tenantId,
+     int skipCount, int maxResultCount, string sorting,
+     Expression<Func<PaymentUserShift, bool>> filterRequests);
 }
