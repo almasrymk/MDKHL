@@ -229,6 +229,7 @@ public partial class OrganizationEdit
         Parkingslot = SelectedSubscription.ParkingSlot;
         _organizationSettingsDto.UserAccess = organization.OrganizationSettings.UserAccess;
         _organizationSettingsDto.VehcileAccess = organization.OrganizationSettings.VehcileAccess;
+        _organizationSettingsDto.UseShifts = organization.OrganizationSettings.UseShifts;
         //StateHasChanged();
 
     }

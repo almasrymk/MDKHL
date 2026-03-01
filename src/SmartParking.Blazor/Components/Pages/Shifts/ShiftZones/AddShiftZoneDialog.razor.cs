@@ -124,7 +124,9 @@ public partial class AddShiftZoneDialog
                 _isSubmitting = false;
                 return;
             }
-
+            CreateUpdateShiftZone.OrganizationId = Garages[0].Id;
+            CreateUpdateShiftZone.OrganizationEnName = Garages[0].OrganizationNameEn;
+            CreateUpdateShiftZone.OrganizationArName = Garages[0].OrganizationNameAr;
             var created = await ShiftZoneAppService.CreateAsync(CreateUpdateShiftZone);
             if (created == null)
             {
