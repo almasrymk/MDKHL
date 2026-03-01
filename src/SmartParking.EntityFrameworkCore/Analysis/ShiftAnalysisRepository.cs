@@ -1,4 +1,5 @@
-﻿using Polly;
+﻿using Microsoft.EntityFrameworkCore;
+using Polly;
 using SmartParking.Entities.Analysis;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
@@ -35,47 +36,76 @@ public class ShiftAnalysisRepository : EfCoreRepository<SmartParkingDbContext, K
             var sortingSplit = sorting.Split(' ').ToList();
             sorting = sortingSplit[0] + " descending";
         }
-        var query = from keeperShift in dbContext.KeeperShifts
-                    where tenantId.HasValue ? keeperShift.TenantId == tenantId : true 
-                    join garage in dbContext.Garages
-                        on keeperShift.GarageId equals garage.Id
-                    join user in dbContext.Users
-                    on keeperShift.KeeperId equals user.Id
-                    join org in dbContext.Organizations
-                    on keeperShift.OrganizationId equals org.Id
+        var query = from staff in dbContext.ShiftStaffDetails
+                    join details in dbContext.ShiftDetails
+                        on staff.ShiftDetailsId equals details.Id
+                    join zone in dbContext.ShiftZones
+                        on details.ShiftZoneId equals zone.Id
                     join shift in dbContext.Shifts
-                    on keeperShift.ShiftId equals shift.Id
+                        on zone.ShiftId equals shift.Id
+
+                    // Join with Garage and Organization using the IDs in the Shift entity
+                    join garage in dbContext.Garages
+                        on shift.GarageId equals garage.Id
+                    join org in dbContext.Organizations
+                        on shift.OrganizationId equals org.Id
+
+                    // Optional Tenant filtering
+                    where tenantId.HasValue ? staff.TenantId == tenantId : true
+
                     select new ShiftAnalysis
                     {
-                        KeeperId = keeperShift.KeeperId,
-                        ShiftId = keeperShift.ShiftId,
-                        KeeperName = user.Name,
-                        GarageId = keeperShift.GarageId,
-                        GarageNameAr = garage.NameAr, 
-                        GarageNameEn = garage.NameEn,
-                        OrganizationId = keeperShift.OrganizationId,
-                        OrganizationNameAr = org.ArabicName, 
-                        OrganizationNameEn = org.EnglishName,
-                        ShiftNameAr = shift.ArabicName,
+                        KeeperId = staff.StaffId,
+                        KeeperName = staff.StaffEnName,
+
+                        ShiftId = shift.Id,
+                        ShiftNameAr = shift.ArabicName, 
                         ShiftNameEn = shift.EnglishName,
-                        StartDate = keeperShift.StartDate, 
-                        EndDate = keeperShift.EndDate,
-                        StartTime = keeperShift.StartTime,
-                        EndTime = keeperShift.EndTime,
+
+                        GarageId = shift.GarageId,
+                        GarageNameAr = garage.NameAr,
+                        GarageNameEn = garage.NameEn,
+
+                        OrganizationId = shift.OrganizationId,
+                        OrganizationNameAr = org.ArabicName,
+                        OrganizationNameEn = org.EnglishName,
+
+                        StartDate = shift.StartDate,
+                        EndDate = shift.EndDate,
+                        StartTime = shift.StartTime,
+                        EndTime = shift.EndTime,
+
                         NumberOfTransaction = dbContext.GarageTransactions
-                            .Where(_ =>
-                                _.GarageId == keeperShift.GarageId &&
-                                DateOnly.FromDateTime((DateTime)_.AccurateTime!) >= keeperShift.StartDate &&
-                                DateOnly.FromDateTime((DateTime)_.AccurateTime) <= keeperShift.EndDate &&
-                                TimeOnly.FromDateTime((DateTime)_.AccurateTime) >= keeperShift.StartTime &&
-                                TimeOnly.FromDateTime((DateTime)_.AccurateTime) <= keeperShift.EndTime
-                            )
-                            .Count()
+                        .Where(t =>
+                            // 1. Physical Location Match
+                            t.GarageId == shift.GarageId &&
+
+                            // 2. Device Match (Dispenser or Camera)
+                            (t.DispenserId == details.ShiftDevices.DeviceId ||
+                                t.CameraId == details.ShiftDevices.DeviceId) &&
+
+                            // 3. Date Range Match
+                            DateOnly.FromDateTime((DateTime)t.AccurateTime!) >= shift.StartDate &&
+                            DateOnly.FromDateTime((DateTime)t.AccurateTime) <= shift.EndDate &&
+
+                            // 4. Time Logic (Handles FullDay, Normal, and Midnight)
+                            (shift.IsFullDay || (
+                                shift.StartTime < shift.EndTime
+                                    // Normal Shift: Time must be between Start and End
+                                    ? (TimeOnly.FromDateTime((DateTime)t.AccurateTime) >= shift.StartTime &&
+                                        TimeOnly.FromDateTime((DateTime)t.AccurateTime) <= shift.EndTime)
+                                    // Midnight Shift: Time must be AFTER Start OR BEFORE End
+                                    : (TimeOnly.FromDateTime((DateTime)t.AccurateTime) >= shift.StartTime ||
+                                        TimeOnly.FromDateTime((DateTime)t.AccurateTime) <= shift.EndTime)
+                            ))
+                        )
+                        .Count()
                     };
         query = query.Where(filterRequests);
         query = query.OrderBy(sorting);
         var total = query.Count();
         query = query.Skip(skipCount).Take(maxResultCount);
+
 
         return new PagedResult<ShiftAnalysis>
         {

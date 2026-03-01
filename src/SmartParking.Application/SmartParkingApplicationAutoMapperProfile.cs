@@ -107,6 +107,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.RegionNameAr, opt => opt.MapFrom(src => src.Region.ArabicName))
             .ForPath(dest => dest.OrganizationSettings.VehcileAccess, opt => opt.MapFrom(src => src.Settings.VehcilePackage))
             .ForPath(dest => dest.OrganizationSettings.UserAccess, opt => opt.MapFrom(src => src.Settings.CustomerPackage))
+            .ForPath(dest => dest.OrganizationSettings.UseShifts, opt => opt.MapFrom(src => src.Settings.UseShifts))
             .ReverseMap();
 
 

@@ -75,4 +75,5 @@ public class OrganizationDto :AuditedEntityDto<int>
     public string PasswordZatca { get; set; }
     public Status StatusZatca { get; set; }
     public OrganizationSettingsDto OrganizationSettings { get; set; }
+
 }
