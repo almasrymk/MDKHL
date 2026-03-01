@@ -5,11 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
+using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Shifts.ShiftZones;
 
-public class AssignShiftZoneAppService : ApplicationService, IAssignShiftZoneAppService
+public class AssignShiftZoneAppService : ApplicationService, IAssignShiftZoneAppService, ITransientDependency
 {
     private readonly IRepository<ShiftZone, Guid> _shiftZoneRepository;
     private readonly IRepository<ShiftDetails, Guid> _shiftDetailsRepository;
@@ -20,7 +21,8 @@ public class AssignShiftZoneAppService : ApplicationService, IAssignShiftZoneApp
         IRepository<ShiftZone, Guid> shiftZoneRepository,
         IRepository<ShiftDetails, Guid> shiftDetailsRepository,
         IRepository<ShiftDevice, Guid> shiftDeviceRepository,
-        IRepository<ShiftStaffDetails, Guid> shiftStaffDetailsRepository)
+        IRepository<ShiftStaffDetails, Guid> shiftStaffDetailsRepository
+    )
     {
         _shiftZoneRepository = shiftZoneRepository;
         _shiftDetailsRepository = shiftDetailsRepository;
@@ -28,244 +30,153 @@ public class AssignShiftZoneAppService : ApplicationService, IAssignShiftZoneApp
         _shiftStaffDetailsRepository = shiftStaffDetailsRepository;
     }
 
-    //[UnitOfWork]
-    public async Task<Result<bool>> AddShiftZoneAssignmentsAsync(
-    Guid shiftZoneId,
-    ICollection<CreateUpdateZoneAssignmentDto> rows)
+    public async Task<Result<bool>> AddShiftZoneAssignmentsAsync(Guid shiftZoneId, ICollection<CreateUpdateZoneAssignmentDto> rows)
     {
         var shiftZone = await _shiftZoneRepository.FindAsync(shiftZoneId);
         if (shiftZone is null)
             return Result.Error("Shift zone not found.");
 
-        var detailsList = rows.Select(row => new ShiftDetails
+        if (rows == null || rows.Count == 0)
+            return Result.Success(true);
+
+        var detailsToInsert = rows.Select(r => new ShiftDetails
         {
             ShiftZoneId = shiftZoneId,
             TenantId = shiftZone.TenantId,
-            OrganizationId = shiftZone.OrganizationId,
+
+            ShiftDevices = (r.DeviceId.HasValue && r.DeviceId > 0)
+                ? new ShiftDevice((GuidGenerator.Create()))
+                {
+                    DeviceId = r.DeviceId.Value,
+                    DeviceCode = r.DeviceCode,
+                    DeviceUserName = r.DeviceUserName,
+                    DevicePassword = r.DevicePassword ?? "P@ssw0rd",
+                    TenantId = shiftZone.TenantId
+                }
+                : null,
+
+            ShiftStaffDetails = (r.StaffId.HasValue && r.StaffId != Guid.Empty)
+                ? new ShiftStaffDetails((GuidGenerator.Create()))
+                {
+                    StaffId = r.StaffId.Value,
+                    StaffEnName = r.StaffEnName,
+                    StaffArName = r.StaffUserName,
+                    StaffPhoneNumber = r.StaffPhoneNumber,
+                    TenantId = shiftZone.TenantId
+                }
+                : null
+
         }).ToList();
 
-        await _shiftDetailsRepository.InsertManyAsync(detailsList, autoSave: true);
-
-        var devices = rows
-            .Zip(detailsList, (row, detail) => (row, detail))
-            .Where(x => x.row.DeviceId is > 0)
-            .Select(x => new ShiftDevice
-            {
-                ShiftDetailsId = x.detail.Id,
-                DeviceId = x.row.DeviceId!.Value,
-                DeviceCode = x.row.DeviceCode,
-                DeviceUserName = x.row.DeviceUserName,
-                DevicePassword = x.row.DevicePassword ?? "P@ssw0rd",
-                TenantId = shiftZone.TenantId,
-                OrganizationId = shiftZone.OrganizationId
-            }).ToList();
-
-        var staff = rows
-            .Zip(detailsList, (row, detail) => (row, detail))
-            .Where(x => x.row.StaffId is not null && x.row.StaffId != Guid.Empty)
-            .Select(x => new ShiftStaffDetails
-            {
-                ShiftDetailsId = x.detail.Id,
-                StaffId = x.row.StaffId!.Value,
-                StaffEnName = x.row.StaffEnName,
-                StaffArName = x.row.StaffUserName,
-                StaffPhoneNumber = x.row.StaffPhoneNumber,
-                TenantId = shiftZone.TenantId,
-                OrganizationId = shiftZone.OrganizationId
-            }).ToList();
-
-        if (devices.Any())
-            await _shiftDeviceRepository.InsertManyAsync(devices);
-
-        if (staff.Any())
-            await _shiftStaffDetailsRepository.InsertManyAsync(staff);
-
+        await _shiftDetailsRepository.InsertManyAsync(detailsToInsert, autoSave: true);
         return Result.Success(true);
     }
 
-    //[UnitOfWork]
-    public async Task<Result<bool>> UpdateShiftZoneAssignmentsAsync(
-    Guid shiftZoneId,
-    ICollection<CreateUpdateZoneAssignmentDto> rows)
+    public async Task<Result<bool>> UpdateShiftZoneAssignmentsAsync(Guid shiftZoneId, ICollection<CreateUpdateZoneAssignmentDto> rows)
     {
         var shiftZone = await _shiftZoneRepository.FindAsync(shiftZoneId);
         if (shiftZone is null)
             return Result.Error("Shift zone not found.");
 
-        var organizationId = shiftZone.OrganizationId;
+        var tenantId = shiftZone.TenantId;
 
-        var query = await _shiftDetailsRepository.WithDetailsAsync(
-            x => x.ShiftDevices,
-            x => x.ShiftStaffDetails);
-
-        var existingDetails = await AsyncExecuter.ToListAsync(
-            query.Where(d => d.ShiftZoneId == shiftZoneId));
-
-        var incomingIds = rows
+        var incomingExistingIds = rows
             .Where(r => r.ExistingShiftDetailsId.HasValue && r.ExistingShiftDetailsId != Guid.Empty)
             .Select(r => r.ExistingShiftDetailsId!.Value)
-            .ToHashSet();
-
-        var toDelete = existingDetails
-            .Where(d => !incomingIds.Contains(d.Id))
             .ToList();
 
-        if (toDelete.Count > 0)
-            await _shiftDetailsRepository.DeleteManyAsync(toDelete);
 
-        var newRows = rows
-            .Where(r => !r.ExistingShiftDetailsId.HasValue || r.ExistingShiftDetailsId == Guid.Empty)
-            .ToList();
-
-        var updateRows = rows
-            .Where(r => r.ExistingShiftDetailsId.HasValue && r.ExistingShiftDetailsId != Guid.Empty)
-            .ToList();
-
-        if (newRows.Count > 0)
+        var detailsToDelete = await _shiftDetailsRepository.GetListAsync(
+            d => d.ShiftZoneId == shiftZoneId && !incomingExistingIds.Contains(d.Id)
+        );
+        if (detailsToDelete.Any())
         {
-            var toInsert = newRows.Select(_ => new ShiftDetails
+            await _shiftDetailsRepository.DeleteManyAsync(detailsToDelete);
+        }
+
+        var newDetails = rows
+            .Where(r => !r.ExistingShiftDetailsId.HasValue || r.ExistingShiftDetailsId == Guid.Empty)
+            .Select(r => new ShiftDetails
             {
                 ShiftZoneId = shiftZoneId,
-                TenantId = shiftZone.TenantId,
-                OrganizationId = organizationId,
+                TenantId = tenantId,
+
+                ShiftDevices = (r.DeviceId.HasValue && r.DeviceId > 0)
+                    ? new ShiftDevice((GuidGenerator.Create()))
+                    {
+                        DeviceId = r.DeviceId.Value,
+                        DeviceCode = r.DeviceCode,
+                        DeviceUserName = r.DeviceUserName,
+                        DevicePassword = r.DevicePassword ?? "P@ssw0rd",
+                        TenantId = tenantId
+                    }
+                    : null,
+
+                ShiftStaffDetails = (r.StaffId.HasValue && r.StaffId != Guid.Empty)
+                    ? new ShiftStaffDetails((GuidGenerator.Create()))
+                    {
+                        StaffId = r.StaffId.Value,
+                        StaffEnName = r.StaffEnName,
+                        StaffArName = r.StaffUserName,
+                        StaffPhoneNumber = r.StaffPhoneNumber,
+                        TenantId = tenantId
+                    }
+                    : null
+
             }).ToList();
 
-            await _shiftDetailsRepository.InsertManyAsync(toInsert, autoSave: true);
+        if (newDetails.Any())
+            await _shiftDetailsRepository.InsertManyAsync(newDetails, autoSave: true);
 
-            var newDevices = newRows
-                .Zip(toInsert, (row, detail) => (row, detail))
-                .Where(x => x.row.DeviceId is > 0)
-                .Select(x => new ShiftDevice
-                {
-                    ShiftDetailsId = x.detail.Id,
-                    DeviceId = x.row.DeviceId!.Value,
-                    DeviceCode = x.row.DeviceCode,
-                    DeviceUserName = x.row.DeviceUserName,
-                    DevicePassword = x.row.DevicePassword ?? "P@ssw0rd",
-                    TenantId = shiftZone.TenantId,
-                    OrganizationId = organizationId
-                }).ToList();
+        var updateIds = incomingExistingIds;
 
-            var newStaff = newRows
-                .Zip(toInsert, (row, detail) => (row, detail))
-                .Where(x => x.row.StaffId is not null && x.row.StaffId != Guid.Empty)
-                .Select(x => new ShiftStaffDetails
-                {
-                    ShiftDetailsId = x.detail.Id,
-                    StaffId = x.row.StaffId!.Value,
-                    StaffEnName = x.row.StaffEnName,
-                    StaffArName = x.row.StaffUserName,
-                    StaffPhoneNumber = x.row.StaffPhoneNumber,
-                    TenantId = shiftZone.TenantId,
-                    OrganizationId = organizationId
-                }).ToList();
-
-            if (newDevices.Any())
-                await _shiftDeviceRepository.InsertManyAsync(newDevices);
-
-            if (newStaff.Any())
-                await _shiftStaffDetailsRepository.InsertManyAsync(newStaff);
-        }
-
-        if (updateRows.Count > 0)
+        var devicesToDelete = await _shiftDeviceRepository.GetListAsync(
+            d => d.ShiftDetailsId.HasValue && updateIds.Contains(d.ShiftDetailsId.Value)
+        );
+        if(devicesToDelete.Any())
         {
-            var detailsMap = existingDetails.ToDictionary(d => d.Id);
-
-            var missingId = updateRows.FirstOrDefault(r =>
-                !detailsMap.ContainsKey(r.ExistingShiftDetailsId!.Value));
-            if (missingId != null)
-                return Result.Error($"ShiftDetails {missingId.ExistingShiftDetailsId} not found.");
-
-            var pairs = updateRows
-                .Select(row => (row, details: detailsMap[row.ExistingShiftDetailsId!.Value]))
-                .ToList();
-
-            var devicePairs = pairs.Where(p => p.row.DeviceId is > 0).ToList();
-
-            var devicesToUpdate = devicePairs
-                .Where(p => p.details.ShiftDevices != null && p.details.ShiftDevices.Id != Guid.Empty)
-                .Select(p => p.details.ShiftDevices.ApplyUpdate(p.row, organizationId))
-                .ToList();
-
-            var devicesToInsert = devicePairs
-                .Where(p => p.details.ShiftDevices == null || p.details.ShiftDevices.Id == Guid.Empty)
-                .Select(p => p.details.ToNewDevice(p.row, organizationId))
-                .ToList();
-
-            var staffPairs = pairs.Where(p => p.row.StaffId is not null && p.row.StaffId != Guid.Empty).ToList();
-
-            var staffToUpdate = staffPairs
-                .Where(p => p.details.ShiftStaffDetails != null && p.details.ShiftStaffDetails.Id != Guid.Empty)
-                .Select(p => p.details.ShiftStaffDetails.ApplyUpdate(p.row, organizationId))
-                .ToList();
-
-            var staffToInsert = staffPairs
-                .Where(p => p.details.ShiftStaffDetails == null || p.details.ShiftStaffDetails.Id == Guid.Empty)
-                .Select(p => p.details.ToNewStaff(p.row, organizationId))
-                .ToList();
-
-            if (devicesToInsert.Count > 0) await _shiftDeviceRepository.InsertManyAsync(devicesToInsert);
-            if (devicesToUpdate.Count > 0) await _shiftDeviceRepository.UpdateManyAsync(devicesToUpdate);
-            if (staffToInsert.Count > 0) await _shiftStaffDetailsRepository.InsertManyAsync(staffToInsert);
-            if (staffToUpdate.Count > 0) await _shiftStaffDetailsRepository.UpdateManyAsync(staffToUpdate);
+            await _shiftDeviceRepository.DeleteManyAsync(devicesToDelete);
         }
 
+        var staffToDelete = await _shiftStaffDetailsRepository.GetListAsync(
+            s => s.ShiftDetailsId.HasValue && updateIds.Contains(s.ShiftDetailsId.Value)
+        );
+        if(staffToDelete.Any())
+        {
+            await _shiftStaffDetailsRepository.DeleteManyAsync(staffToDelete);
+        }
+
+        var devicesToInsert = rows
+            .Where(r => r.ExistingShiftDetailsId.HasValue && r.DeviceId.HasValue && r.DeviceId > 0)
+            .Select(r => new ShiftDevice((GuidGenerator.Create()))
+            {
+                ShiftDetailsId = r.ExistingShiftDetailsId!.Value,
+                DeviceId = r.DeviceId!.Value,
+                DeviceCode = r.DeviceCode,
+                DeviceUserName = r.DeviceUserName,
+                DevicePassword = r.DevicePassword ?? "P@ssw0rd",
+                TenantId = tenantId
+            }).ToList();
+
+        if (devicesToInsert.Any())
+            await _shiftDeviceRepository.InsertManyAsync(devicesToInsert, autoSave: false);
+
+        var staffToInsert = rows
+            .Where(r => r.ExistingShiftDetailsId.HasValue && r.StaffId.HasValue && r.StaffId != Guid.Empty)
+            .Select(r => new ShiftStaffDetails((GuidGenerator.Create()))
+            {
+                ShiftDetailsId = r.ExistingShiftDetailsId!.Value,
+                StaffId = r.StaffId!.Value,
+                StaffEnName = r.StaffEnName,
+                StaffArName = r.StaffUserName,
+                StaffPhoneNumber = r.StaffPhoneNumber,
+                TenantId = tenantId
+            }).ToList();
+
+        if (staffToInsert.Any())
+            await _shiftStaffDetailsRepository.InsertManyAsync(staffToInsert, autoSave: false);
+
+        await CurrentUnitOfWork.SaveChangesAsync();
         return Result.Success(true);
     }
-
 }
-
-/// <summary>
-/// Extension helpers for shift assignment transformations.
-/// Must be in a static class to be visible as extension methods.
-/// </summary>
-#region MappingExtensions
-internal static class ShiftAssignmentExtensions
-{
-    public static ShiftDevice ApplyUpdate(this ShiftDevice device, CreateUpdateZoneAssignmentDto row, int organizationId)
-    {
-        device.DeviceId = row.DeviceId!.Value;
-        device.DeviceCode = row.DeviceCode;
-        device.DeviceUserName = row.DeviceUserName;
-        device.DevicePassword = row.DevicePassword;
-        device.OrganizationId = organizationId;
-        return device;
-    }
-
-    public static ShiftDevice ToNewDevice(this ShiftDetails details, CreateUpdateZoneAssignmentDto row, int organizationId) =>
-        new()
-        {
-            ShiftDetailsId = details.Id,
-            DeviceId = row.DeviceId!.Value,
-            DeviceCode = row.DeviceCode,
-            DeviceUserName = row.DeviceUserName,
-            DevicePassword = row.DevicePassword ?? "P@ssw0rd",
-            TenantId = details.TenantId,
-            OrganizationId = organizationId
-        };
-
-    public static ShiftStaffDetails ApplyUpdate(this ShiftStaffDetails staff, CreateUpdateZoneAssignmentDto row, int organizationId)
-    {
-        staff.StaffId = row.StaffId!.Value;
-        staff.StaffEnName = row.StaffEnName;
-        staff.StaffArName = row.StaffUserName;
-        staff.StaffPhoneNumber = row.StaffPhoneNumber;
-        staff.OrganizationId = organizationId;
-        return staff;
-    }
-
-    public static ShiftStaffDetails ToNewStaff(this ShiftDetails details, CreateUpdateZoneAssignmentDto row, int organizationId) =>
-        new()
-        {
-            ShiftDetailsId = details.Id,
-            StaffId = row.StaffId!.Value,
-            StaffEnName = row.StaffEnName,
-            StaffArName = row.StaffUserName,
-            StaffPhoneNumber = row.StaffPhoneNumber,
-            TenantId = details.TenantId,
-            OrganizationId = organizationId
-        };
-#endregion
-}
-
-

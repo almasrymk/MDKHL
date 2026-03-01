@@ -15,4 +15,13 @@ public class ShiftDevice : FullAuditedEntity<Guid>, IMultiTenant
 
 
     public Guid? TenantId {  get; set; }
+
+
+    public ShiftDevice(Guid Id) : base(Id)
+    {
+    }
+
+    public ShiftDevice()
+    {
+    }
 }

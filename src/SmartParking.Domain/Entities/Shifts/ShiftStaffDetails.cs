@@ -15,4 +15,12 @@ public class ShiftStaffDetails : FullAuditedEntity<Guid>, IMultiTenant
 
     public Guid? TenantId { get; set; }
 
+    public ShiftStaffDetails(Guid Id) : base(Id)
+    {
+    }
+
+    public ShiftStaffDetails()
+    {
+    }
+
 }
