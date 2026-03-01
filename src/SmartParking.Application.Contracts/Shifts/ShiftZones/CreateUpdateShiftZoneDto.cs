@@ -12,7 +12,8 @@ public class CreateUpdateShiftZoneDto
     public string ZoneArName { get; set; }
     public string ZoneEnName { get; set; }
     public int OrganizationId { get; set; }
-
+    public string OrganizationArName { get; set; }
+    public string OrganizationEnName { get; set; }
     public List<CreateUpdateShiftDetailsDto>? ShiftDetails { get; set; }
     public CreateUpdateShiftMangerDto Manager { get; set; }
 }

@@ -16,7 +16,8 @@ public class ShiftZone : FullAuditedEntity<Guid>, IMultiTenant
     public virtual List<ShiftDetails>? ShiftDetails { get; set; }
     public Guid? TenantId { get; set; }
     public int OrganizationId { get; set; }
-
+    public string OrganizationArName { get; set; }
+    public string OrganizationEnName { get; set; }
 
     public ShiftZone()
     {

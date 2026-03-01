@@ -12,7 +12,6 @@ public class ShiftStaffDetails : FullAuditedEntity<Guid>, IMultiTenant
     public string StaffEnName { get; set; }
     public string StaffArName { get; set; }
     public string StaffPhoneNumber { get; set; }
-    public int OrganizationId { get; set; }
 
     public Guid? TenantId { get; set; }
 

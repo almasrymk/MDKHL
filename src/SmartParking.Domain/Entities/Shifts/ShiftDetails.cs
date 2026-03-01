@@ -9,7 +9,6 @@ public class ShiftDetails : FullAuditedEntity<Guid>, IMultiTenant
     public virtual ShiftStaffDetails ShiftStaffDetails { get; set; }
     public virtual ShiftDevice ShiftDevices { get; set; }
     public Guid? ShiftZoneId { get; set; }
-    public int OrganizationId { get; set; }
 
     public Guid? TenantId { get; set; }
 }
