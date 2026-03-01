@@ -123,6 +123,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.ContactMail, opt => opt.MapFrom(src => src.Email))
             .ForPath(dest => dest.Settings.VehcilePackage, opt => opt.MapFrom(src => src.OrganizationSettingsDto.VehcileAccess))
             .ForPath(dest => dest.Settings.CustomerPackage, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UserAccess))
+            .ForPath(dest => dest.Settings.UseShifts, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UseShifts))
             .ReverseMap();
 
         CreateMap<OrganizationSettingsDto, OrganizationSettings>()
