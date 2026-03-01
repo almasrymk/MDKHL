@@ -137,6 +137,7 @@ public partial class OrganizationEdit
         {
             VehcileAccess = _organizationSettingsDto.VehcileAccess,
             UserAccess = _organizationSettingsDto.UserAccess,
+            UseShifts = _organizationSettingsDto.UseShifts
         };
         
         //_createUpdateOrganiztionDto.OrganizationSettingsDto.VehcileAccess = _organizationSettingsDto.VehcileAccess;
