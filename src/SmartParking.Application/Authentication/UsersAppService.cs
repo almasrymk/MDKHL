@@ -426,7 +426,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
                     IdentificationTypes = (IdentificationTypes)Enum.Parse(typeof(IdentificationTypes), input.IdentificationTypes),
                     PhoneNumber = input.Phone,
                     Email = input.Email,
-                    NationalId = input.NationalId
+                    NationalId = input.NationalId,
+                    OrganizationId=user.GetProperty<int>("OrganizationId")
+
                 };
                 await UpdateUserProperties(user, UpdateDataDto);
                 var createdUser = await _userManager.UpdateAsync(user);
@@ -512,6 +514,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             userDto.Image = user.GetProperty<string>("Image");
             userDto.IdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes");
             userDto.NationalId = user.GetProperty<string>("NationalId");
+            userDto.OrganizationId = user.GetProperty<int>("OrganizationId");
             userDto.UserTypeCategory = user.GetProperty<UserTypeCategory>("UserTypeCategory");
             if (user.Roles.Any())
             {
@@ -530,7 +533,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 
         RemoveRole(input.RoleId, user);
         user?.SetProperty("UserTypeId", 3);
-        user?.SetProperty("OrganizationId", value: 0);
+        user?.SetProperty("OrganizationId", input.OrganizationId);
 
 
         if (user.UserName != input.UserName)
