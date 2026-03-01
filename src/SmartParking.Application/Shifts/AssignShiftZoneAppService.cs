@@ -41,7 +41,6 @@ public class AssignShiftZoneAppService : ApplicationService, IAssignShiftZoneApp
         {
             ShiftZoneId = shiftZoneId,
             TenantId = shiftZone.TenantId,
-            OrganizationId = shiftZone.OrganizationId,
         }).ToList();
 
         await _shiftDetailsRepository.InsertManyAsync(detailsList, autoSave: true);
@@ -57,7 +56,6 @@ public class AssignShiftZoneAppService : ApplicationService, IAssignShiftZoneApp
                 DeviceUserName = x.row.DeviceUserName,
                 DevicePassword = x.row.DevicePassword ?? "P@ssw0rd",
                 TenantId = shiftZone.TenantId,
-                OrganizationId = shiftZone.OrganizationId
             }).ToList();
 
         var staff = rows
@@ -71,7 +69,6 @@ public class AssignShiftZoneAppService : ApplicationService, IAssignShiftZoneApp
                 StaffArName = x.row.StaffUserName,
                 StaffPhoneNumber = x.row.StaffPhoneNumber,
                 TenantId = shiftZone.TenantId,
-                OrganizationId = shiftZone.OrganizationId
             }).ToList();
 
         if (devices.Any())
@@ -127,7 +124,6 @@ public class AssignShiftZoneAppService : ApplicationService, IAssignShiftZoneApp
             {
                 ShiftZoneId = shiftZoneId,
                 TenantId = shiftZone.TenantId,
-                OrganizationId = organizationId,
             }).ToList();
 
             await _shiftDetailsRepository.InsertManyAsync(toInsert, autoSave: true);
@@ -143,7 +139,6 @@ public class AssignShiftZoneAppService : ApplicationService, IAssignShiftZoneApp
                     DeviceUserName = x.row.DeviceUserName,
                     DevicePassword = x.row.DevicePassword ?? "P@ssw0rd",
                     TenantId = shiftZone.TenantId,
-                    OrganizationId = organizationId
                 }).ToList();
 
             var newStaff = newRows
@@ -157,7 +152,6 @@ public class AssignShiftZoneAppService : ApplicationService, IAssignShiftZoneApp
                     StaffArName = x.row.StaffUserName,
                     StaffPhoneNumber = x.row.StaffPhoneNumber,
                     TenantId = shiftZone.TenantId,
-                    OrganizationId = organizationId
                 }).ToList();
 
             if (newDevices.Any())
@@ -228,7 +222,6 @@ internal static class ShiftAssignmentExtensions
         device.DeviceCode = row.DeviceCode;
         device.DeviceUserName = row.DeviceUserName;
         device.DevicePassword = row.DevicePassword;
-        device.OrganizationId = organizationId;
         return device;
     }
 
@@ -241,7 +234,6 @@ internal static class ShiftAssignmentExtensions
             DeviceUserName = row.DeviceUserName,
             DevicePassword = row.DevicePassword ?? "P@ssw0rd",
             TenantId = details.TenantId,
-            OrganizationId = organizationId
         };
 
     public static ShiftStaffDetails ApplyUpdate(this ShiftStaffDetails staff, CreateUpdateZoneAssignmentDto row, int organizationId)
@@ -250,7 +242,6 @@ internal static class ShiftAssignmentExtensions
         staff.StaffEnName = row.StaffEnName;
         staff.StaffArName = row.StaffUserName;
         staff.StaffPhoneNumber = row.StaffPhoneNumber;
-        staff.OrganizationId = organizationId;
         return staff;
     }
 
@@ -263,7 +254,6 @@ internal static class ShiftAssignmentExtensions
             StaffArName = row.StaffUserName,
             StaffPhoneNumber = row.StaffPhoneNumber,
             TenantId = details.TenantId,
-            OrganizationId = organizationId
         };
 #endregion
 }
