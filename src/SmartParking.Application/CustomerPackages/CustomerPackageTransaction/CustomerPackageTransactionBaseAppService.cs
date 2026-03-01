@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.Entities.Organizations;
-using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using System;
+using SmartParking.Extensions;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Data;
@@ -67,21 +68,13 @@ public abstract class CustomerPackageTransactionBaseAppService : SmartParkingApp
         IQueryable<CustomerPackage> query,
         GarageTransactionDto garageTransactionDto)
     {
+
         var accurateTime = garageTransactionDto.AccurateTime.Value;
         var timeOfDay = TimeOnly.FromTimeSpan(accurateTime.TimeOfDay);
+        query = query.CountOfVehicleHasActivePackage(garageTransactionDto.OrganizationID , accurateTime);
 
-        query = query.Where(x =>
-            x.OrganizationId == garageTransactionDto.OrganizationID &&
-            x.CustomerPackageStatus == CustomerPackageStatus.Active &&
-            x.ActivationDateOfPackage.HasValue &&
-            x.ExpiryDate != null &&
-            x.ActivationDateOfPackage.Value.Date <= accurateTime.Date &&
-            x.ExpiryDate.Date >= accurateTime.Date &&
-            ((x.IsCustomPackage && x.PackageId == null) || (!x.IsCustomPackage && x.PackageId != null))
-        );
-
-        // Apply identification filters (plate or ticket)
-        query = ApplyIdentificationFilters(query, garageTransactionDto);
+          // Apply identification filters (plate or ticket)
+          query = ApplyIdentificationFilters(query, garageTransactionDto);
 
         // Apply time-of-day restrictions
         query = ApplyTimeOfDayFilters(query, timeOfDay);

@@ -41,7 +41,7 @@ namespace SmartParking.CustomerPackages
         /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="PackageDto"/> objects associated with the customer.</returns>
         Task<PagedResultDto<CustomerPackageDto>> GetListPackagesByCustomerOrganization(Guid customerId, PagedAndSortedResultRequestDto input);
 
-
+       
         new Task DeleteAsync(int id);
 
     }

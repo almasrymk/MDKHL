@@ -12,4 +12,6 @@ namespace SmartParking.CustomerPackages.CustomerPackageTransactions;
 public interface ICustomerPackageHandlerAppService
 {
     Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackage(GarageTransactionDto garageTransactionDto);
+
+    Task<bool> CheckIfCustomerPackageHasAvailableSlots(Guid customerId, int organizationId);
 }

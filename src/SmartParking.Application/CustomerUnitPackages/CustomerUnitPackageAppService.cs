@@ -52,18 +52,20 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
 
     
 
-    public async Task<Result<List<CustomerUnitPackageDto>>> GetUnitPackageByCustomer(Guid customerId)
+    public async Task<Result<List<CustomerUnitPackageDto>>> GetListOfUnitPackageByCustomer(Guid customerId , int organizationId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => c.Customer.Id == customerId);
+            query = query.Where(c => c.Customer.Id == customerId && c.OrganizationId==organizationId);
 
             var result = await AsyncExecuter.ToListAsync(query);
 
             var packageMap = ObjectMapper.Map<List<CustomerUnitPackage>, List<CustomerUnitPackageDto>>(result);
             return Result<List<CustomerUnitPackageDto>>.Success(packageMap);
+        
         }
+        
     }
 
     public async Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(int packageId, Guid customerId, CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto)
@@ -148,6 +150,21 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
             
         }
         return customerUnitPackge!.NumberOfVehicles > numberOfVehicles;
+    }
+
+    public async Task<CustomerUnitPackageDto> GetUnitPackageByCustomer(Guid customerId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+
+            var query = await _repository.GetQueryableAsync();
+            query = query.Where(c => c.Customer.Id == customerId);
+
+            var result = await AsyncExecuter.FirstOrDefaultAsync(query);
+
+            return  ObjectMapper.Map<CustomerUnitPackage,CustomerUnitPackageDto>(result);
+        }
+
     }
 
 
