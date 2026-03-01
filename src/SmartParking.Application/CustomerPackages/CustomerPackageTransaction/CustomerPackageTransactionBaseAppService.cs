@@ -69,15 +69,14 @@ public abstract class CustomerPackageTransactionBaseAppService : SmartParkingApp
         GarageTransactionDto garageTransactionDto)
     {
 
-        var accurateTime = garageTransactionDto.AccurateTime.Value;
-        var timeOfDay = TimeOnly.FromTimeSpan(accurateTime.TimeOfDay);
-        query = query.CountOfVehicleHasActivePackage(garageTransactionDto.OrganizationID , accurateTime);
+        //var accurateTime = garageTransactionDto.AccurateTime.Value;
+        //var timeOfDay = TimeOnly.FromTimeSpan(accurateTime.TimeOfDay);
+       query = query.GetLastActivePackage(garageTransactionDto.OrganizationID);
 
-          // Apply identification filters (plate or ticket)
-          query = ApplyIdentificationFilters(query, garageTransactionDto);
+        // Apply identification filters (plate or ticket)
+        query = ApplyIdentificationFilters(query, garageTransactionDto);
 
-        // Apply time-of-day restrictions
-        query = ApplyTimeOfDayFilters(query, timeOfDay);
+
 
         return query;
     }
@@ -100,33 +99,5 @@ public abstract class CustomerPackageTransactionBaseAppService : SmartParkingApp
         );
     }
 
-    /// <summary>
-    /// Applies time-of-day restrictions with 24-hour access and midnight crossing support
-    /// </summary>
-    protected virtual IQueryable<CustomerPackage> ApplyTimeOfDayFilters(
-        IQueryable<CustomerPackage> query,
-        TimeOnly timeOfDay)
-    {
-        return query.Where(x =>
-            // 24-hour access - no time restrictions
-            x.publishedOfPackage == true
-            ||
-            // Time-restricted access
-            (
-                x.PublishFromOfPackage.HasValue &&
-                x.PublishToOfPackage.HasValue &&
-                (
-                    // Normal hours (doesn't cross midnight)
-                    (x.PublishFromOfPackage.Value <= x.PublishToOfPackage.Value &&
-                     x.PublishFromOfPackage.Value <= timeOfDay &&
-                     x.PublishToOfPackage.Value >= timeOfDay)
-                    ||
-                    // Midnight crossing (e.g., 22:00 to 02:00)
-                    (x.PublishFromOfPackage.Value > x.PublishToOfPackage.Value &&
-                     (x.PublishFromOfPackage.Value <= timeOfDay ||
-                      x.PublishToOfPackage.Value >= timeOfDay))
-                )
-            )
-        );
-    }
+   
 }
