@@ -24,4 +24,13 @@ public static class CustomerPackageExtensions
             x.ExpiryDate.Date >= accurateTime.Date);
 
     }
+    public static IQueryable<CustomerPackage> GetLastActivePackage(this IQueryable<CustomerPackage> query, int organizationId  )
+    {
+
+
+       return query = query.Where(x =>
+            x.OrganizationId == organizationId &&
+            x.CustomerPackageStatus == CustomerPackageStatus.Active );
+
+    }
 }

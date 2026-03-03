@@ -3,7 +3,7 @@ using Castle.Core.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
-using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Entities.Analysis;
 using SmartParking.Entities.Authentication;
 using SmartParking.Entities.Customers;

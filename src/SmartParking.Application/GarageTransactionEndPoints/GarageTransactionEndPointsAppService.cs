@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Logging;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.Cameras;
-using SmartParking.CustomerPackages;
 using SmartParking.CustomerPackages.CustomerPackageTransactions;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Enums;
@@ -143,7 +143,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             (false, false, true, _) => true,
             (false, false, false, _) => false,
         };
-        if (organizationTransactionSettings.HasUserAccess && customerPackageDto?.EnPlateNumber != null)
+        if (organizationTransactionSettings.HasUserAccess && !string.IsNullOrEmpty(customerPackageDto?.EnPlateNumber))
         {
             var vehiclelimitations = await _customerPackagesHandlerAppService.CheckIfCustomerPackageHasAvailableSlots(customerPackageDto.CustomerId, GarageTransaction.OrganizationID);
             finalResult &= vehiclelimitations;

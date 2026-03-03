@@ -66,7 +66,7 @@
                     }
                     @if (organizationId != 0 || CurrentTenant.Id is not null)
                     {
-                        <MudItem sm="12" md="12">
+                        <MudItem sm="10" md="10">
                             <MudSelect T="string"
                                        Label="@L["customer category"]"
                                        Placeholder="@L[ "Choose"]"
@@ -86,11 +86,11 @@
                             </MudSelect>
 
                         </MudItem>
-
-                        <MudItem>
+                        <MudItem sm="2" md="2">
                             <MudCheckBox @bind-Value="IsCustom"
-                             Label="Custom"></MudCheckBox>
+                                         Label="Custom"></MudCheckBox>
                         </MudItem>
+
                     }
                     @if (Packages.Count > 0 && !IsCustom)
                     {
@@ -121,6 +121,8 @@
                                 }
                             </MudSelect>
                         </MudItem>
+
+               
                     }
                     else if (IsCustom)
                     {

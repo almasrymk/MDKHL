@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.Host.Mef;
 using Polly.Caching;
 using SmartParking.Currency;
-using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.DataTable;
 using SmartParking.Entities.Analysis;
 using SmartParking.Entities.Customers;

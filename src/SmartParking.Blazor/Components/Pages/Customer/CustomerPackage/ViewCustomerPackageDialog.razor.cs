@@ -7,7 +7,6 @@ using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.Shared.Utilities;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Currency;
-using SmartParking.CustomerPackages;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using System;
@@ -19,6 +18,7 @@ using static Microsoft.AspNetCore.Razor.Language.TagHelperMetadata;
 using static QRCoder.PayloadGenerator;
 
 using SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
+using SmartParking.CustomerPackages.Dtos;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
 {

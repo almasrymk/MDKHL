@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.AssignantionsContarcts;
+using SmartParking.CustomerPackages.Dtos;
+using SmartParking.CustomerPackages.Inputs;
 using SmartParking.Packages;
 using SmartParking.Payments;
 using SmartParking.Results;
@@ -41,22 +44,27 @@ public class PackagesController : ControllerBase
     public async Task<Result<List<CustomerPackageDto>>> GetPackagesCustomer()
     {
         return await _customerPackagesApp.GetPackageByCustomer();
-    }    
-    
+    }
     [HttpPost("assignpackage")]
     [Authorize]
-    public async Task<Result<PaymentCheckoutDto>> AssignPackageToCustomer(int packageId,string ArabicNumber , string EnglishPlateNumber)
+    public async Task<Result<PaymentCheckoutDto>> AssignPackageToCustomer([FromBody] AssignMobilePackageRequestDto request)
     {
-        var customerPackageDto = await _customerPackagesActionsAppService.AssignPackageToCustomerAsync(packageId,ArabicNumber,EnglishPlateNumber);
-        if (customerPackageDto.Errors.Any() )
-            return Result.Error(customerPackageDto.Errors.FirstOrDefault()!);
+        var customerPackageDto =
+            await _customerPackagesActionsAppService.AssignPackageToCustomerAsync(request.PackageId,request.ArabicNumber,request.EnglishPlateNumber);
+        if (customerPackageDto.Errors.Any())
+            return Result.Error(customerPackageDto.Errors.First());
+
         if (customerPackageDto.ValidationErrors.Any())
-            return Result.Invalid(customerPackageDto.ValidationErrors.FirstOrDefault()!);
-        var paymentReq = customerPackageDto.Value.MapToPaymentCheckout(customerPackageDto, customerPackageDto.Value.TenantId.Value);
-        var result=await _paymentAppService.CreateCheckoutPackagePaymentWebAsync(paymentReq);
+            return Result.Invalid(customerPackageDto.ValidationErrors.First());
+
+        var paymentReq = customerPackageDto.Value
+            .MapToPaymentCheckout(customerPackageDto, customerPackageDto.Value.TenantId!.Value);
+
+        var result = await _paymentAppService.CreateCheckoutPackagePaymentWebAsync(paymentReq);
+
         return Result.Success(result!);
-    } 
-    
+    }
+
     [HttpPut("removepackage")]
     [Authorize]
     public async Task<Result> CancelPackage(int packageId)

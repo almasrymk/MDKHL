@@ -1,4 +1,6 @@
-﻿using SmartParking.Packages;
+﻿using SmartParking.CustomerPackages.Dtos;
+using SmartParking.CustomerPackages.Inputs;
+using SmartParking.Packages;
 using SmartParking.Payments;
 using SmartParking.Results;
 using System;

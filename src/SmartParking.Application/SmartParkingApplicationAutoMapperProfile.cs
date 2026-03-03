@@ -4,7 +4,8 @@ using SmartParking.Cameras;
 using SmartParking.Cameras.Watchers;
 using SmartParking.Cameras.Watchers.Dispensers;
 using SmartParking.CustomerCategories;
-using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.Dtos;
+using SmartParking.CustomerPackages.Inputs;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
 using SmartParking.DailyShifts;
@@ -217,10 +218,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<VehicleDto, CreateUpdateVehicleDto>().ReverseMap();
 
         CreateMap<Package, PackageDto>()
-        .ForMember(dest => dest.PackageType, opt => opt.MapFrom(src => src.PackageType))
         .ForMember(dest => dest.CustomerCategory, opt => opt.MapFrom(src => src.CustomerCategory.ToString()))
-        .ForMember(d => d.PackageTypeArabicName, o => o.MapFrom(s => s.PackageType.ArabicName))
-        .ForMember(d => d.PackageTypeEnglishName, o => o.MapFrom(s => s.PackageType.EnglishName))
         .ForMember(d => d.SubscribersInPackages, o => o.MapFrom(s => s.CustomerPackages.Count))
         .ForMember(d => d.Status, o => o.MapFrom(s => s.Status));
         CreateMap<CustomerPackageDto, CustomerPackage>().ReverseMap();

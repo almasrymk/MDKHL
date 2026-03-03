@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.CustomerPackages;
+namespace SmartParking.CustomerPackages.Dtos;
 
 public class CustomerPackageDto
 {
@@ -21,14 +21,13 @@ public class CustomerPackageDto
     public int PackageId { get; set; }
     public int OrganizationId { get; set; }
     public CustomerPackageStatus CustomerPackageStatus { get; set; }
-    public PackageDto Package { get; set; } = new();
     public  OrganizationDto Organization { get; set; } = new();
     public Guid? TenantId { get; set; }
     public int? DurationOfPackage { get; set; }
     public decimal? PriceOfPackage { get; set; }
     public decimal? PriceOfPackagePerDay { get; set; }
     public decimal? CountOfDays { get; set; }
-    public string? DescriptionOfPackage { get; set; }
+    public string DescriptionOfPackage { get; set; }
     public bool? publishedOfPackage { get; set; }
     public TimeOnly? PublishFromOfPackage { get; set; }
     public TimeOnly? PublishToOfPackage { get; set; }
@@ -48,12 +47,12 @@ public class CustomerPackageDto
     public DateOnly? ActivationDate { get; set; }
     public TimeOnly? ActivationTime { get; set; }
     public bool IsCustomPackage { get; set; }
-    public string? PackageCode { get; set; }
-    public string? QRCodePath { get; set; }
+    public string PackageCode { get; set; }
+    public string QRCodePath { get; set; }
     public decimal Discount { get; set; }
     public decimal Vat { get; set; }
-    public string? LicenseTypeImage { get; set; }
-    public string? VehicleModelImage { get; set; }
+    public string LicenseTypeImage { get; set; }
+    public string VehicleModelImage { get; set; }
 
     public  PaymentCheckoutRequestDto MapToPaymentCheckout(
     CustomerPackageDto customerPackageDto,

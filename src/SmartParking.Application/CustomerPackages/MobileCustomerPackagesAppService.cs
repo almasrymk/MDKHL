@@ -1,5 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmartParking.CustomerPackages.AssignantionsContarcts;
+using SmartParking.CustomerPackages.Dtos;
+using SmartParking.CustomerPackages.Inputs;
 using SmartParking.CustomerPackages.QRGenerator;
+using SmartParking.CustomerPackages.Validations;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
@@ -46,6 +50,7 @@ public class MobileCustomerPackagesAppService : BaseCustomerPackagesAssigingAppS
             var customerPackage = CreateCustomerMobilePackage(package, customer.Id, ArabicPlateNumber, EnglishPlateNumber);
             var dto = CreateUpdateCustomerPackageDto.FromEntity(customerPackage);
             await HandleExistingPackagesForVehicleAsync(dto);
+            customerPackage.TenantId = package.TenantId;
 
             customerPackage.QRCodePath = await HandleQRCode(dto, customer, customerPackage);
             CustomerPackage result = await InsertCustomerPackageAsync(customerPackage);

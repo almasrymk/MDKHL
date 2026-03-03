@@ -50,6 +50,7 @@ public partial class MDKHLEditUserDialog
 
         TenantId = orag.TenantId;
         OrganizationId = organizationId;
+        updateUserDto.OrganizationId = organizationId;
         RolesList = await RoleAppService.GetListByTenant(TenantId);
     }
      

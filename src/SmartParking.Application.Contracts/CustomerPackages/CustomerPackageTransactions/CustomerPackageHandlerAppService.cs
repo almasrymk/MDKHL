@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.GarageTransactions;
 using SmartParking.Repositories;
@@ -33,7 +34,7 @@ public class CustomerPackageHandlerAppService : ICustomerPackageHandlerAppServic
         var customerUnitPackage =await _customerUnitPackageAppService.GetUnitPackageByCustomer(customerId);
         var garageTransactionValidation = await _garageTransactionValidationsRepository.CountOfVehicleRelatedToCustomerPackageParkingInGarage(customerId, organizationId);
 
-        return customerUnitPackage.NumberOfSlots >= (garageTransactionValidation?.Count ?? 0);
+        return customerUnitPackage.NumberOfSlots >= ((garageTransactionValidation?.Count+1) ?? 0);
         }
     }
 

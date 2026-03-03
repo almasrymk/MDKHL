@@ -1,4 +1,4 @@
-﻿using SmartParking.CustomerPackages;
+﻿using SmartParking.CustomerPackages.Dtos;
 using SmartParking.GarageTransactions;
 using SmartParking.Organizations;
 using System;

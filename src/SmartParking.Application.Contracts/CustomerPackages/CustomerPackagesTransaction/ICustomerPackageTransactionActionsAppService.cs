@@ -1,4 +1,5 @@
-﻿using SmartParking.GarageTransactions;
+﻿using SmartParking.CustomerPackages.Dtos;
+using SmartParking.GarageTransactions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

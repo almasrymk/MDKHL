@@ -296,6 +296,7 @@ public partial class User
             IdentificationTypes = userData.IdentificationTypes,
             IsCustomer = userData.IsCustomer,
             UserTypeCategory = userData.UserTypeCategory,
+            OrganizationId = userData.OrganizationId
         };
         var parameters = new DialogParameters
         {

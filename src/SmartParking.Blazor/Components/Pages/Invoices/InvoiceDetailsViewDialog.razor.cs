@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
-using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Entities.Discounts;
 using SmartParking.Invoices;
 using SmartParking.Packages;

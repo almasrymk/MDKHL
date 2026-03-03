@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
-using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Packages;
 
 namespace SmartParking.Blazor.Components.Pages.Invoices;

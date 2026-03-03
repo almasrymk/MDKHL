@@ -1,5 +1,5 @@
 ﻿using Abp.Application.Services;
-using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.DataTable;
 using SmartParking.Entities.Analysis;
 using SmartParking.Enums;
