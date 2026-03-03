@@ -25,6 +25,7 @@ using SmartParking.Entities.Payments;
 using SmartParking.Entities.Shifts;
 using SmartParking.Entities.StateManagements;
 using SmartParking.Entities.Subscriptions;
+using SmartParking.Entities.Units;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.Garages;
@@ -57,6 +58,7 @@ using SmartParking.StateManagements;
 using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
 using SmartParking.UnitPackages;
+using SmartParking.Units;
 using SmartParking.UserShifts;
 using SmartParking.Vehicles;
 using System;
@@ -548,6 +550,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
             .ForMember(dest => dest.OrganizationEnglishName, opt => opt.MapFrom(src => src.OrganizationEnglishName))
             .ForMember(dest => dest.OrganizationArabicName, opt => opt.MapFrom(src => src.OrganizationArabicName));
+
+        CreateMap<CreateUpdateUnitDto, Unit>();
+        CreateMap<Unit, UnitDto>();
+        CreateMap<UnitDto, CreateUpdateUnitDto>();
     }
 
 }
