@@ -911,7 +911,7 @@
         "AddRow": "Add Row",
         "Staff": "Staff",
         "Device": "Device",
-        "Devices" :  "Devices",
+        "Devices": "Devices",
         "AddShiftZone": "Add Shift Zone",
         "Zone": "Zone",
         "Manager": "Manager",
@@ -929,6 +929,8 @@
         "VehiclePackages": "Vehicle Packages",
         "OnlyOnePackageTypeAllowed": "Only one package type can be enabled.",
         "CustomerHasActivePackage": "Customer already package",
-        "PackgeVehiclesLimitationsExceeded": "Number of vehicles allowed for that package exceeded"
+        "PackgeVehiclesLimitationsExceeded": "Number of vehicles allowed for that package exceeded",
+        "Permission:Unit": "Unit Mangment",
+        "Unit": "Unit"
     }
 }

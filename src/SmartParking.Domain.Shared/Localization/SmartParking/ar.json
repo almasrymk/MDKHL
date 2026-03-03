@@ -953,7 +953,7 @@
         "AddRow": "إضافة صف",
         "Staff": "الموظف",
         "Device": "الجهاز",
-        "Devices":  "الاجهزة",
+        "Devices": "الاجهزة",
         "AddShiftZone": "إضافة منطقة الشفت",
         "Zone": "المنطقة",
         "Manager": "المدير",
@@ -971,6 +971,8 @@
         "VehiclePackages": "باقات السيارات",
         "OnlyOnePackageTypeAllowed": "يجب تفعيل نوع حزمة واحد فقط.",
         "CustomerHasActivePackage": "المستفيد لديه باقة بالفعل",
-        "PackgeVehiclesLimitationsExceeded": "لقد تجاوزت العدد المسوح من المركبات لتلك الباقة"
+        "PackgeVehiclesLimitationsExceeded": "لقد تجاوزت العدد المسوح من المركبات لتلك الباقة",
+        "Permission:Unit": "موديول الوحدات",
+        "Unit": "وحده"
     }
 }
