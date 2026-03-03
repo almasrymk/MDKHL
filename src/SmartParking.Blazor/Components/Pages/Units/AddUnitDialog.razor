@@ -1,0 +1,140 @@
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Localization
+@using SmartParking.Units
+@using SmartParking.Organizations
+@using Microsoft.Extensions.Localization
+@using Volo.Abp
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.Validation
+@inject IUnitAppService UnitAppService
+@inject IOrganizationsAppService OrganizationAppService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ICurrentTenant CurrentTenant
+
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+        <MudText Typo="Typo.h6">@L["Add NEW"]</MudText>
+</TitleContent>
+  <DialogContent>
+    <MudForm Class="flex-grow-1 mt-2 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Model="createUpdateUnit" @ref="form">
+        <MudGrid>
+        
+        <MudItem sm="12" md="4">
+              <MudTextField @bind-Value="createUpdateUnit.EnglishName"
+                For="@(() => createUpdateUnit.EnglishName)"
+                Variant="Variant.Text"
+                Class="w-100"
+                Placeholder=@L["Type Here"]
+                Required="true"
+                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                Label=@L["EnglishName"]/>
+           </MudItem>
+        <MudItem sm="12" md="4">
+              <MudTextField @bind-Value="createUpdateUnit.ArabicName"
+                For="@(() => createUpdateUnit.ArabicName)"
+                Variant="Variant.Text"
+                Class="w-100"
+                Placeholder=@L["Type Here"]
+                Required="true"
+                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                Label=@L["ArabicName"]/>
+           </MudItem>
+        <MudItem sm="12" md="4">
+              <MudNumericField @bind-Value="createUpdateUnit.Capacity"
+                For="@(() => createUpdateUnit.Capacity)"
+                Variant="Variant.Text"
+                Class="w-100"
+                Placeholder=@L["Type Here"]
+                Required="true"
+                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                Label=@L["Capacity"]
+                HideSpinButtons="true" />
+           </MudItem>
+     <MudItem sm="12">
+    <MudTextField @bind-Value="createUpdateUnit.Description"
+     For="@(() => createUpdateUnit.Description)"
+           Variant="Variant.Outlined"
+       Class="w-100"
+    Required="true"
+     RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+            Lines="5"
+       Placeholder=@L["Type Here"]
+       Label=@L["Description"] />
+         </MudItem>
+     </MudGrid>
+     </MudForm>
+        </DialogContent>
+        <DialogActions>
+              <DialogActionComponent 
+                ButtonOneColor="MudBlazor.Color.Dark" 
+                ButtonTwoColor="MudBlazor.Color.Primary" 
+                ButtonOneLabel="@L["Back"]" 
+                ButtonTwoLabel="@L["SaveAsDraft"]" 
+                ButtonOneClick="Cancel" 
+                ButtonTwoClick="Submit" 
+                ButtonOneVariant="MudBlazor.Variant.Filled" 
+                ButtonTwoVariant="MudBlazor.Variant.Filled" />
+        </DialogActions>
+    </MudDialog>
+</div>
+
+<style>
+    .mud-modal 
+    {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
+
+@code {
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] NavigationManager NavigationManager { get; set; }
+
+    private MudForm form;
+    private CreateUpdateUnitDto createUpdateUnit = new CreateUpdateUnitDto();
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (CurrentTenant.Id != null)
+        {
+            var org = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+            createUpdateUnit.OrganizationId = org.Id;
+        }
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            await UnitAppService.CreateAsync(createUpdateUnit);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} Unit", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+            await Task.Delay(1000);
+            NavigationManager.NavigateTo("/units", true);
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message}", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
