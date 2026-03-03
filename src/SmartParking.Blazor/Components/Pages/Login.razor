@@ -19,7 +19,7 @@
 
 <h2>@L["Sign In"]</h2>
 <MudContainer Class="d-flex justify-content-center my-5">
-    <EditForm Model="@loginModel" Class="d-flex flex-column gap-3 w-75" OnValidSubmit="HandleLogin">
+    <EditForm FormName="LoginForm" Model="@loginModel" Class="d-flex flex-column gap-3 w-75" OnValidSubmit="HandleLogin">
         <MudTextField @bind-Value="loginModel.Username" T="string" Placeholder=@L["Type Here"] Label=@L["Mobile/User Name"] Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
         <MudTextField @bind-Value="loginModel.Password" T="string" Placeholder=@L["Type Here"] Label=@L["Password"] InputType="InputType.Password" Required="true" RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
         <div class="d-flex align-items-center justify-content-center gap-1">
@@ -35,7 +35,7 @@
     private MudForm form;
     private LoginInputDto loginModel = new LoginInputDto();
 
-    private async void HandleLogin()
+    private async Task HandleLogin()
     {
         try
         {

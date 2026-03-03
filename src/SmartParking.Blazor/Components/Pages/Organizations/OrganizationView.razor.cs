@@ -38,6 +38,7 @@ public partial class OrganizationView
         organization = await OrganizationsAppService.GetAsync(id);     
         organizationSettings.VehcileAccess = organization.OrganizationSettings.VehcileAccess;
         organizationSettings.UserAccess = organization.OrganizationSettings.UserAccess;
+        organizationSettings.UseShifts = organization.OrganizationSettings.UseShifts;
         ClosingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
         ClosingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
        CRExpiryDate =   organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));

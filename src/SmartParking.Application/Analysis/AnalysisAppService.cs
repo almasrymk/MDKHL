@@ -933,16 +933,18 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
 
     public async Task<PagedResultDto<PaymentUserShift>> ReportPaymentCollectedMoneyWithKeeperAndShiftAsync(PagedAndSortedAndFilteredResultRequestDto input, Guid? tenantId)
     {
+
         using (_datafilter.Disable<IMultiTenant>())
         {
             var filterExpression = BuildExpression<PaymentUserShift>.BuildFilterExpression(input.filters);
-            var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyWithKeeperAndShiftAnalysis(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
-
+            //var result = await _paymentAnalysisRepository.GetPaymentCollectedMoneyWithKeeperAndShiftAnalysis(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
+            var result = await _shiftAnalysisRepository.ReportPaymentCollectedMoneyWithShiftZone(tenantId, input.SkipCount, input.MaxResultCount, input.Sorting, filterExpression);
             return new PagedResultDto<PaymentUserShift>
             {
                 Items = result.Queryable.ToList(),
                 TotalCount = (int)result.PageSize
             };
+        
         }
 
     }

@@ -57,5 +57,6 @@ public class CreateUpdateOrganiztionDto
     public string PasswordZatca { get; set; }
     public Status StatusZatca { get; set; }
     public OrganizationSettingsDto OrganizationSettingsDto { get; set; } 
-    
+    public bool UseShifts { get; set; }
+
 }

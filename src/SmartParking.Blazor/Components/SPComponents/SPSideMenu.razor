@@ -66,8 +66,8 @@
                     <MudNavLink Href="/lastinvoice" Icon="@Icons.Material.Filled.Check">@L["LastInvoice"]</MudNavLink>
 
                 }
-                @if (AuthorizationService.IsGrantedAnyAsync([ShiftPermission.Default, UserShiftPermission.Default, MyShiftPermissions.Default, DailyShiftsPermission.Default]).Result 
-                   || currenttenant.Id == null)
+                @if ((AuthorizationService.IsGrantedAnyAsync([ShiftPermission.Default, UserShiftPermission.Default, MyShiftPermissions.Default, DailyShiftsPermission.Default]).Result 
+                   || currenttenant.Id == null) && _isShift)
                 {
                     <MudNavGroup Icon="@Icons.Material.Filled.FilterTiltShift" Title="@L["Shifts"]">
                         @if (AuthorizationService.IsGrantedAnyAsync(ShiftPermission.Default).Result || currenttenant.Id == null)
@@ -80,15 +80,11 @@
                             <MudNavLink Href="/user/shifts" Icon="@Icons.Material.Filled.Person2">@L["UsersCanShift"]</MudNavLink>
                          }
 
-                        @if (AuthorizationService.IsGrantedAnyAsync(MyShiftPermissions.Default).Result && currenttenant.Id != null )
-                         {
-                            <MudNavLink Href="/myshifts" Icon="@Icons.Material.Filled.Schedule">@L["MyShifts"]</MudNavLink>
-                         }
+                        @if (AuthorizationService.IsGrantedAnyAsync(MyShiftPermissions.Default).Result && currenttenant.Id != null)
+                        {
+                            <MudNavLink Href="/shift-zone" Icon="@Icons.Material.Filled.Schedule">@L["ShiftZones"]</MudNavLink>
+                        }
 
-                        @if (AuthorizationService.IsGrantedAnyAsync(DailyShiftsPermission.Default).Result || currenttenant.Id == null)
-                         {
-                            <MudNavLink Href="/dailyshifs" Icon="@Icons.Material.Filled.Check">@L["DailyShifts"]</MudNavLink>
-                         }
 
                     </MudNavGroup>
                 }
@@ -144,7 +140,10 @@
                              <MudNavLink Href="/customerreport" Icon="@Icons.Material.Filled.Man">@L["CustomerAndTransactionReport"]</MudNavLink>
                              <MudNavLink Href="/employeereport" Icon="@Icons.Material.Filled.Work">@L["EmployeeAndTransactionReport"]</MudNavLink>
                              <MudNavLink Href="/visitorreport" Icon="@Icons.Material.Filled.Accessibility">@L["VisitorAndTransactionReport"]</MudNavLink>
-                             <MudNavLink Href="/keepertransactionsreport" Icon="@Icons.Material.Filled.CompareArrows">@L["KeeperTransactions"]</MudNavLink>
+                            @if (_isShift)
+                            {
+                                <MudNavLink Href="/keepertransactionsreport" Icon="@Icons.Material.Filled.CompareArrows">@L["KeeperTransactions"]</MudNavLink>
+                            }
                              <MudNavLink Href="/beneficiariesvehiclesreport" Icon="@Icons.Material.Filled.CarCrash">@L["BeneficiariesVehiclesReport"]</MudNavLink>
                              <MudNavLink Href="/beneficiariesdetailsreport" Icon="@Icons.Material.Filled.Group">@L["BeneficiariesDetailsReports"]</MudNavLink>
                              <MudNavLink Href="/cancelledgaragetransactionreport" Icon="@Icons.Material.Filled.AssignmentReturned">@L["CancelledGarageTransactionReport"]</MudNavLink>
@@ -160,7 +159,10 @@
 
                          @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement).Result || currenttenant.Id is null)
                          {
-                             <MudNavLink Href="/keeperpaymentsreport" Icon="@Icons.Material.Filled.MoreTime">@L["KeeperPayments"]</MudNavLink>
+                             @if(_isShift)
+                             {
+                                <MudNavLink Href="/keeperpaymentsreport" Icon="@Icons.Material.Filled.MoreTime">@L["KeeperPayments"]</MudNavLink>
+                             }
                              <MudNavLink Href="/packagepayment/reports" Icon="@Icons.Material.Filled.MoneyOff">@L["PackagePaymentsData"]</MudNavLink>
                              <MudNavLink Href="/paymentsreports" Icon="@Icons.Material.Filled.Money">@L["Payments"]</MudNavLink>
                              <MudNavLink Href="/packagepaymentreport" Icon="@Icons.Material.Filled.Money">@L["PackagesPayments"] </MudNavLink>
@@ -237,6 +239,7 @@
 
     private bool _isLoaded = false;
     private bool _isUserAccess;
+    private bool _isShift = false;
     public void HandleLogout()
     {
         NavigationManager.NavigateTo("/logOut", true);
@@ -246,6 +249,7 @@
         var organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
 
         _isUserAccess = organization?.OrganizationSettings?.UserAccess ?? false;
+        _isShift = organization?.OrganizationSettings?.UseShifts ?? true;
 
         _isLoaded = true;
     }

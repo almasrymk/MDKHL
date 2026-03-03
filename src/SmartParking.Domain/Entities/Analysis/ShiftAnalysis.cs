@@ -4,7 +4,7 @@ public class ShiftAnalysis
 {
     public Guid KeeperId { get; set; }
     public int ShiftId { get; set; }
-    public int GarageId { get; set; }
+    public int? GarageId { get; set; }
     public string KeeperName { get; set; }
     public string ShiftNameAr { get; set; }
     public string ShiftNameEn { get; set; }

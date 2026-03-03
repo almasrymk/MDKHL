@@ -1,18 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Analysis;
-using SmartParking.Entities.GarageTransactions;
-using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Enums;
-using SmartParking.Migrations;
 using SmartParking.Repositories;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
@@ -33,78 +28,104 @@ public class PaymentAnalysisRepository
         this._dataFilter = dataFilter;
     }
 
-   
-    public async Task<PagedResult<PaymentUserShift>> GetPaymentCollectedMoneyWithKeeperAndShiftAnalysis(Guid? tenantId, 
-        int skipCount, int maxResultCount, string sorting, 
-        Expression<Func<PaymentUserShift, bool>> filterRequests)
-    {
-        sorting = CheckSort(sorting);
-        var dbContext = await GetDbContextAsync();
-        var query = from payments in dbContext.Payments
-                    where tenantId == null || payments.TenantId == tenantId
-                    join userShift in dbContext.KeeperShifts on payments.CreatorId equals userShift.KeeperId
+    //public async Task<PagedResult<PaymentUserShift>> GetPaymentCollectedMoneyWithKeeperAndShiftAnalysis(
+    //Guid? tenantId,
+    //int skipCount, int maxResultCount, string sorting,
+    //Expression<Func<PaymentUserShift, bool>> filterRequests)
+    //{
+    //    sorting = CheckSort(sorting);
+    //    var dbContext = await GetDbContextAsync();
 
-                    group userShift by new
-                    {
-                        userShift.KeeperId,
-                        userShift.StartTime,
-                        userShift.StartDate,
-                        userShift.EndDate,
-                        userShift.EndTime,
-                        userShift.GarageId,
-                        userShift.OrganizationId,
-                        userShift.ShiftId
-                    } into groupedPayments
-                    select new PaymentUserShift
-                    {
-                        UserName = dbContext.Users.Where(u => u.Id == groupedPayments.Key.KeeperId)
-                                          .Select(u => u.Name)
-                                          .FirstOrDefault(),
-                        TotalAmount = dbContext.Payments
-                                .Where(p => p.CreationTime.Date >= groupedPayments.Key.StartDate.ToDateTime(new TimeOnly(0, 0))&&
-                                       p.CreationTime.Date <= groupedPayments.Key.EndDate.ToDateTime(new TimeOnly(23, 59)) && 
-                                       p.CreatorId == groupedPayments.Key.KeeperId
-                                )
-                                .Sum(x => (decimal?)x.Amount) ?? 0, 
-                        EndDate = groupedPayments.Key.EndDate,
-                        StartDate = groupedPayments.Key.StartDate,
-                        EndTime = groupedPayments.Key.EndTime,
-                        GarageArabicName = dbContext.Garages.Where(g => g.Id == groupedPayments.Key.GarageId).Select(g => g.NameAr).FirstOrDefault(),
-                        GarageEnglishName = dbContext.Garages.Where(g => g.Id == groupedPayments.Key.GarageId).Select(g => g.NameEn).FirstOrDefault(),
-                        OrganizationArabicName = dbContext.Organizations.Where(g => g.Id == groupedPayments.Key.OrganizationId).Select(g => g.ArabicName).FirstOrDefault(),
-                        OrganizationEnglishName = dbContext.Organizations.Where(g => g.Id == groupedPayments.Key.OrganizationId).Select(g => g.EnglishName).FirstOrDefault(),
-                        ShiftArabicName = dbContext.Shifts.Where(g => g.Id == groupedPayments.Key.ShiftId).Select(g => g.ArabicName).FirstOrDefault(),
-                        ShiftEnglishName = dbContext.Shifts.Where(g => g.Id == groupedPayments.Key.ShiftId).Select(g => g.EnglishName).FirstOrDefault(),
-                        StartTime = groupedPayments.Key.StartTime
+    //    var query = from payments in dbContext.Payments
+    //                where tenantId == null || payments.TenantId == tenantId
+    //                join shiftZone in dbContext.ShiftZones
+    //                    on payments.OrganizationId equals shiftZone.OrganizationId
+    //                group shiftZone by new
+    //                {
+    //                    shiftZone.Id,
+    //                    shiftZone.ShiftId,
+    //                    shiftZone.ZoneId,
+    //                    shiftZone.ZoneArName,
+    //                    shiftZone.ZoneEnName,
+    //                    shiftZone.OrganizationId,
+    //                    shiftZone.OrganizationArName,
+    //                    shiftZone.OrganizationEnName,
+    //                    shiftZone.ShiftManager.ManagerEnName,
+    //                    shiftZone.ShiftManager.ManagerUserName,
+    //                    shiftZone.ShiftManager.ManagerPhoneNumber,
+    //                } into groupedPayments
+    //                select new PaymentUserShift
+    //                {
+    //                    UserName = groupedPayments.Key.ManagerEnName,
 
-                    };
-        query = query.Where(filterRequests);
-        query = query.OrderBy(sorting);
-        var total = query.Count();
-        query = query.Skip(skipCount).Take(maxResultCount);
-        return new PagedResult<PaymentUserShift>
-        {
-            PageSize = total,
-            Queryable = query,
-        };
-    }
-    
-    
+    //                    TotalAmount = dbContext.Payments
+    //                        .Where(p =>
+    //                            p.OrganizationId == groupedPayments.Key.OrganizationId &&
+    //                            p.TenantId == tenantId)
+    //                        .Sum(p => (decimal?)p.Amount) ?? 0,
+
+    //                    GarageArabicName = groupedPayments.Key.ZoneArName,
+    //                    GarageEnglishName = groupedPayments.Key.ZoneEnName,
+
+    //                    OrganizationArabicName = groupedPayments.Key.OrganizationArName,
+    //                    OrganizationEnglishName = groupedPayments.Key.OrganizationEnName,
+
+    //                    ShiftArabicName = dbContext.Shifts
+    //                        .Where(s => s.Id == groupedPayments.Key.ShiftId)
+    //                        .Select(s => s.ArabicName)
+    //                        .FirstOrDefault(),
+    //                    ShiftEnglishName = dbContext.Shifts
+    //                        .Where(s => s.Id == groupedPayments.Key.ShiftId)
+    //                        .Select(s => s.EnglishName)
+    //                        .FirstOrDefault(),
+
+    //                    StartDate = dbContext.Shifts
+    //                        .Where(s => s.Id == groupedPayments.Key.ShiftId)
+    //                        .Select(s => s.StartDate)
+    //                        .FirstOrDefault(),
+    //                    EndDate = dbContext.Shifts
+    //                        .Where(s => s.Id == groupedPayments.Key.ShiftId)
+    //                        .Select(s => s.EndDate)
+    //                        .FirstOrDefault(),
+    //                    StartTime = dbContext.Shifts
+    //                        .Where(s => s.Id == groupedPayments.Key.ShiftId)
+    //                        .Select(s => s.StartTime)
+    //                        .FirstOrDefault(),
+    //                    EndTime = dbContext.Shifts
+    //                        .Where(s => s.Id == groupedPayments.Key.ShiftId)
+    //                        .Select(s => s.EndTime)
+    //                        .FirstOrDefault(),
+    //                };
+
+    //    query = query.Where(filterRequests);
+    //    query = query.OrderBy(sorting);
+
+    //    var total = query.Count();
+    //    query = query.Skip(skipCount).Take(maxResultCount);
+
+    //    return new PagedResult<PaymentUserShift>
+    //    {
+    //        PageSize = total,
+    //        Queryable = query,
+    //    };
+    //}
+
+
     public async Task<PagedResult<PaymentAnalysis>> GetPaymentForKeeper(Guid? tenantId, int skipCount, int maxResultCount, string sorting, Expression<Func<PaymentAnalysis, bool>> filterRequests)
     {
         var dbContext = await GetDbContextAsync();
         sorting = CheckSort(sorting);
         var query = from payment in dbContext.Payments
-                    where tenantId == null? true : payment.TenantId == tenantId
+                    where tenantId == null ? true : payment.TenantId == tenantId
                     from user in dbContext.Users
                     where payment.CreatorId == user.Id
-                    from roleId in user.Roles.Select(r => r.RoleId) 
-                    join role in dbContext.Roles 
-                        on roleId equals role.Id 
-                    where role.Name == RolesType.Keeper.ToString() 
+                    from roleId in user.Roles.Select(r => r.RoleId)
+                    join role in dbContext.Roles
+                        on roleId equals role.Id
+                    where role.Name == RolesType.Keeper.ToString()
                     group payment by new
                     {
-                        
+
                         payment.CreatorId,
                         Day = DateTime.Now.Date,
                         Month = new { payment.CreationTime.Year, payment.CreationTime.Month }
@@ -135,23 +156,23 @@ public class PaymentAnalysisRepository
 
     public async Task<PagedResult<DiscountPaymentAnalysis>> GetReportDiscount(Guid? tenantId,
        int skipCount, int maxResultCount, string sorting,
-       Expression<Func<DiscountPaymentAnalysis, bool>> filterRequests,string searchTerm)
+       Expression<Func<DiscountPaymentAnalysis, bool>> filterRequests, string searchTerm)
     {
         sorting = CheckSort(sorting);
         var dbContext = await GetDbContextAsync();
         var query = from payments in dbContext.Payments
                     where tenantId == null || payments.TenantId == tenantId
-                    where (payments.Invoice != null && payments.Invoice.Discount > 0 ) || (payments.CustomerPackage != null && payments.CustomerPackage.Discount > 0)
+                    where (payments.Invoice != null && payments.Invoice.Discount > 0) || (payments.CustomerPackage != null && payments.CustomerPackage.Discount > 0)
                     select new DiscountPaymentAnalysis
                     {
-                        Discount =payments!=null && payments.Invoice != null ? payments.Invoice.Discount :payments!.CustomerPackage!.Discount,
+                        Discount = payments != null && payments.Invoice != null ? payments.Invoice.Discount : payments!.CustomerPackage!.Discount,
                         Amount = payments.Amount,
                         Currency = payments.Currency,
                         CustomerArabicName = payments.Customers.ArabicName ?? "NotCustomer",
                         CustomerEnglishName = payments.Customers.IdentityUser.Name ?? "NotCustomer",
-                        PlateNumber = payments != null && payments.Invoice != null?payments.Invoice.PlateNumber : payments!.CustomerPackage!.EnPlateNumber,
+                        PlateNumber = payments != null && payments.Invoice != null ? payments.Invoice.PlateNumber : payments!.CustomerPackage!.EnPlateNumber,
                         InvoiceId = payments.InvoiceId,
-                        CustomerPackageId=payments.CustomerPackageId,
+                        CustomerPackageId = payments.CustomerPackageId,
                         PaymentCategory = payments.PaymentCategory,
                         PaymentDate = payments.CreationTime,
                         PaymentMethod = payments.PaymentMethod,
@@ -162,7 +183,7 @@ public class PaymentAnalysisRepository
                         Time = TimeOnly.FromDateTime(payments.CreationTime),
                     };
         query = query.Where(filterRequests);
-        if(!string.IsNullOrWhiteSpace(searchTerm))
+        if (!string.IsNullOrWhiteSpace(searchTerm))
             query = query.Where(_ => _.Discount.ToString().Contains(searchTerm));
         query = query.OrderBy(sorting);
         var total = query.Count();

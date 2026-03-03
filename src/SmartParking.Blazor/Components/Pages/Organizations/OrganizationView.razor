@@ -59,15 +59,24 @@
                             <MudItem sm="4">
                                 <MudSwitch Label="@L["UserAccess"]"
                                            @bind-Value="organizationSettings.UserAccess"
-                                           Color="MudBlazor.Color.Primary" />
+                                           Color="MudBlazor.Color.Primary"
+                                           ReadOnly />
                             </MudItem>
 
                             <MudItem sm="4">
                                 <MudSwitch Label="@L["VhecileAccess"]"
                                            @bind-Value="organizationSettings.VehcileAccess"
-                                           Color="MudBlazor.Color.Primary" />
+                                           Color="MudBlazor.Color.Primary"
+                                           ReadOnly />
                             </MudItem>
                         </MudGrid>
+
+                        <MudItem sm="6">
+                            <MudSwitch Label=@L["Shift"] 
+                            @bind-Value="organizationSettings.UseShifts" 
+                            Color="MudBlazor.Color.Primary" 
+                            ReadOnly />
+                        </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
 

@@ -1,28 +1,66 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Blazor.Customs
 @using SmartParking.KeeperShifts
 @using SmartParking.Localization
 @using Volo.Abp.MultiTenancy
-@inject IDialogService Dialog
+@using System.Globalization
 @inject IStringLocalizer<SmartParkingResource> L
-@inject IDialogService DialogService
 @inject ISnackbar Snackbar
-@inject NavigationManager Navigation
 @inject ICurrentTenant CurrentTenant
-@inject IAuthorizationService AuthorizationService
-@inject IJSRuntime JSRuntime;
-@inject IKeeperShiftsAppService KeeperShiftsAppService
 
-<PageTitle>@L["UserShifts"]</PageTitle>
-<div class="modal-wrapper ">
-    <MudDialog class="mud-modal w-100" Style="min-width:auto !important">
+<div class="modal-wrapper">
+    <MudDialog Class="mud-modal w-100" Style="min-width: auto !important">
         <TitleContent>
-            <MudText Class="fw-bold">@L["UserShifts"]</MudText>
+            <MudText Class="fw-bold" Typo="Typo.h6">@L["UserShifts"]</MudText>
         </TitleContent>
+
         <DialogContent>
-            <SPDataGrid PageName=@L["UserShifts"] Data="@itemData" TotalItemsInTable="TotalItem" ShowDelete="true" OnClickRowDelete="OnClickRowDelete" OnSearching="FetchTableData" OnPageChanged="FetchTableData"></SPDataGrid>
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
+                <MudGrid Spacing="2">
+                    <MudItem sm="6" md="6">
+                        <MudTextField T="string"
+                                      Value="@(string.IsNullOrWhiteSpace(UserFullName) ? "—" : UserFullName)"
+                                      Disabled="true"
+                                      Label="@L["UserFullName"]" />
+                    </MudItem>
+
+                    <MudItem sm="6" md="6">
+                        <MudTextField T="string"
+                                      Value="@(string.IsNullOrWhiteSpace(Role) ? L["Staff"].Value : (L[Role].Value ?? Role))"
+                                      Disabled="true"
+                                      Label="@L["Role"]" />
+                    </MudItem>
+
+                    <DeviceDisplayComponent Role="@Role"
+                                            Device="@Device"
+                                            Devices="@Devices" />
+
+                    <MudItem xs="12" sm="6" md="6">
+                        <MudTextField T="string"
+                                      Value="@(string.IsNullOrWhiteSpace(Garage) ? "—" : Garage)"
+                                      Disabled="true"
+                                      Label="@L["Garage"]" />
+                    </MudItem>
+
+                    @if (CurrentTenant.Id is null)
+                    {
+                        <MudItem xs="12" sm="6" md="6">
+                            <MudTextField T="string"
+                                          Disabled="true"
+                                          Label="@L["Organization"]" />
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudForm>
         </DialogContent>
+
         <DialogActions>
-            <MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="Cancel">@L["Cancel"]</MudButton>
+            <DialogActionComponent
+                ButtonTwoColor="MudBlazor.Color.Dark"
+                ButtonTwoLabel="@L["Back"]"
+                ButtonTwoClick="Cancel"
+                ButtonTwoVariant="MudBlazor.Variant.Filled" />
         </DialogActions>
     </MudDialog>
 </div>

@@ -1,32 +1,19 @@
-﻿using Castle.Core.Resource;
-using Microsoft.EntityFrameworkCore;
-using SmartParking.Entities;
+﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Analysis;
-using SmartParking.Entities.Customers;
 using SmartParking.Entities.GarageTransactions;
-using SmartParking.Entities.Invoices;
-using SmartParking.Entities.Organizations;
-using SmartParking.Entities.Vehicles;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Enums;
-using SmartParking.Migrations;
 using SmartParking.Repositories;
-using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
-using Volo.Abp.TenantManagement;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace SmartParking.Analysis;
 

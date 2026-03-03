@@ -1,15 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.Invoices;
 using SmartParking.Enums;
-using SmartParking.Invoices;
-using SmartParking.Migrations;
 using SmartParking.Payments;
-using SmartParking.Utilities;
-using System;
-using System.Threading.Tasks;
-using static MudBlazor.CategoryTypes;
 
 namespace SmartParking.Blazor.Components.Pages.Payments;
 

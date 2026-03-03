@@ -1,0 +1,206 @@
+﻿@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Garages
+@using SmartParking.Localization
+@using SmartParking.Mobile.Keepers
+@using SmartParking.Shifts
+@using SmartParking.Shifts.ShiftZones
+@using SmartParking.Shifts.ShiftDevices
+@using SmartParking.Shifts.ShiftStaffDetail
+@using SmartParking.Authentication
+@using SmartParking.Watchers
+@using Volo.Abp.ObjectMapping
+
+@inject IShiftZoneAppService ShiftZoneAppService 
+@inject IShiftAppService ShiftAppService
+@inject IGarageAppService GarageAppService 
+@inject IUserAppService UserAppService
+@inject IWatcherAppService WatcherAppService 
+@inject IAssignShiftZoneAppService AssignShiftZoneAppService
+@inject IObjectMapper ObjectMapper 
+@inject ISnackbar Snackbar 
+@inject IStringLocalizer<SmartParkingResource> L
+@inject NavigationManager NavigationManager
+
+<PageTitle>@L["UpdateShiftZone"]</PageTitle>
+
+<div class="modal-wrapper">
+
+    <MudDialog Class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["UpdateShiftZone"]</MudText>
+        </TitleContent>
+
+        <DialogContent>
+            <MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
+
+                <MudGrid>
+
+                    <MudItem xs="12" md="6">
+                        <MudSelect T="int"
+                                   Label="@L["Shift"]"
+                                   Variant="Variant.Text"
+                                   @bind-Value="CreateUpdateShiftZone.ShiftId"
+                                   Disabled="@(!_isLoaded)">
+                            <MudSelectItem T="int" Value="0">@L["SelectShift"]</MudSelectItem>
+                            @foreach (var shift in ShiftDtos)
+                            {
+                                <MudSelectItem T="int" Value="@shift.Id">
+                                    @(System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar") ? shift.ArabicName : shift.EnglishName)
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudSelect T="int"
+                                   Variant="Variant.Text"
+                                   Label="@L["Zone"]"
+                                   @bind-Value="CreateUpdateShiftZone.ZoneId"
+                                   Disabled="@(!_isLoaded)">
+                            <MudSelectItem T="int" Value="0">@L["SelectZone"]</MudSelectItem>
+                            @foreach (var garage in Garages)
+                            {
+                                <MudSelectItem T="int" Value="@garage.Id">
+                                    @(System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar") ? garage.NameAr : garage.NameEn)
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudSelect T="Guid"
+                                   Variant="Variant.Text"
+                                   Label="@L["Manager"]"
+                                   @bind-Value="SelectedManagerId"
+                                   Disabled="@(!_isLoaded)">
+                            <MudSelectItem T="Guid" Value="Guid.Empty">@L["SelectManager"]</MudSelectItem>
+                            @foreach (var m in Keepers)
+                            {
+                                <MudSelectItem T="Guid" Value="@m.Id">
+                                    @(System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar") ? m.UserName : m.EnglishName)
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+
+                    <MudItem sm="12" Class="d-inline-flex justify-content-center">
+                        <div Class="d-flex flex-row justify-content-between">
+                            <MudRadioGroup @bind-Value="@CreateUpdateShiftZone.Status" Class="d-inline-flex align-content-center">
+
+                                <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Active"]</MudRadio>
+                                <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["InActive"]</MudRadio>
+                            </MudRadioGroup>
+                        </div>
+                    </MudItem>
+
+
+                    <!-- Panel Section -->
+                    <MudItem xs="12">
+                        <div class="sp-panel-root">
+                            <MudPaper Elevation="0"
+                                      Class="d-flex align-center pa-2"
+                                      Style="cursor:pointer;"
+                                      @onclick="ToggleAssignmentPanel">
+
+                                <MudText Typo="Typo.subtitle1">@L["StaffAndDeviceAssignment"]</MudText>
+                                <MudSpacer />
+                                <MudIconButton Icon="@Icons.Material.Filled.ExpandMore"
+                                               Class="@($"sp-panel-chevron {(_assignmentPanelOpen ? "open" : "")}")"
+                                               Edge="@Edge.End" />
+                            </MudPaper>
+
+                            <div class="sp-panel-content @( _assignmentPanelOpen ? "open" : "closed")"
+                                 aria-hidden="@(!_assignmentPanelOpen)">
+                                <div style="overflow-y:auto; max-height:400px; padding:12px;">
+                                    <MudGrid>
+
+                                        @for (int i = 0; i < UiAssignments.Count; i++)
+                                        {
+                                            var assignment = UiAssignments[i];
+
+                                            <MudItem xs="5">
+                                                <MudSelect T="Guid?"
+                                                           Variant="Variant.Text"
+                                                           Label="@L["Staff"]"
+                                                           @bind-Value="assignment.StaffId"
+                                                           Dense="true">
+                                                    <MudSelectItem T="Guid?" Value="@((Guid?)null)">
+                                                        @L["SelectStaff"]
+                                                    </MudSelectItem>
+                                                    @foreach (var keeper in Keepers)
+                                                    {
+                                                        <MudSelectItem T="Guid?" Value="@keeper.Id"
+                                                                       Disabled="@IsKeeperDisabled(keeper.Id, assignment)">
+                                                            @(System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar") ? keeper.UserName : keeper.EnglishName)
+                                                        </MudSelectItem>
+                                                    }
+                                                </MudSelect>
+                                            </MudItem>
+
+                                            <MudItem xs="5">
+                                                <MudSelect T="int?"
+                                                           Variant="Variant.Text"
+                                                           Label="@L["Device"]"
+                                                           @bind-Value="assignment.DeviceId"
+                                                           Dense="true">
+                                                    <MudSelectItem T="int?" Value="@((int?)null)">
+                                                        @L["SelectDevice"]
+                                                    </MudSelectItem>
+                                                    @foreach (var device in Devices)
+                                                    {
+                                                        <MudSelectItem T="int?" Value="@device.Id"
+                                                                       Disabled="@IsDeviceDisabled(device.Id, assignment)">
+                                                            @device.Name
+                                                        </MudSelectItem>
+                                                    }
+                                                </MudSelect>
+                                            </MudItem>
+
+                                            <MudItem xs="2" Class="d-flex align-center">
+                                                <MudIconButton Icon="@Icons.Material.Filled.RemoveCircle"
+                                                               Color="MudBlazor.Color.Error"
+                                                               OnClick="@(() => RemoveRow(assignment))"
+                                                               Disabled="@(UiAssignments.Count == 1)" />
+                                            </MudItem>
+                                        }
+
+                                        <MudItem xs="12">
+                                            <MudButton
+                                                StartIcon="@Icons.Material.Filled.AddCircle"
+                                                Color="MudBlazor.Color.Primary"
+                                                OnClick="AddRow">
+                                                @L["AddRow"]
+                                            </MudButton>
+                                        </MudItem>
+
+                                    </MudGrid>
+                                </div>
+                            </div>
+                        </div>
+                    </MudItem>
+
+                </MudGrid>
+            </MudForm>
+        </DialogContent>
+
+        <DialogActions>
+            <DialogActionComponent ButtonTwoColor="MudBlazor.Color.Primary"
+                                   ButtonOneColor="MudBlazor.Color.Dark"
+                                   ButtonTwoLabel="@L["Save"]"
+                                   ButtonOneLabel="@L["Back"]"
+                                   ButtonTwoClick="Submit"
+                                   ButtonOneClick="Cancel"
+                                   ButtonTwoVariant="MudBlazor.Variant.Filled"
+                                   ButtonOneVariant="MudBlazor.Variant.Filled" />
+        </DialogActions>
+
+    </MudDialog>
+</div>
+
+<style>
+    .mud-modal {
+        border-radius: 0 20px 0 20px;
+    }
+</style>

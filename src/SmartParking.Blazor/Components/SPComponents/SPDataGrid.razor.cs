@@ -423,5 +423,8 @@ public partial class SPDataGrid
         await action.InvokeAsync(columnSelect);
         await dataGrid.ReloadServerData();
     }
+
+    public async Task Reload() => await dataGrid.ReloadServerData();
+
 }
 

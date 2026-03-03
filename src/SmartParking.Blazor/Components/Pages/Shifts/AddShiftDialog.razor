@@ -2,6 +2,7 @@
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Garages
 @using SmartParking.Localization
+@using SmartParking.Organizations
 @using SmartParking.Shifts
 @using System.Globalization
 @using SmartParking.Validations
@@ -12,7 +13,7 @@
 @inject IDialogService DialogService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IShiftAppService ShiftAppService
-@inject IGarageAppService GaragesAppService
+@inject IOrganizationsAppService OrganizaionsAppService
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 @inject ICurrentTenant CurrentTenant
@@ -95,7 +96,7 @@
                             Label="@L["EndTime"]" />
                         </MudItem>
                     }
-                    <MudItem sm="12">
+                    @* <MudItem sm="12">
                         <MudSelect @bind-Value="@shiftDto.GarageId"
                         Variant="Variant.Text"
                         Label="@L["Garage"]"
@@ -120,7 +121,7 @@
 
                             }
                         </MudSelect>
-                    </MudItem>
+                    </MudItem> *@
 
                     <MudItem sm="12">
                         <MudTextField @bind-Value="shiftDto.Description"

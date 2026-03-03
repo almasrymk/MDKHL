@@ -1,15 +1,12 @@
 ﻿using Microsoft.JSInterop;
-using Org.BouncyCastle.Asn1.Ocsp;
-using SmartParking.BarrierAppService;
 using SmartParking.Blazor.Components.Shared;
-using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Enums;
 using SmartParking.Invoices;
 using SmartParking.OpeningGate;
 using SmartParking.Organizations;
 using SmartParking.Payments;
+using SmartParking.Shifts;
 using SmartParking.Utilities;
-using SmartParking.Watchers;
 
 namespace SmartParking.Blazor.Components.Pages.LastInvoiceAtCamera;
 
@@ -17,7 +14,7 @@ public partial class LastInvoiceAtCamera
 {
     private InvoiceDto Invoice = new InvoiceDto();
     private OrganizationDto _organization = new OrganizationDto();
-    private ICollection<Watcher> Watchers = new List<Watcher>();
+    private ICollection<ShiftWatcherActionDto> _filteredWatchersByShiftZone = new List<ShiftWatcherActionDto>();
     private string? SelectedDeviceId;
     private bool NoInvoice { get; set; } = false;
     public PaymentMethod PaymentMethod { get; set; }
@@ -41,8 +38,6 @@ public partial class LastInvoiceAtCamera
 
         try
         {
-            Watchers = await WatcherAppService.GetAllWatchersAsync();
-            
             _organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
 
             Invoice = await KeeperAppService.GetLastInvoiceByOrganizationIdAsync(_organization.Id);
@@ -54,6 +49,18 @@ public partial class LastInvoiceAtCamera
             NoInvoice = true;
         }
 
+    }
+
+    private async Task OpenFilteredWatchers()
+    {
+        try
+        {
+            _filteredWatchersByShiftZone = await ShiftZoneActionAppService.GetShiftZoneDevicesDataAsync();
+        }
+        catch(Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, ex.Message, MudBlazor.Severity.Error);
+        }
     }
     private async Task PayInvoice()
     {
@@ -97,9 +104,7 @@ public partial class LastInvoiceAtCamera
     {
         try
         {
-            var garageTransactionDto=await GarageTransactionAppService.GetAsync(Invoice.GarageTransactionExitId);
-            var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
-            var OpenGateService =await OpenGateFactoryService.GetOpeningGateService(organization);
+            var OpenGateService =await OpenGateFactoryService.GetOpeningGateService(_organization);
             if (OpenGateService == null)
             {
                 SnackBar.ShowSnackbar(Snackbar, L["NoWebSocketConnection"], MudBlazor.Severity.Error);
@@ -108,8 +113,8 @@ public partial class LastInvoiceAtCamera
             }
             var result = await OpenGateService.OpenGateAsync(new OpenGateDto
             {
-                OrganizationId = organization.Id,
-                WatcherCode = SelectedDeviceId,
+                OrganizationId = _organization.Id,
+                WatcherCode = SelectedDeviceId
             });
             if (result == true)
             {
@@ -149,7 +154,6 @@ public partial class LastInvoiceAtCamera
     private void Refresh()
     {
         Navigation.Refresh(true);
-
     }
 
     private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()

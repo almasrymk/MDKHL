@@ -1,15 +1,20 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
 using SmartParking.Authentication;
+using SmartParking.Enums;
 using SmartParking.Results;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.Mobile.Keepers;
 
@@ -30,6 +35,15 @@ public class UserAppService : ApplicationService, IUserAppService
         _userManager = userManager;
         _httpContext = httpContext;
         _usersAppService = usersAppService;
+    }
+
+    public async Task<Result<List<AssignStaffDataDto>>> GetKeeperDataAsync()
+    {
+        var query = await _userRepository.GetQueryableAsync();
+        var users = await query
+            .Where(u => EF.Property<UserTypeCategory>(u, "UserTypeCategory") == UserTypeCategory.Keeper)
+            .ToListAsync();
+        return ObjectMapper.Map<List<Volo.Abp.Identity.IdentityUser>, List<AssignStaffDataDto>>(users);
     }
 
 

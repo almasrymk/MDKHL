@@ -143,7 +143,6 @@ partial class Shifts
         if (CultureInfo.CurrentCulture.Name == "en")
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = L["Name"], Name = "Name", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-            tableData.Columns.Add(new ColumnDef() { DisplayName = L["GarageName"], Name = "GarageName", IsFilterable = true, PropertyName = "GarageEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
             if (CurrentTenant.Id == null)
             {
                 tableData.Columns.Add(new ColumnDef() { DisplayName = L["OrganizationName"], Name = "OrganizationName", IsFilterable = true, PropertyName = "OrganizationEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -154,7 +153,6 @@ partial class Shifts
         {
 
             tableData.Columns.Add(new ColumnDef() { DisplayName = L["Name"], Name = "Name", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-            tableData.Columns.Add(new ColumnDef() { DisplayName = L["GarageName"], Name = "GarageName", IsFilterable = true, PropertyName = "GarageArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
             if (CurrentTenant.Id == null)
             {
                 tableData.Columns.Add(new ColumnDef() { DisplayName = L["OrganizationName"], Name = "OrganizationName", IsFilterable = true, PropertyName = "OrganizationArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -177,13 +175,11 @@ partial class Shifts
             if (CultureInfo.CurrentCulture.Name == "en")
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(L["Name"], Truncate(item.EnglishName, 10)));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["GarageName"], Truncate(item.GarageEnglishName, 10)));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(L["OrganizationName"], Truncate(item.OrganizationEnglishName, 10)));
             }
             else
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(L["Name"], Truncate(item.ArabicName, 10)));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["GarageName"], Truncate(item.GarageArabicName, 10)));
                 if (CurrentTenant.Id == null)
                 {
                     rowDef.Cells.Add(new KeyValuePair<string, string>(L["OrganizationName"], Truncate(item.OrganizationArabicName, 10)));
@@ -221,7 +217,6 @@ partial class Shifts
             Status = shiftDto.Status,
             StartDate = shiftDto.StartDate,
             EndDate = shiftDto.EndDate,
-            GarageId = shiftDto.GarageId,
             OrganizationId = shiftDto.OrganizationId,
             StartTime = shiftDto.StartTime,
             EndTime = shiftDto.EndTime,

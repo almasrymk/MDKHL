@@ -7,6 +7,7 @@ using SmartParking.CustomerPackages.Validations;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
+using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.Packages;
@@ -237,6 +238,47 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
             CustomerEnglishName = entity.Customer?.IdentityUser.Name ?? string.Empty,
 
         };
+    }
+
+    public async Task<bool> HandleExistingPackagesForVehicleAsync(CreateUpdateCustomerPackageDto customerPackageDto)
+    {
+        var newExpiryDate = customerPackageDto.ActivationDateOfPackage.Value.AddDays(-1);
+        var newActivationDate = customerPackageDto.ExpiryDate.AddDays(1);
+
+        var query = await _repository.GetQueryableAsync();
+
+        await query
+            .Where(p =>
+                p.OrganizationId == customerPackageDto.OrganizationId &&
+                p.EnPlateNumber == customerPackageDto.EnPlateNumber &&
+                (
+                    p.ActivationDateOfPackage < customerPackageDto.ActivationDateOfPackage ||
+                    p.ActivationDateOfPackage == customerPackageDto.ActivationDateOfPackage ||
+                    p.ActivationDateOfPackage > customerPackageDto.ActivationDateOfPackage
+                )
+            )
+            .ExecuteUpdateAsync(p => p
+
+        // 1. Update Status to Inactive ONLY if the Activation Dates match
+        .SetProperty(x => x.Status,
+            x => x.ActivationDateOfPackage == customerPackageDto.ActivationDateOfPackage
+                ? Status.Inactive
+                : x.Status)
+
+        // 2. Update ExpiryDate if the existing package is strictly BEFORE the new one
+        .SetProperty(x => x.ExpiryDate,
+            x => x.ActivationDateOfPackage < customerPackageDto.ActivationDateOfPackage
+                ? newExpiryDate
+                : x.ExpiryDate)
+
+        // 3. Update ActivationDate if the existing package is strictly AFTER the new one
+        .SetProperty(x => x.ActivationDateOfPackage,
+            x => x.ActivationDateOfPackage > customerPackageDto.ActivationDateOfPackage
+                ? (newActivationDate < x.ExpiryDate ? newActivationDate : x.ExpiryDate)
+                : x.ActivationDateOfPackage)
+    );
+
+        return true;
     }
 
 

@@ -1,5 +1,7 @@
 ﻿
+using SmartParking.Authentication;
 using SmartParking.Results;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Users;
@@ -22,4 +24,7 @@ public interface IUserAppService : IApplicationService
     /// </summary>
     /// <returns>A <see cref="UserDataDto"/> containing user information.</returns>
     Task<Result<UserDataDto>> GetUserDataAsync();
+
+    Task<Result<List<AssignStaffDataDto>>> GetKeeperDataAsync();
+
 }

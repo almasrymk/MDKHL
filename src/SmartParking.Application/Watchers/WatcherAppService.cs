@@ -1,12 +1,10 @@
-﻿
-
-using Volo.Abp.Domain.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Cameras.Watchers;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Volo.Abp.Application.Services;
-using Volo.Abp.MultiTenancy;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Watchers;
 
@@ -24,6 +22,7 @@ public class WatcherAppService : ApplicationService, IWatcherAppService
         _dispenserRepository = dispenserRepository;
         _watcherRepository = watcherRepository;
     }
+    /// <inheritdoc/>
     public async Task<Camera> GetcameraByWatherCodeAsync(string watcherCode)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -33,7 +32,7 @@ public class WatcherAppService : ApplicationService, IWatcherAppService
             return camera;
         }
     }
-
+    /// <inheritdoc/>
     public Task<Dispenser> GetDispenserByWatherCodeAsync(string watcherCode)
     {
         using (DataFilter.Disable<IMultiTenant>())
@@ -42,14 +41,12 @@ public class WatcherAppService : ApplicationService, IWatcherAppService
             return dispenser!;
         }
     }
-
+    /// <inheritdoc/>
     public async Task<ICollection<Watcher>> GetAllWatchersAsync()
     {
-        
-            return await _watcherRepository.GetListAsync();
-        
+        return await _watcherRepository.GetListAsync();
     }
-
+    /// <inheritdoc/>
     public async Task<string> GetWatcherCodeByWatcherIdAsync(int watcherId)
     {
         using (DataFilter.Disable<IMultiTenant>())

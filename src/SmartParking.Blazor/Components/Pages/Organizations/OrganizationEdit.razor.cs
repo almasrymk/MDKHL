@@ -137,7 +137,9 @@ public partial class OrganizationEdit
         {
             VehcileAccess = _organizationSettingsDto.VehcileAccess,
             UserAccess = _organizationSettingsDto.UserAccess,
+            UseShifts = _organizationSettingsDto.UseShifts
         };
+        
         //_createUpdateOrganiztionDto.OrganizationSettingsDto.VehcileAccess = _organizationSettingsDto.VehcileAccess;
         //_createUpdateOrganiztionDto.OrganizationSettingsDto.UserAccess = _organizationSettingsDto.UserAccess;
 
@@ -227,6 +229,7 @@ public partial class OrganizationEdit
         Parkingslot = SelectedSubscription.ParkingSlot;
         _organizationSettingsDto.UserAccess = organization.OrganizationSettings.UserAccess;
         _organizationSettingsDto.VehcileAccess = organization.OrganizationSettings.VehcileAccess;
+        _organizationSettingsDto.UseShifts = organization.OrganizationSettings.UseShifts;
         //StateHasChanged();
 
     }
