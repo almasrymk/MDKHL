@@ -5,6 +5,7 @@ using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Cutomers;
 using SmartParking.Lookups.LicenceType;
 using SmartParking.Lookups.PlateColor;

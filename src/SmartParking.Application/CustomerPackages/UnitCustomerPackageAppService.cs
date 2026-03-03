@@ -1,5 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmartParking.CustomerPackages.AssignantionsContarcts;
+using SmartParking.CustomerPackages.Dtos;
+using SmartParking.CustomerPackages.Inputs;
 using SmartParking.CustomerPackages.QRGenerator;
+using SmartParking.CustomerPackages.Validations;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;

@@ -1,5 +1,5 @@
 ﻿using SmartParking.CalculationsEndpoint;
-using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Organizations;
 using System;
 using Volo.Abp;

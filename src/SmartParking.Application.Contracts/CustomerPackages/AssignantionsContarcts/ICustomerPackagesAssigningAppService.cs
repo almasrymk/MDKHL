@@ -1,4 +1,5 @@
-﻿using SmartParking.Cutomers;
+﻿using SmartParking.CustomerPackages.Inputs;
+using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Packages;
@@ -9,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.CustomerPackages;
+namespace SmartParking.CustomerPackages.AssignantionsContarcts;
 
 public interface ICustomerPackagesAssigningAppService
 {

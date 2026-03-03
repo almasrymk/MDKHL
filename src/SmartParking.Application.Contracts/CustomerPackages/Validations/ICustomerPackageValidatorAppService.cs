@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using SmartParking.CustomerPackages.Inputs;
+using System.Threading.Tasks;
 
-namespace SmartParking.CustomerPackages;
+namespace SmartParking.CustomerPackages.Validations;
 
 public interface ICustomerPackageValidatorAppService
 {

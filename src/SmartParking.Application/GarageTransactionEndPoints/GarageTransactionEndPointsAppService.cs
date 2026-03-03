@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Logging;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.Cameras;
-using SmartParking.CustomerPackages;
 using SmartParking.CustomerPackages.CustomerPackageTransactions;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Enums;

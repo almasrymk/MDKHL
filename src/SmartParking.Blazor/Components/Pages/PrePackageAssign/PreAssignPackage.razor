@@ -1,19 +1,22 @@
 ﻿@page "/prepayment"
-@using MudBlazor
+@using System.Globalization
 @using Microsoft.Extensions.Localization
+@using MudBlazor
 @using SmartParking.Blazor.Components.Pages.Invoices
 @using SmartParking.Blazor.Components.Pages.LastInvoiceAtCamera
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Blazor.Components.State
 @using SmartParking.Currency
 @using SmartParking.CustomerPackages
+@using SmartParking.CustomerPackages.AssignantionsContarcts
+@using SmartParking.CustomerPackages.Dtos
+@using SmartParking.CustomerPackages.Inputs
 @using SmartParking.Cutomers
 @using SmartParking.Enums
 @using SmartParking.Invoices
 @using SmartParking.Localization
 @using SmartParking.Payments
 @using SmartParking.Utilities
-@using System.Globalization
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IPaymentAppService paymentAppService
 @inject ISnackbar Snackbar

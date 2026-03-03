@@ -1,4 +1,4 @@
-﻿using SmartParking.CustomerPackages;
+﻿using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Cutomers;
 
 namespace SmartParking.Blazor.Components.State;

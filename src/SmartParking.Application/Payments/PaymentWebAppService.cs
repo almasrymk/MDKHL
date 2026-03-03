@@ -1,7 +1,7 @@
 ﻿using Castle.Core.Resource;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
-using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;

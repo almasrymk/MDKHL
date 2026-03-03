@@ -11,6 +11,7 @@ using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using SmartParking.CustomerPackages.Dtos;
 
 namespace SmartParking.CustomerPackages.CustomerPackageTransaction;
 

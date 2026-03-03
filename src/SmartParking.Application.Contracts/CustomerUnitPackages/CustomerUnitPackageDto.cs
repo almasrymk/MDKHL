@@ -1,4 +1,4 @@
-﻿using SmartParking.CustomerPackages;
+﻿using SmartParking.CustomerPackages.Inputs;
 using SmartParking.Enums;
 using SmartParking.Packages;
 using System;

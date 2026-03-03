@@ -1,5 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmartParking.CustomerPackages.AssignantionsContarcts;
+using SmartParking.CustomerPackages.Dtos;
+using SmartParking.CustomerPackages.Inputs;
 using SmartParking.CustomerPackages.QRGenerator;
+using SmartParking.CustomerPackages.Validations;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
@@ -80,6 +84,7 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
             PackageStatus = package.PackageStatus,
             CustomerCategory=package.CustomerCategory.ToString(),
             DurationOfPackage=package.DurationOfPackage,
+            TenantId=package.TenantId,
             Status=package.Status,
             PackageCategoryType=package.PackageCategoryType
         } : null;
@@ -111,7 +116,7 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
     /// </returns>
     protected async Task<Result<CustomerPackage>> InsertCustomerPackageAsync(CustomerPackage customerPackage)
     {
-        customerPackage.TenantId = CurrentTenant.Id;
+        customerPackage.TenantId = customerPackage.TenantId != null? customerPackage.TenantId  :CurrentTenant.Id;
         var assignedPackage = await _repository.InsertAsync(customerPackage, true);
         return assignedPackage != null ? assignedPackage : Result.Error("Can't assign package to customer");
     }
