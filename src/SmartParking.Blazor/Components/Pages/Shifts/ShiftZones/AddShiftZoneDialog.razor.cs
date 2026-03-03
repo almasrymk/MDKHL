@@ -50,6 +50,7 @@ public partial class AddShiftZoneDialog
                     ? null
                     : new CreateUpdateShiftMangerDto
                     {
+                        ManagerUserId = k.Id,
                         ManagerUserName = k.UserName,
                         ManagerEnName = k.EnglishName,
                         ManagerPhoneNumber = k.PhoneNumber

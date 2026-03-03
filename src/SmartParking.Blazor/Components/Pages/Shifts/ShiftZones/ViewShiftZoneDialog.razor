@@ -28,8 +28,8 @@
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
 				<MudGrid>
 					<MudItem sm="4">
-						<MudTextField Value="@(GetLocalized(ShiftZone?.ShiftDto?.EnglishName, ShiftZone?.ShiftDto?.ArabicName))"
-									  For="@(() => ShiftZone.ShiftDto.EnglishName)"
+						<MudTextField Value="@(GetLocalized(ShiftZone?.ShiftEnglishName, ShiftZone?.ShiftArabicName))"
+									  For="@(() => ShiftZone.ShiftEnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
 									  Label=@L["ShiftName"]
@@ -37,8 +37,8 @@
 					</MudItem>
 
 					<MudItem sm="4">
-						<MudTextField Value="@(GetLocalized(ShiftZone?.ShiftDto?.GarageEnglishName, ShiftZone?.ShiftDto?.GarageArabicName))"
-									  For="@(() => ShiftZone.ShiftDto.GarageEnglishName)"
+						<MudTextField Value="@(GetLocalized(ShiftZone?.ZoneEnName, ShiftZone?.ZoneArName))"
+									  For="@(() => ShiftZone.ZoneEnName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
 									  Label=@L["ZoneName"]
@@ -56,16 +56,16 @@
 
 					
 						<MudItem sm="3" md="3">
-							<MudTextField Value="ShiftZone.ShiftDto.StartDate.ToString()"
+							<MudTextField Value="ShiftZone.StartDate.ToString()"
 										  Disabled=true
 										  Label="@L["StartDate"]" />
 						</MudItem>
 						<MudItem sm="3" md="3">
-							<MudTextField Value="ShiftZone.ShiftDto.EndDate.ToString()"
+							<MudTextField Value="ShiftZone.EndDate.ToString()"
 										  Disabled=true
 										   Label="@L["EndDate"]" />
 						</MudItem>
-						@if (ShiftZone.ShiftDto.IsFullDay == true)
+						@if (ShiftZone.IsFullDay == true)
 						{
 							<MudItem sm="4" md="4">
 								<MudTextField T="string"
@@ -81,12 +81,12 @@
 
 					
 							<MudItem sm="3" md="3">
-								<MudTextField Value="ShiftZone.ShiftDto.StartTime.ToString()"
+								<MudTextField Value="ShiftZone.StartTime.ToString()"
 											  Disabled=true
 											   Label="@L["StartTime"]" />
 							</MudItem>
 							<MudItem sm="3" md="3">
-								<MudTextField Value="ShiftZone.ShiftDto.EndTime.ToString()"
+								<MudTextField Value="ShiftZone.EndTime.ToString()"
 											  Disabled=true
 											   Label="@L["EndTime"]" />
 							</MudItem>

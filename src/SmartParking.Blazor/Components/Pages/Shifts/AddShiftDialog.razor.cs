@@ -4,6 +4,7 @@ using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Garages;
 using SmartParking.Localization;
+using SmartParking.Organizations;
 using SmartParking.Shifts;
 using SmartParking.Validations;
 using Volo.Abp;
@@ -41,15 +42,11 @@ namespace SmartParking.Blazor.Components.Pages.Shifts
             get => shiftDto.EndDate == default ? (DateTime?)null : shiftDto.EndDate.ToDateTime(new TimeOnly(0, 0)); // Convert DateOnly to DateTime
             set => shiftDto.EndDate = value.HasValue ? DateOnly.FromDateTime(value.Value) : default; // Convert DateTime to DateOnly
         }
-
+        private OrganizationDto organization = new();
         protected override async Task OnInitializedAsync()
         {
-            var result = await GaragesAppService.GetListAsync(new PagedAndSortedResultRequestDto
-            {
-                MaxResultCount = 100,
-                SkipCount = (1 - 1) * 100
-            });
-            Garages = result.Items.ToList();
+            organization = await OrganizaionsAppService.GetOrganizationForCurrentTenatAsync();
+
             await base.OnInitializedAsync();
         }
         private async Task Submit()
@@ -57,8 +54,7 @@ namespace SmartParking.Blazor.Components.Pages.Shifts
             try
             {
                 CheckInputsDateAndTime();
-                var garage = Garages.Find(x => x.Id == shiftDto.GarageId);
-                shiftDto.OrganizationId = garage.OrganizationId;
+                shiftDto.OrganizationId = organization.Id;
                 shiftDto.TenantId = CurrentTenant.Id;
                 shiftDto.Status = Enums.Status.Inactive;
                 shiftDto.IsFullDay = shiftDto.IsFullDay || PackageValidations.CheckPackageTimeValiditity(shiftDto.StartTime, shiftDto.EndTime);

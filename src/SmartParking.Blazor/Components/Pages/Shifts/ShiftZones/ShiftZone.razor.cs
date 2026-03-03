@@ -127,19 +127,21 @@ public partial class ShiftZone
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["EndDate"], Name = "EndDate", IsFilterable = true, PropertyName = "EndDate", IsSortable = true, TypeFilter = TypeFilter.Date });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["StartTime"], Name = "StartTime", IsFilterable = true, PropertyName = "StartTime", IsSortable = true, TypeFilter = TypeFilter.Date });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["EndTime"], Name = "EndTime", IsFilterable = true, PropertyName = "EndTime", IsSortable = true, TypeFilter = TypeFilter.Date });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
         foreach (var item in shiftStaffDetail.Items)
         {
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             if (CultureInfo.CurrentCulture.Name == "ar")
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ShiftDto.ArabicName));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ShiftArabicName));
             else
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.ShiftDto.EnglishName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["StartDate"], item.ShiftDto.StartDate.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["EndDate"], item.ShiftDto.EndDate.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["StartTime"], item.ShiftDto.IsFullDay ? 24 + L[$"Hour"] : $" {item.ShiftDto.StartTime}"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["EndTime"], item.ShiftDto.IsFullDay ? 24 + L[$"Hour"] : $" {item.ShiftDto.EndTime}")); tableData.Rows.Add(rowDef);
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.ShiftEnglishName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["StartDate"], item.StartDate.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["EndDate"], item.EndDate.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["StartTime"], item.IsFullDay ? 24 + L[$"Hour"] : $" {item.StartTime}"));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["EndTime"], item.IsFullDay ? 24 + L[$"Hour"] : $" {item.EndTime}")); tableData.Rows.Add(rowDef);
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], L[$"{item.Status.ToString()}"]));
         }
 
 
@@ -163,13 +165,13 @@ public partial class ShiftZone
                 newRow.Cells.Add(new(nameof(created.Id), created.Id.ToString()));
                 newRow.Cells.Add(
                     CultureInfo.CurrentCulture.Name == "ar"
-                    ? new(_localizer["ArabicName"], created.ShiftDto?.ArabicName ?? "")
-                    : new(_localizer["EnglishName"], created.ShiftDto?.EnglishName ?? "")
+                    ? new(_localizer["ArabicName"], created.ShiftArabicName ?? "")
+                    : new(_localizer["EnglishName"], created.ShiftEnglishName ?? "")
                 );
-                newRow.Cells.Add(new(L["StartDate"], created.ShiftDto?.StartDate.ToString() ?? ""));
-                newRow.Cells.Add(new(L["EndDate"], created.ShiftDto?.EndDate.ToString() ?? ""));
-                newRow.Cells.Add(new(L["StartTime"], created.ShiftDto?.IsFullDay == true ? 24 + L["Hour"] : $"{created.ShiftDto?.StartTime}"));
-                newRow.Cells.Add(new(L["EndTime"], created.ShiftDto?.IsFullDay == true ? 24 + L["Hour"] : $"{created.ShiftDto?.EndTime}"));
+                newRow.Cells.Add(new(L["StartDate"], created?.StartDate.ToString() ?? ""));
+                newRow.Cells.Add(new(L["EndDate"], created?.EndDate.ToString() ?? ""));
+                newRow.Cells.Add(new(L["StartTime"], created?.IsFullDay == true ? 24 + L["Hour"] : $"{created?.StartTime}"));
+                newRow.Cells.Add(new(L["EndTime"], created?.IsFullDay == true ? 24 + L["Hour"] : $"{created?.EndTime}"));
 
                 var newTable = new TableData
                 {

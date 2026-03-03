@@ -63,26 +63,6 @@
 										   Label="@L["EndTime"]" />
 						</MudItem>
 					}
-					@if (CultureInfo.CurrentCulture.Name == "ar")
-					{
-					<MudItem sm="6" md="6">
-							<MudTextField @bind-Value="shiftDto.GarageArabicName"
-									  Immediate="true"
-									  Disabled=true
-									  Label="@L["GarageName"]" />
-						</MudItem>
-					}
-					else
-					{
-
-						<MudItem sm="6" md="6">
-							<MudTextField @bind-Value="shiftDto.GarageEnglishName"
-										  Immediate="true"
-										  Disabled=true
-										  Label="@L["GarageName"]" />
-						</MudItem>
-
-					}
 					@if(CurrentTenant.Id is null){
 
 						@if (CultureInfo.CurrentCulture.Name == "ar")

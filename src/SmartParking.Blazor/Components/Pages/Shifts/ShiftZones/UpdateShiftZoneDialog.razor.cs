@@ -63,6 +63,7 @@ public partial class UpdateShiftZoneDialog
                     ? null
                     : new CreateUpdateShiftMangerDto
                     {
+                        ManagerUserId = k.Id,
                         ManagerUserName = k.UserName,
                         ManagerEnName = k.EnglishName,
                         ManagerPhoneNumber = k.PhoneNumber
@@ -89,7 +90,7 @@ public partial class UpdateShiftZoneDialog
         ShiftZone = await ShiftZoneAppService.GetAsync(Id);
         ShiftDetails = ShiftZone.ShiftDetailsDto ?? new List<ShiftDetailsDto>();
 
-        CreateUpdateShiftZone.ShiftId = ShiftZone.ShiftDto?.Id ?? 0;
+        CreateUpdateShiftZone.ShiftId = ShiftZone.ShiftId;
         CreateUpdateShiftZone.ZoneId = ShiftZone.ZoneId;
         CreateUpdateShiftZone.ZoneArName = ShiftZone.ZoneArName;
         CreateUpdateShiftZone.ZoneEnName = ShiftZone.ZoneEnName;
@@ -97,6 +98,7 @@ public partial class UpdateShiftZoneDialog
         var managerDto = ShiftZone.ShiftMangerDto;
         CreateUpdateShiftZone.Manager = new CreateUpdateShiftMangerDto
         {
+            ManagerUserId = managerDto?.Id,
             ManagerUserName = managerDto?.ManagerUserName,
             ManagerEnName = managerDto?.ManagerEnName,
             ManagerPhoneNumber = managerDto?.ManagerPhoneNumber
@@ -108,7 +110,7 @@ public partial class UpdateShiftZoneDialog
             {
                 Keepers.Add(new AssignStaffDataDto
                 {
-                    Id = Guid.NewGuid(), 
+                    Id = managerDto.Id,
                     UserName = managerDto.ManagerUserName,
                     EnglishName = managerDto.ManagerEnName,
                     PhoneNumber = managerDto.ManagerPhoneNumber
@@ -183,6 +185,7 @@ public partial class UpdateShiftZoneDialog
             var mgr = Keepers.FirstOrDefault(x => x.Id == SelectedManagerId);
             CreateUpdateShiftZone.Manager = new CreateUpdateShiftMangerDto
             {
+                ManagerUserId = mgr?.Id,
                 ManagerUserName = mgr?.UserName,
                 ManagerEnName = mgr?.EnglishName,
                 ManagerPhoneNumber = mgr?.PhoneNumber

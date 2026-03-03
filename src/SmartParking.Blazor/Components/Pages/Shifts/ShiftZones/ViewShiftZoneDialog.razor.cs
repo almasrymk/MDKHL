@@ -33,7 +33,6 @@ public partial class ViewShiftZoneDialog
     protected override Task OnParametersSetAsync()
     {
         ShiftZone ??= new ShiftZoneDto();
-        ShiftZone.ShiftDto ??= new ShiftDto();
         ShiftZone.ShiftMangerDto ??= new ShiftMangerDto();
 
         return base.OnParametersSetAsync();

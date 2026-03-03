@@ -438,8 +438,13 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         .ForMember(d => d.PaymentNumber, o => o.MapFrom(s => s.PaymentNumber));
 
         #region Shift Mapping
-        CreateMap<CreateUpdateShiftMangerDto, ShiftManager>().ReverseMap();
-        CreateMap<ShiftManager, ShiftMangerDto>().ReverseMap();
+        CreateMap<CreateUpdateShiftMangerDto, ShiftManager>()
+            .ForMember(d=> d.ShiftManagerId , o => o.MapFrom(s => s.ManagerUserId))
+            .ReverseMap();
+        CreateMap<ShiftManager, ShiftMangerDto>()
+            .ForMember(d => d.Id, o => o.MapFrom(s => s.ShiftManagerId))
+
+            .ReverseMap();
 
         CreateMap<ShiftZoneDto, ShiftMangerDto>().ReverseMap();
 
@@ -456,14 +461,21 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
 
         CreateMap<ShiftZone, ShiftZoneDto>()
-            .ForMember(dest => dest.ShiftDto, opt => opt.MapFrom(src => src.Shift))
+            .ForMember(dest => dest.ShiftArabicName, opt => opt.MapFrom(src => src.ShiftArabicName))
+            .ForMember(dest => dest.ShiftEnglishName, opt => opt.MapFrom(src => src.ShiftEnglishName))
             .ForMember(d => d.ShiftDetailsDto, opt => opt.MapFrom(s => s.ShiftDetails))
-            .ForMember(d => d.ShiftMangerDto, opt => opt.MapFrom(s => s.ShiftManager)) 
+            .ForPath(d => d.ShiftMangerDto.Id, opt => opt.MapFrom(s => s.ShiftManager.ShiftManagerId))
+            .ForPath(d => d.ShiftMangerDto.ManagerEnName, opt => opt.MapFrom(s => s.ShiftManager.ManagerEnName))
+            .ForPath(d => d.ShiftMangerDto.ManagerUserName, opt => opt.MapFrom(s => s.ShiftManager.ManagerUserName))
+            .ForPath(d => d.ShiftMangerDto.ManagerPhoneNumber, opt => opt.MapFrom(s => s.ShiftManager.ManagerPhoneNumber))
             .ForMember(d => d.ZoneArName, opt => opt.MapFrom(s => s.ZoneArName))
             .ForMember(d => d.ZoneEnName, opt => opt.MapFrom(s => s.ZoneEnName))
             .ReverseMap();
 
         CreateMap<CreateUpdateShiftZoneDto, ShiftZone>()
+            .ForMember(s => s.ShiftArabicName, opt => opt.MapFrom(src => src.ShiftArabicName))
+            .ForMember(s => s.ShiftEnglishName, opt => opt.MapFrom(src => src.ShiftEnglishName))
+            .ForPath(d=> d.ShiftManager.ShiftManagerId, o=> o.MapFrom(s => s.Manager.ManagerUserId))
             .ForPath(d => d.ShiftManager.ManagerUserName, o => o.MapFrom(s => s.Manager.ManagerUserName))
             .ForPath(d => d.ShiftManager.ManagerEnName, o => o.MapFrom(s => s.Manager.ManagerEnName))
             .ForPath(d => d.ShiftManager.ManagerPhoneNumber, o => o.MapFrom(s => s.Manager.ManagerPhoneNumber))
@@ -482,12 +494,14 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ReverseMap();
 
         CreateMap<AssignStaffDataDto, CreateUpdateShiftMangerDto>()
+            .ForMember(d => d.ManagerUserId, o => o.MapFrom(s => s.Id))
             .ForMember(d => d.ManagerUserName, o => o.MapFrom(s => s.UserName))
             .ForMember(d => d.ManagerEnName, o => o.MapFrom(s => s.EnglishName))
             .ForMember(d => d.ManagerPhoneNumber, o => o.MapFrom(s => s.PhoneNumber))
             .ReverseMap();
 
         CreateMap<AssignStaffDataDto, ShiftMangerDto>()
+            .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
             .ForMember(d => d.ManagerUserName, o => o.MapFrom(s => s.UserName))
             .ForMember(d => d.ManagerEnName, o => o.MapFrom(s => s.EnglishName))
             .ForMember(d => d.ManagerPhoneNumber, o => o.MapFrom(s => s.PhoneNumber))

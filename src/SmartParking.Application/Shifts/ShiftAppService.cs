@@ -58,8 +58,6 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
             var _garageQueryable = await _garageRepository.GetQueryableAsync();
             var _organizationQueryable = await _organizationRepository.GetQueryableAsync();
             var shifts = from Shifts in _shiftQueryable
-                         join Garages in _garageQueryable
-                         on Shifts.GarageId equals Garages.Id
                          join organization in _organizationQueryable
                          on Shifts.OrganizationId equals organization.Id
                          where tenantId.HasValue ? organization.TenantId == tenantId : true
@@ -75,13 +73,10 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
                              EndTime = Shifts.EndTime,
                              Status = Shifts.Status,
                              OrganizationId = Shifts.OrganizationId,
-                             GarageArabicName = Garages.NameAr,
-                             GarageEnglishName = Garages.NameEn,
                              OrganizationArabicName = organization.ArabicName,
                              OrganizationEnglishName = organization.EnglishName,
                              IsFullDay = Shifts.IsFullDay,
                              TenantId = Shifts.TenantId,
-                             GarageId = Shifts.GarageId,
                              CreationTime = Shifts.CreationTime
                          };
 
@@ -99,8 +94,6 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         var _garageQueryable = await _garageRepository.GetQueryableAsync();
 
         var shifts = from Shifts in _shiftQueryable
-                     join Garages in _garageQueryable
-                     on Shifts.GarageId equals Garages.Id
                      select new ShiftDto
                      {
                          Id = Shifts.Id,
@@ -113,10 +106,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
                          EndTime = Shifts.EndTime,
                          Status = Shifts.Status,
                          OrganizationId = Shifts.OrganizationId,
-                         GarageArabicName = Garages.NameAr,
-                         GarageEnglishName = Garages.NameEn,
                          TenantId = Shifts.TenantId,
-                         GarageId = Shifts.GarageId,
                          CreationTime = Shifts.CreationTime,
                          IsFullDay = Shifts.IsFullDay,
                      };
@@ -142,12 +132,9 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var _shiftQueryable = await _repository.GetQueryableAsync();
-            var _garageQueryable = await _garageRepository.GetQueryableAsync();
             var _organizationQueryable = await _organizationRepository.GetQueryableAsync();
             var shift = from Shifts in _shiftQueryable
                         where Shifts.Id == id
-                        join Garages in _garageQueryable
-                        on Shifts.GarageId equals Garages.Id
                         join organization in _organizationQueryable
                         on Shifts.OrganizationId equals organization.Id
 
@@ -163,9 +150,6 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
                             EndTime = Shifts.EndTime,
                             Status = Shifts.Status,
                             OrganizationId = Shifts.OrganizationId,
-                            GarageId = Shifts.GarageId,
-                            GarageArabicName = Garages.NameAr,
-                            GarageEnglishName = Garages.NameEn,
                             OrganizationArabicName = organization.ArabicName,
                             OrganizationEnglishName = organization.EnglishName,
                             TenantId = Shifts.TenantId,
@@ -253,9 +237,13 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     /// </summary>
     /// <param name="GarageId">The ID of the garage to check.</param>
     /// <returns>True if the garage exists, otherwise false.</returns>
-    private async Task<bool> CheckGarageExists(int GarageId)
+    private async Task<bool> CheckGarageExists(int? GarageId)
     {
-        var garage = await _garageRepository.FindAsync(GarageId);
+        if (!GarageId.HasValue)
+        {
+            return false;
+        }
+        var garage = await _garageRepository.FindAsync(GarageId.Value);
         return garage != null;
     }
     /// <summary>
@@ -299,7 +287,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     /// <param name="status">The status of shifts to compare with.</param>
     /// <returns>An expression used to find overlapping shifts.</returns>
     private Expression<Func<Shift, bool>> GetTimeOverlapExpression(
-        TimeOnly StartTime, TimeOnly EndTime, DateOnly StartDate, DateOnly EndDate, int garageId, bool IsFullday, Status status)
+        TimeOnly StartTime, TimeOnly EndTime, DateOnly StartDate, DateOnly EndDate, int? garageId, bool IsFullday, Status status)
     {
         Expression<Func<Shift, bool>> baseCondition = BaseConditionForCreatingShift(garageId, status);
         Expression<Func<Shift, bool>> existingShiftIsFullDay = AnExistingShiftIsFullDayOverlapsWithNewShift(StartDate, EndDate);
@@ -337,7 +325,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     /// <param name="GarageId">Garage identifier.</param>
     /// <param name="status">Status of the shift to match (typically Active).</param>
     /// <returns>An expression to match overlapping shifts by date and status.</returns>
-    private Expression<Func<Shift, bool>> BaseConditionForCreatingShift(int GarageId, Status status)
+    private Expression<Func<Shift, bool>> BaseConditionForCreatingShift(int? GarageId, Status status)
     {
         return s =>
             s.GarageId == GarageId &&
@@ -555,10 +543,6 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     /// <param name="input">The shift data containing the organization and garage IDs.</param>
     private async Task CheckExistanceOfDependencies(CreateUpdateShiftDto input)
     {
-        if (!await CheckGarageExists(input.GarageId))
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Garage") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-        }
         if (!await CheckOrganizationExists(input.OrganizationId))
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("Organization") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));

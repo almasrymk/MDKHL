@@ -36,14 +36,6 @@ public class ShiftAnalysisRepository : EfCoreRepository<SmartParkingDbContext, K
                         on staff.ShiftDetailsId equals details.Id
                     join zone in dbContext.ShiftZones
                         on details.ShiftZoneId equals zone.Id
-                    join shift in dbContext.Shifts
-                        on zone.ShiftId equals shift.Id
-
-                    // Join with Garage and Organization using the IDs in the Shift entity
-                    join garage in dbContext.Garages
-                        on shift.GarageId equals garage.Id
-                    join org in dbContext.Organizations
-                        on shift.OrganizationId equals org.Id
 
                     // Optional Tenant filtering
                     where tenantId.HasValue ? staff.TenantId == tenantId : true
@@ -53,45 +45,39 @@ public class ShiftAnalysisRepository : EfCoreRepository<SmartParkingDbContext, K
                         KeeperId = staff.StaffId,
                         KeeperName = staff.StaffEnName,
 
-                        ShiftId = shift.Id,
-                        ShiftNameAr = shift.ArabicName,
-                        ShiftNameEn = shift.EnglishName,
+                        ShiftId = zone.ShiftId,
+                        ShiftNameAr = zone.ShiftArabicName,
+                        ShiftNameEn = zone.ShiftEnglishName,
 
-                        GarageId = shift.GarageId,
-                        GarageNameAr = garage.NameAr,
-                        GarageNameEn = garage.NameEn,
+                        GarageId = zone.ZoneId,
+                        GarageNameAr = zone.ZoneArName,
+                        GarageNameEn = zone.ZoneEnName,
 
-                        OrganizationId = shift.OrganizationId,
-                        OrganizationNameAr = org.ArabicName,
-                        OrganizationNameEn = org.EnglishName,
+                        OrganizationId = zone.OrganizationId,
+                        OrganizationNameAr = zone.OrganizationArName,
+                        OrganizationNameEn = zone.OrganizationEnName,
 
-                        StartDate = shift.StartDate,
-                        EndDate = shift.EndDate,
-                        StartTime = shift.StartTime,
-                        EndTime = shift.EndTime,
+                        StartDate = zone.StartDate,
+                        EndDate = zone.EndDate,
+                        StartTime = zone.StartTime,
+                        EndTime = zone.EndTime,
 
                         NumberOfTransaction = dbContext.GarageTransactions
                         .Where(t =>
-                            // 1. Physical Location Match
-                            t.GarageId == shift.GarageId &&
-
-                            // 2. Device Match (Dispenser or Camera)
-                            (t.DispenserId == details.ShiftDevices.DeviceId ||
-                                t.CameraId == details.ShiftDevices.DeviceId) &&
 
                             // 3. Date Range Match
-                            DateOnly.FromDateTime((DateTime)t.AccurateTime!) >= shift.StartDate &&
-                            DateOnly.FromDateTime((DateTime)t.AccurateTime) <= shift.EndDate &&
+                            DateOnly.FromDateTime((DateTime)t.AccurateTime!) >= zone.StartDate &&
+                            DateOnly.FromDateTime((DateTime)t.AccurateTime) <= zone.EndDate &&
 
                             // 4. Time Logic (Handles FullDay, Normal, and Midnight)
-                            (shift.IsFullDay || (
-                                shift.StartTime < shift.EndTime
+                            (zone.IsFullDay || (
+                                zone.StartTime < zone.EndTime
                                     // Normal Shift: Time must be between Start and End
-                                    ? (TimeOnly.FromDateTime((DateTime)t.AccurateTime) >= shift.StartTime &&
-                                        TimeOnly.FromDateTime((DateTime)t.AccurateTime) <= shift.EndTime)
+                                    ? (TimeOnly.FromDateTime((DateTime)t.AccurateTime) >= zone.StartTime &&
+                                        TimeOnly.FromDateTime((DateTime)t.AccurateTime) <= zone.EndTime)
                                     // Midnight Shift: Time must be AFTER Start OR BEFORE End
-                                    : (TimeOnly.FromDateTime((DateTime)t.AccurateTime) >= shift.StartTime ||
-                                        TimeOnly.FromDateTime((DateTime)t.AccurateTime) <= shift.EndTime)
+                                    : (TimeOnly.FromDateTime((DateTime)t.AccurateTime) >= zone.StartTime ||
+                                        TimeOnly.FromDateTime((DateTime)t.AccurateTime) <= zone.EndTime)
                             ))
                         )
                         .Count()
@@ -119,60 +105,103 @@ public class ShiftAnalysisRepository : EfCoreRepository<SmartParkingDbContext, K
             var sortingSplit = sorting.Split(' ').ToList();
             sorting = sortingSplit[0] + " descending";
         }
-
         var dbContext = await GetDbContextAsync();
 
-        var query = from staff in dbContext.ShiftStaffDetails
-                    join details in dbContext.ShiftDetails
-                        on staff.ShiftDetailsId equals details.Id
-                    join zone in dbContext.ShiftZones
-                        on details.ShiftZoneId equals zone.Id
-                    join shift in dbContext.Shifts
-                        on zone.ShiftId equals shift.Id
-                    join garage in dbContext.Garages
-                        on shift.GarageId equals garage.Id
-                    join org in dbContext.Organizations
-                        on shift.OrganizationId equals org.Id
+        var staffPayments =
+            from staff in dbContext.ShiftStaffDetails
+            join details in dbContext.ShiftDetails on staff.ShiftDetailsId equals details.Id
+            join zone in dbContext.ShiftZones on details.ShiftZoneId equals zone.Id
+            join payment in dbContext.Payments on staff.StaffId equals payment.CreatorId
+            where (!tenantId.HasValue || zone.TenantId == tenantId)
+               && (!tenantId.HasValue || payment.TenantId == tenantId)
+               && DateOnly.FromDateTime(payment.CreationTime.Date) >= zone.StartDate
+               && DateOnly.FromDateTime(payment.CreationTime.Date) <= zone.EndDate
+               && (zone.IsFullDay || (
+                       zone.StartTime < zone.EndTime
+                           ? (TimeOnly.FromDateTime(payment.CreationTime) >= zone.StartTime &&
+                              TimeOnly.FromDateTime(payment.CreationTime) <= zone.EndTime)
+                           : (TimeOnly.FromDateTime(payment.CreationTime) >= zone.StartTime ||
+                              TimeOnly.FromDateTime(payment.CreationTime) <= zone.EndTime)))
+            select new
+            {
+                UserName = staff.StaffEnName,
+                CreatorId = staff.StaffId,
+                ShiftArabicName = zone.ShiftArabicName,
+                ShiftEnglishName = zone.ShiftEnglishName,
+                GarageArabicName = zone.ZoneArName,
+                GarageEnglishName = zone.ZoneEnName,
+                OrgArabicName = zone.OrganizationArName,
+                OrgEnglishName = zone.OrganizationEnName,
+                zone.StartDate,
+                zone.EndDate,
+                zone.StartTime,
+                zone.EndTime,
+                payment.Amount
+            };
 
-                    where tenantId.HasValue ? staff.TenantId == tenantId : true
+        var managerPayments =
+            from zone in dbContext.ShiftZones
+            join payment in dbContext.Payments on zone.ShiftManager.ShiftManagerId equals payment.CreatorId
+            where (!tenantId.HasValue || zone.TenantId == tenantId)
+               && (!tenantId.HasValue || payment.TenantId == tenantId)
+               && DateOnly.FromDateTime(payment.CreationTime.Date) >= zone.StartDate
+               && DateOnly.FromDateTime(payment.CreationTime.Date) <= zone.EndDate
+               && (zone.IsFullDay || (
+                       zone.StartTime < zone.EndTime
+                           ? (TimeOnly.FromDateTime(payment.CreationTime) >= zone.StartTime &&
+                              TimeOnly.FromDateTime(payment.CreationTime) <= zone.EndTime)
+                           : (TimeOnly.FromDateTime(payment.CreationTime) >= zone.StartTime ||
+                              TimeOnly.FromDateTime(payment.CreationTime) <= zone.EndTime)))
+            select new
+            {
+                UserName = zone.ShiftManager.ManagerEnName,
+                CreatorId = zone.ShiftManager.ShiftManagerId,
+                ShiftArabicName = zone.ShiftArabicName,
+                ShiftEnglishName = zone.ShiftEnglishName,
+                GarageArabicName = zone.ZoneArName,
+                GarageEnglishName = zone.ZoneEnName,
+                OrgArabicName = zone.OrganizationArName,
+                OrgEnglishName = zone.OrganizationEnName,
+                zone.StartDate,
+                zone.EndDate,
+                zone.StartTime,
+                zone.EndTime,
+                payment.Amount
+            };
 
-                    select new PaymentUserShift
-                    {
-                        UserName = staff.StaffEnName,
+        var combined = staffPayments.Union(managerPayments);
 
-                        ShiftArabicName = shift.ArabicName,
-                        ShiftEnglishName = shift.EnglishName,
-
-                        GarageArabicName = garage.NameAr,
-                        GarageEnglishName = garage.NameEn,
-
-                        OrganizationArabicName = org.ArabicName,
-                        OrganizationEnglishName = org.EnglishName,
-
-                        StartDate = shift.StartDate,
-                        EndDate = shift.EndDate,
-                        StartTime = shift.StartTime,
-                        EndTime = shift.EndTime,
-
-                        TotalAmount = dbContext.Payments
-                            .Where(p =>
-                                p.CreatorId == staff.StaffId &&
-
-                                (!tenantId.HasValue || p.TenantId == tenantId) &&
-
-                                DateOnly.FromDateTime(p.CreationTime.Date) >= shift.StartDate &&
-                                DateOnly.FromDateTime(p.CreationTime.Date) <= shift.EndDate &&
-
-                                (shift.IsFullDay || (
-                                    shift.StartTime < shift.EndTime
-                                        ? (TimeOnly.FromDateTime(p.CreationTime) >= shift.StartTime &&
-                                           TimeOnly.FromDateTime(p.CreationTime) <= shift.EndTime)
-                                        : (TimeOnly.FromDateTime(p.CreationTime) >= shift.StartTime ||
-                                           TimeOnly.FromDateTime(p.CreationTime) <= shift.EndTime)
-                                ))
-                            )
-                            .Sum(p => (decimal?)p.Amount) ?? 0
-                    };
+        var query = combined
+            .GroupBy(x => new
+            {
+                x.UserName,
+                x.CreatorId,
+                x.ShiftArabicName,
+                x.ShiftEnglishName,
+                x.GarageArabicName,
+                x.GarageEnglishName,
+                x.OrgArabicName,
+                x.OrgEnglishName,
+                x.StartDate,
+                x.EndDate,
+                x.StartTime,
+                x.EndTime
+            })
+            .Select(g => new PaymentUserShift
+            {
+                UserName = g.Key.UserName,
+                ShiftArabicName = g.Key.ShiftArabicName,
+                ShiftEnglishName = g.Key.ShiftEnglishName,
+                GarageArabicName = g.Key.GarageArabicName,
+                GarageEnglishName = g.Key.GarageEnglishName,
+                OrganizationArabicName = g.Key.OrgArabicName,
+                OrganizationEnglishName = g.Key.OrgEnglishName,
+                StartDate = g.Key.StartDate,
+                EndDate = g.Key.EndDate,
+                StartTime = g.Key.StartTime,
+                EndTime = g.Key.EndTime,
+                TotalAmount = g.Sum(x => (decimal?)x.Amount) ?? 0
+            });
 
         query = query.Where(filterRequests);
         query = query.OrderBy(sorting);
