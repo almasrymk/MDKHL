@@ -2,6 +2,7 @@
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
 using SmartParking.Enums;
+using SmartParking.Organizations;
 using SmartParking.Shifts.ShiftZones;
 using SmartParking.UserShifts;
 using System;
@@ -20,23 +21,26 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
 {
     private readonly IRepository<ShiftZone, Guid> _shiftZoneRepository;
     private readonly IRepository<Watcher, int> _watcherRepository;
-    private readonly IRepository<Organization, int> _organizationRepository;
+    private readonly IOrganizationsAppService organizationsAppService;
 
     public ShiftZoneActionAppService(
         IRepository<Watcher, int> watcherRepository,
         IRepository<ShiftZone, Guid> shiftZoneRepository,
-        IRepository<Organization, int> organizationRepository
-        )
+        IOrganizationsAppService organizationsAppService)
     {
         _shiftZoneRepository = shiftZoneRepository;
         _watcherRepository = watcherRepository;
-        _organizationRepository = organizationRepository;
+        this.organizationsAppService = organizationsAppService;
     }
     /// <inheritdoc/>
     public async Task<ICollection<ShiftWatcherActionDto>> GetShiftZoneDevicesDataAsync()
     {
         if (!CurrentUser.Id.HasValue)
             return new List<ShiftWatcherActionDto>();
+
+        var currentOrganization = await organizationsAppService.GetOrganizationForCurrentTenatAsync();
+        if(currentOrganization.OrganizationSettings.UseShifts==false)
+           return ObjectMapper.Map<List<Watcher>, List<ShiftWatcherActionDto>>(await _watcherRepository.GetListAsync());
 
         var today = DateOnly.FromDateTime(DateTime.Now);
         var timeOfDay = TimeOnly.FromDateTime(DateTime.Now);
@@ -58,10 +62,8 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
         if (!organizationId.HasValue)
             return new List<ShiftWatcherActionDto>(); 
 
-        var currentOrganization = await _organizationRepository
-            .GetAsync(x => x.Id == organizationId.Value, includeDetails: true);
 
-        IQueryable<ShiftZone> finalActiveShiftsQuery = currentOrganization.Settings?.UseShifts == true
+        IQueryable<ShiftZone> finalActiveShiftsQuery = currentOrganization.OrganizationSettings?.UseShifts == true
             ? activeShiftsQuery
             : query.Where(sz => sz.OrganizationId == organizationId.Value);
 
@@ -94,8 +96,6 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
         var watchers = await AsyncExecuter.ToListAsync(
             watcherQuery.Where(w => deviceIds.Contains(w.DeviceId)));
 
-        if (watchers == null || !watchers.Any())
-            return ObjectMapper.Map<List<Watcher>, List<ShiftWatcherActionDto>>(await _watcherRepository.GetListAsync());
 
         return ObjectMapper.Map<List<Watcher>, List<ShiftWatcherActionDto>>(watchers);
     }
