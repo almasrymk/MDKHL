@@ -973,6 +973,8 @@
         "CustomerHasActivePackage": "المستفيد لديه باقة بالفعل",
         "PackgeVehiclesLimitationsExceeded": "لقد تجاوزت العدد المسوح من المركبات لتلك الباقة",
         "Permission:Unit": "موديول الوحدات",
-        "Unit": "وحده"
+        "Unit": "وحده",
+        "Units": "وحدات"
+
     }
 }

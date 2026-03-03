@@ -931,6 +931,7 @@
         "CustomerHasActivePackage": "Customer already package",
         "PackgeVehiclesLimitationsExceeded": "Number of vehicles allowed for that package exceeded",
         "Permission:Unit": "Unit Mangment",
-        "Unit": "Unit"
+        "Unit": "Unit",
+        "Units": "Units"
     }
 }
