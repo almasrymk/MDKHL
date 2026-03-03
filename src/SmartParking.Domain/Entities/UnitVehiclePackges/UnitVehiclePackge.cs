@@ -1,0 +1,17 @@
+﻿using System;
+using Volo.Abp.Domain.Entities.Auditing;
+
+namespace SmartParking.Entities.UnitVehiclePackges;
+
+public class UnitVehiclePackge : FullAuditedEntity<Guid>
+{
+    public Guid CustomerId { get; set; }
+    public string UnitCode { get; set; }
+    public DateTime ActivationDate { get; set; }
+    public DateTime DectivationDate { get; set; }
+    public TimeOnly PublishFrom { get; set; }
+    public TimeOnly PublishTo { get; set; }
+    public string EnPlateNumber { get; set; }
+    public string ArPlateNumber { get; set; }
+    
+}
