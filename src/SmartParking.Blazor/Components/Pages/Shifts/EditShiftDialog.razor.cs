@@ -49,8 +49,6 @@ namespace SmartParking.Blazor.Components.Pages.Shifts
                 SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {Shift.ArabicName}", Severity.Success);
                 await Task.Delay(1000);
                 Navigation.NavigateTo("/shifts", forceLoad: true);
-
-
             }
             catch (AbpValidationException validationException)
             {

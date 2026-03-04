@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MudBlazor;
 using SmartParking.Authentication;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Entities.Cameras.Watchers;
+using SmartParking.Entities.Shifts;
 using SmartParking.Garages;
 using SmartParking.Shifts;
 using SmartParking.Shifts.ShiftDetail;
@@ -10,7 +13,10 @@ using SmartParking.Shifts.ShiftsMangers;
 using SmartParking.Shifts.ShiftStaffDetail;
 using SmartParking.Shifts.ShiftZones;
 using SmartParking.Validations;
+using System.Security.Authentication;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Shifts.ShiftZones;
 
@@ -226,13 +232,30 @@ public partial class UpdateShiftZoneDialog
             if (assignmentRows.Any())
                 await AssignShiftZoneAppService.UpdateShiftZoneAssignmentsAsync(Id, assignmentRows);
 
-            Snackbar.Add(L["ShiftZoneSaved"], Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {CreateUpdateShiftZone.ShiftArabicName}", Severity.Success);
             await Task.Delay(1000);
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"{L["SaveFailed"]}: {ex.Message}", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
         }
         finally
         {
