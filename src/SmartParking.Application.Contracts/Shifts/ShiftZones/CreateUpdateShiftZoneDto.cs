@@ -24,6 +24,8 @@ public class CreateUpdateShiftZoneDto
     public TimeOnly EndTime { get; set; }
     public bool IsFullDay { get; set; }
     public Status Status { get; set; }
+    public Guid? TenantId { get; set; }
+
 
 
     public List<CreateUpdateShiftDetailsDto>? ShiftDetails { get; set; }

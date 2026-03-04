@@ -6,7 +6,9 @@ using SmartParking.Garages;
 using SmartParking.Shifts;
 using SmartParking.Shifts.ShiftsMangers;
 using SmartParking.Shifts.ShiftZones;
+using SmartParking.Validations;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Blazor.Components.Pages.Shifts.ShiftZones;
 
@@ -131,12 +133,12 @@ public partial class AddShiftZoneDialog
                 return;
             }
 
+
             await AssignShiftZoneDetails(created);
 
             Snackbar.Add(L["ShiftZoneCreated"], Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
             await Task.Delay(1000);
-            NavigationManager.NavigateTo("/shift-zone", true);
         }
         catch (Exception ex)
         {
@@ -186,6 +188,10 @@ public partial class AddShiftZoneDialog
             _isSubmitting = false;
             return (false, null);
         }
+        CreateUpdateShiftZone.Status = Enums.Status.Inactive;
+        CreateUpdateShiftZone.TenantId = CurrentTenant.Id;
+        CreateUpdateShiftZone.Status = Enums.Status.Inactive;
+        CreateUpdateShiftZone.IsFullDay = CreateUpdateShiftZone.IsFullDay || PackageValidations.CheckPackageTimeValiditity(CreateUpdateShiftZone.StartTime, CreateUpdateShiftZone.EndTime);
 
         CreateUpdateShiftZone.OrganizationId = Garages[0].Id;
         CreateUpdateShiftZone.OrganizationEnName = Garages[0].OrganizationNameEn;

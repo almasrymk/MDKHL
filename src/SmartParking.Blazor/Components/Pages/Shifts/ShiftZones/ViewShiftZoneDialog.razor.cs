@@ -80,7 +80,7 @@ public partial class ViewShiftZoneDialog
             
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Staff"], item.ShiftStaffDetails.StaffEnName.ToString()));
             
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Device"], item!.ShiftDevices.DeviceCode.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Device"], item!.ShiftDevices.DeviceUserName.ToString()));
             
 
 

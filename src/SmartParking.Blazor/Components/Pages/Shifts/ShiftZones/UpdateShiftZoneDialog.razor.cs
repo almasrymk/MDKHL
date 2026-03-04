@@ -9,6 +9,7 @@ using SmartParking.Shifts.ShiftDevices;
 using SmartParking.Shifts.ShiftsMangers;
 using SmartParking.Shifts.ShiftStaffDetail;
 using SmartParking.Shifts.ShiftZones;
+using SmartParking.Validations;
 using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Blazor.Components.Pages.Shifts.ShiftZones;
@@ -175,6 +176,12 @@ public partial class UpdateShiftZoneDialog
 
         try
         {
+            CreateUpdateShiftZone.TenantId = CurrentTenant.Id;
+            CreateUpdateShiftZone.IsFullDay = CreateUpdateShiftZone.IsFullDay || PackageValidations.CheckPackageTimeValiditity(CreateUpdateShiftZone.StartTime, CreateUpdateShiftZone.EndTime);
+
+            CreateUpdateShiftZone.OrganizationId = Garages[0].Id;
+            CreateUpdateShiftZone.OrganizationEnName = Garages[0].OrganizationNameEn;
+            CreateUpdateShiftZone.OrganizationArName = Garages[0].OrganizationNameAr;
             if (CreateUpdateShiftZone.ZoneId == 0)
             {
                 Snackbar.Add(L["PleaseSelectZone"], Severity.Warning);
@@ -222,7 +229,6 @@ public partial class UpdateShiftZoneDialog
             Snackbar.Add(L["ShiftZoneSaved"], Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
             await Task.Delay(1000);
-            NavigationManager.NavigateTo("/shift-zone", true);
         }
         catch (Exception ex)
         {

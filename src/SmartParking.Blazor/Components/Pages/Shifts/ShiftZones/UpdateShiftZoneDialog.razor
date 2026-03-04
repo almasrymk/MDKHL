@@ -10,6 +10,7 @@
 @using SmartParking.Shifts.ShiftStaffDetail
 @using SmartParking.Authentication
 @using SmartParking.Watchers
+@using Volo.Abp.MultiTenancy
 @using Volo.Abp.ObjectMapping
 
 @inject IShiftZoneAppService ShiftZoneAppService 
@@ -22,6 +23,8 @@
 @inject ISnackbar Snackbar 
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager NavigationManager
+@inject ICurrentTenant CurrentTenant
+
 
 <PageTitle>@L["UpdateShiftZone"]</PageTitle>
 
@@ -85,7 +88,7 @@
                         </MudSelect>
                     </MudItem>
 
-                    <MudItem sm="12" Class="d-inline-flex justify-content-center">
+                    <MudItem sm="12" md="6" Class="d-inline-flex justify-content-center">
                         <div Class="d-flex flex-row justify-content-between">
                             <MudRadioGroup @bind-Value="@CreateUpdateShiftZone.Status" Class="d-inline-flex align-content-center">
 
@@ -126,7 +129,7 @@
                                                            Label="@L["Staff"]"
                                                            @bind-Value="assignment.StaffId"
                                                            Dense="true">
-                                                    <MudSelectItem T="Guid?" Value="@((Guid?)null)">
+                                                    <MudSelectItem T="Guid?" Disabled Value="@((Guid?)null)">
                                                         @L["SelectStaff"]
                                                     </MudSelectItem>
                                                     @foreach (var keeper in Keepers)
@@ -145,7 +148,7 @@
                                                            Label="@L["Device"]"
                                                            @bind-Value="assignment.DeviceId"
                                                            Dense="true">
-                                                    <MudSelectItem T="int?" Value="@((int?)null)">
+                                                    <MudSelectItem T="int?" Disabled Value="@((int?)null)">
                                                         @L["SelectDevice"]
                                                     </MudSelectItem>
                                                     @foreach (var device in Devices)

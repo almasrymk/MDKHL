@@ -12,6 +12,7 @@
 @using SmartParking.Shifts.ShiftsMangers
 @using SmartParking.Watchers
 @using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
 @using Volo.Abp.ObjectMapping
 
 @inject IShiftZoneAppService ShiftZoneAppService
@@ -24,6 +25,8 @@
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager NavigationManager
+@inject ICurrentTenant CurrentTenant
+
 
 
 
@@ -90,7 +93,7 @@
                                             var assignment = UiAssignments[i];
                                             <MudItem xs="5">
                                                 <MudSelect T="Guid ?" Label="@L["Staff"]" @bind-Value="assignment.StaffId" AnchorOrigin="Origin.BottomCenter" Dense="true">
-                                                    <MudSelectItem T="Guid?" Value="@((Guid?)null)">@L["SelectStaff"]</MudSelectItem>
+                                                    <MudSelectItem T="Guid?" Disabled Value="@((Guid?)null)">@L["SelectStaff"]</MudSelectItem>
                                                     @foreach (var keeper in Keepers)
                                                     {
                                                         <MudSelectItem T="Guid?" Value="@keeper.Id" Disabled="@IsKeeperDisabled(keeper.Id, assignment)">
@@ -102,7 +105,7 @@
 
                                             <MudItem xs="5">
                                                 <MudSelect T="int?" Label="@L["Device"]" @bind-Value="assignment.DeviceId" AnchorOrigin="Origin.BottomCenter" Dense="true">
-                                                    <MudSelectItem T="int?" Value="@((int?)null)">@L["SelectDevice"]</MudSelectItem>
+                                                    <MudSelectItem T="int?" Disabled Value="@((int?)null)">@L["SelectDevice"]</MudSelectItem>
                                                     @foreach (var device in Devices)
                                                     {
                                                         <MudSelectItem T="int?" Value="@device.Id" Disabled="@IsDeviceDisabled(device.Id, assignment)">

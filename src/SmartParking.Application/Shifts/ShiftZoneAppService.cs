@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Reporting.Map.WebForms.BingMaps;
+using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
 using SmartParking.Filters;
 using SmartParking.Garages;
@@ -88,7 +89,6 @@ public class ShiftZoneAppService :
             return await MapToGetOutputDtoInternalAsync(entity);
         }
     }
-
     /// <inheritdoc/>
 
     protected async Task<ShiftZoneDto> MapToGetOutputDtoForOrganizationAsync(ShiftZone entity)
