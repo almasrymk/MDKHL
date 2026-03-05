@@ -26,6 +26,7 @@ using SmartParking.Entities.Shifts;
 using SmartParking.Entities.StateManagements;
 using SmartParking.Entities.Subscriptions;
 using SmartParking.Entities.Units;
+using SmartParking.Entities.UnitVehiclePackges;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.Garages;
@@ -59,6 +60,7 @@ using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
 using SmartParking.UnitPackages;
 using SmartParking.Units;
+using SmartParking.UnitVehiclePackages;
 using SmartParking.UserShifts;
 using SmartParking.Vehicles;
 using System;
@@ -535,7 +537,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         #region Unit Package Mapping
         CreateMap<CreateUpdateUnitPackageDto, UnitPackage>()
-    .ForMember(d => d.Package, o => o.MapFrom(s => s.Package));
+            .ForMember(d => d.Package, o => o.MapFrom(s => s.Package))
+            .ForMember(d => d.ArabicName, o => o.MapFrom(s => s.Package.ArabicName))
+            .ForMember(d => d.EnglishName, o => o.MapFrom(s => s.Package.EnglishName));
 
         CreateMap<UnitPackage, UnitPackageDto>()
             .ForMember(d => d.Package, o => o.MapFrom(s => s.Package));
@@ -543,6 +547,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CustomerUnitPackage, CustomerUnitPackageDto>();
 
         CreateMap<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>();
+            
         #endregion
 
         CreateMap<UserWithRole, ShiftZoneUserViewDto>()
@@ -554,6 +559,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateUnitDto, Unit>();
         CreateMap<Unit, UnitDto>();
         CreateMap<UnitDto, CreateUpdateUnitDto>();
+
+        CreateMap<CreateUpdateUnitVehiclePackageDto, UnitVehiclePackge>();
+        CreateMap<UnitVehiclePackge, UnitVehiclePackageDto>();
     }
 
 }
