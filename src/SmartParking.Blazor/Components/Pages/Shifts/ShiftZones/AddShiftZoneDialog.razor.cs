@@ -1,17 +1,15 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MudBlazor;
 using SmartParking.Authentication;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Garages;
 using SmartParking.Shifts;
-using SmartParking.Shifts.ShiftsMangers;
+using SmartParking.Shifts.Extensions;
 using SmartParking.Shifts.ShiftZones;
 using SmartParking.Validations;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.MultiTenancy;
 using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Shifts.ShiftZones;
@@ -23,22 +21,15 @@ public partial class AddShiftZoneDialog
     private CreateUpdateShiftZoneDto CreateUpdateShiftZone { get; set; } = new();
     private List<ShiftDto> ShiftDtos { get; set; } = new();
     private List<GarageDto> Garages { get; set; } = new();
-
-    private List<AssignStaffDataDto> Keepers = new();
+    private List<AssignStaffDataDto> Keepers { get; set; } = new();
     private List<AssignStaffDataDto> Managers { get; set; } = new();
     private List<Watcher> Devices { get; set; } = new();
+    private List<AssignmentRowDto> UiAssignments { get; set; } = new();
 
     private bool _isLoaded = false;
     private bool _isSubmitting = false;
-    private List<AssignmentRow> UiAssignments { get; set; } = new();
+    private bool _assignmentPanelOpen = true;
 
-    public class AssignmentRow
-    {
-        public Guid? StaffId { get; set; }
-        public int? DeviceId { get; set; }
-    }
-
-    private bool _assignmentPanelOpen { get; set; } = true;
     private void ToggleAssignmentPanel() => _assignmentPanelOpen = !_assignmentPanelOpen;
 
     private Guid _selectedManagerId = Guid.Empty;
@@ -47,23 +38,15 @@ public partial class AddShiftZoneDialog
         get => _selectedManagerId;
         set
         {
-            if (_selectedManagerId != value)
-            {
-                _selectedManagerId = value;
-                ManagerChanged(value);
-                var k = Keepers.FirstOrDefault(x => x.Id == value);
-                CreateUpdateShiftZone.Manager = (k == null || value == Guid.Empty)
-                    ? null
-                    : new CreateUpdateShiftMangerDto
-                    {
-                        ManagerUserId = k.Id,
-                        ManagerUserName = k.UserName,
-                        ManagerEnName = k.EnglishName,
-                        ManagerPhoneNumber = k.PhoneNumber
-                    };
-            }
+            if (_selectedManagerId == value) return;
+            _selectedManagerId = value;
+            ManagerChanged(value);
+            CreateUpdateShiftZone.Manager = (value == Guid.Empty)
+                ? null
+                : Keepers.FirstOrDefault(x => x.Id == value)?.ToManagerDto();
         }
     }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -80,43 +63,28 @@ public partial class AddShiftZoneDialog
         Managers = Keepers;
         Devices = (await watchersTask).ToList();
 
-        UiAssignments = new List<AssignmentRow> { new AssignmentRow() };
+        UiAssignments = new List<AssignmentRowDto> { new AssignmentRowDto() };
 
         _isLoaded = true;
     }
 
+
     private void ManagerChanged(Guid newManagerId)
     {
-        foreach (var r in UiAssignments.Where(x => x.StaffId == newManagerId))
-        {
-            r.StaffId = null;
-        }
+        foreach (var row in UiAssignments.Where(r => r.StaffId == newManagerId))
+            row.StaffId = null;
     }
 
-    private void AddRow()
-    {
-        UiAssignments.Add(new AssignmentRow());
-    }
+    private void AddRow() => UiAssignments.Add(new AssignmentRowDto());
+    private void RemoveRow(AssignmentRowDto row) => UiAssignments.Remove(row);
 
-    private void RemoveRow(AssignmentRow row)
-    {
-        if (UiAssignments.Contains(row))
-        {
-            UiAssignments.Remove(row);
-        }
-    }
+    private bool IsKeeperDisabled(Guid keeperId, AssignmentRowDto currentRow)
+        => keeperId == SelectedManagerId
+        || UiAssignments.Any(r => r != currentRow && r.StaffId == keeperId);
 
-    private bool IsKeeperDisabled(Guid keeperId, AssignmentRow currentRow)
-    {
-        if (keeperId == SelectedManagerId) return true;
+    private bool IsDeviceDisabled(int deviceId, AssignmentRowDto currentRow)
+        => UiAssignments.Any(r => r != currentRow && r.DeviceId == deviceId);
 
-        return UiAssignments.Any(r => r != currentRow && r.StaffId == keeperId);
-    }
-
-    private bool IsDeviceDisabled(int deviceId, AssignmentRow currentRow)
-    {
-        return UiAssignments.Any(r => r != currentRow && r.DeviceId == deviceId);
-    }
 
     public async Task Submit()
     {
@@ -125,42 +93,37 @@ public partial class AddShiftZoneDialog
 
         try
         {
-            var (flowControl, created) = await CreatingShiftZone();
-            if (!flowControl)
-            {
+            var (success, created) = await CreatingShiftZone();
+            if (!success || created == null)
                 return;
-            }
-
-            if (created == null)
-            {
-                Snackbar.Add(L["CreateFailed"], Severity.Error);
-                return;
-            }
-
 
             await AssignShiftZoneDetails(created);
 
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {CreateUpdateShiftZone.ShiftArabicName}", Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar,
+                $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {CreateUpdateShiftZone.ShiftArabicName}",
+                Severity.Success);
+
             MudDialog.Close(DialogResult.Ok(true));
             await Task.Delay(1000);
         }
-        catch (AbpValidationException validationException)
+        catch (AbpValidationException ex)
         {
-            foreach (var validationError in validationException.ValidationErrors)
-            {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
-            }
+            foreach (var error in ex.ValidationErrors)
+                SnackBar.ShowSnackbar(Snackbar,
+                    $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[error.MemberNames.First()]} - {error.ErrorMessage}",
+                    Severity.Error);
         }
         catch (BusinessException ex)
         {
-
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message}", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar,
+                $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message}",
+                Severity.Error);
         }
-
         catch (Exception ex)
         {
-
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar,
+                $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message}",
+                Severity.Error);
         }
         finally
         {
@@ -168,53 +131,28 @@ public partial class AddShiftZoneDialog
         }
     }
 
-    private async Task AssignShiftZoneDetails(ShiftZoneDto created)
-    {
-        var assignmentRows = UiAssignments
-            .Where(r => (r.StaffId != null && r.StaffId != Guid.Empty && r.StaffId != SelectedManagerId)
-                     || (r.DeviceId != null && r.DeviceId > 0))
-            .Select(r =>
-            {
-                var keeper = Keepers.FirstOrDefault(x => x.Id == r.StaffId);
-                var device = Devices.FirstOrDefault(d => d.Id == r.DeviceId);
-                return new CreateUpdateZoneAssignmentDto
-                {
-                    ExistingShiftDetailsId = null,
-                    StaffId = (r.StaffId != Guid.Empty && r.StaffId != SelectedManagerId) ? r.StaffId : null,
-                    StaffUserName = keeper?.UserName,
-                    StaffEnName = keeper?.EnglishName,
-                    StaffPhoneNumber = keeper?.PhoneNumber,
-                    DeviceId = r.DeviceId,
-                    DeviceCode = device?.DeviceId,
-                    DeviceUserName = device?.Name,
-                    DevicePassword = "P@ssw0rd"
-                };
-            })
-            .ToList();
+    public void Cancel() => MudDialog.Cancel();
 
-        if (assignmentRows.Any())
-            await AssignShiftZoneAppService.AddShiftZoneAssignmentsAsync(created.Id, assignmentRows);
-    }
 
+    #region Private Methods
     private async Task<(bool Success, ShiftZoneDto? Created)> CreatingShiftZone()
     {
-        ShiftZoneDto? created = null;
-
         if (CreateUpdateShiftZone.ZoneId == 0)
         {
             Snackbar.Add(L["PleaseSelectZone"], Severity.Warning);
             _isSubmitting = false;
             return (false, null);
         }
+
         CreateUpdateShiftZone.Status = Enums.Status.Inactive;
         CreateUpdateShiftZone.TenantId = CurrentTenant.Id;
-        CreateUpdateShiftZone.Status = Enums.Status.Inactive;
-        CreateUpdateShiftZone.IsFullDay = CreateUpdateShiftZone.IsFullDay || PackageValidations.CheckPackageTimeValiditity(CreateUpdateShiftZone.StartTime, CreateUpdateShiftZone.EndTime);
+        CreateUpdateShiftZone.IsFullDay = CreateUpdateShiftZone.IsFullDay
+            || PackageValidations.CheckPackageTimeValiditity(
+                   CreateUpdateShiftZone.StartTime, CreateUpdateShiftZone.EndTime);
 
-        CreateUpdateShiftZone.OrganizationId = Garages[0].Id;
-        CreateUpdateShiftZone.OrganizationEnName = Garages[0].OrganizationNameEn;
-        CreateUpdateShiftZone.OrganizationArName = Garages[0].OrganizationNameAr;
-        created = await ShiftZoneAppService.CreateAsync(CreateUpdateShiftZone);
+        CreateUpdateShiftZone.EnrichFromOrganization(Garages[0]);
+
+        var created = await ShiftZoneAppService.CreateAsync(CreateUpdateShiftZone);
         if (created == null)
         {
             Snackbar.Add(L["CreateFailed"], Severity.Error);
@@ -225,5 +163,16 @@ public partial class AddShiftZoneDialog
         return (true, created);
     }
 
-    public void Cancel() => MudDialog.Cancel();
+    private async Task AssignShiftZoneDetails(ShiftZoneDto created)
+    {
+        var rows = UiAssignments
+            .Where(r => (r.StaffId != null && r.StaffId != Guid.Empty && r.StaffId != SelectedManagerId)
+                     || (r.DeviceId != null && r.DeviceId > 0))
+            .Select(r => r.ToZoneAssignmentDto(Keepers, Devices))
+            .ToList();
+
+        if (rows.Any())
+            await AssignShiftZoneAppService.AddShiftZoneAssignmentsAsync(created.Id, rows);
+    }
+    #endregion
 }
