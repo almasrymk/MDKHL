@@ -22,5 +22,6 @@ public class CreateUpdateCustomerUnitPackageDto
     public decimal Vat { get; set; }
     public int OrganizationId { get; set; }
     public CustomerCategoryStatus CustomerCategory { get; set; }
+    public string UnitCode { get; set; }
 
 }

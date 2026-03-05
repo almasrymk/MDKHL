@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,4 +12,5 @@ public class CustomerUnitPackageAssignationDto
     public decimal Discount { get; set; }
     public int DurationOfPackage { get; set; }
     public decimal Vat { get; set; }
+    public string UnitCode { get; set; }
 }

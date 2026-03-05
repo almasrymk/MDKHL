@@ -127,6 +127,7 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
             OrganizationId=package.Package.OrganizationId,
             Discount=customerUnitPackageAssignationDto.Discount,
             CustomerCategory = category,
+            UnitCode = customerUnitPackageAssignationDto.UnitCode
         };
 
         var entity = ObjectMapper.Map<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>(customerUnitPackageDto);
