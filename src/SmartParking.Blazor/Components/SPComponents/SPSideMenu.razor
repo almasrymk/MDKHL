@@ -21,6 +21,7 @@
 @using SmartParking.Permissions.ShiftsPermissions
 @using SmartParking.Permissions.SubsctriptionPermissions
 @using SmartParking.Permissions.UnLinkedTransactionPermissions
+@using SmartParking.Permissions.UnitVehiclePackagesPermissions
 @using SmartParking.Permissions.UnitsPermissions
 @using SmartParking.Permissions.UserProfile
 @using SmartParking.Permissions.UserShiftsPermissions
@@ -135,6 +136,10 @@
                  @if(AuthorizationService.IsGrantedAsync(UnitPermissions.Default).Result)
                  {
                      <MudNavLink Href="/units" Icon="@Icons.Material.Filled.House">@L["Units"]</MudNavLink>
+                 }
+                 @if(AuthorizationService.IsGrantedAsync(UnitVehiclePackagePermissions.Default).Result)
+                 {
+                     <MudNavLink Href="/unit-vehicle-packages" Icon="@Icons.Material.Filled.DataThresholding">@L["UnitVehiclePackages"]</MudNavLink>
                  }
                  @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager).Result || AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result || AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement).Result|| currenttenant.Id is null)
                  {
