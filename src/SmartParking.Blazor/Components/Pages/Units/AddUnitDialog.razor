@@ -20,7 +20,7 @@
     <MudForm Class="flex-grow-1 mt-2 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Model="createUpdateUnit" @ref="form">
         <MudGrid>
         
-        <MudItem sm="12" md="4">
+        <MudItem sm="12" md="6">
               <MudTextField @bind-Value="createUpdateUnit.EnglishName"
                 For="@(() => createUpdateUnit.EnglishName)"
                 Variant="Variant.Text"
@@ -30,7 +30,7 @@
                 RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                 Label=@L["EnglishName"]/>
            </MudItem>
-        <MudItem sm="12" md="4">
+        <MudItem sm="12" md="6">
               <MudTextField @bind-Value="createUpdateUnit.ArabicName"
                 For="@(() => createUpdateUnit.ArabicName)"
                 Variant="Variant.Text"
@@ -40,7 +40,7 @@
                 RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                 Label=@L["ArabicName"]/>
            </MudItem>
-        <MudItem sm="12" md="4">
+        <MudItem sm="12" md="6">
               <MudNumericField @bind-Value="createUpdateUnit.Capacity"
                 For="@(() => createUpdateUnit.Capacity)"
                 Variant="Variant.Text"
@@ -50,6 +50,16 @@
                 RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                 Label=@L["Capacity"]
                 HideSpinButtons="true" />
+           </MudItem>
+           <MudItem sm="12" md="6">
+              <MudTextField @bind-Value="createUpdateUnit.Code"
+                For="@(() => createUpdateUnit.Code)"
+                Variant="Variant.Text"
+                Class="w-100"
+                Placeholder=@L["Type Here"]
+                Required="true"
+                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                Label=@L["UnitCode"]/>
            </MudItem>
      <MudItem sm="12">
     <MudTextField @bind-Value="createUpdateUnit.Description"

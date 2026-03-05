@@ -9,23 +9,20 @@
         <MudText Typo="Typo.h6">@L["Details"]</MudText>
        </TitleContent>
   <DialogContent>
-  <MudGrid>
-       <MudItem sm="12">
+      <MudGrid>
+   <MudItem sm="12">
         <MudText><strong>@L["Code"]:</strong> @Unit.Code</MudText>
   </MudItem>
  <MudItem sm="12">
- <MudText><strong>@L["Capacity"]:</strong> @Unit.Capacity</MudText>
-         </MudItem>
+     <MudText><strong>@L["Capacity"]:</strong> @Unit.Capacity</MudText>
+     </MudItem>
        <MudItem sm="12">
  <MudText><strong>@L["Description"]:</strong> @Unit.Description</MudText>
-           </MudItem>
- <MudItem sm="12">
-     @* <MudText><strong>@L["Status"]:</strong> @L[$"{Unit.Status.ToString()}"]</MudText> *@
-      </MudItem>
+     </MudItem>
   </MudGrid>
         </DialogContent>
      <DialogActions>
-      <MudButton OnClick="Cancel" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">@L["Close"]</MudButton>
+<MudButton OnClick="Cancel" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">@L["Close"]</MudButton>
        </DialogActions>
   </MudDialog>
 </div>
@@ -33,7 +30,7 @@
 <style>
     .mud-modal 
     {
-   border-radius: 0 20px 0 20px;
+ border-radius: 0 20px 0 20px;
     }
 </style>
 
@@ -44,7 +41,7 @@
     [CascadingParameter]
  private IMudDialogInstance MudDialog { get; set; }
 
-    private void Cancel()
+ private void Cancel()
  {
    MudDialog.Cancel();
     }
