@@ -35,10 +35,7 @@ public class UnitAppService : CrudAppService<
     public override async Task<UnitDto> CreateAsync(CreateUpdateUnitDto input)
     {
         var query = await _repository.GetQueryableAsync();
-        var unit = await query.OrderByDescending(x => x.Code).FirstOrDefaultAsync();
-        var code = _codeGenerationAppService.CodeGenerationAsync(unit?.Code, CodeGenerationConsts.Unit);
         var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
-        input.Code = code;
         input.TenantId = CurrentTenant.Id;
         input.OrganizationId = organization.Id;
         return await base.CreateAsync(input);
