@@ -1,0 +1,20 @@
+﻿using SmartParking.Enums;
+using System;
+using Volo.Abp.Application.Dtos;
+
+namespace SmartParking.UnitVehiclePackages;
+
+public class UnitVehiclePackageDto : FullAuditedEntityDto<Guid>
+{
+    public Guid CustomerId { get; set; }
+    public string UnitCode { get; set; }
+    public DateTime ActivationDate { get; set; }
+    public DateTime DectivationDate { get; set; }
+    public TimeOnly PublishFrom { get; set; }
+    public TimeOnly PublishTo { get; set; }
+    public string EnPlateNumber { get; set; }
+    public string ArPlateNumber { get; set; }
+    public int CustomerUnitPackageId { get; set; }
+    public CustomerUnitPackageType CustomerUnitPackageType { get; set; }
+
+}
