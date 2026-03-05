@@ -117,15 +117,25 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
+            CustomerDto? customerDto = new();
 
-            var user = await _userManager.FindByNameAsync(createUpdateCustomerDto.UserName);
-            if (user != null)
+            try
             {
-                var customerDto = await _baseCustomer.GetCustomerIdForUser(user.Id);
-                await _customerPackagesAppService.AddDefaultPackageToCustomerAsync(new DefaultCustomerPackageDto { CustomerId=customerDto.Id,OrganizationId= createUpdateCustomerDto .OrganizationId,TenantId=user.TenantId.Value});
-                return customerDto;
+                var user = await _userManager.FindByNameAsync(createUpdateCustomerDto.UserName);
+                if (user != null)
+                {
+                    customerDto = await _baseCustomer.GetCustomerIdForUser(user.Id);
+                    await _customerPackagesAppService.AddDefaultPackageToCustomerAsync(new DefaultCustomerPackageDto { CustomerId=customerDto.Id,OrganizationId= createUpdateCustomerDto .OrganizationId,TenantId=user.TenantId.Value});
+                    return customerDto;
+                }
+
+            }
+            catch(Exception e)
+            {
+                throw new UserFriendlyException("User Name already exists");
             }
             return null;
+
         }
     }
     /// <inheritdoc/>
