@@ -932,6 +932,13 @@
         "PackgeVehiclesLimitationsExceeded": "Number of vehicles allowed for that package exceeded",
         "Permission:Unit": "Unit Mangment",
         "Unit": "Unit",
-        "Units": "Units"
+        "Units": "Units",
+        "DeactivationDate": "Deactivation Date",
+        "UnitCode": "Unit Code",
+        "UnitVehiclePackages": "Unit Vehicle Packages",
+        "CustomerUnitPackageType": "Type",
+        "PublishTo": "Publish To",
+        "PublishFrom": "Publish From",
+        "Permission:UnitVehiclePackage": "Unit Vehicle Package Management"
     }
 }
