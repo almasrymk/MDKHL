@@ -2,6 +2,7 @@
 @using SmartParking.CustomerPackages
 @using SmartParking.CustomerUnitPackages
 @using SmartParking.Localization
+@using SmartParking.UnitVehiclePackages
 @using Volo.Abp.MultiTenancy
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ICurrentTenant CurrentTenant
@@ -10,6 +11,7 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 @inject ICustomerPackagesCreationValidationsAppService customerPackagesValidations
+@inject IUnitVehiclePackageAppService UnitVehiclePackageAppService
 
 
 
