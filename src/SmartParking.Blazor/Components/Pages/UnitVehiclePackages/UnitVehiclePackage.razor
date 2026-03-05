@@ -1,0 +1,35 @@
+@page "/unit-vehicle-packages"
+@using Microsoft.Extensions.Localization
+@using SmartParking.CustomerUnitPackages
+@using SmartParking.Cutomers
+@using SmartParking.Localization
+@using SmartParking.Permissions
+@using SmartParking.Permissions.UnitVehiclePackagesPermissions
+@using SmartParking.UnitVehiclePackages
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
+@inject IUnitVehiclePackageAppService UnitVehiclePackageAppService
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
+@inject IAuthorizationService AuthorizationService
+@inject ICustomerAppService CustomerAppService
+@inject ICustomerUnitPackageAppService CustomerUnitPackageAppService
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<PageTitle>@L["UnitVehiclePackages"]</PageTitle>
+
+<MudText Typo="Typo.h5" Class="mb-2">@L["UnitVehiclePackages"]</MudText>
+
+<SPDataGrid PageName=@L["UnitVehiclePackages"] 
+    ShowView="AuthorizationService.IsGrantedAsync(UnitVehiclePackagePermissions.Default).Result"
+    Data="@itemData" 
+    TotalItemsInTable="TotalItem" 
+    OnFiltering="HandleFilter" 
+    OnClickRowView="OnClickRowView" 
+    OnPageChanged="FetchTableData" 
+    OnSearching="HandleSearch">
+</SPDataGrid>
