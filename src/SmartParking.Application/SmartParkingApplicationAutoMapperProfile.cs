@@ -536,7 +536,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<Watcher, WatcherDto>().ReverseMap();
 
         CreateMap<Watcher, ShiftWatcherActionDto>()
-            .ForMember(d => d.WatcherCode, o => o.MapFrom(s => s.DeviceId))
+            .ForMember(d => d.WatcherCode, o => o.MapFrom(s => s.Name))
             .ReverseMap();
 
 

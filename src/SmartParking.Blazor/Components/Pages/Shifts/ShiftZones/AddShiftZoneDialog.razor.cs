@@ -1,12 +1,18 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MudBlazor;
 using SmartParking.Authentication;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Garages;
 using SmartParking.Shifts;
 using SmartParking.Shifts.ShiftsMangers;
 using SmartParking.Shifts.ShiftZones;
+using SmartParking.Validations;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Shifts.ShiftZones;
 
@@ -131,16 +137,30 @@ public partial class AddShiftZoneDialog
                 return;
             }
 
+
             await AssignShiftZoneDetails(created);
 
-            Snackbar.Add(L["ShiftZoneCreated"], Severity.Success);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} {CreateUpdateShiftZone.ShiftArabicName}", Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
             await Task.Delay(1000);
-            NavigationManager.NavigateTo("/shift-zone", true);
         }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message}", Severity.Error);
+        }
+
         catch (Exception ex)
         {
-            Snackbar.Add($"{L["CreateFailed"]}: {ex.Message}", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.ADD]} : {ex.Message} ", Severity.Error);
         }
         finally
         {
@@ -186,6 +206,10 @@ public partial class AddShiftZoneDialog
             _isSubmitting = false;
             return (false, null);
         }
+        CreateUpdateShiftZone.Status = Enums.Status.Inactive;
+        CreateUpdateShiftZone.TenantId = CurrentTenant.Id;
+        CreateUpdateShiftZone.Status = Enums.Status.Inactive;
+        CreateUpdateShiftZone.IsFullDay = CreateUpdateShiftZone.IsFullDay || PackageValidations.CheckPackageTimeValiditity(CreateUpdateShiftZone.StartTime, CreateUpdateShiftZone.EndTime);
 
         CreateUpdateShiftZone.OrganizationId = Garages[0].Id;
         CreateUpdateShiftZone.OrganizationEnName = Garages[0].OrganizationNameEn;

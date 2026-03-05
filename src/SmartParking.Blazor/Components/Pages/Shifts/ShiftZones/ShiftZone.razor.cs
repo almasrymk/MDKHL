@@ -3,8 +3,8 @@ using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
-using SmartParking.GarageTransactions;
 using SmartParking.Localization;
+using SmartParking.Shifts;
 using SmartParking.Shifts.ShiftZones;
 using System.Globalization;
 using System.Security.Authentication;
@@ -81,6 +81,7 @@ public partial class ShiftZone
                 : await ShiftZoneAppService.Search(input);
         else
             response = await ShiftZoneAppService.GetListAsync(input);
+
 
         TotalItem = (int)response.TotalCount;
 
