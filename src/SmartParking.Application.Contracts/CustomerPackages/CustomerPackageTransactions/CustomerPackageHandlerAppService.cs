@@ -32,21 +32,15 @@ public class CustomerPackageHandlerAppService : ICustomerPackageHandlerAppServic
         {
 
 <<<<<<< HEAD
-<<<<<<< HEAD
         var customerUnitPackage =await _customerUnitPackageAppService.GetListOfUnitPackageByCustomer(customerId, organizationId);
         var garageTransactionValidation = await _garageTransactionValidationsRepository.CountOfVehicleRelatedToCustomerPackageParkingInGarage(customerId, organizationId);
 
         return customerUnitPackage.Value[0].NumberOfSlots >= ((garageTransactionValidation?.Count+1) ?? 0);
 =======
-=======
->>>>>>> f7dfad3fd794f0105bfbec31fa5b53ad5edf60ad
         var customerUnitPackage =await _customerUnitPackageAppService.GetUnitPackageByCustomer(customerId);
         var garageTransactionValidation = await _garageTransactionValidationsRepository.CountOfVehicleRelatedToCustomerPackageParkingInGarage(customerId, organizationId);
 
         return customerUnitPackage.NumberOfSlots >= ((garageTransactionValidation?.Count+1) ?? 0);
-<<<<<<< HEAD
->>>>>>> f7dfad3fd794f0105bfbec31fa5b53ad5edf60ad
-=======
 >>>>>>> f7dfad3fd794f0105bfbec31fa5b53ad5edf60ad
         }
     }
