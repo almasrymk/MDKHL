@@ -21,15 +21,12 @@ public class UnitAppService : CrudAppService<
     IUnitAppService
 {
     private readonly IRepository<Unit, int> _repository;
-    private readonly ICodeGenerationAppService _codeGenerationAppService;
     private readonly IOrganizationsAppService _organizationsAppService;
 
     public UnitAppService(IRepository<Unit, int> repository,
-        ICodeGenerationAppService codeGenerationAppService,
         IOrganizationsAppService organizationsAppService) : base(repository)
     {
         _repository = repository;
-        _codeGenerationAppService = codeGenerationAppService;
         _organizationsAppService = organizationsAppService;
     }
     public override async Task<UnitDto> CreateAsync(CreateUpdateUnitDto input)
