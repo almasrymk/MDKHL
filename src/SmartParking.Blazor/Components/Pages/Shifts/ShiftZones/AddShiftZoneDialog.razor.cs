@@ -150,7 +150,7 @@ public partial class AddShiftZoneDialog
             || PackageValidations.CheckPackageTimeValiditity(
                    CreateUpdateShiftZone.StartTime, CreateUpdateShiftZone.EndTime);
 
-        CreateUpdateShiftZone.EnrichFromOrganization(Garages[0]);
+        CreateUpdateShiftZone.OrganizationAssignmentDto(Garages[0]);
 
         var created = await ShiftZoneAppService.CreateAsync(CreateUpdateShiftZone);
         if (created == null)

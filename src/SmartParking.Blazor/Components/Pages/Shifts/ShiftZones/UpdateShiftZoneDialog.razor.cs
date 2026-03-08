@@ -179,7 +179,7 @@ public partial class UpdateShiftZoneDialog
         CreateUpdateShiftZone.IsFullDay = CreateUpdateShiftZone.IsFullDay
             || PackageValidations.CheckPackageTimeValiditity(
                    CreateUpdateShiftZone.StartTime, CreateUpdateShiftZone.EndTime);
-        CreateUpdateShiftZone.EnrichFromOrganization(Garages[0]);
+        CreateUpdateShiftZone.OrganizationAssignmentDto(Garages[0]);
         CreateUpdateShiftZone.Manager = (SelectedManagerId == Guid.Empty)
             ? null
             : Keepers.FirstOrDefault(x => x.Id == SelectedManagerId)?.ToManagerDto();

@@ -74,10 +74,10 @@ public static class ShiftZoneMappingExtensions
             Manager = shiftZone.ShiftMangerDto.ToCreateUpdateDto()
         };
     /// <summary>
-    /// Enriches a <see cref="CreateUpdateShiftZoneDto"/> in-place with
+    /// Populates a <see cref="CreateUpdateShiftZoneDto"/> in-place with
     /// denormalised shift and zone data. Used in the app-service Create/Update.
     /// </summary>
-    public static void EnrichFrom(
+    public static void ShiftAndGarageAssignmentDto(
         this CreateUpdateShiftZoneDto dto,
         ShiftDto shift,
         GarageDto garage)
@@ -96,7 +96,7 @@ public static class ShiftZoneMappingExtensions
     /// Writes the three organisation fields from the default garage into the DTO.
     /// Call this before sending the DTO to the app-service.
     /// </summary>
-    public static void EnrichFromOrganization(
+    public static void OrganizationAssignmentDto(
         this CreateUpdateShiftZoneDto dto,
         GarageDto organization)
     {

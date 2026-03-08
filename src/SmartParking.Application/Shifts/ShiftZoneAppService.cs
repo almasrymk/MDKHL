@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Shifts;
-using SmartParking.Filters;
+using SmartParking.Extensions;
 using SmartParking.Garages;
 using SmartParking.Shifts.Extensions;
 using SmartParking.Shifts.ShiftZones;
@@ -47,7 +47,7 @@ public class ShiftZoneAppService :
         var garage = await _garageAppService.GetAsync(dto.ZoneId)
             ?? throw new Exception("Garage not found");
 
-        dto.EnrichFrom(shift, garage);
+        dto.ShiftAndGarageAssignmentDto(shift, garage);
 
         return await base.CreateAsync(dto);
     }
@@ -61,7 +61,7 @@ public class ShiftZoneAppService :
         var shift = await _shiftAppService.GetShiftAsync(dto.ShiftId)
             ?? throw new Exception("Shift not found");
 
-        dto.EnrichFrom(shift, garage);
+        dto.ShiftAndGarageAssignmentDto(shift, garage);
 
         return await base.UpdateAsync(id, dto);
     }
@@ -126,7 +126,6 @@ public class ShiftZoneAppService :
         return await SearchInternalAsync(input);
     }
 
-
     #region Private Methods
     /// <summary>
     /// Gets a ShiftZone by id, with an option to include organization details in the result.
@@ -173,59 +172,42 @@ public class ShiftZoneAppService :
         return dto;
     }
     /// <summary>
-    /// Filter shift zones based on dynamic filter expressions and sorting, with pagination support.
+    /// Executes pagination and maps results to DTOs.
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    private async Task<PagedResultDto<ShiftZoneDto>> FilterInternalAsync(
-        PagedAndSortedAndFilteredResultRequestDto input)
+    private async Task<PagedResultDto<ShiftZoneDto>> ToPagedResultAsync(
+        IQueryable<ShiftZone> queryable, int skipCount, int maxResultCount)
     {
-        var queryable = await _repository.GetQueryableAsync();
-
-        var filterExpression = BuildExpression<ShiftZone>.BuildFilterExpression(input.filters);
-        if (filterExpression is not null)
-            queryable = queryable.Where(filterExpression);
-
-        if (!input.Sorting.IsNullOrEmpty())
-            queryable = input.Sorting.Contains("DESC")
-                ? queryable.OrderBy(input.Sorting.Split(' ')[0] + " descending")
-                : queryable.OrderBy(input.Sorting);
-
         var totalCount = await AsyncExecuter.CountAsync(queryable);
         var items = await AsyncExecuter.ToListAsync(
-                             queryable.Skip(input.SkipCount).Take(input.MaxResultCount));
+            queryable.Skip(skipCount).Take(maxResultCount));
 
         return new PagedResultDto<ShiftZoneDto>(
             totalCount,
             ObjectMapper.Map<List<ShiftZone>, List<ShiftZoneDto>>(items));
     }
     /// <summary>
-    /// Search shift zones based on a search term that matches either the English or Arabic shift name, with sorting and pagination support. 
+    /// Filters shift zones based on dynamic filter expressions and sorting, with pagination support.
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
+    private async Task<PagedResultDto<ShiftZoneDto>> FilterInternalAsync(
+        PagedAndSortedAndFilteredResultRequestDto input)
+    {
+        var queryable = (await _repository.GetQueryableAsync())
+            .ApplyFilters(input.filters)   
+            .ApplySorting(input.Sorting);
+
+        return await ToPagedResultAsync(queryable, input.SkipCount, input.MaxResultCount);
+    }
+    /// <summary>
+    /// Searches shift zones by English or Arabic name, with sorting and pagination support.
+    /// </summary>
     private async Task<PagedResultDto<ShiftZoneDto>> SearchInternalAsync(
         PagedAndSortedAndSearchResultRequestDto input)
     {
-        var queryable = await _repository.GetQueryableAsync();
+        var queryable = (await _repository.GetQueryableAsync())
+            .ApplySearch(input.SearchingTerm)
+            .ApplySorting(input.Sorting);
 
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-            queryable = queryable.Where(x =>
-                x.ShiftEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                x.ShiftArabicName.ToLower().Contains(input.SearchingTerm.ToLower()));
-
-        if (!input.Sorting.IsNullOrEmpty())
-            queryable = input.Sorting.Contains("DESC")
-                ? queryable.OrderBy(input.Sorting.Split(' ')[0] + " descending")
-                : queryable.OrderBy(input.Sorting);
-
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-        var items = await AsyncExecuter.ToListAsync(
-                             queryable.Skip(input.SkipCount).Take(input.MaxResultCount));
-
-        return new PagedResultDto<ShiftZoneDto>(
-            totalCount,
-            ObjectMapper.Map<List<ShiftZone>, List<ShiftZoneDto>>(items));
+        return await ToPagedResultAsync(queryable, input.SkipCount, input.MaxResultCount);
     }
     #endregion
 }
