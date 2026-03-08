@@ -102,33 +102,7 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
     {
         CustomerCategoryStatus category;
 
-        Enum.TryParse(
-            package.Package.CustomerCategory,
-            true,
-            out category
-        );
-
-        CreateUpdateCustomerUnitPackageDto customerUnitPackageDto = new CreateUpdateCustomerUnitPackageDto
-        {
-            ArabicName = package.Package.ArabicName,
-            EnglishName = package.Package.EnglishName,
-            ActivationDate = PackageAssignationLogic.PackageActivationTime(package.Package.ActivationDate,package.Package.PublishFrom, package.Package.PackageCategoryType == PackageCategoryTypes.CustomPackage),
-            Status = package.Package.Status,
-            DectivationDate = PackageAssignationLogic.PackageExpirationTime(package.Package.DectivationDate , package.Package.DurationOfPackage, package.Package.PackageCategoryType == PackageCategoryTypes.CustomPackage),
-            Price = package.Package.Price,
-            PublishFrom = package.Package.PublishFrom,
-            PublishTo = package.Package.PublishTo,
-            NumberOfSlots = package.NumberOfSlots,
-            NumberOfVehicles = package.NumberOfVehicles,
-            CustomerId = customer.Id,
-            UnitPackageId = package.Id,
-            DurationOfPackage=customerUnitPackageAssignationDto.DurationOfPackage,
-            Vat=customerUnitPackageAssignationDto.Vat,
-            OrganizationId=package.Package.OrganizationId,
-            Discount=customerUnitPackageAssignationDto.Discount,
-            CustomerCategory = category,
-            UnitCode = customerUnitPackageAssignationDto.UnitCode
-        };
+        var customerUnitPackageDto = CreateUpdateCustomerUnitPackageDto.CreateFrom(customer, package, customerUnitPackageAssignationDto);
 
         var entity = ObjectMapper.Map<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>(customerUnitPackageDto);
         var data = await _repository.InsertAsync(entity);
@@ -150,6 +124,8 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         }
         return customerUnitPackge!.NumberOfVehicles > numberOfVehicles;
     }
+
+    
 
 
     #endregion
