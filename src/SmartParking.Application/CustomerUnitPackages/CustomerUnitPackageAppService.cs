@@ -57,14 +57,11 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-<<<<<<< HEAD
             query = query
                 .Where(c => c.Customer.Id == customerId && c.OrganizationId==organizationId)
                 .OrderBy(c => Math.Abs((c.ActivationDate - DateTime.UtcNow).TotalSeconds));
             
-=======
-            query = query.Where(c => c.Customer.Id == customerId && c.OrganizationId==organizationId);
->>>>>>> f7dfad3fd794f0105bfbec31fa5b53ad5edf60ad
+
 
             var result = await AsyncExecuter.ToListAsync(query);
 

@@ -50,17 +50,7 @@ public partial class AssignVehicleToPackageDialog
     {
         var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
 
-<<<<<<< HEAD
-<<<<<<< HEAD
         customerUnitPackages = await CustomerUnitPackageAppService.GetListOfUnitPackageByCustomer(CustomerId, organization.Id);
-=======
-=======
->>>>>>> f7dfad3fd794f0105bfbec31fa5b53ad5edf60ad
-        organizationDto = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
-
-        customerUnitPackages = await CustomerUnitPackageAppService.GetUnitPackageByCustomer(CustomerId);
->>>>>>> f7dfad3fd794f0105bfbec31fa5b53ad5edf60ad
-
 
         CreateTable(customerUnitPackages);
 
