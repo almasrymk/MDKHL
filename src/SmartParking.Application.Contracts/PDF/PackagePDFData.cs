@@ -1,4 +1,4 @@
-﻿using SmartParking.CustomerPackages;
+﻿using SmartParking.CustomerPackages.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;

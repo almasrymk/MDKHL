@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.CustomerPackages;
+namespace SmartParking.CustomerPackages.Validations;
 
 public interface ICustomerPackagesCreationValidationsAppService
 {

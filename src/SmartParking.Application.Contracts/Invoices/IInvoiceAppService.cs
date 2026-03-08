@@ -97,12 +97,7 @@ public interface IInvoiceAppService : ICrudAppService<InvoiceDto, int, PagedAndS
     Task<Result<List<InvoiceDto>>> GetUnpaidInvoiceForKeeperInHisOrganization(int OrganizationId, string plateNumber);
 
 
-    /// <summary>
-    /// Asynchronously retrieves the latest invoice for an organization.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation, containing the latest <see cref="InvoiceDto"/> for the organization, or <c>null</c> if no invoices exist.</returns>
-    Task<InvoiceDto?> GetLatestInvoiceForOrganization();
-
+    
     
     /// <summary>
     /// Asynchronously updates the discount for a specified invoice.

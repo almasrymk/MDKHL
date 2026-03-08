@@ -1,5 +1,5 @@
 ﻿using SmartParking.CalculationsEndpoint;
-using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Organizations;
 using System;
 using Volo.Abp;
@@ -158,11 +158,10 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     ///<inheritdoc/>
     public decimal CalculationForRegisteredCustomer(DateTime? exitTime, DateTime? entranceTime, TransactionOrganizationDto organization, CustomerPackageTransactionDto? packageDto, int totalHours)
     {
-        return (packageDto, packageDto?.Package, packageDto?.IsCustomPackage) switch
-        {
-            (null, _, _) or (not null, null, false) => CalculateInvoiceCases(entranceTime.Value, totalHours, exitTime.Value, organization),
-            (not null, not null, _) or (not null, null, true) => CalculateInvoiceForCustomerPackageType(entranceTime.Value, organization, packageDto, exitTime.Value),
-        };
+        if (!string.IsNullOrEmpty(packageDto!.EnPlateNumber))
+            return CalculateInvoiceForCustomerPackageType(entranceTime!.Value, organization, packageDto, exitTime.Value);
+        return CalculateInvoiceCases(entranceTime!.Value, totalHours, exitTime!.Value, organization);
+        
     }
     #endregion
 
@@ -177,17 +176,8 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     /// <returns>price of invoice</returns>
     public decimal CalculateInvoiceForCustomerPackageType(DateTime entranceTime, TransactionOrganizationDto organization, CustomerPackageTransactionDto packageDto, DateTime exitTime)
     {
-        decimal price;
-        if (packageDto.IsCustomPackage)
-        {
-            var totaldays = CalculateTimeForCustomPackage(exitTime, packageDto);
-            price = totaldays * organization.FullDayPrice;
-        }
-        else
-        {
-            var THoursOutPackage = CalculateTimeDependsOnPackage(entranceTime, exitTime, packageDto);
-            price = THoursOutPackage * organization.AdditionalHourPrice;
-        }
+        var THoursOutPackage = CalculateTimeDependsOnPackage(entranceTime, exitTime, packageDto);
+        decimal price = THoursOutPackage * organization.AdditionalHourPrice;
         return price;
     }
     /// <summary>

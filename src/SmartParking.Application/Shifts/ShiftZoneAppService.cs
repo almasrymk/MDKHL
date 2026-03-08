@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Reporting.Map.WebForms.BingMaps;
+using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
 using SmartParking.Filters;
 using SmartParking.Garages;
@@ -42,8 +44,18 @@ public class ShiftZoneAppService :
         var garage = await _garageAppService.GetAsync(dto.ZoneId);
         if (garage == null) throw new Exception("Garage not found");
 
+        var shift = await _shiftAppService.GetShiftAsync(dto.ShiftId);
+        if (shift == null) throw new Exception("Shift not found");
+
         dto.ZoneArName = garage.NameAr;
         dto.ZoneEnName = garage.NameEn;
+        dto.StartDate = shift.StartDate;
+        dto.EndDate = shift.EndDate;
+        dto.StartTime = shift.StartTime;
+        dto.EndTime = shift.EndTime;
+        dto.IsFullDay = shift.IsFullDay;
+        dto.ShiftEnglishName = shift.EnglishName;
+        dto.ShiftArabicName = shift.ArabicName;
 
         return await base.UpdateAsync(id, dto);
     }
@@ -58,6 +70,13 @@ public class ShiftZoneAppService :
 
         dto.ZoneArName = garage.NameAr;
         dto.ZoneEnName = garage.NameEn;
+        dto.StartDate = shift.StartDate;
+        dto.EndDate = shift.EndDate;
+        dto.StartTime = shift.StartTime;
+        dto.EndTime = shift.EndTime;
+        dto.IsFullDay = shift.IsFullDay;
+        dto.ShiftEnglishName = shift.EnglishName;
+        dto.ShiftArabicName = shift.ArabicName;
 
         return await base.CreateAsync(dto);
     }
@@ -70,7 +89,6 @@ public class ShiftZoneAppService :
             return await MapToGetOutputDtoInternalAsync(entity);
         }
     }
-
     /// <inheritdoc/>
 
     protected async Task<ShiftZoneDto> MapToGetOutputDtoForOrganizationAsync(ShiftZone entity)
@@ -82,7 +100,6 @@ public class ShiftZoneAppService :
     private async Task<ShiftZoneDto> MapToGetOutputDtoInternalAsync(ShiftZone entity)
     {
         var query = await _repository.WithDetailsAsync(
-            x => x.Shift,
             x => x.ShiftDetails
         );
 
@@ -97,16 +114,10 @@ public class ShiftZoneAppService :
         dto.OrganizationId = entity.OrganizationId;
 
         var garage = await _garageAppService.GetAsync(entity.ZoneId);
-        dto.ShiftDto.GarageEnglishName = garage.NameEn;
-        dto.ShiftDto.GarageArabicName = garage.NameAr;
+        dto.ZoneEnName = garage.NameEn;
+        dto.ZoneArName = garage.NameAr;
 
         return dto;
-    }
-    /// <inheritdoc/>
-    protected override async Task<IQueryable<ShiftZone>> CreateFilteredQueryAsync(PagedAndSortedResultRequestDto input)
-    {
-        return (await base.CreateFilteredQueryAsync(input))
-            .Include(x => x.Shift);
     }
     /// <inheritdoc/>
 
@@ -128,7 +139,6 @@ public class ShiftZoneAppService :
     private async Task<ShiftZoneDto> GetInternalAsync(Guid id, bool forOrganization)
     {
         var queryable = await _repository.WithDetailsAsync(
-            x => x.Shift,
             x => x.ShiftDetails
         );
 
@@ -211,8 +221,8 @@ public class ShiftZoneAppService :
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
             queryable = queryable.Where(or =>
-                or.Shift.EnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.Shift.ArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
+                or.ShiftEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                or.ShiftArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
             );
         }
 

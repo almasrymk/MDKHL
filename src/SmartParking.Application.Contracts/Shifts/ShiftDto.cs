@@ -14,7 +14,7 @@ public class ShiftDto : BaseDto
     public DateOnly EndDate { get; set; }
     public TimeOnly StartTime { get; set; }
     public TimeOnly EndTime { get; set; }
-    public int GarageId { get; set; }
+    public int? GarageId { get; set; }
     public string  GarageArabicName { get; set; }
     public string  GarageEnglishName { get; set; }
     public string  OrganizationEnglishName { get; set; }

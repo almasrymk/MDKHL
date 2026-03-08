@@ -169,7 +169,10 @@
 
                          @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement).Result || currenttenant.Id is null)
                          {
-                             <MudNavLink Href="/keeperpaymentsreport" Icon="@Icons.Material.Filled.MoreTime">@L["KeeperPayments"]</MudNavLink>
+                             @if(_isShift)
+                             {
+                                <MudNavLink Href="/keeperpaymentsreport" Icon="@Icons.Material.Filled.MoreTime">@L["KeeperPayments"]</MudNavLink>
+                             }
                              <MudNavLink Href="/packagepayment/reports" Icon="@Icons.Material.Filled.MoneyOff">@L["PackagePaymentsData"]</MudNavLink>
                              <MudNavLink Href="/paymentsreports" Icon="@Icons.Material.Filled.Money">@L["Payments"]</MudNavLink>
                              <MudNavLink Href="/packagepaymentreport" Icon="@Icons.Material.Filled.Money">@L["PackagesPayments"] </MudNavLink>
@@ -256,7 +259,7 @@
         var organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
 
         _isUserAccess = organization?.OrganizationSettings?.UserAccess ?? false;
-        _isShift = organization?.OrganizationSettings?.UseShifts ?? false;
+        _isShift = organization?.OrganizationSettings?.UseShifts ?? true;
 
         _isLoaded = true;
     }

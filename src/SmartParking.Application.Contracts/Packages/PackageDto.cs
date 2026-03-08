@@ -1,8 +1,5 @@
-﻿using SmartParking.Entities;
-using SmartParking.Entities.Organizations;
-using SmartParking.Enums;
+﻿using SmartParking.Enums;
 using System;
-using System.Collections.Generic;
 using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Packages;
@@ -11,10 +8,6 @@ public class PackageDto : AuditedEntityDto<int>
 {
     public string ArabicName { get; set; }
 	public string EnglishName { get; set; }
-    public PackageType PackageType { get; set; }
-    public int PackageTypeId { get; set; }
-    public string PackageTypeArabicName { get; set; }
-    public string PackageTypeEnglishName { get; set; }
     public decimal Price { get; set; }
     public string Description { get; set; }
     public bool Published { get; set; }

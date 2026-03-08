@@ -52,18 +52,27 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
 
     
 
-    public async Task<Result<List<CustomerUnitPackageDto>>> GetUnitPackageByCustomer(Guid customerId)
+    public async Task<Result<List<CustomerUnitPackageDto>>> GetListOfUnitPackageByCustomer(Guid customerId , int organizationId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => c.Customer.Id == customerId);
+<<<<<<< HEAD
+            query = query
+                .Where(c => c.Customer.Id == customerId && c.OrganizationId==organizationId)
+                .OrderBy(c => Math.Abs((c.ActivationDate - DateTime.UtcNow).TotalSeconds));
+            
+=======
+            query = query.Where(c => c.Customer.Id == customerId && c.OrganizationId==organizationId);
+>>>>>>> f7dfad3fd794f0105bfbec31fa5b53ad5edf60ad
 
             var result = await AsyncExecuter.ToListAsync(query);
 
             var packageMap = ObjectMapper.Map<List<CustomerUnitPackage>, List<CustomerUnitPackageDto>>(result);
             return Result<List<CustomerUnitPackageDto>>.Success(packageMap);
+        
         }
+        
     }
 
     public async Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(int packageId, Guid customerId, CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto)

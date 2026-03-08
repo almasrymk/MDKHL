@@ -1,6 +1,6 @@
 ﻿using MudBlazor;
 using SmartParking.Blazor.Components.State;
-using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Packages;

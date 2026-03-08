@@ -1,5 +1,6 @@
-﻿using SmartParking.CustomerPackages;
+﻿using SmartParking.CustomerPackages.Inputs;
 using SmartParking.Enums;
+using SmartParking.Packages;
 using System;
 
 namespace SmartParking.CustomerUnitPackages;
@@ -57,7 +58,6 @@ public class CustomerUnitPackageDto
             PublishedOfPackage = PublishFrom==PublishTo,               
             PublishFromOfPackage = PublishFrom,
             PublishToOfPackage = PublishTo,
-
             PackageArabicName = ArabicName,
             PackageEnglishName = EnglishName,
 
@@ -78,9 +78,10 @@ public class CustomerUnitPackageDto
             ActivationTime = TimeOnly.FromDateTime(ActivationDate),
 
             // Defaults / not available from this DTO
-            IsCustomPackage = false,
+            IsCustomPackage = true,
             Discount = Discount,
             Vat = Vat,
+            
 
 
             // If you don’t have these values here, leave as null

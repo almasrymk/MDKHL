@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.GarageTransactions;
 using System;
 using System.Collections.Generic;
@@ -12,4 +13,6 @@ namespace SmartParking.CustomerPackages.CustomerPackageTransactions;
 public interface ICustomerPackageHandlerAppService
 {
     Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackage(GarageTransactionDto garageTransactionDto);
+
+    Task<bool> CheckIfCustomerPackageHasAvailableSlots(Guid customerId, int organizationId);
 }

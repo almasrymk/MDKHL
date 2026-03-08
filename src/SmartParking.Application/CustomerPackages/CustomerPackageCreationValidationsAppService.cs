@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmartParking.CustomerPackages.Validations;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
+using SmartParking.Extensions;
 using SmartParking.Localization;
 using SmartParking.Subscriptions;
 using System;
@@ -51,11 +53,8 @@ public class CustomerPackageCreationValidationsAppService : ApplicationService, 
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-                return await query
-                .Where(x =>
-                    x.CustomerId == customerId &&
-                    x.OrganizationId == organizationId )
-                .CountAsync();
+
+                return await query.Where(x=>x.CustomerId==customerId).CountOfVehicleHasActivePackage(organizationId , DateTime.Now).CountAsync();
         }
     }
 

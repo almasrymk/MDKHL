@@ -33,7 +33,6 @@ public partial class ViewShiftZoneDialog
     protected override Task OnParametersSetAsync()
     {
         ShiftZone ??= new ShiftZoneDto();
-        ShiftZone.ShiftDto ??= new ShiftDto();
         ShiftZone.ShiftMangerDto ??= new ShiftMangerDto();
 
         return base.OnParametersSetAsync();
@@ -81,7 +80,7 @@ public partial class ViewShiftZoneDialog
             
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Staff"], item.ShiftStaffDetails.StaffEnName.ToString()));
             
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Device"], item!.ShiftDevices.DeviceCode.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Device"], item!.ShiftDevices.DeviceUserName.ToString()));
             
 
 

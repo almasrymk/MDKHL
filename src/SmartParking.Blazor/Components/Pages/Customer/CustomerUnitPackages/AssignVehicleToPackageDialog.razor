@@ -1,7 +1,10 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SmartParking.CustomerPackages
+@using SmartParking.CustomerPackages.AssignantionsContarcts
+@using SmartParking.CustomerPackages.Validations
 @using SmartParking.CustomerUnitPackages
 @using SmartParking.Localization
+@using SmartParking.Organizations
 @using SmartParking.UnitVehiclePackages
 @using Volo.Abp.MultiTenancy
 @inject IStringLocalizer<SmartParkingResource> L
@@ -12,6 +15,7 @@
 @inject NavigationManager Navigation
 @inject ICustomerPackagesCreationValidationsAppService customerPackagesValidations
 @inject IUnitVehiclePackageAppService UnitVehiclePackageAppService
+@inject IOrganizationsAppService OrganizationAppService
 
 
 

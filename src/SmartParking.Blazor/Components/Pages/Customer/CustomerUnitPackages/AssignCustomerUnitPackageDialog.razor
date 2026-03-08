@@ -61,7 +61,8 @@
                                 }
                             </MudSelect>
                         </MudItem>
-
+                            
+                        
 
 
                     }
@@ -135,6 +136,8 @@
                                 }
                             </MudSelect>
                         </MudItem>
+
+               
                     }
                     else if (IsCustom)
                     {
@@ -148,6 +151,11 @@
                             {
                                 <MudTextField T="string" Label="@L["CustomPackage"]" Placeholder="@L["CustomPackage"]" ReadOnly @bind-Value="_customerPackageDto.EnglishName"> @L["CustomPackage"] </MudTextField>
                             }
+                        </MudItem>
+                        <MudItem sm="12">
+                            <CustomUnitPackage UnitPackageDto="_createUpdateUnitPackageDto">
+
+                            </CustomUnitPackage>
                         </MudItem>
 
                     }

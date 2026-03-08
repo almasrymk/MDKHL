@@ -1,6 +1,8 @@
 ﻿using SmartParking.Entities.Cameras.Watchers;
+using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
 using SmartParking.Enums;
+using SmartParking.Organizations;
 using SmartParking.Shifts.ShiftZones;
 using SmartParking.UserShifts;
 using System;
@@ -19,13 +21,16 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
 {
     private readonly IRepository<ShiftZone, Guid> _shiftZoneRepository;
     private readonly IRepository<Watcher, int> _watcherRepository;
+    private readonly IOrganizationsAppService organizationsAppService;
 
     public ShiftZoneActionAppService(
         IRepository<Watcher, int> watcherRepository,
-        IRepository<ShiftZone, Guid> shiftZoneRepository)
+        IRepository<ShiftZone, Guid> shiftZoneRepository,
+        IOrganizationsAppService organizationsAppService)
     {
         _shiftZoneRepository = shiftZoneRepository;
         _watcherRepository = watcherRepository;
+        this.organizationsAppService = organizationsAppService;
     }
     /// <inheritdoc/>
     public async Task<ICollection<ShiftWatcherActionDto>> GetShiftZoneDevicesDataAsync()
@@ -33,21 +38,36 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
         if (!CurrentUser.Id.HasValue)
             return new List<ShiftWatcherActionDto>();
 
+        var currentOrganization = await organizationsAppService.GetOrganizationForCurrentTenatAsync();
+        if(currentOrganization.OrganizationSettings.UseShifts==false)
+           return ObjectMapper.Map<List<Watcher>, List<ShiftWatcherActionDto>>(await _watcherRepository.GetListAsync());
+
         var today = DateOnly.FromDateTime(DateTime.Now);
         var timeOfDay = TimeOnly.FromDateTime(DateTime.Now);
 
         var query = await _shiftZoneRepository.WithDetailsAsync(
-            x => x.ShiftDetails,
-            x => x.Shift);
+                        x => x.ShiftDetails);
 
         var activeShiftsQuery = query
-            .Where(sz => sz.Shift.StartDate <= today && sz.Shift.EndDate >= today)
-            .Where(sz => sz.Shift.Status == Status.Active)
-            .Where(sz => sz.Shift.IsFullDay ||
-                ((sz.Shift.StartTime <= sz.Shift.EndTime && sz.Shift.StartTime <= timeOfDay && sz.Shift.EndTime >= timeOfDay) ||
-                 (sz.Shift.StartTime > sz.Shift.EndTime && (sz.Shift.StartTime <= timeOfDay || sz.Shift.EndTime >= timeOfDay))));
+            .Where(sz => sz.StartDate <= today && sz.EndDate >= today)
+            .Where(sz => sz.Status == Status.Active)
+            .Where(sz => sz.IsFullDay ||
+                ((sz.StartTime <= sz.EndTime && sz.StartTime <= timeOfDay && sz.EndTime >= timeOfDay) ||
+                 (sz.StartTime > sz.EndTime && (sz.StartTime <= timeOfDay || sz.EndTime >= timeOfDay))));
 
-        var isManager = activeShiftsQuery
+        var activeShift = activeShiftsQuery.FirstOrDefault();
+
+        int? organizationId = activeShift?.OrganizationId ?? query.FirstOrDefault()?.OrganizationId;
+
+        if (!organizationId.HasValue)
+            return new List<ShiftWatcherActionDto>(); 
+
+
+        IQueryable<ShiftZone> finalActiveShiftsQuery = currentOrganization.OrganizationSettings?.UseShifts == true
+            ? activeShiftsQuery
+            : query.Where(sz => sz.OrganizationId == organizationId.Value);
+
+        var isManager = finalActiveShiftsQuery
             .Any(sz => sz.ShiftManager.ManagerUserName == CurrentUser.UserName);
 
         List<ShiftZone> shiftZones;
@@ -55,17 +75,17 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
         if (isManager)
         {
             shiftZones = await AsyncExecuter.ToListAsync(
-                activeShiftsQuery.Where(sz => sz.ShiftManager.ManagerUserName == CurrentUser.UserName));
+                finalActiveShiftsQuery.Where(sz => sz.ShiftManager.ManagerUserName == CurrentUser.UserName));
         }
         else
         {
             shiftZones = await AsyncExecuter.ToListAsync(
-                activeShiftsQuery.Where(sz =>
+                finalActiveShiftsQuery.Where(sz =>
                     sz.ShiftDetails.Any(sd => sd.ShiftStaffDetails.StaffId == CurrentUser.Id)));
         }
 
         var deviceIds = shiftZones
-            .SelectMany(sz => sz.ShiftDetails)
+            .SelectMany(sz => sz.ShiftDetails ?? new List<ShiftDetails>())
             .Where(sd => sd.ShiftDevices?.DeviceCode != null)
             .Where(sd => isManager || sd.ShiftStaffDetails.StaffId == CurrentUser.Id)
             .Select(sd => sd.ShiftDevices.DeviceCode)
@@ -76,16 +96,16 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
         var watchers = await AsyncExecuter.ToListAsync(
             watcherQuery.Where(w => deviceIds.Contains(w.DeviceId)));
 
+
         return ObjectMapper.Map<List<Watcher>, List<ShiftWatcherActionDto>>(watchers);
-    }    
+    }
     /// <inheritdoc/>
     public async Task<PagedResultDto<ShiftZoneUserViewDto>> GetShiftZoneUsersAsync(
         Guid? tenantId,
         PagedAndSortedAndSearchResultRequestDto input)
     {
         var query = await _shiftZoneRepository.WithDetailsAsync(
-            x => x.ShiftDetails,
-            x => x.Shift);
+            x => x.ShiftDetails);
 
         if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
         {
@@ -116,8 +136,8 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
                                               .Distinct()
                                               .ToList() ?? new List<string>(),
                 Garage = garageName(zone),
-                OrganizationArabicName = zone.ShiftDto?.OrganizationArabicName,
-                OrganizationEnglishName = zone.ShiftDto?.OrganizationEnglishName
+                OrganizationArabicName = zone?.OrganizationArName,
+                OrganizationEnglishName = zone?.OrganizationEnName
             });
 
         var staffRows = mapping
@@ -133,8 +153,8 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
                     Device = detail.ShiftDevices?.DeviceCode ?? "None",
                     Devices = new List<string>(),
                     Garage = garageName(zone),
-                    OrganizationArabicName = zone.ShiftDto?.OrganizationArabicName,
-                    OrganizationEnglishName = zone.ShiftDto?.OrganizationEnglishName
+                    OrganizationArabicName = zone?.OrganizationArName,
+                    OrganizationEnglishName = zone?.OrganizationEnName
                 }));
 
         var resultList = managerRows

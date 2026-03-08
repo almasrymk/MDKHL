@@ -332,7 +332,6 @@ public partial class Package
         {
 
             ArabicName = packageDto.ArabicName,
-            PackageTypeId = packageDto.PackageTypeId,
             Description = packageDto.Description,
             EnglishName = packageDto.EnglishName,
             OrganizationId = packageDto.OrganizationId,
@@ -341,7 +340,6 @@ public partial class Package
             PublishFrom = packageDto.PublishFrom,
             PublishTo = packageDto.PublishTo,
             PackageStatus = packageDto.PackageStatus,
-            PackageType = packageDto.PackageType,
             CustomerCategory = packageDto.CustomerCategory,
             DurationOfPackage = packageDto.DurationOfPackage,
             ActivationDate = packageDto.ActivationDate,

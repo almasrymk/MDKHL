@@ -29,6 +29,7 @@ using Microsoft.AspNetCore.Identity;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using SmartParking.Filters;
 using static Volo.Abp.Identity.Settings.IdentitySettingNames;
+using SmartParking.CustomerPackages.Dtos;
 namespace SmartParking.Customers;
 /// <summary>
 /// Customer application service class.

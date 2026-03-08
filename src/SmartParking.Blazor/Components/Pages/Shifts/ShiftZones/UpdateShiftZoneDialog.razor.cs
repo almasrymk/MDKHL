@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MudBlazor;
 using SmartParking.Authentication;
+using SmartParking.Blazor.Components.Shared;
 using SmartParking.Entities.Cameras.Watchers;
+using SmartParking.Entities.Shifts;
 using SmartParking.Garages;
 using SmartParking.Shifts;
 using SmartParking.Shifts.ShiftDetail;
@@ -9,7 +12,11 @@ using SmartParking.Shifts.ShiftDevices;
 using SmartParking.Shifts.ShiftsMangers;
 using SmartParking.Shifts.ShiftStaffDetail;
 using SmartParking.Shifts.ShiftZones;
+using SmartParking.Validations;
+using System.Security.Authentication;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Validation;
 
 namespace SmartParking.Blazor.Components.Pages.Shifts.ShiftZones;
 
@@ -63,6 +70,7 @@ public partial class UpdateShiftZoneDialog
                     ? null
                     : new CreateUpdateShiftMangerDto
                     {
+                        ManagerUserId = k.Id,
                         ManagerUserName = k.UserName,
                         ManagerEnName = k.EnglishName,
                         ManagerPhoneNumber = k.PhoneNumber
@@ -89,7 +97,7 @@ public partial class UpdateShiftZoneDialog
         ShiftZone = await ShiftZoneAppService.GetAsync(Id);
         ShiftDetails = ShiftZone.ShiftDetailsDto ?? new List<ShiftDetailsDto>();
 
-        CreateUpdateShiftZone.ShiftId = ShiftZone.ShiftDto?.Id ?? 0;
+        CreateUpdateShiftZone.ShiftId = ShiftZone.ShiftId;
         CreateUpdateShiftZone.ZoneId = ShiftZone.ZoneId;
         CreateUpdateShiftZone.ZoneArName = ShiftZone.ZoneArName;
         CreateUpdateShiftZone.ZoneEnName = ShiftZone.ZoneEnName;
@@ -97,6 +105,7 @@ public partial class UpdateShiftZoneDialog
         var managerDto = ShiftZone.ShiftMangerDto;
         CreateUpdateShiftZone.Manager = new CreateUpdateShiftMangerDto
         {
+            ManagerUserId = managerDto?.Id,
             ManagerUserName = managerDto?.ManagerUserName,
             ManagerEnName = managerDto?.ManagerEnName,
             ManagerPhoneNumber = managerDto?.ManagerPhoneNumber
@@ -108,7 +117,7 @@ public partial class UpdateShiftZoneDialog
             {
                 Keepers.Add(new AssignStaffDataDto
                 {
-                    Id = Guid.NewGuid(), 
+                    Id = managerDto.Id,
                     UserName = managerDto.ManagerUserName,
                     EnglishName = managerDto.ManagerEnName,
                     PhoneNumber = managerDto.ManagerPhoneNumber
@@ -173,6 +182,12 @@ public partial class UpdateShiftZoneDialog
 
         try
         {
+            CreateUpdateShiftZone.TenantId = CurrentTenant.Id;
+            CreateUpdateShiftZone.IsFullDay = CreateUpdateShiftZone.IsFullDay || PackageValidations.CheckPackageTimeValiditity(CreateUpdateShiftZone.StartTime, CreateUpdateShiftZone.EndTime);
+
+            CreateUpdateShiftZone.OrganizationId = Garages[0].Id;
+            CreateUpdateShiftZone.OrganizationEnName = Garages[0].OrganizationNameEn;
+            CreateUpdateShiftZone.OrganizationArName = Garages[0].OrganizationNameAr;
             if (CreateUpdateShiftZone.ZoneId == 0)
             {
                 Snackbar.Add(L["PleaseSelectZone"], Severity.Warning);
@@ -183,6 +198,7 @@ public partial class UpdateShiftZoneDialog
             var mgr = Keepers.FirstOrDefault(x => x.Id == SelectedManagerId);
             CreateUpdateShiftZone.Manager = new CreateUpdateShiftMangerDto
             {
+                ManagerUserId = mgr?.Id,
                 ManagerUserName = mgr?.UserName,
                 ManagerEnName = mgr?.EnglishName,
                 ManagerPhoneNumber = mgr?.PhoneNumber
@@ -216,14 +232,30 @@ public partial class UpdateShiftZoneDialog
             if (assignmentRows.Any())
                 await AssignShiftZoneAppService.UpdateShiftZoneAssignmentsAsync(Id, assignmentRows);
 
-            Snackbar.Add(L["ShiftZoneSaved"], Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.UPDATE]} {CreateUpdateShiftZone.ShiftArabicName}", Severity.Success);
             await Task.Delay(1000);
-            NavigationManager.NavigateTo("/shift-zone", true);
+        }
+        catch (AbpValidationException validationException)
+        {
+            foreach (var validationError in validationException.ValidationErrors)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.VAlIDATION_ERROR]}: {L[validationError.MemberNames.First()]} - {validationError.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (BusinessException ex)
+        {
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Code}", Severity.Error);
+        }
+        catch (AuthenticationException ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"{L["SaveFailed"]}: {ex.Message}", Severity.Error);
+
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.UPDATE]} : {ex.Message} ", Severity.Error);
         }
         finally
         {

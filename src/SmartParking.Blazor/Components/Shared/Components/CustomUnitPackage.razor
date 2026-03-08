@@ -1,0 +1,181 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Packages
+@using SmartParking.UnitPackages
+@using SmartParking.Enums
+@inject IStringLocalizer<SmartParkingResource> L
+
+<MudGrid>
+    <MudItem sm="6">
+        <MudDatePicker Label="@L["StartDate"]"
+                       DateChanged="OnActivationDateChanged"
+                       PickerVariant="PickerVariant.Dialog"
+                       ShowToolbar="false"
+                       Date="UnitPackageDto.Package.ActivationDate == default ? null : UnitPackageDto.Package.ActivationDate"
+                       Required="true"
+                       MinDate="new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)"
+                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+    </MudItem>
+    <MudItem sm="6">
+        <MudDatePicker Label="@L["EndDate"]"
+                       DateChanged="OnDeactivationDateChanged"
+                       PickerVariant="PickerVariant.Dialog"
+                       ShowToolbar="false"
+                       Date="UnitPackageDto.Package.DeactivationDate == default ? null : UnitPackageDto.Package.DeactivationDate"
+                       Required="true"
+                       MinDate="_activationDate == null
+                           ? new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).AddDays(1)
+                           : _activationDate.Value.AddDays(1)"
+                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+    </MudItem>
+</MudGrid>
+
+<MudGrid>
+    <MudItem sm="6">
+        <MudTimePicker Label="@L["PublishFrom"]"
+                       PickerVariant="PickerVariant.Dialog"
+                       Time="_publishFrom"
+                       TimeChanged="OnPublishFromChanged"
+                       Required="true"
+                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+    </MudItem>
+    <MudItem sm="6">
+        <MudTimePicker Label="@L["PublishTo"]"
+                       PickerVariant="PickerVariant.Dialog"
+                       Time="_publishTo"
+                       TimeChanged="OnPublishToChanged"
+                       MinTime="_publishFrom"
+                       Required="true"
+                       Validation="ValidatePublishTo"
+                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+    </MudItem>
+</MudGrid>
+
+<MudGrid>
+    <MudItem sm="6">
+        <MudNumericField T="decimal" @bind-Value="UnitPackageDto.Package.Price"
+                         HideSpinButtons Min="0"
+                         Label="@L["Price"]"
+                         Required="true"
+                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+    </MudItem>
+    <MudItem sm="6">
+        <MudNumericField T="int" @bind-Value="UnitPackageDto.Package.DurationOfPackage"
+                         HideSpinButtons Min="0"
+                         Label="@L["DurationOfPackage"]"
+                         ReadOnly="true"
+                         Required="true"
+                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+    </MudItem>
+</MudGrid>
+
+<MudGrid>
+    <MudItem sm="6">
+        <MudNumericField T="int" @bind-Value="UnitPackageDto.NumberOfVehicles"
+                         HideSpinButtons Min="0"
+                         Label="@L["NumberOfVehicles"]"
+                         Required="true"
+                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+    </MudItem>
+    <MudItem sm="6">
+        <MudNumericField T="int" @bind-Value="UnitPackageDto.NumberOfSlots"
+                         HideSpinButtons Min="0"
+                         Label="@L["NumberOfSlots"]"
+                         Required="true"
+                         RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+    </MudItem>
+</MudGrid>
+
+
+
+
+
+@code {
+    [Parameter]
+    public CreateUpdateUnitPackageDto UnitPackageDto { get; set; }
+
+    // Local nullable mirrors so MudDatePicker / MudTimePicker work cleanly
+    private DateTime? _activationDate;
+    private DateTime? _deactivationDate;
+    private TimeSpan? _publishFrom;
+    private TimeSpan? _publishTo;
+
+    protected override void OnParametersSet()
+{
+    UnitPackageDto ??= new CreateUpdateUnitPackageDto();
+    UnitPackageDto.Package ??= new CreateUpdatePackageDto();
+
+    _activationDate   = UnitPackageDto.Package.ActivationDate   == default ? null : UnitPackageDto.Package.ActivationDate;
+    _deactivationDate = UnitPackageDto.Package.DeactivationDate == default ? null : UnitPackageDto.Package.DeactivationDate;
+    _publishFrom = UnitPackageDto.Package.PublishFrom.HasValue
+        ? new TimeSpan(UnitPackageDto.Package.PublishFrom.Value.Hour, UnitPackageDto.Package.PublishFrom.Value.Minute, 0)
+        : null;
+    _publishTo = UnitPackageDto.Package.PublishTo.HasValue
+        ? new TimeSpan(UnitPackageDto.Package.PublishTo.Value.Hour, UnitPackageDto.Package.PublishTo.Value.Minute, 0)
+        : null;
+}
+
+    private void OnActivationDateChanged(DateTime? newDate)
+    {
+        _activationDate = newDate;
+        UnitPackageDto.Package.ActivationDate = newDate ?? default;
+
+        if (_activationDate > _deactivationDate)
+        {
+            _deactivationDate = _activationDate.Value.AddDays(1);
+            UnitPackageDto.Package.DeactivationDate = _deactivationDate.Value;
+        }
+
+        CalculateDuration();
+    }
+
+    private void OnDeactivationDateChanged(DateTime? newDate)
+    {
+        _deactivationDate = newDate;
+        UnitPackageDto.Package.DeactivationDate = newDate ?? default;
+
+        CalculateDuration();
+    }
+
+    private void OnPublishFromChanged(TimeSpan? value)
+    {
+        _publishFrom = value;
+        UnitPackageDto.Package.PublishFrom = value.HasValue
+            ? new TimeOnly(value.Value.Hours, value.Value.Minutes)
+            : null;
+
+        // Reset PublishTo if it is now invalid
+        if (_publishTo.HasValue && _publishFrom.HasValue && _publishTo <= _publishFrom)
+        {
+            _publishTo = null;
+            UnitPackageDto.Package.PublishTo = null;
+        }
+    }
+
+    private void OnPublishToChanged(TimeSpan? value)
+    {
+        _publishTo = value;
+        UnitPackageDto.Package.PublishTo = value.HasValue
+            ? new TimeOnly(value.Value.Hours, value.Value.Minutes)
+            : null;
+    }
+
+    private string ValidatePublishTo(TimeSpan? value)
+    {
+        if (!value.HasValue || !_publishFrom.HasValue)
+            return null;
+
+        if (value <= _publishFrom)
+            return L["EndTimeShouldBeGreaterThanStartTime"];
+
+        return null;
+    }
+
+    private void CalculateDuration()
+    {
+        if (_activationDate.HasValue && _deactivationDate.HasValue && _deactivationDate > _activationDate)
+            UnitPackageDto.Package.DurationOfPackage = (int)(_deactivationDate.Value - _activationDate.Value).TotalDays;
+        else
+            UnitPackageDto.Package.DurationOfPackage = 0;
+    }
+}

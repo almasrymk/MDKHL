@@ -66,7 +66,7 @@ public class KeeperShiftsAppService : ApplicationService, IKeeperShiftsAppServic
             await OverlappingValidation(input, shift);
             var keeperShift = _mapper.Map<KeeperShift>(input);
             keeperShift.OrganizationId = shift.OrganizationId;
-            keeperShift.GarageId = shift.GarageId;
+            keeperShift.GarageId = shift.GarageId.Value;
             keeperShift.StartTime = shift.StartTime;
             keeperShift.EndTime = shift.EndTime;
             await _keeperShiftRepository.InsertAsync(keeperShift, true);

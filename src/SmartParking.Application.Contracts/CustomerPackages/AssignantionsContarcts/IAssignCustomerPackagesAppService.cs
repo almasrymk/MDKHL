@@ -1,8 +1,10 @@
-﻿using SmartParking.Payments;
+﻿using SmartParking.CustomerPackages.Dtos;
+using SmartParking.CustomerPackages.Inputs;
+using SmartParking.Payments;
 using SmartParking.Results;
 using System.Threading.Tasks;
 
-namespace SmartParking.CustomerPackages;
+namespace SmartParking.CustomerPackages.AssignantionsContarcts;
 
 public interface IAssignCustomerPackagesAppService
 {

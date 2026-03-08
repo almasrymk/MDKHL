@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SmartParking.CodeGeneration;
 using SmartParking.Entities.Units;
 using SmartParking.Organizations;
 using System;

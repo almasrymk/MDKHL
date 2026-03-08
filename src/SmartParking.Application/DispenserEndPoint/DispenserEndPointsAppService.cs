@@ -86,7 +86,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             packageDto = new();
             var customerId = await _garageTransactionUtilityAppService.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(_garageTransactionDto.PlateNumber);
             packageDto.CustomerId = customerId.HasValue ? customerId.Value : Guid.Empty;
-            var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly,  _garageTransactionDto  , packageDto);
+            var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, new OrganizationTransactionSettingsDto { HasFreeSlots = _organization.HasFreeSlots, HasPackageOnly = _organization.HasPackageOnly, HasUserAccess = _organization.Settings.CustomerPackage, HasVehicleAccess = _organization.Settings.VehcilePackage },  _garageTransactionDto  , packageDto);
             await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = request.CarNum, laneNO = request.LaneNO, operatorType = result == false ? 2 : 5 });
             return GetGateResponse(request.CarNum, result, _otherReasons);
         }
@@ -119,7 +119,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             {
                 return NotFoundPackageHandler(packageCodeEntry.CarNum);
             }
-            var result = await _garageTransactionEndPointsAppService.HandleEntrance(unlinkedDto, _organization.HasFreeSlots, _organization.HasPackageOnly, _garageTransactionDto, packageDto);
+            var result = await _garageTransactionEndPointsAppService.HandleEntrance(unlinkedDto, new OrganizationTransactionSettingsDto { HasFreeSlots = _organization.HasFreeSlots, HasPackageOnly = _organization.HasPackageOnly, HasUserAccess = _organization.UserAccess, HasVehicleAccess = _organization.VehicleAccess }, _garageTransactionDto, packageDto);
             return GetGateResponse(packageCodeEntry.CarNum ,result, _otherReasons);
         }
     }

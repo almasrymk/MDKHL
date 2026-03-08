@@ -8,6 +8,7 @@
 @using SmartParking.Shifts.ShiftStaffDetail
 @using SmartParking.Shifts.ShiftZones
 @using SmartParking.Shifts.ShiftsMangers
+@using Volo.Abp.MultiTenancy
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<SmartParkingResource> L
 @inject NavigationManager Navigation
@@ -15,6 +16,8 @@
 @inject IGarageAppService GarageAppService
 @inject IShiftDetailsAppService ShiftDetailsAppService
 @inject IShiftZoneAppService ShiftZoneAppService
+@inject ICurrentTenant CurrentTenant
+
 
 
 <PageTitle>@L["ShiftZoneDetails"]</PageTitle>
@@ -27,25 +30,25 @@
 		<DialogContent>
 			<MudForm Class="flex-grow-1 mt-4 h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper">
 				<MudGrid>
-					<MudItem sm="4">
-						<MudTextField Value="@(GetLocalized(ShiftZone?.ShiftDto?.EnglishName, ShiftZone?.ShiftDto?.ArabicName))"
-									  For="@(() => ShiftZone.ShiftDto.EnglishName)"
+					<MudItem sm="3">
+						<MudTextField Value="@(GetLocalized(ShiftZone?.ShiftEnglishName, ShiftZone?.ShiftArabicName))"
+									  For="@(() => ShiftZone.ShiftEnglishName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
 									  Label=@L["ShiftName"]
 									  Disabled />
 					</MudItem>
 
-					<MudItem sm="4">
-						<MudTextField Value="@(GetLocalized(ShiftZone?.ShiftDto?.GarageEnglishName, ShiftZone?.ShiftDto?.GarageArabicName))"
-									  For="@(() => ShiftZone.ShiftDto.GarageEnglishName)"
+					<MudItem sm="3">
+						<MudTextField Value="@(GetLocalized(ShiftZone?.ZoneEnName, ShiftZone?.ZoneArName))"
+									  For="@(() => ShiftZone.ZoneEnName)"
 									  Immediate="true"
 									  Variant="Variant.Text"
 									  Label=@L["ZoneName"]
 									  Disabled />
 					</MudItem>
 
-					<MudItem sm="4">
+					<MudItem sm="3">
 						<MudTextField Value="@(GetLocalized(ShiftZone?.ShiftMangerDto?.ManagerEnName, ShiftZone?.ShiftMangerDto?.ManagerUserName))"
 									  For="@(() => ShiftZone.ShiftMangerDto.ManagerEnName)"
 									  Immediate="true"
@@ -54,53 +57,81 @@
 									  Disabled />
 					</MudItem>
 
+					<MudItem sm="3">
+						<MudTextField T="string"
+									  Value="@L[$"{ShiftZone.Status}"]"
+									  Immediate="true"
+									  Disabled=true
+									  Label="@L["Status"]" />
+					</MudItem>
+
 					
-						<MudItem sm="3" md="3">
-							<MudTextField Value="ShiftZone.ShiftDto.StartDate.ToString()"
-										  Disabled=true
-										  Label="@L["StartDate"]" />
+					<MudItem sm="3" md="3">
+						<MudTextField Value="ShiftZone.StartDate.ToString()"
+										Disabled=true
+										Label="@L["StartDate"]" />
+					</MudItem>
+					<MudItem sm="3" md="3">
+						<MudTextField Value="ShiftZone.EndDate.ToString()"
+										Disabled=true
+										Label="@L["EndDate"]" />
+					</MudItem>
+					@if (ShiftZone.IsFullDay == true)
+					{
+						<MudItem sm="4" md="4">
+							<MudTextField T="string"
+											Text="@(24+L["Hour"])"
+											Immediate="true"
+											Disabled=true
+											Label=@L["Published"] />
 						</MudItem>
+					}
+					else
+					{
 						<MudItem sm="3" md="3">
-							<MudTextField Value="ShiftZone.ShiftDto.EndDate.ToString()"
-										  Disabled=true
-										   Label="@L["EndDate"]" />
+							<MudTextField Value="ShiftZone.StartTime.ToString()"
+											Disabled=true
+											Label="@L["StartTime"]" />
 						</MudItem>
-						@if (ShiftZone.ShiftDto.IsFullDay == true)
+
+						<MudItem sm="3" md="3">
+							<MudTextField Value="ShiftZone.EndTime.ToString()"
+											Disabled=true
+											Label="@L["EndTime"]" />
+						</MudItem>
+					}
+
+					@if (CurrentTenant.Id is null)
+					{
+
+						@if (CultureInfo.CurrentCulture.Name == "ar")
 						{
-							<MudItem sm="4" md="4">
-								<MudTextField T="string"
-											  Text="@(24+L["Hour"])"
-											  Immediate="true"
-											  Disabled=true
-											  Label=@L["Published"] />
-							</MudItem>
-
-
-						}
-						else{
-
-					
-							<MudItem sm="3" md="3">
-								<MudTextField Value="ShiftZone.ShiftDto.StartTime.ToString()"
-											  Disabled=true
-											   Label="@L["StartTime"]" />
-							</MudItem>
-							<MudItem sm="3" md="3">
-								<MudTextField Value="ShiftZone.ShiftDto.EndTime.ToString()"
-											  Disabled=true
-											   Label="@L["EndTime"]" />
+							<MudItem sm="6" md="6">
+								<MudTextField @bind-Value="ShiftZone.OrganizationArName"
+												Immediate="true"
+												Disabled=true
+												Label="@L["Organization"]" />
 							</MudItem>
 						}
+						else
+						{
+
+							<MudItem sm="6" md="6">
+								<MudTextField @bind-Value="ShiftZone.OrganizationEnName"
+												Immediate="true"
+												Disabled=true
+												Label="@L["Organization"]" />
+							</MudItem>
+						}
+					}
 					
-						<MudItem sm="12">
-
-							<SPDataGrid PageName=@L["StaffDevices"] 
-								TotalItemsInTable="@TotalItem" 
-								Data="@itemData" 
-								OnPageChanged="FetchTableData"
-								ShowExport=false></SPDataGrid>
-						</MudItem>
-
+					<MudItem sm="12">
+						<SPDataGrid PageName=@L["StaffDevices"] 
+							TotalItemsInTable="@TotalItem" 
+							Data="@itemData" 
+							OnPageChanged="FetchTableData"
+							ShowExport=false></SPDataGrid>
+					</MudItem>
 				</MudGrid>
 			</MudForm>
 		</DialogContent>

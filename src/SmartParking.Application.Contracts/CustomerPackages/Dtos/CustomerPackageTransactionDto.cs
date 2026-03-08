@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.CustomerPackages;
+namespace SmartParking.CustomerPackages.Dtos;
 public class CustomerPackageTransactionDto
 {
     public int Id { get; set; }
@@ -20,7 +20,7 @@ public class CustomerPackageTransactionDto
     public Guid? TenantId { get; set; }
     public int? DurationOfPackage { get; set; }
     public decimal? PriceOfPackage { get; set; }
-    public string? DescriptionOfPackage { get; set; }
+    public string DescriptionOfPackage { get; set; }
     public bool? publishedOfPackage { get; set; }
     public TimeOnly? PublishFromOfPackage { get; set; }
     public TimeOnly? PublishToOfPackage { get; set; }
@@ -39,6 +39,6 @@ public class CustomerPackageTransactionDto
     public DateOnly? ActivationDate { get; set; }
     public TimeOnly? ActivationTime { get; set; }
     public bool IsCustomPackage { get; set; }
-    public string? PackageCode { get; set; }
-    public string? QRCodePath { get; set; }
+    public string PackageCode { get; set; }
+    public string QRCodePath { get; set; }
 }

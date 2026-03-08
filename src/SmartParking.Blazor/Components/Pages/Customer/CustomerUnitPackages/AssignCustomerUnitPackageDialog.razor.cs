@@ -18,6 +18,7 @@ public partial class AssignCustomerUnitPackageDialog
     private IMudDialogInstance MudDialogAdd { get; set; }
     public UnitPackageDto CustomerPackage = new UnitPackageDto();
     public CustomerUnitPackageDto _customerPackageDto = new CustomerUnitPackageDto();
+    public CreateUpdateUnitPackageDto _createUpdateUnitPackageDto = new CreateUpdateUnitPackageDto();
     [Parameter]
     public CustomerDto Customer { get; set; } = new();
 
@@ -34,7 +35,6 @@ public partial class AssignCustomerUnitPackageDialog
     private IReadOnlyList<UnitDto> Units { get; set; } = new List<UnitDto>();
     private string unitCode;
     private CustomerUnitPackageType customerUnitPackageType;
-
 
     /// <summary>
     /// Retrieves the available packages based on the customer's category.
