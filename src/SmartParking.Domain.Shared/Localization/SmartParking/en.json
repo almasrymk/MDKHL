@@ -930,7 +930,7 @@
     "OnlyOnePackageTypeAllowed": "Only one package type can be enabled.",
     "CustomerHasActivePackage": "Customer already package",
     "PackgeVehiclesLimitationsExceeded": "Number of vehicles allowed for that package exceeded",
-    "PleaseChooseAGate": "Please Choose A Gate",
+    "ChooseGate": "Please Choose A Gate",
     "Warning": "Warning"
   }
 }
