@@ -57,16 +57,16 @@ public class SmartParkingDomainModule : AbpModule
     }
     public override Task ConfigureServicesAsync(ServiceConfigurationContext context)
     {
-        context.Services.AddScoped<GarageTransactionsBackgroundWorker>();
+        //  context.Services.AddScoped<GarageTransactionsBackgroundWorker>();
 
         return base.ConfigureServicesAsync(context);
     }
     public override void OnApplicationInitialization(Volo.Abp.ApplicationInitializationContext context)
     {
-        var backgroundWorkerManager = context.ServiceProvider.GetRequiredService<IBackgroundWorkerManager>();
+        //var backgroundWorkerManager = context.ServiceProvider.GetRequiredService<IBackgroundWorkerManager>();
 
-        var worker = context.ServiceProvider.GetRequiredService<GarageTransactionsBackgroundWorker>();
-        backgroundWorkerManager.AddAsync(worker);
+        //var worker = context.ServiceProvider.GetRequiredService<GarageTransactionsBackgroundWorker>();
+        //backgroundWorkerManager.AddAsync(worker);
         base.OnApplicationInitialization(context);
     }
 }

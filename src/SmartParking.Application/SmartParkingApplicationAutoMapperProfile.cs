@@ -317,8 +317,23 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
          .ForPath(d => d.OrganizationEnglishName, s => s.MapFrom(o => o.Organization.EnglishName))
          .ForPath(d => d.GarageArabicName, s => s.MapFrom(o => o.Garage.NameAr))
          .ForPath(d => d.GarageEnglishName, s => s.MapFrom(o => o.Garage.NameEn))
-        .ReverseMap();
-
+         .ForMember(d => d.RemainingTime, s => s.MapFrom(src =>
+            !src.CheckoutMobile.HasValue || src.Organization == null
+                ? (DateTime?)null
+                : src.CheckoutMobile.Value.AddMinutes(src.Organization.Graceperiod) <= DateTime.Now
+                    ? DateTime.MinValue
+                        : src.CheckoutMobile.Value.AddMinutes(src.Organization.Graceperiod)
+          ))
+          .ForMember(d => d.IsPending, s => s.MapFrom(src =>
+              src.CheckoutMobile.HasValue &&
+              src.Organization != null &&
+              src.CheckoutMobile.Value.AddMinutes(src.Organization.Graceperiod) > DateTime.Now
+          ))
+          .ForMember(d => d.CanCheckout, s => s.MapFrom(src =>
+              src.CheckoutMobile.HasValue &&
+              src.Organization != null &&
+              src.CheckoutMobile.Value.AddMinutes(src.Organization.Graceperiod) <= DateTime.Now
+          ));
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>().ReverseMap();        
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransactionDto>().ReverseMap();       
         
