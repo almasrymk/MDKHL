@@ -291,12 +291,11 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     {
         var result = await _shiftZoneActionAppService.GetShiftZoneDevicesDataAsync();
 
-        if (result == null || result.Count == 0)
+        if (result == null)
         {
             return Result<ICollection<ShiftWatcherActionDto>>.Success(new List<ShiftWatcherActionDto>());
         }
-
-        return Result<ICollection<ShiftWatcherActionDto>>.Success(result);
+        return Result<ICollection<ShiftWatcherActionDto>>.Success(result.Value);
     }
 
     /// <inheritdoc/>
