@@ -1,0 +1,48 @@
+@using SmartParking.Localization
+@using SmartParking.Units
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+        <MudText Typo="Typo.h6">@L["Details"]</MudText>
+       </TitleContent>
+  <DialogContent>
+      <MudGrid>
+   <MudItem sm="12">
+        <MudText><strong>@L["Code"]:</strong> @Unit.Code</MudText>
+  </MudItem>
+ <MudItem sm="12">
+     <MudText><strong>@L["Capacity"]:</strong> @Unit.Capacity</MudText>
+     </MudItem>
+       <MudItem sm="12">
+ <MudText><strong>@L["Description"]:</strong> @Unit.Description</MudText>
+     </MudItem>
+  </MudGrid>
+        </DialogContent>
+     <DialogActions>
+<MudButton OnClick="Cancel" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">@L["Close"]</MudButton>
+       </DialogActions>
+  </MudDialog>
+</div>
+
+<style>
+    .mud-modal 
+    {
+ border-radius: 0 20px 0 20px;
+    }
+</style>
+
+@code {
+    [Parameter]
+ public UnitDto Unit { get; set; } = new UnitDto();
+    
+    [CascadingParameter]
+ private IMudDialogInstance MudDialog { get; set; }
+
+ private void Cancel()
+ {
+   MudDialog.Cancel();
+    }
+}

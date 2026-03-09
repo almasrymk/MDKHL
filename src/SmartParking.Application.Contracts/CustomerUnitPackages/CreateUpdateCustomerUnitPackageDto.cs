@@ -1,4 +1,7 @@
-﻿using SmartParking.Enums;
+﻿using SmartParking.Cutomers;
+using SmartParking.Enums;
+using SmartParking.UnitPackages;
+using SmartParking.Validations;
 using System;
 
 namespace SmartParking.CustomerUnitPackages;
@@ -22,5 +25,46 @@ public class CreateUpdateCustomerUnitPackageDto
     public decimal Vat { get; set; }
     public int OrganizationId { get; set; }
     public CustomerCategoryStatus CustomerCategory { get; set; }
+    public string UnitCode { get; set; }
+
+    public static CreateUpdateCustomerUnitPackageDto CreateFrom(
+    CustomerDto customer,
+    UnitPackageDto package,
+    CustomerUnitPackageAssignationDto assignDto)
+    {
+        var p = package.Package;
+        var isCustom = p.PackageCategoryType == PackageCategoryTypes.CustomPackage;
+
+        Enum.TryParse(p.CustomerCategory, true, out CustomerCategoryStatus category);
+
+        return new CreateUpdateCustomerUnitPackageDto
+        {
+            // Basic Info
+            ArabicName = p.ArabicName,
+            EnglishName = p.EnglishName,
+            Status = p.Status,
+            Price = p.Price,
+            OrganizationId = p.OrganizationId,
+            PublishFrom = p.PublishFrom,
+            PublishTo = p.PublishTo,
+
+            // Calculated Dates
+            ActivationDate = PackageAssignationLogic.PackageActivationTime(p.ActivationDate, p.PublishFrom, isCustom),
+            DectivationDate = PackageAssignationLogic.PackageExpirationTime(p.DectivationDate, p.DurationOfPackage, isCustom),
+
+            // Package Relations
+            UnitPackageId = package.Id,
+            NumberOfSlots = package.NumberOfSlots,
+            NumberOfVehicles = package.NumberOfVehicles,
+
+            // Customer & Assignation Info
+            CustomerId = customer.Id,
+            CustomerCategory = category,
+            DurationOfPackage = assignDto.DurationOfPackage,
+            Vat = assignDto.Vat,
+            Discount = assignDto.Discount,
+            UnitCode = assignDto.UnitCode
+        };
+    }
 
 }

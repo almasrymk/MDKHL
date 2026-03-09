@@ -3,9 +3,11 @@ using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
+using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Organizations;
 using SmartParking.UnitPackages;
+using SmartParking.Units;
 using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
@@ -30,7 +32,9 @@ public partial class AssignCustomerUnitPackageDialog
     private MudForm form;
     public List<UnitPackageDto> selectedPackageDto { get; set; } = new List<UnitPackageDto>();
     private bool IsCustom { get; set; } = false;
-    private OrganizationDto OrganizationDto { get; set; }
+    private IReadOnlyList<UnitDto> Units { get; set; } = new List<UnitDto>();
+    private string unitCode;
+    private CustomerUnitPackageType customerUnitPackageType;
 
     /// <summary>
     /// Retrieves the available packages based on the customer's category.
@@ -46,6 +50,15 @@ public partial class AssignCustomerUnitPackageDialog
         selectedPackageDto.Clear();
     }
 
+    private void UnitCodeChange(string code)
+    {
+        unitCode = code;
+    }
+    private void GetType(string value)
+    {
+        customerUnitPackageType = (CustomerUnitPackageType)Enum.Parse(typeof(CustomerUnitPackageType), value);
+    }
+
     /// <summary>
     /// Initializes the component and loads the list of organizations.
     /// </summary>
@@ -53,7 +66,8 @@ public partial class AssignCustomerUnitPackageDialog
     {
         var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         Organizations = result.Items;
-        OrganizationDto = await OrganizationAppService.GetOrganizationForCurrentTenatAsync(); 
+        var unitResult = await UnitAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        Units = unitResult.Items;
         await base.OnInitializedAsync();
     }
 
@@ -63,31 +77,18 @@ public partial class AssignCustomerUnitPackageDialog
     private async Task SubmitEdit()
     {
         var result = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(Customer.Id);
-        if (result)
-        {
-            SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"],Severity.Error);
-            return;
-        }
+        //if (result)
+        //{
+        //    SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"],Severity.Error);
+        //    return;
+        //}
+        var package = selectedPackageDto.FirstOrDefault();
 
-        if (IsCustom)
-        {
-            _createUpdateUnitPackageDto.Package.EnglishName = "Custom Package";
-            _createUpdateUnitPackageDto.Package.ArabicName = "باقة مخصصة";
-            _createUpdateUnitPackageDto.Package.Description = "Custom Package";
-            _createUpdateUnitPackageDto.Package.PackageStatus = SubscriptionStatus.Active;
-            _createUpdateUnitPackageDto.Package.CustomerCategory = CustomerCategoryStatus.None;
-            _createUpdateUnitPackageDto.Package.Status = Status.Active;
-            _createUpdateUnitPackageDto.Package.PackageCategoryType = PackageCategoryTypes.CustomPackage;
-            _createUpdateUnitPackageDto.Package.OrganizationId = OrganizationDto.Id;
-            var packageDto = await PackageAppService.CreateAsync(_createUpdateUnitPackageDto);
-            preAssignState.UnitPackage = packageDto;
-        }
-        else
-        {
-            var package = selectedPackageDto.FirstOrDefault();
-            preAssignState.UnitPackage = package;
-        }
+
+        preAssignState.UnitPackage=package;
         preAssignState.Customer = Customer;
+        preAssignState.UnitCode = unitCode;
+        preAssignState.CustomerUnitPackageType = customerUnitPackageType;
         Navigation.NavigateTo("/prepaymentpackageunit");
 
 
@@ -114,7 +115,7 @@ public partial class AssignCustomerUnitPackageDialog
 
     }
 
-
+    
 
 
 }

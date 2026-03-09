@@ -1,0 +1,68 @@
+@using SmartParking.Localization
+@using SmartParking.Enums
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+
+<div class="modal-wrapper">
+  <MudDialog class="mud-modal">
+      <TitleContent>
+ <MudText Typo="Typo.h6">@L["Select Package Type"]</MudText>
+    </TitleContent>
+  <DialogContent>
+ <MudGrid>
+      <MudItem sm="12">
+     <MudText Class="mb-4">@L["Please select the package type"]</MudText>
+ </MudItem>
+ <MudItem sm="12">
+ <MudRadioGroup T="CustomerUnitPackageType?" 
+               Value="SelectedPackageType" 
+               ValueChanged="OnPackageTypeChanged">
+    @foreach (var type in Enum.GetValues(typeof(CustomerUnitPackageType)).Cast<CustomerUnitPackageType>())
+    {
+        <MudRadio Value="@((CustomerUnitPackageType?)type)" Color="MudBlazor.Color.Primary">
+            @L[type.ToString()]
+        </MudRadio>
+    }
+</MudRadioGroup>
+ </MudItem>
+   </MudGrid>
+  </DialogContent>
+     <DialogActions>
+ <MudButton OnClick="Cancel" Variant="Variant.Filled" Color="MudBlazor.Color.Dark">@L["Cancel"]</MudButton>
+      <MudButton OnClick="Submit" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Disabled="@(!SelectedPackageType.HasValue)">@L["Confirm"]</MudButton>
+</DialogActions>
+    </MudDialog>
+</div>
+
+<style>
+    .mud-modal 
+    {
+  border-radius: 0 20px 0 20px;
+    }
+</style>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    private CustomerUnitPackageType? SelectedPackageType;
+
+    private void OnPackageTypeChanged(CustomerUnitPackageType? value)
+    {
+        SelectedPackageType = value;
+        StateHasChanged(); // This manually pushes the update to the UI
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void Submit()
+    {
+        if (SelectedPackageType.HasValue)
+        {
+            MudDialog.Close(DialogResult.Ok(SelectedPackageType.Value));
+        }
+    }
+}

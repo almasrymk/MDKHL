@@ -1,0 +1,140 @@
+@using SmartParking.CustomerUnitPackages
+@using SmartParking.Cutomers
+@using SmartParking.Localization
+@using SmartParking.UnitVehiclePackages
+@using Microsoft.Extensions.Localization
+@using System.Globalization
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ICustomerAppService CustomerAppService
+@inject ICustomerUnitPackageAppService CustomerUnitPackageAppService
+
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+      <TitleContent>
+      <MudText Typo="Typo.h6">@L["Details"]</MudText>
+     </TitleContent>
+ <DialogContent>
+      <MudGrid>
+     
+<MudItem sm="12" md="6">
+    <MudTextField @bind-Value="CustomerFullName"
+        Label=@L["FullName"]
+        Variant="Variant.Text"
+        ReadOnly="true"
+        Disabled="true" />
+</MudItem>
+<MudItem sm="12" md="6">
+    <MudTextField @bind-Value="PackageName"
+        Label=@L["Package"]
+        Variant="Variant.Text"
+        ReadOnly="true"
+        Disabled="true" />
+</MudItem>
+
+<MudItem sm="12" md="6">
+    <MudTextField @bind-Value="Package.UnitCode"
+        Label=@L["UnitCode"]
+        Variant="Variant.Text"
+        ReadOnly="true"
+        Disabled="true" />
+</MudItem>
+<MudItem sm="12" md="6">
+    <MudTextField @bind-Value="Package.CustomerUnitPackageType"
+        Label=@L["CustomerUnitPackageType"]
+        Variant="Variant.Text"
+        ReadOnly="true"
+        Disabled="true" />
+</MudItem>
+<MudItem sm="12" md="6">
+    <MudTextField @bind-Value="Package.EnPlateNumber"
+        Label=@L["EnPlateNumber"]
+        Variant="Variant.Text"
+        ReadOnly="true"
+        Disabled="true" />
+</MudItem>
+<MudItem sm="12" md="6">
+    <MudTextField @bind-Value="Package.ArPlateNumber"
+        Label=@L["ArPlateNumber"]
+        Variant="Variant.Text"
+        ReadOnly="true"
+  Disabled="true" />
+</MudItem>
+<MudItem sm="12" md="6">
+    <MudTextField @bind-Value="ActivationDateStr"
+        Label=@L["ActivationDate"]
+        Variant="Variant.Text"
+        ReadOnly="true"
+        Disabled="true" />
+</MudItem>
+<MudItem sm="12" md="6">
+    <MudTextField @bind-Value="DeactivationDateStr"
+        Label=@L["DeactivationDate"]
+        Variant="Variant.Text"
+        ReadOnly="true"
+        Disabled="true" />
+</MudItem>
+<MudItem sm="12" md="6">
+    <MudTextField @bind-Value="PublishFromStr"
+        Label=@L["PublishFrom"]
+        Variant="Variant.Text"
+        ReadOnly="true"
+        Disabled="true" />
+</MudItem>
+<MudItem sm="12" md="6">
+    <MudTextField @bind-Value="PublishToStr"
+        Label=@L["PublishTo"]
+        Variant="Variant.Text"
+        ReadOnly="true"
+        Disabled="true" />
+</MudItem>
+
+      </MudGrid>
+      </DialogContent>
+  <DialogActions>
+   <MudButton OnClick="Cancel" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">@L["Close"]</MudButton>
+        </DialogActions>
+    </MudDialog>
+</div>
+
+<style>
+    .mud-modal 
+    {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public UnitVehiclePackageDto Package { get; set; } = new UnitVehiclePackageDto();
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    private string ActivationDateStr { get; set; }
+    private string DeactivationDateStr { get; set; }
+    private string PublishFromStr { get; set; }
+    private string PublishToStr { get; set; }
+    private string CustomerFullName { get; set; }
+    private string PackageName { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        ActivationDateStr = Package.ActivationDate.ToString("yyyy-MM-dd");
+        DeactivationDateStr = Package.DectivationDate.ToString("yyyy-MM-dd");
+        PublishFromStr = Package.PublishFrom.ToString("HH:mm");
+        PublishToStr = Package.PublishTo.ToString("HH:mm");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var customerUnitPackage = await CustomerUnitPackageAppService.GetAsync(Package.CustomerUnitPackageId);
+        var customer = await CustomerAppService.GetAsync(customerUnitPackage.CustomerId);
+        CustomerFullName = CultureInfo.CurrentCulture.Name == "en" ? customer.FullName : customer.ArabicName;
+        PackageName = CultureInfo.CurrentCulture.Name == "en" ? customerUnitPackage.EnglishName : customerUnitPackage.ArabicName;
+    }
+
+ private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

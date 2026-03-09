@@ -936,8 +936,6 @@
     "Check-out": "توقيت الخروج",
     "ThankyouforusingMadkhal": "شكرا لاستخدامك نظام مدخل للمواقف الذكية",
     "PrintInvoice": "طباعة الفاتوره",
-    "This Invoice Is already paid": "هذه الفاتورة مدفوعة بالفعل",
-    "This Payment Number Is already Exist": "كود الدفع موجود مسبقا",
     "ShiftZone": "مكان الشفت",
     "ShiftDetailsNull": "لا يوجد تفاصيل الشيفت",
     "ShiftManagers": "مدير الشفت",
@@ -973,6 +971,15 @@
     "CustomerHasActivePackage": "المستفيد لديه باقة بالفعل",
     "PackgeVehiclesLimitationsExceeded": "لقد تجاوزت العدد المسوح من المركبات لتلك الباقة",
     "ChooseGate": "يرجى اختيار بوابة",
+    "Permission:Unit": "موديول الوحدات",
+    "Unit": "وحده",
+    "Units": "وحدات",
+    "DeactivationDate": "تاريخ الانتهاء",
+    "UnitCode": "كود الوحده",
+    "UnitVehiclePackages": "سيارات باقات الوحده",
+    "CustomerUnitPackageType": "النوع",
+    "Permission:UnitVehiclePackage": "موديول سيارات باقات الوحده",
     "Warning": "تنبية"
   }
+
 }

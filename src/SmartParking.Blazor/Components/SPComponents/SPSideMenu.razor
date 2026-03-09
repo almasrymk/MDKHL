@@ -21,6 +21,8 @@
 @using SmartParking.Permissions.ShiftsPermissions
 @using SmartParking.Permissions.SubsctriptionPermissions
 @using SmartParking.Permissions.UnLinkedTransactionPermissions
+@using SmartParking.Permissions.UnitVehiclePackagesPermissions
+@using SmartParking.Permissions.UnitsPermissions
 @using SmartParking.Permissions.UserProfile
 @using SmartParking.Permissions.UserShiftsPermissions
 @using Volo.Abp.Account
@@ -130,6 +132,14 @@
                  @if (AuthorizationService.IsGrantedAnyAsync(SubscriptionPermissions.Default).Result && currenttenant.Id is not null)
                  {
                      <MudNavLink Href="/subscription" Icon="@Icons.Material.Filled.Group">@L["Subscriptions"]</MudNavLink>
+                 }
+                 @if(AuthorizationService.IsGrantedAsync(UnitPermissions.Default).Result && _isUserAccess)
+                 {
+                     <MudNavLink Href="/units" Icon="@Icons.Material.Filled.House">@L["Units"]</MudNavLink>
+                 }
+                 @if(AuthorizationService.IsGrantedAsync(UnitVehiclePackagePermissions.Default).Result && _isUserAccess)
+                 {
+                     <MudNavLink Href="/unit-vehicle-packages" Icon="@Icons.Material.Filled.DataThresholding">@L["UnitVehiclePackages"]</MudNavLink>
                  }
                  @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager).Result || AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result || AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement).Result|| currenttenant.Id is null)
                  {

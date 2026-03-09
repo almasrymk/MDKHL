@@ -1,4 +1,6 @@
-﻿namespace SmartParking.Entities.Organizations;
+﻿using SmartParking.Enums;
+
+namespace SmartParking.Entities.Organizations;
 
 public class UnitPackage : BaseEntity
 {

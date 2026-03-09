@@ -931,6 +931,17 @@
     "CustomerHasActivePackage": "Customer already package",
     "PackgeVehiclesLimitationsExceeded": "Number of vehicles allowed for that package exceeded",
     "ChooseGate": "Please Choose A Gate",
-    "Warning": "Warning"
+    "Warning": "Warning",
+    "Permission:Unit": "Unit Mangment",
+    "Unit": "Unit",
+    "Units": "Units",
+    "DeactivationDate": "Deactivation Date",
+    "UnitCode": "Unit Code",
+    "UnitVehiclePackages": "Unit Vehicle Packages",
+    "CustomerUnitPackageType": "Type",
+    "PublishTo": "Publish To",
+    "PublishFrom": "Publish From",
+    "Permission:UnitVehiclePackage": "Unit Vehicle Package Management"
   }
+
 }
