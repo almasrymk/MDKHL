@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Reporting.Map.WebForms.BingMaps;
-using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
-using SmartParking.Filters;
+using SmartParking.Extensions;
 using SmartParking.Garages;
+using SmartParking.Shifts.Extensions;
 using SmartParking.Shifts.ShiftZones;
 using System;
 using System.Collections.Generic;
@@ -38,89 +37,36 @@ public class ShiftZoneAppService :
         _garageAppService = garageAppService;
         _dataFilter = dataFilter;
     }
-    /// <inheritdoc/>
-    public override async Task<ShiftZoneDto> UpdateAsync(Guid id, CreateUpdateShiftZoneDto dto)
-    {
-        var garage = await _garageAppService.GetAsync(dto.ZoneId);
-        if (garage == null) throw new Exception("Garage not found");
 
-        var shift = await _shiftAppService.GetShiftAsync(dto.ShiftId);
-        if (shift == null) throw new Exception("Shift not found");
-
-        dto.ZoneArName = garage.NameAr;
-        dto.ZoneEnName = garage.NameEn;
-        dto.StartDate = shift.StartDate;
-        dto.EndDate = shift.EndDate;
-        dto.StartTime = shift.StartTime;
-        dto.EndTime = shift.EndTime;
-        dto.IsFullDay = shift.IsFullDay;
-        dto.ShiftEnglishName = shift.EnglishName;
-        dto.ShiftArabicName = shift.ArabicName;
-
-        return await base.UpdateAsync(id, dto);
-    }
     /// <inheritdoc/>
     public override async Task<ShiftZoneDto> CreateAsync(CreateUpdateShiftZoneDto dto)
     {
-        var shift = await _shiftAppService.GetShiftAsync(dto.ShiftId);
-        if (shift == null) throw new Exception("Shift not found");
+        var shift = await _shiftAppService.GetShiftAsync(dto.ShiftId)
+            ?? throw new Exception("Shift not found");
 
-        var garage = await _garageAppService.GetAsync(dto.ZoneId);
-        if (garage == null) throw new Exception("Garage not found");
+        var garage = await _garageAppService.GetAsync(dto.ZoneId)
+            ?? throw new Exception("Garage not found");
 
-        dto.ZoneArName = garage.NameAr;
-        dto.ZoneEnName = garage.NameEn;
-        dto.StartDate = shift.StartDate;
-        dto.EndDate = shift.EndDate;
-        dto.StartTime = shift.StartTime;
-        dto.EndTime = shift.EndTime;
-        dto.IsFullDay = shift.IsFullDay;
-        dto.ShiftEnglishName = shift.EnglishName;
-        dto.ShiftArabicName = shift.ArabicName;
+        dto.ShiftAndGarageAssignmentDto(shift, garage);
 
         return await base.CreateAsync(dto);
     }
-    /// <inheritdoc/>
 
-    protected override async Task<ShiftZoneDto> MapToGetOutputDtoAsync(ShiftZone entity)
+    /// <inheritdoc/>
+    public override async Task<ShiftZoneDto> UpdateAsync(Guid id, CreateUpdateShiftZoneDto dto)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            return await MapToGetOutputDtoInternalAsync(entity);
-        }
+        var garage = await _garageAppService.GetAsync(dto.ZoneId)
+            ?? throw new Exception("Garage not found");
+
+        var shift = await _shiftAppService.GetShiftAsync(dto.ShiftId)
+            ?? throw new Exception("Shift not found");
+
+        dto.ShiftAndGarageAssignmentDto(shift, garage);
+
+        return await base.UpdateAsync(id, dto);
     }
-    /// <inheritdoc/>
-
-    protected async Task<ShiftZoneDto> MapToGetOutputDtoForOrganizationAsync(ShiftZone entity)
-    {
-        return await MapToGetOutputDtoInternalAsync(entity);
-    }
 
     /// <inheritdoc/>
-    private async Task<ShiftZoneDto> MapToGetOutputDtoInternalAsync(ShiftZone entity)
-    {
-        var query = await _repository.WithDetailsAsync(
-            x => x.ShiftDetails
-        );
-
-        entity = await query.FirstOrDefaultAsync(e => e.Id == entity.Id);
-
-        if (entity == null)
-            throw new Exception($"ShiftZone with id {entity.Id} not found");
-
-        var dto = ObjectMapper.Map<ShiftZone, ShiftZoneDto>(entity);
-
-        // Map OrganizationId
-        dto.OrganizationId = entity.OrganizationId;
-
-        var garage = await _garageAppService.GetAsync(entity.ZoneId);
-        dto.ZoneEnName = garage.NameEn;
-        dto.ZoneArName = garage.NameAr;
-
-        return dto;
-    }
-    /// <inheritdoc/>
-
     public override async Task<ShiftZoneDto> GetAsync(Guid id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -128,33 +74,29 @@ public class ShiftZoneAppService :
             return await GetInternalAsync(id, forOrganization: false);
         }
     }
-    /// <inheritdoc/>
 
+    /// <inheritdoc/>
     public async Task<ShiftZoneDto> GetForOrganizationAsync(Guid id)
     {
         return await GetInternalAsync(id, forOrganization: true);
     }
-    /// <inheritdoc/>
 
-    private async Task<ShiftZoneDto> GetInternalAsync(Guid id, bool forOrganization)
+    /// <inheritdoc/>
+    protected override async Task<ShiftZoneDto> MapToGetOutputDtoAsync(ShiftZone entity)
     {
-        var queryable = await _repository.WithDetailsAsync(
-            x => x.ShiftDetails
-        );
-
-        var entity = await AsyncExecuter.FirstOrDefaultAsync(queryable.Where(x => x.Id == id));
-
-        if (entity == null)
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            throw new Volo.Abp.Domain.Entities.EntityNotFoundException(typeof(ShiftZone), id);
+            return await MapToGetOutputDtoInternalAsync(entity);
         }
-
-        return forOrganization
-            ? await MapToGetOutputDtoForOrganizationAsync(entity)
-            : await MapToGetOutputDtoInternalAsync(entity);
     }
-    /// <inheritdoc/>
 
+    /// <inheritdoc/>
+    protected async Task<ShiftZoneDto> MapToGetOutputDtoForOrganizationAsync(ShiftZone entity)
+    {
+        return await MapToGetOutputDtoInternalAsync(entity);
+    }
+
+    /// <inheritdoc/>
     public async Task<PagedResultDto<ShiftZoneDto>> FilterForMDKHL(PagedAndSortedAndFilteredResultRequestDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -163,40 +105,10 @@ public class ShiftZoneAppService :
         }
     }
 
- 
     /// <inheritdoc/>
     public async Task<PagedResultDto<ShiftZoneDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
     {
         return await FilterInternalAsync(input);
-    }
-    /// <inheritdoc/>
-
-    private async Task<PagedResultDto<ShiftZoneDto>> FilterInternalAsync(PagedAndSortedAndFilteredResultRequestDto input)
-    {
-        var queryable = await _repository.GetQueryableAsync();
-
-        var filterExpression = BuildExpression<ShiftZone>.BuildFilterExpression(input.filters);
-        if (filterExpression is not null)
-        {
-            queryable = queryable.Where(filterExpression);
-        }
-
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            queryable = input.Sorting.Contains("DESC")
-                ? queryable.OrderBy(input.Sorting.Split(' ')[0] + " descending")
-                : queryable.OrderBy(input.Sorting);
-        }
-
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-
-        var items = await AsyncExecuter.ToListAsync(queryable);
-
-        var itemsDto = ObjectMapper.Map<List<ShiftZone>, List<ShiftZoneDto>>(items);
-
-        return new PagedResultDto<ShiftZoneDto>(totalCount, itemsDto);
     }
 
     /// <inheritdoc/>
@@ -213,35 +125,89 @@ public class ShiftZoneAppService :
     {
         return await SearchInternalAsync(input);
     }
-    /// <inheritdoc/>
-    private async Task<PagedResultDto<ShiftZoneDto>> SearchInternalAsync(PagedAndSortedAndSearchResultRequestDto input)
+
+    #region Private Methods
+    /// <summary>
+    /// Gets a ShiftZone by id, with an option to include organization details in the result.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="forOrganization"></param>
+    /// <returns></returns>
+    /// <exception cref="Volo.Abp.Domain.Entities.EntityNotFoundException"></exception>
+    private async Task<ShiftZoneDto> GetInternalAsync(Guid id, bool forOrganization)
     {
-        var queryable = await _repository.GetQueryableAsync();
+        var queryable = await _repository.WithDetailsAsync(x => x.ShiftDetails);
+        var entity = await AsyncExecuter.FirstOrDefaultAsync(queryable.Where(x => x.Id == id));
 
-        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
-        {
-            queryable = queryable.Where(or =>
-                or.ShiftEnglishName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.ShiftArabicName.ToLower().Contains(input.SearchingTerm.ToLower())
-            );
-        }
+        if (entity == null)
+            throw new Volo.Abp.Domain.Entities.EntityNotFoundException(typeof(ShiftZone), id);
 
-        if (!input.Sorting.IsNullOrEmpty())
-        {
-            queryable = input.Sorting.Contains("DESC")
-                ? queryable.OrderBy(input.Sorting.Split(' ')[0] + " descending")
-                : queryable.OrderBy(input.Sorting);
-        }
-
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-
-        var items = await AsyncExecuter.ToListAsync(queryable);
-
-        var itemsDto = ObjectMapper.Map<List<ShiftZone>, List<ShiftZoneDto>>(items);
-
-
-        return new PagedResultDto<ShiftZoneDto>(totalCount, itemsDto);
+        return forOrganization
+            ? await MapToGetOutputDtoForOrganizationAsync(entity)
+            : await MapToGetOutputDtoInternalAsync(entity);
     }
+    /// <summary>
+    /// Map a ShiftZone entity to a ShiftZoneDto, including related details and garage information.
+    /// This method is used for both regular and organization-specific retrievals,
+    /// with the caller determining which details to include based on the context.
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    private async Task<ShiftZoneDto> MapToGetOutputDtoInternalAsync(ShiftZone entity)
+    {
+        var query = await _repository.WithDetailsAsync(x => x.ShiftDetails);
+
+        entity = await query.FirstOrDefaultAsync(e => e.Id == entity.Id)
+            ?? throw new Exception($"ShiftZone with id {entity.Id} not found");
+
+        var dto = ObjectMapper.Map<ShiftZone, ShiftZoneDto>(entity);
+
+        dto.OrganizationId = entity.OrganizationId;
+
+        var garage = await _garageAppService.GetAsync(entity.ZoneId);
+        dto.ZoneEnName = garage.NameEn;
+        dto.ZoneArName = garage.NameAr;
+
+        return dto;
+    }
+    /// <summary>
+    /// Executes pagination and maps results to DTOs.
+    /// </summary>
+    private async Task<PagedResultDto<ShiftZoneDto>> ToPagedResultAsync(
+        IQueryable<ShiftZone> queryable, int skipCount, int maxResultCount)
+    {
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        var items = await AsyncExecuter.ToListAsync(
+            queryable.Skip(skipCount).Take(maxResultCount));
+
+        return new PagedResultDto<ShiftZoneDto>(
+            totalCount,
+            ObjectMapper.Map<List<ShiftZone>, List<ShiftZoneDto>>(items));
+    }
+    /// <summary>
+    /// Filters shift zones based on dynamic filter expressions and sorting, with pagination support.
+    /// </summary>
+    private async Task<PagedResultDto<ShiftZoneDto>> FilterInternalAsync(
+        PagedAndSortedAndFilteredResultRequestDto input)
+    {
+        var queryable = (await _repository.GetQueryableAsync())
+            .ApplyFilters(input.filters)   
+            .ApplySorting(input.Sorting);
+
+        return await ToPagedResultAsync(queryable, input.SkipCount, input.MaxResultCount);
+    }
+    /// <summary>
+    /// Searches shift zones by English or Arabic name, with sorting and pagination support.
+    /// </summary>
+    private async Task<PagedResultDto<ShiftZoneDto>> SearchInternalAsync(
+        PagedAndSortedAndSearchResultRequestDto input)
+    {
+        var queryable = (await _repository.GetQueryableAsync())
+            .ApplySearch(input.SearchingTerm)
+            .ApplySorting(input.Sorting);
+
+        return await ToPagedResultAsync(queryable, input.SkipCount, input.MaxResultCount);
+    }
+    #endregion
 }
