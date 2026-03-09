@@ -972,7 +972,7 @@
     "OnlyOnePackageTypeAllowed": "يجب تفعيل نوع حزمة واحد فقط.",
     "CustomerHasActivePackage": "المستفيد لديه باقة بالفعل",
     "PackgeVehiclesLimitationsExceeded": "لقد تجاوزت العدد المسوح من المركبات لتلك الباقة",
-    "PleaseChooseAGate": "يرجى اختيار بوابة",
+    "ChooseGate": "يرجى اختيار بوابة",
     "Warning": "تنبية"
   }
 }
