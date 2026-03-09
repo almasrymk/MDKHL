@@ -22,5 +22,6 @@ public static class AlertMessages
     public const string END = "End";
     public const string PackageNameAr = "باقة مخصصه";
     public const string PackageNameEn = "Custom Package";
+    public const string WARNING = "Warning";
 
 }

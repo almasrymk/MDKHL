@@ -1,4 +1,5 @@
-﻿using SmartParking.UserShifts;
+﻿using SmartParking.Results;
+using SmartParking.UserShifts;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ public interface IShiftZoneActionAppService
     /// <returns>
     /// A collection of <see cref="ShiftWatcherActionDto"/> containing the devices data used by shift watchers.
     /// </returns>
-    Task<ICollection<ShiftWatcherActionDto>> GetShiftZoneDevicesDataAsync();
+    Task<Result<ICollection<ShiftWatcherActionDto>>> GetShiftZoneDevicesDataAsync();
 
     /// <summary>
     /// Retrieves users assigned to shift zones using paging, sorting and search parameters.

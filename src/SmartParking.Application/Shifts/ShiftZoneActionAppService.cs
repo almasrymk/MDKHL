@@ -3,6 +3,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Shifts;
 using SmartParking.Enums;
 using SmartParking.Organizations;
+using SmartParking.Results;
 using SmartParking.Shifts.ShiftZones;
 using SmartParking.UserShifts;
 using System;
@@ -33,15 +34,18 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
         this.organizationsAppService = organizationsAppService;
     }
     /// <inheritdoc/>
-    public async Task<ICollection<ShiftWatcherActionDto>> GetShiftZoneDevicesDataAsync()
+    public async Task<Result<ICollection<ShiftWatcherActionDto>>> GetShiftZoneDevicesDataAsync()
     {
         if (!CurrentUser.Id.HasValue)
-            return new List<ShiftWatcherActionDto>();
+            return Result<ICollection<ShiftWatcherActionDto>>.Invalid(new ValidationError
+            {
+                ErrorCode = "400",
+                ErrorMessage = "User not authenticated."
+            });
 
         var currentOrganization = await organizationsAppService.GetOrganizationForCurrentTenatAsync();
         if(currentOrganization.OrganizationSettings.UseShifts==false)
-           return ObjectMapper.Map<List<Watcher>, List<ShiftWatcherActionDto>>(await _watcherRepository.GetListAsync());
-
+           return Result<ICollection<ShiftWatcherActionDto>>.Success(ObjectMapper.Map<List<Watcher>, List<ShiftWatcherActionDto>>(await _watcherRepository.GetListAsync()));
         var today = DateOnly.FromDateTime(DateTime.Now);
         var timeOfDay = TimeOnly.FromDateTime(DateTime.Now);
 
@@ -60,8 +64,11 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
         int? organizationId = activeShift?.OrganizationId ?? query.FirstOrDefault()?.OrganizationId;
 
         if (!organizationId.HasValue)
-            return new List<ShiftWatcherActionDto>(); 
-
+            return Result<ICollection<ShiftWatcherActionDto>>.Invalid(new ValidationError
+            {
+                ErrorCode = "400",
+                ErrorMessage = "Organization not found."
+            });
 
         IQueryable<ShiftZone> finalActiveShiftsQuery = currentOrganization.OrganizationSettings?.UseShifts == true
             ? activeShiftsQuery
@@ -97,7 +104,7 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
             watcherQuery.Where(w => deviceIds.Contains(w.DeviceId)));
 
 
-        return ObjectMapper.Map<List<Watcher>, List<ShiftWatcherActionDto>>(watchers);
+        return Result<ICollection<ShiftWatcherActionDto>>.Success(ObjectMapper.Map<List<Watcher>, List<ShiftWatcherActionDto>>(watchers));
     }
     /// <inheritdoc/>
     public async Task<PagedResultDto<ShiftZoneUserViewDto>> GetShiftZoneUsersAsync(

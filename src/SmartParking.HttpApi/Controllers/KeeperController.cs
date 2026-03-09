@@ -36,6 +36,7 @@ public class KeeperController : AbpController
     private readonly IKeeperTransactionsAppService _keeperTransactionsAppService;
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
     private readonly IDiscountAppService _discountAppService;
+    private readonly IShiftZoneActionAppService _shiftZoneActionAppService;
 
     private readonly IWatcherAppService _watcherAppService;
     public KeeperController(IKeeperAppService keeperAppService,
@@ -46,7 +47,8 @@ public class KeeperController : AbpController
         IUsersAppService usersAppService,
         IGarageTransactionsAppService garageTransactionsAppService = null,
         IKeeperTransactionsAppService keeperTransactionsAppService = null,
-        IWatcherAppService watcherAppService = null)
+        IWatcherAppService watcherAppService = null,
+        IShiftZoneActionAppService shiftZoneActionAppService = null)
     {
         _keeperAppService = keeperAppService;
         _authenticationAppService = authenticationAppService;
@@ -57,6 +59,7 @@ public class KeeperController : AbpController
         _discountAppService = discountAppService;
         _keeperTransactionsAppService = keeperTransactionsAppService;
         _watcherAppService = watcherAppService;
+        _shiftZoneActionAppService = shiftZoneActionAppService;
     }
 
     [HttpPost("login")]
@@ -89,10 +92,15 @@ public class KeeperController : AbpController
         }
     }
 
-    [HttpGet("getshiftwatcheraction")]
+    [HttpGet("getgatesforcurrentkeepers")]
     public async Task<Result<ICollection<ShiftWatcherActionDto>>> GetShiftWatcherActionAsync()
     {
         return await _keeperAppService.GetShiftWatcherActionAsync();
+    }
+    [HttpGet("getkeepersassignedgates")]
+    public async Task<Result<ICollection<ShiftWatcherActionDto>>> GetKeepersAssignedGatesAsync()
+    {
+        return await _shiftZoneActionAppService.GetShiftZoneDevicesDataAsync();
     }
 
     [HttpPost("Mdkhl/login")]
