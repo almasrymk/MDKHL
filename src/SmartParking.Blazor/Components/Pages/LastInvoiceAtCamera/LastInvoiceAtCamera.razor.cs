@@ -55,7 +55,8 @@ public partial class LastInvoiceAtCamera
     {
         try
         {
-            _filteredWatchersByShiftZone = await ShiftZoneActionAppService.GetShiftZoneDevicesDataAsync();
+            var result = await ShiftZoneActionAppService.GetShiftZoneDevicesDataAsync();
+            _filteredWatchersByShiftZone = result.Value;
         }
         catch(Exception ex)
         {
@@ -124,8 +125,7 @@ public partial class LastInvoiceAtCamera
             }
             else
             {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L["OpenGate"]}", MudBlazor.Severity.Error);
-
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.WARNING]} {L["ChooseGate"]}", MudBlazor.Severity.Warning);
             }
         }
         catch (Exception ex)
