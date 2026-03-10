@@ -19,4 +19,5 @@ public interface IUnitPackageAppService
     Task<PagedResultDto<UnitPackageDto>> GetUnitPackagesByOrganization(PagedAndSortedResultRequestDto input, int organizationId);
     Task<List<UnitPackageDto>> GetUnitPackagesByCategory(CustomerCategoryStatus customerCategory);
     Task<List<UnitPackageDto>> GetUnitPackagesByCategory(int organizationId,CustomerCategoryStatus customerCategory);
+    Task<PagedResultDto<UnitPackageDto>> GetListAsyncForMdkhl(PagedAndSortedResultRequestDto input);
 }
