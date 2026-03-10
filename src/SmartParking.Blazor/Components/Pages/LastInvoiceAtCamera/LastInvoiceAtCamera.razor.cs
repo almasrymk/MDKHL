@@ -130,9 +130,6 @@ public partial class LastInvoiceAtCamera
                 await Task.Delay(500);
                 await OpenGate();
                 await JSRuntime.InvokeVoidAsync("eval", $"window.open('/payments/view/{payment.PaymentId}', '_blank');");
-
-                // await JSRuntime.InvokeAsync<object>("open", $"/payments/view/{payment.PaymentId}", "_blank");
-
             }
             else
             {
