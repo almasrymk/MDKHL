@@ -120,29 +120,41 @@ public partial class ShiftZone
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         if (CultureInfo.CurrentCulture.Name == "ar")
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ShiftArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ShiftName"], Name = "ArabicName", PropertyName = "ShiftArabicName", IsFilterable = true, IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageName"], Name = "ZoneArName", PropertyName = "ZoneArName", IsFilterable = true, IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ManagerName"], Name = "ManagerUserName", PropertyName = "ManagerUserName", IsFilterable = true, IsSortable = true, TypeFilter = TypeFilter.Text });
+        }
         else
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["EnglishName"], Name = "FullName", IsFilterable = true, PropertyName = "ShiftEnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        {
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ShiftName"], Name = "FullName", PropertyName = "ShiftEnglishName", IsFilterable = true, IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["GarageName"], Name = "ZoneEnName", PropertyName = "ZoneEnName", IsFilterable = true, IsSortable = true, TypeFilter = TypeFilter.Text });
+            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ManagerName"], Name = "ManagerEnName", PropertyName = "ManagerEnName", IsFilterable = true, IsSortable = true, TypeFilter = TypeFilter.Text });
+        }
 
-        tableData.Columns.Add(new ColumnDef() { DisplayName = L["StartDate"], Name = "StartDate", IsFilterable = true, PropertyName = "StartDate", IsSortable = true, TypeFilter = TypeFilter.Date });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = L["EndDate"], Name = "EndDate", IsFilterable = true, PropertyName = "EndDate", IsSortable = true, TypeFilter = TypeFilter.Date });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = L["StartTime"], Name = "StartTime", IsFilterable = true, PropertyName = "StartTime", IsSortable = true, TypeFilter = TypeFilter.Date });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = L["EndTime"], Name = "EndTime", IsFilterable = true, PropertyName = "EndTime", IsSortable = true, TypeFilter = TypeFilter.Date });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
         foreach (var item in shiftStaffDetail.Items)
         {
             var rowDef = new RowDef();
-            rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>("Id", item.Id.ToString()));
+
             if (CultureInfo.CurrentCulture.Name == "ar")
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ArabicName"], item.ShiftArabicName));
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ShiftName"], item.ShiftArabicName ?? ""));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageName"], item.ZoneArName ?? ""));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ManagerName"], item.ShiftMangerDto?.ManagerUserName ?? ""));
+            }
             else
-                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["EnglishName"], item.ShiftEnglishName));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["StartDate"], item.StartDate.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["EndDate"], item.EndDate.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["StartTime"], item.IsFullDay ? 24 + L[$"Hour"] : $" {item.StartTime}"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["EndTime"], item.IsFullDay ? 24 + L[$"Hour"] : $" {item.EndTime}")); tableData.Rows.Add(rowDef);
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], L[$"{item.Status.ToString()}"]));
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ShiftName"], item.ShiftEnglishName ?? ""));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["GarageName"], item.ZoneEnName ?? ""));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ManagerName"], item.ShiftMangerDto?.ManagerEnName ?? ""));
+            }
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], L[$"{item.Status}"]));
+
+            tableData.Rows.Add(rowDef);
         }
 
 
