@@ -34,6 +34,32 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
         this.organizationsAppService = organizationsAppService;
     }
     /// <inheritdoc/>
+    public async Task<Result<bool>> GetCurrentUserActiveShiftZoneStatusAsync()
+    {
+        if (!CurrentUser.Id.HasValue)
+            return Result<bool>.Invalid(new ValidationError
+            {
+                ErrorCode = "400",
+                ErrorMessage = "User not authenticated."
+            });
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var timeOfDay = TimeOnly.FromDateTime(DateTime.Now);
+        var query = await _shiftZoneRepository.WithDetailsAsync(
+                        x => x.ShiftDetails);
+        var activeShiftsQuery = query
+            .Where(sz => sz.StartDate <= today && sz.EndDate >= today)
+            .Where(sz => sz.Status == Status.Active)
+            .Where(sz => sz.IsFullDay ||
+                ((sz.StartTime <= sz.EndTime && sz.StartTime <= timeOfDay && sz.EndTime >= timeOfDay) ||
+                 (sz.StartTime > sz.EndTime && (sz.StartTime <= timeOfDay || sz.EndTime >= timeOfDay))));
+        var isActiveInShiftZone = await AsyncExecuter.AnyAsync(activeShiftsQuery.Where(sz =>
+            sz.ShiftManager.ManagerUserName == CurrentUser.UserName ||
+            sz.ShiftDetails.Any(sd => sd.ShiftStaffDetails.StaffId == CurrentUser.Id)));
+        return Result<bool>.Success(isActiveInShiftZone);
+    }
+
+
+    /// <inheritdoc/>
     public async Task<Result<ICollection<ShiftWatcherActionDto>>> GetShiftZoneDevicesDataAsync()
     {
         if (!CurrentUser.Id.HasValue)

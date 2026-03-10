@@ -55,12 +55,12 @@
 					   Label="@L["DeviceId"]"
 					   Dense="true"
 					   Class="flex-grow-0"
-					   OnOpen="OpenFilteredWatchers"
+					   OnOpen="(async()=> await OpenFilteredWatchers())"
 					   @bind-Value="SelectedDeviceId">
 				@foreach (var watcher in _filteredWatchersByShiftZone)
 				{
 					<MudSelectItem T="string" Value="@watcher.WatcherCode">
-						@watcher.WatcherCode
+						@watcher.WatcherName
 					</MudSelectItem>
 				}
 			</MudSelect>
@@ -103,6 +103,6 @@
 
 		<a href="" target="_blank" id="openLink" style="display:none;"></a>
 
-		<PriceSummaryComponent OnValueSelected="HandleAddDiscount" OnSelectPaymentMethod="OnSelectPaymentMethod" ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice?.InvoicePrice" IsPaying="isPaying" IsPaid="Invoice.InvoiceType == InvoiceType.Paid.ToString()" Cancel="Cancel" PayInvoice="PayInvoice" PaymentMethod="@PaymentMethod" NoInvoice="NoInvoice" ShowOpenGate="true" OpenGate="OpenGate" HasConfirmPermission="@(AuthorizationService.IsGrantedAsync(CheckoutPermissions.Confirm).Result)" />
+		<PriceSummaryComponent OnValueSelected="HandleAddDiscount" OnSelectPaymentMethod="OnSelectPaymentMethod" ComponentSize="5" ConfirmSize="12" InvoicePrice="@Invoice?.InvoicePrice" IsPaying="isPaying" IsPaid="Invoice?.InvoiceType == InvoiceType.Paid.ToString()" Cancel="Cancel" PayInvoice="PayInvoice" PaymentMethod="@PaymentMethod" NoInvoice="NoInvoice" ShowOpenGate="true" OpenGate="OpenGate" HasConfirmPermission="@(AuthorizationService.IsGrantedAsync(CheckoutPermissions.Confirm).Result)" />
 	</MudItem>
 </MudGrid>

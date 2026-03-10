@@ -15,12 +15,26 @@ public partial class LastInvoiceAtCamera
     private InvoiceDto Invoice = new InvoiceDto();
     private OrganizationDto _organization = new OrganizationDto();
     private ICollection<ShiftWatcherActionDto> _filteredWatchersByShiftZone = new List<ShiftWatcherActionDto>();
-    private string? SelectedDeviceId;
     private bool NoInvoice { get; set; } = false;
     public PaymentMethod PaymentMethod { get; set; }
     public decimal Discount { get; set; } = default;
     public decimal InvoicePrice { get; set; } = default;
     private bool isPaying = false;
+
+
+    private string? _selectedDeviceId;
+    private string? SelectedDeviceId
+    {
+        get => _selectedDeviceId;
+        set
+        {
+            if (_selectedDeviceId == value) return;
+            _selectedDeviceId = value;
+            _ = OnDeviceSelected(value);
+        }
+    }
+
+
     private Task HandleAddDiscount(decimal selected)
     {
         Discount = selected;
@@ -40,8 +54,8 @@ public partial class LastInvoiceAtCamera
         {
             _organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
 
-            Invoice = await KeeperAppService.GetLastInvoiceByOrganizationIdAsync(_organization.Id);
-            InvoicePrice = Invoice.InvoicePrice;
+            //Invoice = await KeeperAppService.GetLastInvoiceByOrganizationIdAndWatcherCodeAsync(_organization.Id, SelectedDeviceId);
+            //InvoicePrice = Invoice.InvoicePrice;
         }
         catch (Exception ex)
         {
@@ -56,11 +70,50 @@ public partial class LastInvoiceAtCamera
         try
         {
             var result = await ShiftZoneActionAppService.GetShiftZoneDevicesDataAsync();
-            _filteredWatchersByShiftZone = result.Value;
+            _filteredWatchersByShiftZone = result?.Value ?? new List<ShiftWatcherActionDto>();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             SnackBar.ShowSnackbar(Snackbar, ex.Message, MudBlazor.Severity.Error);
+        }
+    }
+
+    private async Task OnDeviceSelected(string? value)
+    {
+        await LoadInvoiceForSelectedDevice();
+    }
+
+    private async Task LoadInvoiceForSelectedDevice()
+    {
+        if (string.IsNullOrWhiteSpace(SelectedDeviceId))
+        {
+            Invoice = new InvoiceDto();
+            NoInvoice = true;
+            StateHasChanged(); 
+            return;
+        }
+
+        try
+        {
+            var result = await KeeperAppService
+                .GetLastInvoiceByOrganizationIdAndWatcherCodeAsync(_organization.Id, SelectedDeviceId);
+
+            Invoice = result?.Value ?? new InvoiceDto();
+            InvoicePrice = Invoice.InvoicePrice;
+
+            if (InvoicePrice == 0)
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.WARNING]} {L["NoAssign"]}", MudBlazor.Severity.Warning);
+
+            NoInvoice = InvoicePrice == 0;
+        }
+        catch
+        {
+            Invoice = new InvoiceDto();
+            NoInvoice = true;
+        }
+        finally
+        {
+            StateHasChanged(); 
         }
     }
     private async Task PayInvoice()
@@ -155,6 +208,9 @@ public partial class LastInvoiceAtCamera
     {
         Navigation.Refresh(true);
     }
+
+
+
 
     private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()
     {

@@ -973,6 +973,7 @@
     "CustomerHasActivePackage": "المستفيد لديه باقة بالفعل",
     "PackgeVehiclesLimitationsExceeded": "لقد تجاوزت العدد المسوح من المركبات لتلك الباقة",
     "ChooseGate": "يرجى اختيار بوابة",
-    "Warning": "تنبية"
+    "Warning": "تنبية",
+    "NoAssign": "لا توجد بوابة مخصصة لهذا الموزع/الكاميرا"
   }
 }

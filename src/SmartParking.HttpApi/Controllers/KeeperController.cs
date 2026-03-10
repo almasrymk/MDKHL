@@ -97,10 +97,10 @@ public class KeeperController : AbpController
     {
         return await _keeperAppService.GetShiftWatcherActionAsync();
     }
-    [HttpGet("getkeepersassignedgates")]
-    public async Task<Result<ICollection<ShiftWatcherActionDto>>> GetKeepersAssignedGatesAsync()
+    [HttpGet("hasactiveshiftzoneaction")]
+    public async Task<Result<bool>> HasActiveShiftZoneActionAsync()
     {
-        return await _shiftZoneActionAppService.GetShiftZoneDevicesDataAsync();
+        return await _keeperAppService.HasActiveShiftZoneActionAsync();
     }
 
     [HttpPost("Mdkhl/login")]
@@ -146,9 +146,9 @@ public class KeeperController : AbpController
     }
     [HttpGet("lastinvoice")]
     [Authorize]
-    public async Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationId([FromQuery] int organizationId)
+    public async Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationId([FromQuery] int organizationId, [FromQuery] string watcherCode)
     {
-        return await _keeperAppService.GetLastInvoiceByOrganizationIdAsync(organizationId);
+        return await _keeperAppService.GetLastInvoiceByOrganizationIdAndWatcherCodeAsync(organizationId, watcherCode);
     }
 
     [HttpGet("garageTransactionWithoutPlateNumber")]

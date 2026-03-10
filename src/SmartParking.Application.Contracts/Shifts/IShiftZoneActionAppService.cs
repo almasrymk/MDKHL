@@ -30,4 +30,9 @@ public interface IShiftZoneActionAppService
     /// A <see cref="PagedResultDto{ShiftZoneUserViewDto}"/> containing the paged list of users assigned to shift zones.
     /// </returns>
     Task<PagedResultDto<ShiftZoneUserViewDto>> GetShiftZoneUsersAsync(Guid? tenantId, PagedAndSortedAndSearchResultRequestDto input);
+    /// <summary>
+    /// Return either true or false based on the current user's active shift zone status.
+    /// </summary>
+    /// <returns>A <see cref="Result{Boolean}"/> indicating whether the current user has an active shift zone.</returns>
+    Task<Result<bool>> GetCurrentUserActiveShiftZoneStatusAsync();
 }
