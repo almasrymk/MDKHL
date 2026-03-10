@@ -46,7 +46,9 @@ public partial class OrganizationAdd
     private string NewAddress { get; set; }
     private bool IsReadOnly = false;
     public CreateUpdateOrganiztionDto CreateUpdateOrganiztion { get; set; } = new CreateUpdateOrganiztionDto();
-    
+    private OrganizationSettingsDto _organizationSettingsDto = new OrganizationSettingsDto();
+
+
     IList<StateLookupDto> states = new List<StateLookupDto>();
     IList<RegionLookupDto> regions = new List<RegionLookupDto>();
     IList<CountryLookupDto> countries = new List<CountryLookupDto>();
@@ -141,6 +143,12 @@ public partial class OrganizationAdd
         CreateUpdateOrganiztion.CityId = int.Parse(CitySelectValue);
         CreateUpdateOrganiztion.RegionId = int.Parse(RegionSelectValue);
         CreateUpdateOrganiztion.StateId = int.Parse(StateSelectValue);
+        CreateUpdateOrganiztion.OrganizationSettingsDto = new OrganizationSettingsDto
+        {
+            VehcileAccess = _organizationSettingsDto.VehcileAccess,
+            UserAccess = _organizationSettingsDto.UserAccess,
+            UseShifts = _organizationSettingsDto.UseShifts
+        };
         try
         {
             CreateUpdateOrganiztion.IsClose = PackageValidations.GetOrganizationIsCloseAfterTimeValidity(CreateUpdateOrganiztion.IsClose, CreateUpdateOrganiztion.ClosingHoursStart, CreateUpdateOrganiztion.ClosingHoursEnd);

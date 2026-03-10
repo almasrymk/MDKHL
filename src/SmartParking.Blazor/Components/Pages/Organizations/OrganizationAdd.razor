@@ -69,15 +69,32 @@
                         <MudItem sm="4">
                             <MudTextField T="string" Disabled ReadOnly="true" InputType="InputType.Text" Placeholder="@L["Will Be Automatically Created"]"
                                           Label=@L["Code"] />
-                        </MudItem>                        
+                        </MudItem>                 
                         
-                        <MudItem sm="4">
+                        <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
+
+                        
+                        <MudItem sm="5">
                             <MudSwitch Label=@L["CameraTransaction"] @bind-Value="CreateUpdateOrganiztion.CameraTransaction" Color="MudBlazor.Color.Primary" />
                         </MudItem>                      
                         
-                        <MudItem sm="4">
+                        <MudItem sm="5">
                             <MudSwitch Label=@L["DispenserTransaction"] @bind-Value="CreateUpdateOrganiztion.DispenserTransaction" Color="MudBlazor.Color.Primary" />
 
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <MudSwitch Label=@L["UserAccess"] @bind-Value="_organizationSettingsDto.UserAccess" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+
+                        <MudItem sm="4">
+                            <MudSwitch Label=@L["VhecileAccess"] @bind-Value="_organizationSettingsDto.VehcileAccess" Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+
+
+                        <MudItem sm="4">
+                            <MudSwitch Label=@L["Shift"] @bind-Value="_organizationSettingsDto.UseShifts"
+                                       Color="MudBlazor.Color.Primary" />
                         </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
@@ -91,30 +108,42 @@
                              <MudTextField Required="true"  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"  T="string" InputType="InputType.Text" @bind-Value="CreateUpdateOrganiztion.Email" Placeholder="@L["Type Here"]" Label="@L["Contact Email"]" />
                          </MudItem>
                          
-                        <MudItem sm="4">
-                            <MudTextField  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Text" @bind-Value="CreateUpdateOrganiztion.UserNameZatca" Placeholder=@L["UserNameZatca"] Label=@L["UserNameZatca"] />
-                        </MudItem>
-                          <MudItem sm="4">
-                            <MudTextField  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Password" @bind-Value="CreateUpdateOrganiztion.PasswordZatca" Placeholder=@L["PasswordZatca"] Label=@L["PasswordZatca"] />
-                        </MudItem>
+                        
 
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
 
                          <MudItem sm="4">
-                            <MudNumericField T="int" Required="true"  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" Validation="@(new Func<int, string>(NumbersValidations.validateNumber0to9999))"  @bind-Value="CreateUpdateOrganiztion.BuildingNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["BuidlingNumber"]" />
+                            <MudNumericField T="int" 
+                                Required="true"  
+                                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" 
+                                Validation="@(new Func<int, string>(NumbersValidations.validateNumber0to9999))"  
+                                    @bind-Value="CreateUpdateOrganiztion.BuildingNumber" HideSpinButtons="true" 
+                                    Placeholder="@L["Type Here"]" 
+                                Label="@L["BuidlingNumber"]" />
                          </MudItem>
 
                          <MudItem sm="4">
-                            <MudTextField Required="true"  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Text" @bind-Value="CreateUpdateOrganiztion.StreetName" Placeholder="@L["Type Here"]" Label="@L["StreetName"]" />
+                            <MudTextField Required="true"  
+                                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Text" @bind-Value="CreateUpdateOrganiztion.StreetName" Placeholder="@L["Type Here"]" 
+                                Label="@L["StreetName"]" />
                          </MudItem>
                         
                          <MudItem sm="4">
-                            <MudNumericField Required="true"  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"  Validation="@(new Func<int, string>(NumbersValidations.ValidateNumber1111to9999))" @bind-Value="CreateUpdateOrganiztion.SecondaryNumber" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["SecondaryNumber"]" />
+                            <MudNumericField Required="true"  
+                                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"  
+                                Validation="@(new Func<int, string>(NumbersValidations.ValidateNumber1111to9999))" 
+                                    @bind-Value="CreateUpdateOrganiztion.SecondaryNumber" HideSpinButtons="true" 
+                                    Placeholder="@L["Type Here"]" 
+                                    Label="@L["SecondaryNumber"]" />
                          </MudItem>
 
                          <MudItem sm="4">
-                            <MudTextField Required="true"  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Text" @bind-Value="CreateUpdateOrganiztion.District" Placeholder="@L["Type Here"]" Label="@L["District"]" />
+                            <MudTextField Required="true"  
+                                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" 
+                                T="string" InputType="InputType.Text" @bind-Value="CreateUpdateOrganiztion.District" 
+                                Placeholder="@L["Type Here"]" 
+                                Label="@L["District"]" />
                          </MudItem>
                          <MudItem sm="4">
                             <MudNumericField Required="true"  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" Validation="@(new Func<int, string>(NumbersValidations.ValidateNumber11111to99999))" @bind-Value="CreateUpdateOrganiztion.PostalCode" HideSpinButtons="true" Placeholder="@L["Type Here"]" Label="@L["PostalCode"]" />
@@ -242,10 +271,19 @@
                             </div>
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Text" @bind-Value="CreateUpdateOrganiztion.UserNameZatca" Placeholder=@L["UserNameZatca"] Label=@L["UserNameZatca"] readonly="@IsReadOnly" />
+                            <MudTextField 
+                                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" 
+                                T="string" InputType="InputType.Text" 
+                                @bind-Value="CreateUpdateOrganiztion.UserNameZatca" 
+                                Placeholder=@L["UserNameZatca"] 
+                                Label=@L["UserNameZatca"] />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" T="string" InputType="InputType.Password" @bind-Value="CreateUpdateOrganiztion.PasswordZatca" Placeholder=@L["PasswordZatca"] Label=@L["PasswordZatca"] readonly="@IsReadOnly" />
+                            <MudTextField 
+                                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" 
+                                T="string" InputType="InputType.Password" 
+                                @bind-Value="CreateUpdateOrganiztion.PasswordZatca" 
+                                Placeholder=@L["PasswordZatca"] Label=@L["PasswordZatca"]/>
                         </MudItem>
 
                         <MudDivider Style="border-top:1px solid #505254; margin:50px 0px;" />
