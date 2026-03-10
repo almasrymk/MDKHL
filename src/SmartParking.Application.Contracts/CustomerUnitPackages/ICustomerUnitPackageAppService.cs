@@ -19,7 +19,7 @@ public interface ICustomerUnitPackageAppService :
     /// The task result contains a <see cref="Result{T}"/> with a list of <see cref="CustomerPackageDto"/> assigned to the customer.
     /// </returns>
     Task<Result<List<CustomerUnitPackageDto>>> GetListOfUnitPackageByCustomer(Guid customerId, int organizationId);
-    Task<CustomerUnitPackageDto> GetUnitPackageByCustomer(Guid customerId);
+
 
 
     Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(int packageId, Guid customerId , CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto);

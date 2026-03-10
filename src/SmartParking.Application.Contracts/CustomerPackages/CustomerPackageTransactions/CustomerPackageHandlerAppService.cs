@@ -31,10 +31,10 @@ public class CustomerPackageHandlerAppService : ICustomerPackageHandlerAppServic
         using (_dataFilter.Disable<IMultiTenant>())
         {
 
-        var customerUnitPackage =await _customerUnitPackageAppService.GetUnitPackageByCustomer(customerId);
+        var customerUnitPackage =await _customerUnitPackageAppService.GetListOfUnitPackageByCustomer(customerId, organizationId);
         var garageTransactionValidation = await _garageTransactionValidationsRepository.CountOfVehicleRelatedToCustomerPackageParkingInGarage(customerId, organizationId);
 
-        return customerUnitPackage.NumberOfSlots >= ((garageTransactionValidation?.Count+1) ?? 0);
+        return customerUnitPackage.Value[0].NumberOfSlots >= ((garageTransactionValidation?.Count+1) ?? 0);
         }
     }
 

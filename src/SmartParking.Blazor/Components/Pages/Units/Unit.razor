@@ -1,0 +1,40 @@
+@page "/units"
+@using Microsoft.Extensions.Localization
+@using SmartParking.Localization
+@using SmartParking.Permissions
+@using SmartParking.Permissions.UnitsPermissions
+@using SmartParking.Units
+@using SmartParking.Organizations
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
+@inject IUnitAppService UnitAppService
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
+@inject IOrganizationsAppService OrganizationAppService
+@inject IAuthorizationService AuthorizationService
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inherits AbpCrudPageBase<IUnitAppService, UnitDto, int, PagedAndSortedResultRequestDto, CreateUpdateUnitDto>
+
+<PageTitle>@L["Units"]</PageTitle>
+
+<MudText Typo="Typo.h5" Class="mb-2">@L["Units"]</MudText>
+
+<SPDataGrid PageName=@L["Units"] 
+    ShowAdd="AuthorizationService.IsGrantedAsync(UnitPermissions.Create).Result"
+    ShowDelete="AuthorizationService.IsGrantedAsync(UnitPermissions.Delete).Result"
+    ShowEdit="AuthorizationService.IsGrantedAsync(UnitPermissions.Edit).Result"
+    ShowView="AuthorizationService.IsGrantedAsync(UnitPermissions.Default).Result"
+    Data="@itemData" 
+    TotalItemsInTable="TotalItem" 
+    OnFiltering="HandleFilter" 
+    OnClickRowEdit="OnClickRowEdit" 
+    OnClickRowView="OnClickRowView" 
+    OnPageChanged="FetchTableData" 
+    OnSearching="HandleSearch" 
+    OnAdd="@(() => OpenDialogAsync(_backdropClick))" 
+    OnClickRowDelete="OnClickRowDelete">
+</SPDataGrid>

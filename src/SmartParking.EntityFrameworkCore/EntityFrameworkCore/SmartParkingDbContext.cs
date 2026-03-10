@@ -15,6 +15,8 @@ using SmartParking.Entities.Payments;
 using SmartParking.Entities.Shifts;
 using SmartParking.Entities.StateManagements;
 using SmartParking.Entities.Subscriptions;
+using SmartParking.Entities.Units;
+using SmartParking.Entities.UnitVehiclePackges;
 using SmartParking.Entities.Vehicles;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -119,7 +121,8 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<ShiftZone> ShiftZones { get; set; }
     public DbSet<UnitPackage> UnitPackages { get; set; }
     public DbSet<CustomerUnitPackage> CustomerUnitPackages { get; set; }
-
+    public DbSet<Unit> Units { get; set; }
+    public DbSet<UnitVehiclePackge> UnitVehiclePackges { get; set; }
 
     #endregion
 

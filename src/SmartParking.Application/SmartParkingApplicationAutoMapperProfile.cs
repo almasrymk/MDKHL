@@ -26,6 +26,8 @@ using SmartParking.Entities.Payments;
 using SmartParking.Entities.Shifts;
 using SmartParking.Entities.StateManagements;
 using SmartParking.Entities.Subscriptions;
+using SmartParking.Entities.Units;
+using SmartParking.Entities.UnitVehiclePackges;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.Garages;
@@ -58,6 +60,8 @@ using SmartParking.StateManagements;
 using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
 using SmartParking.UnitPackages;
+using SmartParking.Units;
+using SmartParking.UnitVehiclePackages;
 using SmartParking.UserShifts;
 using SmartParking.Vehicles;
 using System;
@@ -313,8 +317,23 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
          .ForPath(d => d.OrganizationEnglishName, s => s.MapFrom(o => o.Organization.EnglishName))
          .ForPath(d => d.GarageArabicName, s => s.MapFrom(o => o.Garage.NameAr))
          .ForPath(d => d.GarageEnglishName, s => s.MapFrom(o => o.Garage.NameEn))
-        .ReverseMap();
-
+         .ForMember(d => d.RemainingTime, s => s.MapFrom(src =>
+            !src.CheckoutMobile.HasValue || src.Organization == null
+                ? (DateTime?)null
+                : src.CheckoutMobile.Value.AddMinutes(src.Organization.Graceperiod) <= DateTime.Now
+                    ? DateTime.MinValue
+                        : src.CheckoutMobile.Value.AddMinutes(src.Organization.Graceperiod)
+          ))
+          .ForMember(d => d.IsPending, s => s.MapFrom(src =>
+              src.CheckoutMobile.HasValue &&
+              src.Organization != null &&
+              src.CheckoutMobile.Value.AddMinutes(src.Organization.Graceperiod) > DateTime.Now
+          ))
+          .ForMember(d => d.CanCheckout, s => s.MapFrom(src =>
+              src.CheckoutMobile.HasValue &&
+              src.Organization != null &&
+              src.CheckoutMobile.Value.AddMinutes(src.Organization.Graceperiod) <= DateTime.Now
+          ));
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>().ReverseMap();        
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransactionDto>().ReverseMap();       
         
@@ -546,7 +565,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         #region Unit Package Mapping
         CreateMap<CreateUpdateUnitPackageDto, UnitPackage>()
-    .ForMember(d => d.Package, o => o.MapFrom(s => s.Package));
+            .ForMember(d => d.Package, o => o.MapFrom(s => s.Package))
+            .ForMember(d => d.ArabicName, o => o.MapFrom(s => s.Package.ArabicName))
+            .ForMember(d => d.EnglishName, o => o.MapFrom(s => s.Package.EnglishName));
 
         CreateMap<UnitPackage, UnitPackageDto>()
             .ForMember(d => d.Package, o => o.MapFrom(s => s.Package));
@@ -554,6 +575,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CustomerUnitPackage, CustomerUnitPackageDto>();
 
         CreateMap<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>();
+            
         #endregion
 
         CreateMap<UserWithRole, ShiftZoneUserViewDto>()
@@ -561,6 +583,13 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
             .ForMember(dest => dest.OrganizationEnglishName, opt => opt.MapFrom(src => src.OrganizationEnglishName))
             .ForMember(dest => dest.OrganizationArabicName, opt => opt.MapFrom(src => src.OrganizationArabicName));
+
+        CreateMap<CreateUpdateUnitDto, Unit>();
+        CreateMap<Unit, UnitDto>();
+        CreateMap<UnitDto, CreateUpdateUnitDto>();
+
+        CreateMap<CreateUpdateUnitVehiclePackageDto, UnitVehiclePackge>();
+        CreateMap<UnitVehiclePackge, UnitVehiclePackageDto>();
     }
 
 }

@@ -57,7 +57,11 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => c.Customer.Id == customerId && c.OrganizationId==organizationId);
+            query = query
+                .Where(c => c.Customer.Id == customerId && c.OrganizationId==organizationId)
+                .OrderBy(c => Math.Abs((c.ActivationDate - DateTime.UtcNow).TotalSeconds));
+            
+
 
             var result = await AsyncExecuter.ToListAsync(query);
 
@@ -104,32 +108,7 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
     {
         CustomerCategoryStatus category;
 
-        Enum.TryParse(
-            package.Package.CustomerCategory,
-            true,
-            out category
-        );
-
-        CreateUpdateCustomerUnitPackageDto customerUnitPackageDto = new CreateUpdateCustomerUnitPackageDto
-        {
-            ArabicName = package.Package.ArabicName,
-            EnglishName = package.Package.EnglishName,
-            ActivationDate = PackageAssignationLogic.PackageActivationTime(package.Package.ActivationDate,package.Package.PublishFrom, package.Package.PackageCategoryType == PackageCategoryTypes.CustomPackage),
-            Status = package.Package.Status,
-            DectivationDate = PackageAssignationLogic.PackageExpirationTime(package.Package.DectivationDate , package.Package.DurationOfPackage, package.Package.PackageCategoryType == PackageCategoryTypes.CustomPackage),
-            Price = package.Package.Price,
-            PublishFrom = package.Package.PublishFrom,
-            PublishTo = package.Package.PublishTo,
-            NumberOfSlots = package.NumberOfSlots,
-            NumberOfVehicles = package.NumberOfVehicles,
-            CustomerId = customer.Id,
-            UnitPackageId = package.Package.Id,
-            DurationOfPackage=customerUnitPackageAssignationDto.DurationOfPackage,
-            Vat=customerUnitPackageAssignationDto.Vat,
-            OrganizationId=package.Package.OrganizationId,
-            Discount=customerUnitPackageAssignationDto.Discount,
-            CustomerCategory = category,
-        };
+        var customerUnitPackageDto = CreateUpdateCustomerUnitPackageDto.CreateFrom(customer, package, customerUnitPackageAssignationDto);
 
         var entity = ObjectMapper.Map<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>(customerUnitPackageDto);
         var data = await _repository.InsertAsync(entity);
@@ -152,20 +131,7 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         return customerUnitPackge!.NumberOfVehicles > numberOfVehicles;
     }
 
-    public async Task<CustomerUnitPackageDto> GetUnitPackageByCustomer(Guid customerId)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-
-            var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => c.Customer.Id == customerId);
-
-            var result = await AsyncExecuter.FirstOrDefaultAsync(query);
-
-            return  ObjectMapper.Map<CustomerUnitPackage,CustomerUnitPackageDto>(result);
-        }
-
-    }
+    
 
 
     #endregion

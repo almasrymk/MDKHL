@@ -26,6 +26,7 @@ public class CustomerUnitPackageDto
     public int UnitPackageId { get; set; }
     public  Guid TenantId { get; set; }
     public CustomerPackageStatus CustomerPackageStatus { get; set; }
+    public string UnitCode { get; set; }
 
     public CreateUpdateCustomerPackageDto ToCreateUpdateCustomerPackageDto(
         string enPlateNumber,
