@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Extensions.Localization
 @using MudBlazor
+@using SmartParking.Blazor.Components.Shared
 @using SmartParking.Entities.Cameras.Watchers
 @using SmartParking.Garages
 @using SmartParking.Localization
@@ -54,7 +55,7 @@
 
                     <MudItem xs="12" md="6">
                         <MudSelect T="int" Label="@L["Garage"]" @bind-Value="CreateUpdateShiftZone.ZoneId" AnchorOrigin="Origin.BottomCenter" Disabled="@(!_isLoaded)">
-                            <MudSelectItem T="int" Value="0">@L["SelectZone"]</MudSelectItem>
+                            <MudSelectItem T="int" Value="0">@L["SelectGarage"]</MudSelectItem>
                             @foreach (var garage in Garages)
                             {
                                 <MudSelectItem T="int" Value="@garage.Id">@(System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar") ? garage.NameAr : garage.NameEn)</MudSelectItem>
@@ -70,7 +71,7 @@
                             <MudSelectItem T="Guid" Value="Guid.Empty">@L["SelectManager"]</MudSelectItem>
                             @foreach (var m in Keepers)
                             {
-                                <MudSelectItem T="Guid" Value="@m.Id">@(System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar") ? m.UserName : m.EnglishName)</MudSelectItem>
+                                <MudSelectItem T="Guid" Value="@m.Id">@(System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar") ? m.EnglishName : m.EnglishName)</MudSelectItem>
                             }
                         </MudSelect>
                     </MudItem>
@@ -97,7 +98,7 @@
                                                     @foreach (var keeper in Keepers)
                                                     {
                                                         <MudSelectItem T="Guid?" Value="@keeper.Id" Disabled="@IsKeeperDisabled(keeper.Id, assignment)">
-                                                            @(System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar") ? keeper.UserName : keeper.EnglishName)
+                                                            @(System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar") ? keeper.EnglishName : keeper.EnglishName)
                                                         </MudSelectItem>
                                                     }
                                                 </MudSelect>
@@ -133,16 +134,19 @@
             </MudForm>
         </DialogContent>
 
+
         <DialogActions>
-            <MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
-            <MudButton Color="MudBlazor.Color.Primary" OnClick="Submit" Disabled="@(_isSubmitting || !_isLoaded)">
-                @if (_isSubmitting)
-                {
-                    <MudProgressCircular Indeterminate="true" Class="me-2" />
-                }
-                @L["Save"]
-            </MudButton>
+            <DialogActionComponent 
+            ButtonOneColor="MudBlazor.Color.Dark" 
+            ButtonTwoColor="MudBlazor.Color.Primary" 
+            ButtonOneLabel="@L["Back"]" 
+            ButtonTwoLabel="@L["SaveAsDraft"]" 
+            ButtonOneClick="Cancel" 
+            ButtonTwoClick="Submit" 
+            ButtonOneVariant="MudBlazor.Variant.Filled" 
+            ButtonTwoVariant="MudBlazor.Variant.Filled" />
         </DialogActions>
+
     </MudDialog>
 </div>
 
