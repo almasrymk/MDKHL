@@ -26,11 +26,12 @@ public interface IKeeperAppService
     /// <returns>list of InvoiceDto</returns>
     Task<Result<PagedResultDto<InvoiceDto>>> GetAllInvoicesByOrganizationIdAsync(int organizationId, PagedAndSortedAndSearchResultRequestDto paged);
     /// <summary>
-    /// Retrieves Last invoice by organization id asynchronously.
+    /// Retrieves Last invoice by organization id, and watcher code asynchronously.
     /// </summary>
     /// <param name="organizationId">id of specific organization</param>
+    /// <param name="watcherCode">watcher code</param>
     /// <returns> InvoiceDto</returns>
-    Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationIdAsync(int organizationId);
+    Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationIdAndWatcherCodeAsync(int organizationId, string watcherCode);
     /// <summary>
     /// Retrieves a list of all garage transaction with no plate number  asynchronously.
     /// </summary>
@@ -96,4 +97,11 @@ public interface IKeeperAppService
     /// with the collection of shift watcher actions. If none are found, returns a successful Result with an empty collection.
     /// </returns>
     Task<Result<ICollection<ShiftWatcherActionDto>>> GetShiftWatcherActionAsync();
+    /// <summary>
+    /// Checks if the current user has an active shift zone action (gate).
+    /// </summary>
+    /// <returns>
+    /// A task representing the asynchronous operation, containing a <see cref="Result{Boolean}"/> indicating whether the current user has an active shift zone action.
+    /// </returns>
+    Task<Result<bool>> HasActiveShiftZoneActionAsync();
 }

@@ -971,15 +971,7 @@
     "CustomerHasActivePackage": "المستفيد لديه باقة بالفعل",
     "PackgeVehiclesLimitationsExceeded": "لقد تجاوزت العدد المسوح من المركبات لتلك الباقة",
     "ChooseGate": "يرجى اختيار بوابة",
-    "Permission:Unit": "موديول الوحدات",
-    "Unit": "وحده",
-    "Units": "وحدات",
-    "DeactivationDate": "تاريخ الانتهاء",
-    "UnitCode": "كود الوحده",
-    "UnitVehiclePackages": "سيارات باقات الوحده",
-    "CustomerUnitPackageType": "النوع",
-    "Permission:UnitVehiclePackage": "موديول سيارات باقات الوحده",
-    "Warning": "تنبية"
+    "Warning": "تنبية",
+    "NoAssign": "لا توجد بوابة مخصصة لهذا الموزع/الكاميرا"
   }
-
 }

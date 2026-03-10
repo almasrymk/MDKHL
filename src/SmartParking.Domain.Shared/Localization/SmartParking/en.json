@@ -941,7 +941,7 @@
     "CustomerUnitPackageType": "Type",
     "PublishTo": "Publish To",
     "PublishFrom": "Publish From",
-    "Permission:UnitVehiclePackage": "Unit Vehicle Package Management"
+    "Permission:UnitVehiclePackage": "Unit Vehicle Package Management",
+    "NoAssign": "No Assigned gate found for this dispenser/camera"
   }
-
 }

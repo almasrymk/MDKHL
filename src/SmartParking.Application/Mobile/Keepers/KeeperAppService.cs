@@ -31,6 +31,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.PermissionManagement;
 using Volo.Abp.TenantManagement;
+using Volo.Abp.Users;
 
 namespace SmartParking.Mobile.Keepers;
 
@@ -281,7 +282,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                 UserId = user.Id.ToString(),
                 OrganizationId = organizationEntity.Id,
                 GracePeriod = organizationEntity.Graceperiod,
-                CanCancelTransaction = canCheckout
+                CanCancelTransaction = canCheckout,
+                OrganizationHasShifts=organizationEntity.Settings.UseShifts
             });
         }
     }
@@ -390,22 +392,41 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
        return await CheckoutAsync(invoiceId,(int) PaymentMethod.Cash ,discountValue);
     }
 
-  
+
     /// <inheritdoc/>
 
-    public async Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationIdAsync(int organizationId)
+    public async Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationIdAndWatcherCodeAsync(int organizationId, string watcherCode)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            var query = await _invoiceRepository.GetQueryableAsync();
-            query = query.Where(x => x.InvoiceType == InvoiceType.UnPaid 
-            && x.InvoicePrice > 0 
-            && x.OrganizationId==organizationId);
-            query = query.OrderByDescending(x => x.CreationTime);
-            var invoice = await query.FirstOrDefaultAsync();
-            return ObjectMapper.Map<Invoice, InvoiceDto>(invoice); 
+            var invoice = await _invoiceRepository.GetQueryableAsync();
+            var garageTransaction = await _garageTransactionRepository.GetQueryableAsync();
 
+            var result =
+                from keeper in invoice
+                join transaction in garageTransaction
+                    on keeper.GarageTransactionExitId equals transaction.Id
+                where
+                    (transaction.Camera.DeviceId == watcherCode || transaction.LaneNO == watcherCode)
+                    && keeper.OrganizationId == organizationId
+                    && keeper.InvoicePrice > 0
+                    && keeper.InvoiceType == InvoiceType.UnPaid
+                orderby keeper.CreationTime descending
+                select keeper;
+
+            var lastInvoice = await AsyncExecuter.FirstOrDefaultAsync(result);
+
+            if (lastInvoice == null)
+                return Result<InvoiceDto>.Success(new InvoiceDto());
+
+            return Result<InvoiceDto>.Success(ObjectMapper.Map<Invoice, InvoiceDto>(lastInvoice));
         }
+    }
+
+    /// <inheritdoc/>
+    public Task<Result<bool>> HasActiveShiftZoneActionAsync()
+    {
+        return _shiftZoneActionAppService.GetCurrentUserActiveShiftZoneStatusAsync();
     }
 
     #endregion
@@ -492,7 +513,5 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         }
         return null;
     }
-
- 
     #endregion
 }
