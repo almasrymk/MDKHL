@@ -93,6 +93,8 @@ public partial class CustomerUnitPackageDialog
 
         foreach (var item in packages)
         {
+            if (item.Status == Enums.Status.Deleted)
+                continue;
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             if (CultureInfo.CurrentCulture.Name == "en")
@@ -133,5 +135,11 @@ public partial class CustomerUnitPackageDialog
     }
 
 
-
+    private async Task RemovePackage(RowDef row)
+    {
+        var id = int.Parse(row.Cells[0].Value);
+        await CustomerUnitPackageAppService.DeleteAsync(id); 
+        StateHasChanged();
+        NavigationManager.Refresh();
+    }
 }

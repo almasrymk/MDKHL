@@ -6,6 +6,7 @@
 @using SmartParking.CustomerUnitPackages
 @inject IDialogService Dialog
 @inject ICustomerAppService CustomersAppService
+@inject NavigationManager NavigationManager
 @inject IStringLocalizer<SmartParkingResource> L
 
 
@@ -22,7 +23,9 @@
                         TotalItemsInTable="@TotalItem"
                         Data="@itemData" 
                         OnAdd="OpenAssignPackage" 
-                        OnPageChanged="FetchTableData">
+                        OnPageChanged="FetchTableData"
+                        ShowDelete="true"
+                        OnClickRowDelete="RemovePackage">
             </SPDataGrid>
         </DialogContent>
         <DialogActions>
