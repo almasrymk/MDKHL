@@ -31,7 +31,15 @@ public class UnitPackageAppService : CrudAppService<UnitPackage, UnitPackageDto,
         _dataFilter = dataFilter;
     }
 
-    public override async Task<PagedResultDto<UnitPackageDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    //public override async Task<PagedResultDto<UnitPackageDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    //{
+    //    using (DataFilter.Disable<IMultiTenant>())
+    //    {
+    //        var unitPackage = await base.GetListAsync(input);
+    //        return unitPackage;
+    //    }
+    //}
+    public async Task<PagedResultDto<UnitPackageDto>> GetListAsyncForMdkhl(PagedAndSortedResultRequestDto input)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
