@@ -84,6 +84,17 @@ public partial class AssignCustomerUnitPackageDialog
         //}
         var package = selectedPackageDto.FirstOrDefault();
 
+        if (package is null) 
+        {
+            Snackbar.Add(@L["PackageSelectValidation"], Severity.Error);
+            return;
+        }
+
+        if (unitCode is null)
+        {
+            Snackbar.Add(@L["CodeSelectValidation"], Severity.Error);
+            return;
+        }
 
         preAssignState.UnitPackage=package;
         preAssignState.Customer = Customer;
@@ -116,6 +127,4 @@ public partial class AssignCustomerUnitPackageDialog
     }
 
     
-
-
 }
