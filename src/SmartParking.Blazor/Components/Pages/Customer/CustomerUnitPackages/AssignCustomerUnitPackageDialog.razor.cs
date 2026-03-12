@@ -76,15 +76,16 @@ public partial class AssignCustomerUnitPackageDialog
     /// </summary>
     private async Task SubmitEdit()
     {
-        var result = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(Customer.Id);
-        //if (result)
-        //{
-        //    SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"],Severity.Error);
-        //    return;
-        //}
-        var package = selectedPackageDto.FirstOrDefault();
+        
+        //var package = selectedPackageDto.FirstOrDefault();
 
-        if (package is null) 
+        var result = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(Customer.Id, CustomerPackage);
+        if (result)
+        {
+            SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"],Severity.Error);
+            return;
+        }
+        if (CustomerPackage is null) 
         {
             Snackbar.Add(@L["PackageSelectValidation"], Severity.Error);
             return;
@@ -96,13 +97,19 @@ public partial class AssignCustomerUnitPackageDialog
             return;
         }
 
-        preAssignState.UnitPackage=package;
+        var packageOverUnits = await CustomerUnitPackageAppService.CheckPackageOverUnits(unitCode, CustomerPackage.Id);
+
+        if(packageOverUnits)
+        {
+            SnackBar.ShowSnackbar(Snackbar, L["PackageOverUnitValidation"], Severity.Error);
+            return;
+        }
+
+        preAssignState.UnitPackage = CustomerPackage;
         preAssignState.Customer = Customer;
         preAssignState.UnitCode = unitCode;
         preAssignState.CustomerUnitPackageType = customerUnitPackageType;
         Navigation.NavigateTo("/prepaymentpackageunit");
-
-
 
     }
 
