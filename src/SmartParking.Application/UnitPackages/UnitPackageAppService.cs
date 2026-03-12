@@ -53,6 +53,7 @@ public class UnitPackageAppService : CrudAppService<UnitPackage, UnitPackageDto,
         using (_dataFilter.Disable<IMultiTenant>())
         {
             await CheckExistName(input);
+            await HandlePackageDeactivationDate(input);
             return await base.CreateAsync(input);
         }
     }
@@ -177,5 +178,26 @@ public class UnitPackageAppService : CrudAppService<UnitPackage, UnitPackageDto,
         }
 
     }
+
+    private async Task HandlePackageDeactivationDate(CreateUpdateUnitPackageDto input)
+    {
+        switch (input.Package.PackageCategoryType)
+        {
+            case PackageCategoryTypes.Daily:
+                input.Package.DeactivationDate = input.Package.ActivationDate.AddDays(input.Package.DurationOfPackage);
+                break;
+            case PackageCategoryTypes.Monthly:
+                input.Package.DeactivationDate = input.Package.ActivationDate.AddMonths(30);
+                break;
+            case PackageCategoryTypes.HalfYear:
+                input.Package.DeactivationDate = input.Package.ActivationDate.AddMonths(180);
+                break;
+            case PackageCategoryTypes.Year:
+                input.Package.DeactivationDate = input.Package.ActivationDate.AddYears(365);
+                break;
+        }
+
+    }
+
     #endregion
 }
