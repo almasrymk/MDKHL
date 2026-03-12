@@ -6,6 +6,7 @@
 @using SmartParking.Localization
 @using System.Globalization
 @using SmartParking.Payments
+@using SmartParking.Payments.PaymentRelations
 @using SmartParking.Utilities
 @using Volo.Abp.MultiTenancy
 @inject IPaymentWebAppService paymentWebAppService
@@ -16,6 +17,7 @@
 @inject IInvoiceAppService InvoiceAppService
 @inject IDialogService DialogService
 @inject CurrentTenant currentTenant
+@inject IPaymentRelationAppService PaymentRelationAppService
 
 
 <PageTitle>@L["View Details"]</PageTitle>
@@ -167,13 +169,16 @@
                                       Value="@(Payment?.customerPackageDto?.PackageArabicName ?? "")"
                                       Label="@L["PackageName"]" />
                     </MudItem>
-                    <MudItem sm="4">
-                        <MudTextField @bind-Value="@Payment!.ArPlateNumber"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                      Label="@L["PlateNumber"]"
-                                      ReadOnly="true" />
-                    </MudItem>
+                    @if (Payment.ArPlateNumber is not null)
+                    {
+                        <MudItem sm="4">
+                            <MudTextField @bind-Value="@Payment!.ArPlateNumber"
+                                          Immediate="true"
+                                          Variant="Variant.Text"
+                                          Label="@L["PlateNumber"]"
+                                          ReadOnly="true" />
+                        </MudItem>
+                    }
 
                 }
                 else
@@ -186,14 +191,16 @@
                                       Label="@L["PackageName"]" />
                     </MudItem>
 
-                    <MudItem sm="4">
-                        <MudTextField @bind-Value="Payment.EnPlateNumber"
-                                      Immediate="true"
-                                      Variant="Variant.Text"
-                                      Label="@L["PlateNumber"]"
-                                      ReadOnly="true" />
-                    </MudItem>
-
+                    @if (Payment.EnPlateNumber is not null)
+                    {
+                        <MudItem sm="4">
+                            <MudTextField @bind-Value="Payment.EnPlateNumber"
+                            Immediate="true"
+                            Variant="Variant.Text"
+                            Label="@L["PlateNumber"]"
+                            ReadOnly="true" />
+                        </MudItem>
+                    }
                 }
             }
             @if (Payment.StatusZatca == Enums.Status.Active)
