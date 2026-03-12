@@ -13,6 +13,7 @@
 @using SmartParking.Invoices
 @using SmartParking.Localization
 @using SmartParking.Payments
+@using SmartParking.Payments.PaymentRelations
 @using SmartParking.UnitPackages
 @using SmartParking.Utilities
 @using System.Globalization
@@ -23,6 +24,7 @@
 @inject NavigationManager Navigation
 @inject ICustomerUnitPackageAppService CustomerUnitPackageAppService
 @inject PreAssignPackageUnitState preAssignState
+@inject IPaymentRelationAppService PaymentRelationAppService
 
 <PageTitle>@L["PreInvoice"]</PageTitle>
 
@@ -141,6 +143,10 @@
             {
                 SnackBar.ShowSnackbar(Snackbar, $"{L["PackagePaymentSuccessfully"]}", MudBlazor.Severity.Success);
                 await Task.Delay(1000);
+
+                var paymentRelation = PaymentRelationStaticFactory.CreateByCustomerUnitPackage(payment.PaymentId, assignPackage);
+                var result = await PaymentRelationAppService.CreateAsync(paymentRelation);
+
                 Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
             }
         }
@@ -166,4 +172,5 @@
 
         return await paymentAppService.CreateCheckoutPackagePaymentWebAsync(paymentCheckout);
     }
+
 }
