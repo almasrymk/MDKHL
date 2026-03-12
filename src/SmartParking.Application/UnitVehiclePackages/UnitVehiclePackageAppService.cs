@@ -20,12 +20,14 @@ public class UnitVehiclePackageAppService : CrudAppService<
     IUnitVehiclePackageAppService
 {
     private readonly ICustomerUnitPackageAppService _customerUnitPackageAppService;
+    private readonly IRepository<UnitVehiclePackge, Guid> _repository;
     public UnitVehiclePackageAppService(IRepository<UnitVehiclePackge, Guid> repository,
         IVehiclesAppService vehiclesAppService,
         ICustomerUnitPackageAppService customerUnitPackageAppService)
         : base(repository)
     {
         _customerUnitPackageAppService = customerUnitPackageAppService;
+        _repository = repository;
     }
 
     #region public methods
@@ -47,6 +49,13 @@ public class UnitVehiclePackageAppService : CrudAppService<
         }
         return await base.CreateAsync(input);
 
+    }
+
+    
+
+    public async Task<bool> CheckDuplicationForVehicle(Guid CustomerId, string EnPlateNumber)
+    {
+         return await _repository.AnyAsync(x => x.EnPlateNumber == EnPlateNumber && x.CustomerId == CustomerId);
     }
 
     #endregion
