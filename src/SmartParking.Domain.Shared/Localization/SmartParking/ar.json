@@ -973,6 +973,10 @@
     "ChooseGate": "يرجى اختيار بوابة",
     "Warning": "تنبية",
     "NoAssign": "لا توجد بوابة مخصصة لهذا الموزع/الكاميرا",
-    "ManagerName":  "اسم المدير"
+    "ManagerName": "اسم المدير",
+    "SelectStaff": "اختر الموظف",
+    "SelectDevice": "اختر الجهاز",
+    "NameDuplication": "غير مسموح بتكرار اسم الوردية",
+    "Types":  "النوع"
   }
 }

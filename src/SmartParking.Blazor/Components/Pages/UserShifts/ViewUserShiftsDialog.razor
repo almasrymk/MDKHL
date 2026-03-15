@@ -27,12 +27,12 @@
 
                     <MudItem sm="6" md="6">
                         <MudTextField T="string"
-                                      Value="@(string.IsNullOrWhiteSpace(Role) ? L["Staff"].Value : (L[Role].Value ?? Role))"
+                                      Value="@(string.IsNullOrWhiteSpace(Types) ? L["Staff"].Value : (L[Types].Value ?? Types))"
                                       Disabled="true"
-                                      Label="@L["Role"]" />
+                                      Label="@L["Types"]" />
                     </MudItem>
 
-                    <DeviceDisplayComponent Role="@Role"
+                    <DeviceDisplayComponent Role="@Types"
                                             Device="@Device"
                                             Devices="@Devices" />
 
