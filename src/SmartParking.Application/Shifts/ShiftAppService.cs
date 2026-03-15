@@ -46,6 +46,7 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
     public override async Task<ShiftDto> CreateAsync(CreateUpdateShiftDto input)
     {
         await CheckExistanceOfDependencies(input);
+        await CheckDuplication(input);
         
         return await base.CreateAsync(input);
     }
@@ -549,5 +550,19 @@ public class ShiftAppService : CrudAppService<Shift, ShiftDto, int, PagedAndSort
         }
     }
 
+    private async Task CheckDuplication(CreateUpdateShiftDto input)
+    {
+        var isDuplicated = await _repository.AnyAsync(s =>
+            s.OrganizationId == input.OrganizationId &&
+            (s.ArabicName == input.ArabicName || s.EnglishName == input.EnglishName)
+        );
+
+        if (isDuplicated)
+        {
+            throw new BusinessException(
+                message: LocalizationHelper.GetLocalizedString("NameDuplication")
+            );
+        }
+    }
     #endregion
 }
