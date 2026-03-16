@@ -123,7 +123,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<CustomerUnitPackage> CustomerUnitPackages { get; set; }
     public DbSet<Unit> Units { get; set; }
     public DbSet<UnitVehiclePackge> UnitVehiclePackges { get; set; }
-    public DbSet<PaymentRelation> PaymentRelations { get; set; }
+    public DbSet<PaymentDetails> PaymentDetails { get; set; }
 
     #endregion
 
