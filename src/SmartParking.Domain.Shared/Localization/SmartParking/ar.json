@@ -977,6 +977,7 @@
     "CodeSelectValidation": "يرجي اختيار وحده",
     "PackageSelectValidation": "يرجي اختيار باقه",
     "PackageOverUnitValidation": "هذه الباقه توجد بالفعل في هذه الوحده",
-    "DuplicateVehicleForCustomer": "هذه الباقه توجد بالفعل علي هذه السياره"
+    "DuplicateVehicleForCustomer": "هذه الباقه توجد بالفعل علي هذه السياره",
+    "UnitVehiclePackage": "باقه سياره الوحده"
   }
 }

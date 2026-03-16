@@ -947,7 +947,8 @@
     "CodeSelectValidation": "Please select a unit",
     "PackageSelectValidation": "Please select a package",
     "PackageOverUnitValidation": "This Package is assigned to this unit already",
-    "DuplicateVehicleForCustomer": "This vehicle is already assigned for this package"
+    "DuplicateVehicleForCustomer": "This vehicle is already assigned for this package",
+    "UnitVehiclePackage": "Unit Vehicle Package"
 
   }
 }
