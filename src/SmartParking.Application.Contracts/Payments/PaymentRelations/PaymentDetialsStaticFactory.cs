@@ -3,11 +3,11 @@ using System;
 
 namespace SmartParking.Payments.PaymentRelations;
 
-public abstract class PaymentRelationStaticFactory
+public abstract class PaymentDetialsStaticFactory
 {
-    public static CreateUpdatePaymentRelationDto CreateByCustomerUnitPackage(Guid PaymentId, CustomerUnitPackageDto dto)
+    public static CreateUpdatePaymentDetailsDto CreateByCustomerUnitPackage(Guid PaymentId, CustomerUnitPackageDto dto)
     {
-        return new CreateUpdatePaymentRelationDto
+        return new CreateUpdatePaymentDetailsDto
         {
             ArabicName = dto.ArabicName,
             EnglishName = dto.EnglishName,

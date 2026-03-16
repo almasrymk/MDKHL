@@ -7,27 +7,27 @@ using Volo.Abp.Domain.Repositories;
 
 namespace SmartParking.Payments.PaymentRelations;
 
-public class PaymentRelationAppService : CrudAppService<
-    PaymentRelation,
-    PaymentRelationDto,
+public class PaymentDetailsAppService : CrudAppService<
+    PaymentDetails,
+    PaymentDetailsDto,
     Guid,
     PagedAndSortedResultRequestDto,
-    CreateUpdatePaymentRelationDto>,
-    IPaymentRelationAppService
+    CreateUpdatePaymentDetailsDto>,
+    IPaymentDetailsAppService
 {
-    private readonly IRepository<PaymentRelation, Guid> _repository;
-    public PaymentRelationAppService(IRepository<PaymentRelation, Guid> repository) : base(repository)
+    private readonly IRepository<PaymentDetails, Guid> _repository;
+    public PaymentDetailsAppService(IRepository<PaymentDetails, Guid> repository) : base(repository)
     {
         _repository = repository;
     }
 
-    public async Task<PaymentRelationDto> GetByPaymentIdAsync(Guid paymentId)
+    public async Task<PaymentDetailsDto> GetByPaymentIdAsync(Guid paymentId)
     {
         var paymentRelation = await _repository.FirstOrDefaultAsync(x => x.PaymentId == paymentId);
         if (paymentRelation == null)
         {
             throw new Exception("There is no such payment ID.");
         }
-        return ObjectMapper.Map<PaymentRelation, PaymentRelationDto>(paymentRelation);
+        return ObjectMapper.Map<PaymentDetails, PaymentDetailsDto>(paymentRelation);
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities.Payments;
 
-public class PaymentRelation : FullAuditedEntity<Guid>
+public class PaymentDetails : FullAuditedEntity<Guid>, IMultiTenant
 {
     public Guid PaymentId { get; set; }
     public int PayableId { get; set; }
@@ -13,4 +14,5 @@ public class PaymentRelation : FullAuditedEntity<Guid>
     public string ArabicName { get; set; }
     public string EnglishName { get; set; }
 
+    public Guid? TenantId { get; set; }
 }

@@ -1,9 +1,8 @@
 ﻿using System;
-using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Payments.PaymentRelations;
 
-public class PaymentRelationDto : FullAuditedEntityDto<Guid>
+public class CreateUpdatePaymentDetailsDto
 {
     public Guid PaymentId { get; set; }
     public int PayableId { get; set; }
