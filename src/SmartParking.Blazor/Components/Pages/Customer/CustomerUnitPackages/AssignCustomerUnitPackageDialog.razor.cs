@@ -79,12 +79,7 @@ public partial class AssignCustomerUnitPackageDialog
         
         //var package = selectedPackageDto.FirstOrDefault();
 
-        var result = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(Customer.Id, CustomerPackage);
-        if (result)
-        {
-            SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"],Severity.Error);
-            return;
-        }
+        
         if (CustomerPackage is null) 
         {
             Snackbar.Add(@L["PackageSelectValidation"], Severity.Error);
@@ -94,6 +89,12 @@ public partial class AssignCustomerUnitPackageDialog
         if (unitCode is null)
         {
             Snackbar.Add(@L["CodeSelectValidation"], Severity.Error);
+            return;
+        }
+        var result = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(Customer.Id, CustomerPackage);
+        if (result)
+        {
+            SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"], Severity.Error);
             return;
         }
 
