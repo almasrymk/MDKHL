@@ -4,6 +4,7 @@ using SmartParking.Blazor.Components.Pages.Invoices;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Enums;
 using SmartParking.Payments;
+using SmartParking.Payments.PaymentRelations;
 
 namespace SmartParking.Blazor.Components.Pages.Payments;
 
@@ -28,7 +29,9 @@ public partial class DetailsPayment
     private async Task FetchPayment()
     {
         Payment = await paymentWebAppService.GetMdkhlAsync(Guid.Parse(Id));
-        var paymentRelation = await PaymentRelationAppService.GetByPaymentIdAsync(Payment.Id);
+        PaymentDetailsDto paymentRelation = new();
+        if (Payment.customerPackageDto == null && Payment.Invoice==null)
+             paymentRelation = await PaymentRelationAppService.GetByPaymentIdAsync(Payment.Id);
         Payment.customerPackageDto ??= new CustomerPackageDto();
         var dto = Payment.customerPackageDto;
 
@@ -46,7 +49,6 @@ public partial class DetailsPayment
                 Payment?.customerPackageDto?.PackageArabicName is not null ? Payment?.customerPackageDto?.PackageArabicName : paymentRelation.ArabicName;
             Payment?.customerPackageDto?.PackageEnglishName = 
                 Payment?.customerPackageDto?.PackageEnglishName is not null ? Payment?.customerPackageDto?.PackageEnglishName : paymentRelation.EnglishName;
-
 
         }
         else

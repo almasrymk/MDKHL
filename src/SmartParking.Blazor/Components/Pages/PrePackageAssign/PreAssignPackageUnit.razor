@@ -24,7 +24,7 @@
 @inject NavigationManager Navigation
 @inject ICustomerUnitPackageAppService CustomerUnitPackageAppService
 @inject PreAssignPackageUnitState preAssignState
-@inject IPaymentRelationAppService PaymentRelationAppService
+@inject IPaymentDetailsAppService PaymentRelationAppService
 
 <PageTitle>@L["PreInvoice"]</PageTitle>
 
@@ -144,7 +144,7 @@
                 SnackBar.ShowSnackbar(Snackbar, $"{L["PackagePaymentSuccessfully"]}", MudBlazor.Severity.Success);
                 await Task.Delay(1000);
 
-                var paymentRelation = PaymentRelationStaticFactory.CreateByCustomerUnitPackage(payment.PaymentId, assignPackage);
+                var paymentRelation = PaymentDetialsStaticFactory.CreateByCustomerUnitPackage(payment.PaymentId, assignPackage);
                 var result = await PaymentRelationAppService.CreateAsync(paymentRelation);
 
                 Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
