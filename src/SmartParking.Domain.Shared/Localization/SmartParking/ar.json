@@ -978,8 +978,7 @@
     "PackageSelectValidation": "يرجي اختيار باقه",
     "PackageOverUnitValidation": "هذه الباقه توجد بالفعل في هذه الوحده",
     "DuplicateVehicleForCustomer": "هذه الباقه توجد بالفعل علي هذه السياره",
-    "UnitVehiclePackage": "باقه سياره الوحده"
-    "ManagerName": "اسم المدير",
+    "UnitVehiclePackage": "باقه سياره الوحده",
     "SelectStaff": "اختر الموظف",
     "SelectDevice": "اختر الجهاز",
     "NameDuplication": "غير مسموح بتكرار اسم الوردية",
