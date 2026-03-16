@@ -10,15 +10,31 @@
        </TitleContent>
   <DialogContent>
       <MudGrid>
-   <MudItem sm="12">
-        <MudText><strong>@L["Code"]:</strong> @Unit.Code</MudText>
+   <MudItem sm="6">
+                    <MudTextField 
+                        ReadOnly="true" 
+                        T="string" 
+                        InputType="InputType.Text" 
+                        @bind-Value="Unit.Code" 
+                        Label =@L["Code"]> </MudTextField>
   </MudItem>
- <MudItem sm="12">
-     <MudText><strong>@L["Capacity"]:</strong> @Unit.Capacity</MudText>
-     </MudItem>
-       <MudItem sm="12">
- <MudText><strong>@L["Description"]:</strong> @Unit.Description</MudText>
-     </MudItem>
+   <MudItem sm="6">
+                    <MudTextField 
+                        ReadOnly="true" 
+                        T="int" 
+                        InputType="InputType.Text" 
+                        @bind-Value="Unit.Capacity"
+                        Label=@L["Capacity"]> </MudTextField>
+  </MudItem>
+   <MudItem sm="12">
+        <MudTextField 
+            ReadOnly="true" 
+            T="string" 
+            InputType="InputType.Text" 
+            @bind-Value="Unit.Description"
+            Label=@L["Description"]> </MudTextField>
+  </MudItem>
+ 
   </MudGrid>
         </DialogContent>
      <DialogActions>
