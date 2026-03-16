@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Cutomers;
+using SmartParking.CustomerUnitPackages;
 using SmartParking.Localization;
 using SmartParking.Permissions.UnitVehiclePackagesPermissions;
 using SmartParking.UnitVehiclePackages;
@@ -15,84 +18,84 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Validation;
 
-namespace SmartParking.Blazor.Components.Pages.UnitVehiclePackages;
+namespace SmartParking.Blazor.Components.Pages.Reports;
 
 public partial class UnitVehiclePackage
 {
+    [Inject]
+    private IUnitVehiclePackageAppService UnitVehiclePackageAppService { get; set; }
+
+    [Inject]
+    private IDialogService Dialog { get; set; }
+
+    [Inject]
+    private IStringLocalizer<SmartParkingResource> L { get; set; }
+
+    [Inject]
+    private ISnackbar Snackbar { get; set; }
+
+    [Inject]
+    private NavigationManager Navigation { get; set; }
+
+    [Inject]
+    private ICurrentTenant CurrentTenant { get; set; }
+
+    [Inject]
+    private IAuthorizationService AuthorizationService { get; set; }
+
+    [Inject]
+    private ICustomerAppService CustomerAppService { get; set; }
+
+    [Inject]
+    private ICustomerUnitPackageAppService CustomerUnitPackageAppService { get; set; }
+
     private int TotalItem;
     public int CurrentPage { get; set; } = 1;
     public int RowPerPage { get; set; } = 10;
     private string sortColumn;
     private TableData itemData = new TableData();
+    private List<MudMenuData> MenuDatas = new List<MudMenuData>();
+    public string ColumnVisibility { get; private set; }
+
+
     private string termSearch;
     private readonly DialogOptions _backdropClick = new() { BackdropClick = false };
-  private readonly IStringLocalizer<SmartParkingResource> _localizer;
-
-    public UnitVehiclePackage(IStringLocalizer<SmartParkingResource> localizer)
-    {
-        _localizer = localizer;
-     //CreatePolicyName = UnitVehiclePackagePermissions.Create;
-     //   UpdatePolicyName = UnitVehiclePackagePermissions.Edit;
-        //DeletePolicyName = UnitVehiclePackagePermissions.Delete;
-    }
 
     protected async override Task OnInitializedAsync()
     {
-   // if (!await AuthorizationService.IsGrantedAsync(UnitVehiclePackagePermissions.View))
-   //     {
-   //Navigation.NavigateTo("/Account/AccessDenied", true);
-   //     }
-
-   await base.OnInitializedAsync();
+        await base.OnInitializedAsync();
+        await FetchTableData(new PageChangeEventArgs { PageNumber = 1, RowsPerPage = 10, SortColumn = "" });
     }
 
     private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
-    var input = new PagedAndSortedAndFilteredResultRequestDto
+        var input = new PagedAndSortedAndFilteredResultRequestDto
         {
-  MaxResultCount = pageInfo.RowsPerPage,
- SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-  Sorting = pageInfo.SortColumn,
-     SearchingTerm = termSearch,
-    filters = pageInfo.Filters
-   };
-
-      var unitsDto = await UnitVehiclePackageAppService.GetListAsync(input);
-        TotalItem = (int)unitsDto.TotalCount;
-      await CreateTable(unitsDto);
-    }
-
-    private async Task HandleSearch(PageChangeEventArgs pageInfo)
-    {
-termSearch = pageInfo.SearchTerm;
-   CurrentPage = pageInfo.PageNumber;
-        RowPerPage = pageInfo.RowsPerPage;
-  sortColumn = pageInfo.SortColumn;
-
-        var input = new PagedAndSortedAndSearchResultRequestDto
-        {
-          MaxResultCount = pageInfo.RowsPerPage,
+            MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-     Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch
-   };
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = termSearch,
+            filters = pageInfo.Filters
+        };
 
         var unitsDto = await UnitVehiclePackageAppService.GetListAsync(input);
         TotalItem = (int)unitsDto.TotalCount;
         await CreateTable(unitsDto);
-  }
+    }
+
+   
 
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-  var input = new PagedAndSortedAndSearchResultRequestDto
+        var input = new PagedAndSortedAndSearchResultRequestDto
         {
- MaxResultCount = pageInfo.RowsPerPage,
+            MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
- Sorting = pageInfo.SortColumn,
-     SearchingTerm = pageInfo.SearchTerm
+            Sorting = pageInfo.SortColumn,
+            SearchingTerm = pageInfo.SearchTerm
         };
 
-var unitsDto = await UnitVehiclePackageAppService.GetListAsync(input);
+        var unitsDto = await UnitVehiclePackageAppService.GetListAsync(input);
         TotalItem = (int)unitsDto.TotalCount;
         await CreateTable(unitsDto);
     }
@@ -148,6 +151,7 @@ var unitsDto = await UnitVehiclePackageAppService.GetListAsync(input);
         }
 
         itemData = tableData;
+        await CreateMenue(tableData.Columns);
         await Task.Yield();
     }
 
@@ -168,5 +172,36 @@ var unitsDto = await UnitVehiclePackageAppService.GetListAsync(input);
     {
         if (string.IsNullOrEmpty(str)) return str;
         return str.Length > maxLength ? str.Substring(0, maxLength) + "..." : str;
+    }
+
+    private async Task<MudMenuData> CreateColumnVisibilityMenue(List<ColumnDef> columns)
+    {
+        var items = new List<MenuItem>();
+        foreach (var item in columns)
+        {
+            items.Add(new MenuItem { MenueName = "ColumnVisibility", Label = item.DisplayName, ISColumnVisibility = true, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectColumnVisibilityAsync(selectedValue)) });
+        }
+        await Task.Yield();
+        return new MudMenuData
+        {
+            Name = L["ColumnVisibility"],
+            Label = L["ColumnVisibilitySelector"],
+            Items = items,
+            IsMenueColumnVisible = true
+        };
+    }
+    private async Task CreateMenue(List<ColumnDef> columns)
+    {
+        var MenuDatasTable = new List<MudMenuData>
+        {
+           await CreateColumnVisibilityMenue(columns)
+
+        };
+        MenuDatas = MenuDatasTable;
+    }
+    private async Task HandleSelectColumnVisibilityAsync(string valueOfMenue)
+    {
+        ColumnVisibility = valueOfMenue;
+        await Task.Yield();
     }
 }

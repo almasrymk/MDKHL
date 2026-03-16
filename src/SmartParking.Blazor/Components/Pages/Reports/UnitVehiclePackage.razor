@@ -8,15 +8,7 @@
 @using SmartParking.UnitVehiclePackages
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.MultiTenancy
-@inject IUnitVehiclePackageAppService UnitVehiclePackageAppService
-@inject IDialogService Dialog
-@inject IStringLocalizer<SmartParkingResource> L
-@inject ISnackbar Snackbar
-@inject NavigationManager Navigation
-@inject ICurrentTenant CurrentTenant
-@inject IAuthorizationService AuthorizationService
-@inject ICustomerAppService CustomerAppService
-@inject ICustomerUnitPackageAppService CustomerUnitPackageAppService
+
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 
@@ -31,5 +23,7 @@
     OnFiltering="HandleFilter" 
     OnClickRowView="OnClickRowView" 
     OnPageChanged="FetchTableData" 
-    OnSearching="HandleSearch">
+    ShowFiltering="true"
+    ShowMenue="true"
+    Menus="@MenuDatas">
 </SPDataGrid>
