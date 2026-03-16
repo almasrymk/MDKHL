@@ -592,8 +592,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateUnitVehiclePackageDto, UnitVehiclePackge>();
         CreateMap<UnitVehiclePackge, UnitVehiclePackageDto>();
 
-        CreateMap<CreateUpdatePaymentRelationDto, PaymentRelation>();
-        CreateMap<PaymentRelation, PaymentRelationDto>();
+        CreateMap<CreateUpdatePaymentDetailsDto, PaymentDetails>();
+        CreateMap<PaymentDetails, PaymentDetailsDto>();
     }
 
 }
