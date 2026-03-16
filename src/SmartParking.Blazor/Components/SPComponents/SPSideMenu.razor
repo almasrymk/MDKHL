@@ -258,7 +258,7 @@
     {
         var organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
 
-        _isUserAccess = organization?.OrganizationSettings?.UserAccess ?? false;
+        _isUserAccess = organization?.OrganizationSettings?.UserAccess ?? true;
         _isShift = organization?.OrganizationSettings?.UseShifts ?? true;
 
         _isLoaded = true;

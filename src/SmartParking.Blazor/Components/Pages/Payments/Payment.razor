@@ -18,7 +18,13 @@
 <PageTitle>@L["Payments"]</PageTitle>
 <MudText Typo="Typo.h5" Class="mb-2">@L["Payments"]</MudText>
 
-<SPDataGrid PageName=@L["Payments"] Data="@itemData" Menus="@MenuDatas" ShowView="AuthorizationService.IsGrantedAsync(PaymentsPermission.View).Result"  ShowMenue="!CurrentTenant.Id.HasValue" OnSearching="FetchTableData" TotalItemsInTable="TotalItem" ShowFiltering="false" 
+<SPDataGrid PageName=@L["Payments"] 
+Data="@itemData" 
+Menus="@MenuDatas" 
+ShowView="AuthorizationService.IsGrantedAsync(PaymentsPermission.View).Result"  
+ShowMenue="!CurrentTenant.Id.HasValue" 
+OnSearching="FetchTableData" 
+TotalItemsInTable="TotalItem" ShowFiltering="false" 
 OnClickRowView="HandleView"                    
 OnPageChanged="FetchTableData">
 </SPDataGrid>

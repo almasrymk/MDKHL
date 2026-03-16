@@ -222,6 +222,7 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
         using (_dataFilter.Disable<IMultiTenant>())
         {
             await CheckExistName(input);
+            await HandlePackageDeactivationDate(input);
             return await base.CreateAsync(input);
         }
     }
@@ -406,6 +407,26 @@ public class PackagesAppService :  CrudAppService<Package,PackageDto,int,PagedAn
         {
             throw new Exception(LocalizationHelper.GetLocalizedString("DuplicationPackageName"));
         }
+    }
+
+    private async Task HandlePackageDeactivationDate(CreateUpdatePackageDto input)
+    {
+        switch (input.PackageCategoryType)
+        {
+            case PackageCategoryTypes.Daily:
+                input.DeactivationDate = input.ActivationDate.AddDays(input.DurationOfPackage);
+                break;
+            case PackageCategoryTypes.Monthly:
+                input.DeactivationDate = input.ActivationDate.AddMonths(30);
+                break;
+            case PackageCategoryTypes.HalfYear:
+                input.DeactivationDate = input.ActivationDate.AddMonths(180);
+                break;
+            case PackageCategoryTypes.Year:
+                input.DeactivationDate = input.ActivationDate.AddYears(365);
+                break;
+        }
+                
     }
     #endregion
 

@@ -1,5 +1,6 @@
 ﻿using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Results;
+using SmartParking.UnitPackages;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,7 +25,13 @@ public interface ICustomerUnitPackageAppService :
 
     Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(int packageId, Guid customerId , CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto);
 
-    Task<bool> IfCustomerHasMultiplePackageAsync(Guid CustomerId);
+    Task<bool> IfCustomerHasMultiplePackageAsync(Guid CustomerId, UnitPackageDto dto);
     Task<bool> CheckCustomerUnitPackageVehicleLimitations(Guid CustomerId, int numberOfVehicles);
+    /// <summary>
+    /// Determines whether the specified package is associated to same unit code before or not.
+    /// </summary>
+    /// <param name="UnitCode">The code identifying the unit to check. Cannot be null or empty.</param>
+    /// <param name="UnitPackageId">The identifier of the package associated with the unit. Must be a valid package ID.</param>
+    Task<bool> CheckPackageOverUnits(string UnitCode, int UnitPackageId);
 
 }

@@ -94,6 +94,7 @@
                                 Label="@L["UnitCode"]"
                                 HelperText=@L["Helper Text"]
                                 Required="true"
+                                RequiredError="@L["CodeSelectValidation"]"
                                 ValueChanged="UnitCodeChange">
                                 @foreach(var unit in Units)
                                 {
@@ -193,6 +194,9 @@
                             <MudTd>@context.Package.DurationOfPackage</MudTd>
                             <MudTd>@context.NumberOfVehicles</MudTd>
                             <MudTd>@context.NumberOfSlots</MudTd>
+
+                          
+
                         </RowTemplate>
                     </MudTable>
                 }

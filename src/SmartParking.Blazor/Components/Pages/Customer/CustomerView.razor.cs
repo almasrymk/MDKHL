@@ -129,4 +129,13 @@ public partial class CustomerView
         };
         return await DialogService.ShowAsync<CustomerUnitPackageDialog>(L["Packages"], parameters);
     }
+    private async Task<IDialogReference> ViewUnitVehiclePackage()
+    {
+        // Create dialog parameters
+        var parameters = new DialogParameters
+        {
+            ["CustomerId"] = customerId,
+        };
+        return await DialogService.ShowAsync<UnitVehiclePackageView>(L["UnitVehiclePackage"], parameters);
+    }
 }

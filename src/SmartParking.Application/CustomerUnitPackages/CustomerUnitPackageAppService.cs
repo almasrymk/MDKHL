@@ -116,9 +116,11 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         return dto;
     }
 
-    public Task<bool> IfCustomerHasMultiplePackageAsync(Guid CustomerId)
+    public Task<bool> IfCustomerHasMultiplePackageAsync(Guid CustomerId, UnitPackageDto dto)
     {
-        return _repository.AnyAsync(x=> x.CustomerId == CustomerId);
+        return _repository.AnyAsync(x => x.CustomerId == CustomerId
+            && x.ActivationDate <= dto.Package.DectivationDate
+            && x.DectivationDate >= dto.Package.ActivationDate);
     }
 
     public async Task<bool> CheckCustomerUnitPackageVehicleLimitations(Guid CustomerId , int numberOfVehicles)
@@ -131,7 +133,10 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         return customerUnitPackge!.NumberOfVehicles > numberOfVehicles;
     }
 
-    
+    public async Task<bool> CheckPackageOverUnits(string UnitCode, int UnitPackageId)
+    {
+        return await _repository.AnyAsync(x => x.UnitCode == UnitCode && x.UnitPackageId == UnitPackageId);
+    }
 
 
     #endregion

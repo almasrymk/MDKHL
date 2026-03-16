@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.Pages.Invoices;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Enums;
 using SmartParking.Payments;
+using SmartParking.Payments.PaymentRelations;
 
 namespace SmartParking.Blazor.Components.Pages.Payments;
 
@@ -27,15 +29,27 @@ public partial class DetailsPayment
     private async Task FetchPayment()
     {
         Payment = await paymentWebAppService.GetMdkhlAsync(Guid.Parse(Id));
+        PaymentDetailsDto paymentRelation = new();
+        if (Payment.customerPackageDto == null && Payment.Invoice==null)
+             paymentRelation = await PaymentRelationAppService.GetByPaymentIdAsync(Payment.Id);
+        Payment.customerPackageDto ??= new CustomerPackageDto();
+        var dto = Payment.customerPackageDto;
 
         CreationTime = Payment?.CreationTime.ToString() ?? "";
         if (Payment.PaymentCategory == PaymentCategory.Package.ToString())
         {
 
             Total = Payment.Amount == 0 ? "0.0" : Payment.Amount.ToString();
-            Amount = Payment.customerPackageDto?.PriceOfPackage.ToString();
-            Vat = Payment.customerPackageDto?.Vat.ToString();
-            Discount = Payment.customerPackageDto?.Discount.ToString();
+            Amount = dto.PriceOfPackage?.ToString() ?? paymentRelation.Price.ToString();
+            if (dto.Vat.ToString() is null || dto.Vat == 0)
+                Vat =  paymentRelation.Vat.ToString();
+            if (dto.Discount.ToString() is null || dto.Discount == 0)
+                Discount = paymentRelation.Discount.ToString();
+            Payment?.customerPackageDto?.PackageArabicName = 
+                Payment?.customerPackageDto?.PackageArabicName is not null ? Payment?.customerPackageDto?.PackageArabicName : paymentRelation.ArabicName;
+            Payment?.customerPackageDto?.PackageEnglishName = 
+                Payment?.customerPackageDto?.PackageEnglishName is not null ? Payment?.customerPackageDto?.PackageEnglishName : paymentRelation.EnglishName;
+
         }
         else
         {
@@ -69,7 +83,7 @@ public partial class DetailsPayment
     private Task ViewInvoiceDetails()
     {
 
-        
+
         var parameters = new DialogParameters
         {
 

@@ -50,6 +50,7 @@ using SmartParking.OrganizationsGarages;
 using SmartParking.PackageCodeEndPoint;
 using SmartParking.Packages;
 using SmartParking.Payments;
+using SmartParking.Payments.PaymentRelations;
 using SmartParking.Shifts;
 using SmartParking.Shifts.ShiftDetail;
 using SmartParking.Shifts.ShiftDevices;
@@ -590,6 +591,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<CreateUpdateUnitVehiclePackageDto, UnitVehiclePackge>();
         CreateMap<UnitVehiclePackge, UnitVehiclePackageDto>();
+
+        CreateMap<CreateUpdatePaymentDetailsDto, PaymentDetails>();
+        CreateMap<PaymentDetails, PaymentDetailsDto>();
     }
 
 }
