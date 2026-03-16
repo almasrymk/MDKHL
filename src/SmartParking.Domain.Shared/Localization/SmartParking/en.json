@@ -943,6 +943,10 @@
     "PublishFrom": "Publish From",
     "Permission:UnitVehiclePackage": "Unit Vehicle Package Management",
     "NoAssign": "No Assigned gate found for this dispenser/camera",
-    "ManagerName": "Manager Name"
+    "ManagerName": "Manager Name",
+    "SelectStaff": "Select A Staff",
+    "SelectDevice": "Select A Device",
+    "NameDuplication": "No Name Duplication for Shift is Allowed",
+    "Types": "Type"
   }
 }

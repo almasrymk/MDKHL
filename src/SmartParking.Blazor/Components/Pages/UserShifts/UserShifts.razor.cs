@@ -146,9 +146,9 @@ public partial class UserShifts
         var parameters = new DialogParameters
         {
             ["UserFullName"] = user?.Name ?? string.Empty,
-            ["Role"] = user?.Role ?? string.Empty,
+            ["Types"] = user?.Role ?? string.Empty,
             ["Device"] = user?.Device ?? string.Empty,
-            ["Devices"] = user?.Devices ?? new List<string>(),   // ← new
+            ["Devices"] = user?.Devices ?? new List<string>(),   
             ["Garage"] = user?.Garage ?? string.Empty,
         };
 

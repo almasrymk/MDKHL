@@ -45,7 +45,7 @@
 
                     <MudItem xs="12" md="6">
                         <MudSelect T="int" Label="@L["Shift"]" @bind-Value="CreateUpdateShiftZone.ShiftId" AnchorOrigin="Origin.BottomCenter" Disabled="@(!_isLoaded)">
-                            <MudSelectItem T="int" Value="0">@L["SelectShift"]</MudSelectItem>
+                            <MudSelectItem T="int" Value="0" Disabled>@L["SelectShift"]</MudSelectItem>
                             @foreach (var shift in ShiftDtos)
                             {
                                 <MudSelectItem T="int" Value="@shift.Id">@(System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar") ? shift.ArabicName : shift.EnglishName)</MudSelectItem>
@@ -55,7 +55,7 @@
 
                     <MudItem xs="12" md="6">
                         <MudSelect T="int" Label="@L["Garage"]" @bind-Value="CreateUpdateShiftZone.ZoneId" AnchorOrigin="Origin.BottomCenter" Disabled="@(!_isLoaded)">
-                            <MudSelectItem T="int" Value="0">@L["SelectGarage"]</MudSelectItem>
+                            <MudSelectItem T="int" Value="0" Disabled>@L["SelectGarage"]</MudSelectItem>
                             @foreach (var garage in Garages)
                             {
                                 <MudSelectItem T="int" Value="@garage.Id">@(System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar") ? garage.NameAr : garage.NameEn)</MudSelectItem>
@@ -68,7 +68,7 @@
                                    Label="@L["Manager"]"
                                    @bind-Value="SelectedManagerId"
                                    Disabled="@(!_isLoaded)">
-                            <MudSelectItem T="Guid" Value="Guid.Empty">@L["SelectManager"]</MudSelectItem>
+                            <MudSelectItem T="Guid" Value="Guid.Empty" Disabled>@L["SelectManager"]</MudSelectItem>
                             @foreach (var m in Keepers)
                             {
                                 <MudSelectItem T="Guid" Value="@m.Id">@(System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar") ? m.EnglishName : m.EnglishName)</MudSelectItem>
