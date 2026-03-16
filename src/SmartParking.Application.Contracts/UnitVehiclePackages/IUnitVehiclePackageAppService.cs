@@ -17,4 +17,12 @@ public interface IUnitVehiclePackageAppService : ICreateAppService<UnitVehiclePa
     /// <returns>A task that represents the asynchronous operation. The task result contains <see langword="true"/> if a
     /// duplicate vehicle exists for the customer; otherwise, <see langword="false"/>.</returns>
     Task<bool> CheckDuplicationForVehicle(Guid CustomerId, string EnPlateNumber);
+
+    /// <summary>
+    /// Retrieves all unit vehicle package information associated with the specified customer.
+    /// </summary>
+    /// <param name="customerId">The unique identifier of the customer whose vehicle packages are to be retrieved. Cannot be empty.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a data transfer object with all
+    /// vehicle packages for the specified customer.</returns>
+    Task<PagedResultDto<UnitVehiclePackageDto>> GetAllByCustomerId(Guid customerId, PagedAndSortedResultRequestDto input);
 }

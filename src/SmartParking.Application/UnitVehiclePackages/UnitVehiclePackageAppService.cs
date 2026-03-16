@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmartParking.Cameras;
 using SmartParking.CustomerUnitPackages;
+using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.UnitVehiclePackges;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -58,6 +61,23 @@ public class UnitVehiclePackageAppService : CrudAppService<
          return await _repository.AnyAsync(x => x.EnPlateNumber == EnPlateNumber && x.CustomerId == CustomerId);
     }
 
+    public async Task<PagedResultDto<UnitVehiclePackageDto>> GetAllByCustomerId(Guid customerId, PagedAndSortedResultRequestDto input)
+    {
+        var query = await _repository.GetQueryableAsync();
+        query = query.Where(x => x.CustomerId == customerId);
+        var totalCount = await AsyncExecuter.CountAsync(query);
+        query = query
+            .Skip(input.SkipCount)
+            .Take(input.MaxResultCount);
+        var packages = await AsyncExecuter.ToListAsync(query);
+        var packagesDto = ObjectMapper.Map<List<UnitVehiclePackge>, List<UnitVehiclePackageDto>>(packages);
+        return new PagedResultDto<UnitVehiclePackageDto>(
+            totalCount,
+            packagesDto
+        );
+    }
+
+
     #endregion
 
     #region private methods
@@ -71,6 +91,7 @@ public class UnitVehiclePackageAppService : CrudAppService<
         input.UnitCode = customerUnitPackage.UnitCode;
     }
 
+    
     #endregion
 
 }
