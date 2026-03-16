@@ -979,5 +979,10 @@
     "PackageOverUnitValidation": "هذه الباقه توجد بالفعل في هذه الوحده",
     "DuplicateVehicleForCustomer": "هذه الباقه توجد بالفعل علي هذه السياره",
     "UnitVehiclePackage": "باقه سياره الوحده"
+    "ManagerName": "اسم المدير",
+    "SelectStaff": "اختر الموظف",
+    "SelectDevice": "اختر الجهاز",
+    "NameDuplication": "غير مسموح بتكرار اسم الوردية",
+    "Types":  "النوع"
   }
 }

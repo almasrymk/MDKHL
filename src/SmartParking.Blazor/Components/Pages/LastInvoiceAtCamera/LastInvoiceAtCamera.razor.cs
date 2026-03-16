@@ -68,6 +68,7 @@ public partial class LastInvoiceAtCamera
         {
             var result = await ShiftZoneActionAppService.GetShiftZoneDevicesDataAsync();
             _filteredWatchersByShiftZone = result?.Value ?? new List<ShiftWatcherActionDto>();
+            // keep filtered watchers in a variable to use it in the UI even when the user click on refresh button to not make him select again the watcher 
         }
         catch (Exception ex)
         {
@@ -145,7 +146,7 @@ public partial class LastInvoiceAtCamera
         {
             isPaying = false;
         }
-        Refresh();
+        await Refresh();
 
     }
     private async Task OpenGate()
@@ -195,16 +196,18 @@ public partial class LastInvoiceAtCamera
             SnackBar.ShowSnackbar(Snackbar, L[ex.Message], MudBlazor.Severity.Error);
 
         }
-        Refresh();
+        await Refresh();
     }
 
-    private void Refresh()
+    private async Task Refresh()
     {
-        Navigation.Refresh(true);
+        // keep filtered watchers in a variable to use it in the UI even when the user click on refresh button to not make him select again the watcher 
+        // Re-load watchers
+        await OpenFilteredWatchers();
+
+        // Re-load the invoice for the *already selected* device
+        await LoadInvoiceForSelectedDevice();
     }
-
-
-
 
     private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()
     {

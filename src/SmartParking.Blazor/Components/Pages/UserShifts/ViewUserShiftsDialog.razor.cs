@@ -9,7 +9,7 @@ public partial class ViewUserShiftsDialog
     private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter] public string UserFullName { get; set; } = string.Empty;
-    [Parameter] public string Role { get; set; } = string.Empty;
+    [Parameter] public string Types { get; set; } = string.Empty;
     [Parameter] public string Device { get; set; } = string.Empty;
 
     [Parameter] public List<string> Devices { get; set; } = new();
