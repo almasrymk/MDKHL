@@ -1,0 +1,46 @@
+﻿@using Microsoft.Extensions.Localization
+@using SmartParking.CustomerUnitPackages
+@using SmartParking.Cutomers
+@using SmartParking.Localization
+@using SmartParking.Permissions
+@using SmartParking.Permissions.UnitVehiclePackagesPermissions
+@using SmartParking.UnitVehiclePackages
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.MultiTenancy
+@using System.Globalization
+@using SmartParking.Blazor.Components.DataGrid
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.Blazor.Components.Pages.UnitVehiclePackages
+@using MudBlazor
+@using Microsoft.AspNetCore.Authorization
+@inject IUnitVehiclePackageAppService UnitVehiclePackageAppService
+@inject IDialogService Dialog
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ICurrentTenant CurrentTenant
+@inject IAuthorizationService AuthorizationService
+@inject ICustomerAppService CustomerAppService
+@inject ICustomerUnitPackageAppService CustomerUnitPackageAppService
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">@L["UnitVehiclePackages"]</MudText>
+    </TitleContent>
+    <DialogContent>
+        <SPDataGrid PageName=@L["UnitVehiclePackages"]
+                    ShowView="AuthorizationService.IsGrantedAsync(UnitVehiclePackagePermissions.Default).Result"
+                    Data="@itemData"
+                    TotalItemsInTable="TotalItem"
+                    OnFiltering="HandleFilter"
+                    OnClickRowView="OnClickRowView"
+                    OnPageChanged="FetchTableData"
+                    OnSearching="HandleSearch">
+        </SPDataGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@L["Close"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
