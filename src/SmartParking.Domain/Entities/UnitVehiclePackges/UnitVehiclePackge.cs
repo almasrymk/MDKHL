@@ -1,10 +1,11 @@
 ﻿using SmartParking.Enums;
 using System;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Entities.UnitVehiclePackges;
 
-public class UnitVehiclePackge : FullAuditedEntity<Guid>
+public class UnitVehiclePackge : FullAuditedEntity<Guid>, IMultiTenant
 {
     public Guid CustomerId { get; set; }
     public string UnitCode { get; set; }
@@ -17,4 +18,5 @@ public class UnitVehiclePackge : FullAuditedEntity<Guid>
     public int CustomerUnitPackageId { get; set; }
     public CustomerUnitPackageType CustomerUnitPackageType { get; set; }
 
+    public Guid? TenantId {  get; set; }
 }
