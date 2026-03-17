@@ -23,8 +23,16 @@
                         ReadOnly="true" 
                         T="int" 
                         InputType="InputType.Text" 
-                        @bind-Value="Unit.Capacity"
-                        Label=@L["Capacity"]> </MudTextField>
+                        @bind-Value="Unit.OwnerSlots"
+                        Label=@L["OwnerSlots"]> </MudTextField>
+  </MudItem>
+   <MudItem sm="6">
+                    <MudTextField 
+                        ReadOnly="true" 
+                        T="int" 
+                        InputType="InputType.Text" 
+                        @bind-Value="Unit.RenterSlots"
+                        Label=@L["RenterSlots"]> </MudTextField>
   </MudItem>
    <MudItem sm="12">
         <MudTextField 

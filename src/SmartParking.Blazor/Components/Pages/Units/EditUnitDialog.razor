@@ -41,14 +41,35 @@
                 Label=@L["ArabicName"]/>
            </MudItem>
         <MudItem sm="12" md="4">
-              <MudNumericField @bind-Value="Unit.Capacity"
-                For="@(() => Unit.Capacity)"
+              <MudTextField @bind-Value="Unit.Code"
+                For="@(() => Unit.Code)"
                 Variant="Variant.Text"
                 Class="w-100"
                 Placeholder=@L["Type Here"]
                 Required="true"
                 RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                Label=@L["Capacity"]
+                Label=@L["Code"]/>
+           </MudItem>
+        <MudItem sm="12" md="6">
+              <MudNumericField @bind-Value="Unit.OwnerSlots"
+                For="@(() => Unit.OwnerSlots)"
+                Variant="Variant.Text"
+                Class="w-100"
+                Placeholder=@L["Type Here"]
+                Required="true"
+                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                Label=@L["OwnerSlots"]
+                HideSpinButtons="true" />
+           </MudItem>
+        <MudItem sm="12" md="6">
+              <MudNumericField @bind-Value="Unit.RenterSlots"
+                For="@(() => Unit.RenterSlots)"
+                Variant="Variant.Text"
+                Class="w-100"
+                Placeholder=@L["Type Here"]
+                Required="true"
+                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                Label=@L["RenterSlots"]
                 HideSpinButtons="true" />
            </MudItem>
         <MudItem sm="12">
