@@ -23,7 +23,7 @@ public interface ICustomerUnitPackageAppService :
 
 
 
-    Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(int packageId, Guid customerId , CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto);
+    Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(UnitPackageDto packageDto, Guid customerId , CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto);
 
     Task<bool> IfCustomerHasMultiplePackageAsync(Guid CustomerId, UnitPackageDto dto);
     Task<bool> CheckCustomerUnitPackageVehicleLimitations(Guid CustomerId, int numberOfVehicles);
@@ -31,7 +31,14 @@ public interface ICustomerUnitPackageAppService :
     /// Determines whether the specified package is associated to same unit code before or not.
     /// </summary>
     /// <param name="UnitCode">The code identifying the unit to check. Cannot be null or empty.</param>
-    /// <param name="UnitPackageId">The identifier of the package associated with the unit. Must be a valid package ID.</param>
-    Task<bool> CheckPackageOverUnits(string UnitCode, int UnitPackageId);
+    Task<bool> CheckPackageOverUnits(string UnitCode);
+    /// <summary>
+    /// Determines whether the number of renter slots exceeds the allowed limit for the specified unit.
+    /// </summary>
+    /// <param name="dto">The unit package data containing information about renter slots and related unit details. Cannot be null.</param>
+    /// <param name="unitCode">The unique code identifying the unit to check. Cannot be null or empty.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result is <see langword="true"/> if the renter slots
+    /// exceed the unit's limit; otherwise, <see langword="false"/>.</returns>
+    Task<bool> CheckRenterSlotsOverUnit(UnitPackageDto dto, string unitCode);
 
 }
