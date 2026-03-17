@@ -13,4 +13,5 @@ public class CustomerUnitPackageAssignationDto
     public int DurationOfPackage { get; set; }
     public decimal Vat { get; set; }
     public string UnitCode { get; set; }
+    public bool IsOwnerPackage { get; set; }
 }
