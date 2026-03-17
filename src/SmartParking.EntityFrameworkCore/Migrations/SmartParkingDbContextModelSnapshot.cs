@@ -3415,9 +3415,6 @@ namespace SmartParking.Migrations
                     b.Property<string>("ArabicName")
                         .HasColumnType("text");
 
-                    b.Property<int>("Capacity")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Code")
                         .HasColumnType("text");
 
@@ -3461,6 +3458,12 @@ namespace SmartParking.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OwnerSlots")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RenterSlots")
                         .HasColumnType("integer");
 
                     b.Property<int>("Status")
