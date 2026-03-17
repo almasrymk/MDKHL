@@ -103,7 +103,7 @@
             Navigation.NavigateTo("/customers");
         UnitPackageDto = preAssignState.UnitPackage;
         CustomerDto = preAssignState.Customer;
-        CustomerUnitPackage.DurationOfPackage = UnitPackageDto.Package.DurationOfPackage;
+        CustomerUnitPackage.DurationOfPackage = UnitPackageDto?.Package?.DurationOfPackage ?? 99999;
         CustomerUnitPackage.UnitCode = preAssignState.UnitCode;
         packagePrice = UnitPackageDto.Package.Price;
         if (UnitPackageDto.Package.Published)

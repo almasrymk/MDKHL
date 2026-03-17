@@ -137,10 +137,6 @@
                  {
                      <MudNavLink Href="/units" Icon="@Icons.Material.Filled.House">@L["Units"]</MudNavLink>
                  }
-                 @if(AuthorizationService.IsGrantedAsync(UnitVehiclePackagePermissions.Default).Result && _isUserAccess)
-                 {
-                     <MudNavLink Href="/unit-vehicle-packages" Icon="@Icons.Material.Filled.DataThresholding">@L["UnitVehiclePackages"]</MudNavLink>
-                 }
                  @if (AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.SecurityManager).Result || AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.IT).Result || AuthorizationService.IsGrantedAnyAsync(ReportsPermissions.FinancialManagement).Result|| currenttenant.Id is null)
                  {
                      <MudNavGroup Icon="@Icons.Material.Filled.Assessment" Title="@L["Reports"]">
@@ -179,6 +175,10 @@
                              <MudNavLink Href="/paymentsbankreports" Icon="@Icons.Material.Filled.Payment">@L["PaymentMehtodReport"]</MudNavLink>
                              <MudNavLink Href="/paymentscustomerreports" Icon="@Icons.Material.Filled.AttachMoney">@L["CustomerAndPaymentReport"]</MudNavLink>
                              <MudNavLink Href="/discount/report" Icon="@Icons.Material.Filled.Discount">@L["DiscountsReport"]</MudNavLink>
+                            @if (AuthorizationService.IsGrantedAsync(UnitVehiclePackagePermissions.Default).Result && _isUserAccess)
+                            {
+                                <MudNavLink Href="/unit-vehicle-packages" Icon="@Icons.Material.Filled.DataThresholding">@L["UnitVehiclePackages"]</MudNavLink>
+                            }
                          }
 
                      </MudNavGroup>

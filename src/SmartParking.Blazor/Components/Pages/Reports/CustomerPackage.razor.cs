@@ -90,7 +90,7 @@ public partial class CustomerPackage
                 Label = LocalizationHelper.GetLocalizedString("EmployeePackageReport"), ISColumnVisibility = false,
                 OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await CustomerPackageReportsAsync("Employee"))
             } ,
-                             new MenuItem { MenueName = "Reports",
+               new MenuItem { MenueName = "Reports",
                 Label = LocalizationHelper.GetLocalizedString("VisitorPackageReport"), ISColumnVisibility = false,
                 OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await CustomerPackageReportsAsync("Visitor"))
             }
