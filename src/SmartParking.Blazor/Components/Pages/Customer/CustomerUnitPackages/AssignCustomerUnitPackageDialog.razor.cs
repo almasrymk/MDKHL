@@ -35,6 +35,8 @@ public partial class AssignCustomerUnitPackageDialog
     private IReadOnlyList<UnitDto> Units { get; set; } = new List<UnitDto>();
     private string unitCode;
     private CustomerUnitPackageType customerUnitPackageType;
+    private CustomerUnitPackageType? SelectedPackageType = CustomerUnitPackageType.Owner;
+
 
     /// <summary>
     /// Retrieves the available packages based on the customer's category.
@@ -76,40 +78,30 @@ public partial class AssignCustomerUnitPackageDialog
     /// </summary>
     private async Task SubmitEdit()
     {
-        
-        //var package = selectedPackageDto.FirstOrDefault();
 
-        
-        if (CustomerPackage is null) 
-        {
-            Snackbar.Add(@L["PackageSelectValidation"], Severity.Error);
-            return;
-        }
+        //var package = selectedPackageDto.FirstOrDefault();
 
         if (unitCode is null)
         {
             Snackbar.Add(@L["CodeSelectValidation"], Severity.Error);
             return;
         }
-        var result = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(Customer.Id, CustomerPackage);
-        if (result)
-        {
-            SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"], Severity.Error);
-            return;
-        }
 
-        var packageOverUnits = await CustomerUnitPackageAppService.CheckPackageOverUnits(unitCode, CustomerPackage.Id);
+        if (SelectedPackageType == CustomerUnitPackageType.Renter)
+            await HandleRenterPackage();
 
-        if(packageOverUnits)
-        {
-            SnackBar.ShowSnackbar(Snackbar, L["PackageOverUnitValidation"], Severity.Error);
-            return;
-        }
+        //var packageOverUnits = await CustomerUnitPackageAppService.CheckPackageOverUnits(unitCode, CustomerPackage.Id);
+
+        //if(packageOverUnits)
+        //{
+        //    SnackBar.ShowSnackbar(Snackbar, L["PackageOverUnitValidation"], Severity.Error);
+        //    return;
+        //}
 
         preAssignState.UnitPackage = CustomerPackage;
         preAssignState.Customer = Customer;
         preAssignState.UnitCode = unitCode;
-        preAssignState.CustomerUnitPackageType = customerUnitPackageType;
+        preAssignState.CustomerUnitPackageType = SelectedPackageType.Value;
         Navigation.NavigateTo("/prepaymentpackageunit");
 
     }
@@ -134,5 +126,24 @@ public partial class AssignCustomerUnitPackageDialog
 
     }
 
-    
+    private void OnPackageTypeChanged(CustomerUnitPackageType? value)
+    {
+        SelectedPackageType = value;
+        StateHasChanged(); // This manually pushes the update to the UI
+    }
+
+    private async Task HandleRenterPackage()
+    {
+        if (CustomerPackage is null)
+        {
+            Snackbar.Add(@L["PackageSelectValidation"], Severity.Error);
+            return;
+        }
+        var result = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(Customer.Id, CustomerPackage);
+        if (result)
+        {
+            SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"], Severity.Error);
+            return;
+        }
+    }
 }
