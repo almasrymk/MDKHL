@@ -1,6 +1,7 @@
 ﻿using SmartParking.Cutomers;
 using SmartParking.Entities.CustomerUnitPackages;
 using SmartParking.Entities.Organizations;
+using SmartParking.Entities.Units;
 using SmartParking.Enums;
 using SmartParking.Results;
 using SmartParking.UnitPackages;
@@ -25,16 +26,18 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
     private readonly IRepository<UnitPackage> _packageRepository;
     private readonly IDataFilter _dataFilter;
     private readonly ICustomerAppService _customerAppService;
+    private readonly IRepository<Unit> _unitRepository;
 
     public CustomerUnitPackageAppService(IRepository<CustomerUnitPackage, int> repository,
         IRepository<UnitPackage> packageRepository,
+        IRepository<Unit> unitRepository,
         IDataFilter dataFilter,
         ICustomerAppService customerAppService) : base(repository)
     {
         _repository = repository;
         _packageRepository = packageRepository;
         _dataFilter = dataFilter;
-
+        _unitRepository = unitRepository;
         _customerAppService = customerAppService;
     }
 
@@ -72,17 +75,19 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         
     }
 
-    public async Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(int packageId, Guid customerId, CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto)
+    public async Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(UnitPackageDto packagedto, Guid customerId, CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto)
     {
         var customer = await _customerAppService.GetAsync(customerId);
         if (customer == null)
             return Result.NotFound("Customer not found");
+        if (!customerUnitPackageAssignationDto.IsOwnerPackage)
+        {
+            var package = await GetPackageAsync(packagedto.Id);
+            if (package == null)
+                return Result.NotFound("Package not found");
+        }
 
-        var package = await GetPackageAsync(packageId);
-        if (package == null)
-            return Result.NotFound("Package not found");
-
-        return await AssignPackage(customer, package , customerUnitPackageAssignationDto);
+        return await AssignPackage(customer, packagedto, customerUnitPackageAssignationDto);
     }
 
     public override async Task<CustomerUnitPackageDto> GetAsync(int id)
@@ -116,16 +121,27 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         return dto;
     }
 
-    public Task<bool> IfCustomerHasMultiplePackageAsync(Guid CustomerId, UnitPackageDto dto)
+    public async Task<bool> IfCustomerHasMultiplePackageAsync(Guid CustomerId, UnitPackageDto dto)
     {
-        return _repository.AnyAsync(x => x.CustomerId == CustomerId
+        return await _repository.AnyAsync(x => x.CustomerId == CustomerId
             && x.ActivationDate <= dto.Package.DectivationDate
             && x.DectivationDate >= dto.Package.ActivationDate);
+    }
+    public async Task<bool> CheckRenterSlotsOverUnit(UnitPackageDto dto, string unitCode)
+    {
+
+        var unit = await _unitRepository.FirstOrDefaultAsync(x => x.Code == unitCode);
+
+        var count = await _repository.CountAsync(x => x.ActivationDate <= dto.Package.DectivationDate
+            && x.DectivationDate >= dto.Package.ActivationDate
+            && x.UnitCode == unitCode);
+
+        return count >= unit!.RenterSlots;
     }
 
     public async Task<bool> CheckCustomerUnitPackageVehicleLimitations(Guid CustomerId , int numberOfVehicles)
     {
-      var customerUnitPackge = await _repository.SingleOrDefaultAsync(x=>x.CustomerId == CustomerId);
+      var customerUnitPackge = await _repository.FirstOrDefaultAsync(x=>x.CustomerId == CustomerId);
         if (customerUnitPackge == null) {
             throw new Exception("NotFound");
             
@@ -133,9 +149,9 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         return customerUnitPackge!.NumberOfVehicles > numberOfVehicles;
     }
 
-    public async Task<bool> CheckPackageOverUnits(string UnitCode, int UnitPackageId)
+    public async Task<bool> CheckPackageOverUnits(string UnitCode)
     {
-        return await _repository.AnyAsync(x => x.UnitCode == UnitCode && x.UnitPackageId == UnitPackageId);
+        return await _repository.AnyAsync(x => x.UnitCode == UnitCode && x.EnglishName == "Owner Package");
     }
 
 
