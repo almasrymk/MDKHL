@@ -952,6 +952,8 @@
     "SelectStaff": "Select A Staff",
     "SelectDevice": "Select A Device",
     "NameDuplication": "No Name Duplication for Shift is Allowed",
-    "Types": "Type"
+    "Types": "Type",
+    "RenterSlotsOverUnitValidation": "Cannot assign more vehicles than the number of slots available in the unit",
+    "VehiclePackagesReport": "Vehicle Packages Report"
   }
 }

@@ -116,15 +116,15 @@ public partial class AssignVehicleToPackageDialog
     public async Task HandleAssign(string customerUnitId)
     {
         // Open the SelectPackageTypeDialog to let the user choose the package type
-        var dialog = await DialogService.ShowAsync<SelectPackageTypeDialog>("Select Package Type");
-        var result = await dialog.Result;
+        //var dialog = await DialogService.ShowAsync<SelectPackageTypeDialog>("Select Package Type");
+        //var result = await dialog.Result;
 
-        if (result.Canceled)
-        {
-            return;
-        }
+        //if (result.Canceled)
+        //{
+        //    return;
+        //}
 
-        var selectedPackageType = (CustomerUnitPackageType)result.Data;
+        //var selectedPackageType = (CustomerUnitPackageType)result.Data;
 
         try
         {
@@ -155,12 +155,12 @@ public partial class AssignVehicleToPackageDialog
                 PublishTo = customerUnitPackage.PublishTo,
                 EnPlateNumber = Vehicle.EnPlateNumber,
                 ArPlateNumber = Vehicle.ArPlateNumber,
-                CustomerUnitPackageType = selectedPackageType
+                CustomerUnitPackageType = customerUnitPackage.UnitPackageId == 0 ? CustomerUnitPackageType.Owner : CustomerUnitPackageType.Renter
             };
             await UnitVehiclePackageAppService.CreateAsync(createUpdateUnitVehiclePackageDto);
             if (result2 != null)
             {
-                SnackBar.ShowSnackbar(Snackbar, $"{L["AssigningDone"]} - {L[selectedPackageType.ToString()]}", MudBlazor.Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, $"{L["AssigningDone"]}", MudBlazor.Severity.Success);
                 await Task.Delay(1000);
                 Navigation.NavigateTo($"/customers/view/{CustomerId}");
             }

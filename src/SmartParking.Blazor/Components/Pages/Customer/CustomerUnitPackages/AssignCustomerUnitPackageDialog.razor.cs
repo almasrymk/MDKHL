@@ -1,14 +1,16 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Blazor.Components.Shared.Utilities;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
-using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Organizations;
+using SmartParking.Packages;
 using SmartParking.UnitPackages;
 using SmartParking.Units;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
 
@@ -26,6 +28,7 @@ public partial class AssignCustomerUnitPackageDialog
 
     private int organizationId;
     private IReadOnlyList<OrganizationDto> Organizations = new List<OrganizationDto>();
+    private OrganizationDto OrganizationDto { get; set; } = new OrganizationDto();
     public List<UnitPackageDto> Packages { get; set; } = new List<UnitPackageDto>();
 
     bool _clearable;
@@ -34,9 +37,44 @@ public partial class AssignCustomerUnitPackageDialog
     private bool IsCustom { get; set; } = false;
     private IReadOnlyList<UnitDto> Units { get; set; } = new List<UnitDto>();
     private string unitCode;
-    private CustomerUnitPackageType customerUnitPackageType;
+    private UnitDto selectedUnit { get; set; } = new();
     private CustomerUnitPackageType? SelectedPackageType = CustomerUnitPackageType.Owner;
 
+    private UnitPackageDto ownerPackage = new UnitPackageDto
+    {
+        Package = new PackageDto()
+
+    };
+
+    private void MapOwnerPackageData()
+    {
+        ownerPackage.Package.ArabicName = PackageStaticValues.ArabicName;
+        ownerPackage.Package.EnglishName = PackageStaticValues.EnglishName;
+        ownerPackage.Package.DectivationDate = PackageStaticValues.DeactivationDate;
+        ownerPackage.Package.ActivationDate = PackageStaticValues.ActivationDate;
+        ownerPackage.Package.PublishFrom = PackageStaticValues.PublishedFrom;
+        ownerPackage.Package.PublishTo = PackageStaticValues.PublishedTo;
+        ownerPackage.Package.CustomerCategory = PackageStaticValues.CustomerCategory;
+        ownerPackage.Package.Description = PackageStaticValues.Description;
+        ownerPackage.Package.DurationOfPackage = PackageStaticValues.DurationOfPackage;
+        ownerPackage.Package.PackageCategoryType = PackageStaticValues.PackageCategoryType;
+        ownerPackage.Package.Status = PackageStaticValues.status;
+        ownerPackage.Package.PackageStatus = PackageStaticValues.PackageStatus;
+        ownerPackage.Package.Price = PackageStaticValues.Price;
+
+        // These come from the loaded OrganizationDto
+        ownerPackage.Package.OrganizationId = OrganizationDto.Id;
+        ownerPackage.Package.OrganizationArabicName = OrganizationDto.ArabicName;
+        ownerPackage.Package.OrganizationEnglishName = OrganizationDto.EnglishName;
+        ownerPackage.Package.TenantId = OrganizationDto.TenantId;
+    }
+
+
+    private async Task GetOrganization()
+    {
+        OrganizationDto = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+
+    }
 
     /// <summary>
     /// Retrieves the available packages based on the customer's category.
@@ -52,14 +90,17 @@ public partial class AssignCustomerUnitPackageDialog
         selectedPackageDto.Clear();
     }
 
+
     private void UnitCodeChange(string code)
     {
         unitCode = code;
+        selectedUnit = Units.Where(x => x.Code == unitCode).FirstOrDefault();
+        if (SelectedPackageType == CustomerUnitPackageType.Owner)
+        {
+            ShowOwnerPackageInTable();
+        }
     }
-    private void GetType(string value)
-    {
-        customerUnitPackageType = (CustomerUnitPackageType)Enum.Parse(typeof(CustomerUnitPackageType), value);
-    }
+    
 
     /// <summary>
     /// Initializes the component and loads the list of organizations.
@@ -70,6 +111,8 @@ public partial class AssignCustomerUnitPackageDialog
         Organizations = result.Items;
         var unitResult = await UnitAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         Units = unitResult.Items;
+        await GetOrganization();
+        MapOwnerPackageData();
         await base.OnInitializedAsync();
     }
 
@@ -79,8 +122,6 @@ public partial class AssignCustomerUnitPackageDialog
     private async Task SubmitEdit()
     {
 
-        //var package = selectedPackageDto.FirstOrDefault();
-
         if (unitCode is null)
         {
             Snackbar.Add(@L["CodeSelectValidation"], Severity.Error);
@@ -88,15 +129,23 @@ public partial class AssignCustomerUnitPackageDialog
         }
 
         if (SelectedPackageType == CustomerUnitPackageType.Renter)
-            await HandleRenterPackage();
+        {
+            var result = await HandleRenterPackage(CustomerPackage, unitCode);
+            if (result)
+                return;
+        }
 
-        //var packageOverUnits = await CustomerUnitPackageAppService.CheckPackageOverUnits(unitCode, CustomerPackage.Id);
+        else
+        {
+            var packageOverUnits = await CustomerUnitPackageAppService.CheckPackageOverUnits(unitCode);
 
-        //if(packageOverUnits)
-        //{
-        //    SnackBar.ShowSnackbar(Snackbar, L["PackageOverUnitValidation"], Severity.Error);
-        //    return;
-        //}
+            if (packageOverUnits)
+            {
+                SnackBar.ShowSnackbar(Snackbar, L["PackageOverUnitValidation"], Severity.Error);
+                return;
+            }
+
+        }
 
         preAssignState.UnitPackage = CustomerPackage;
         preAssignState.Customer = Customer;
@@ -129,21 +178,41 @@ public partial class AssignCustomerUnitPackageDialog
     private void OnPackageTypeChanged(CustomerUnitPackageType? value)
     {
         SelectedPackageType = value;
+        if(SelectedPackageType == CustomerUnitPackageType.Owner)
+        {
+            ShowOwnerPackageInTable();
+        }
+        
         StateHasChanged(); // This manually pushes the update to the UI
     }
 
-    private async Task HandleRenterPackage()
+    private void ShowOwnerPackageInTable()
+    {
+        ownerPackage.NumberOfSlots = selectedUnit.OwnerSlots;
+        ownerPackage.NumberOfVehicles = selectedUnit.OwnerSlots;
+        selectedPackageDto.Clear();
+        selectedPackageDto.Add(ownerPackage);
+        CustomerPackage = ownerPackage;
+    }
+    private async Task<bool> HandleRenterPackage(UnitPackageDto dto, string unitCode)
     {
         if (CustomerPackage is null)
         {
             Snackbar.Add(@L["PackageSelectValidation"], Severity.Error);
-            return;
+            return true;
         }
         var result = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(Customer.Id, CustomerPackage);
         if (result)
         {
             SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"], Severity.Error);
-            return;
+            return true;
         }
+        var result2 = await CustomerUnitPackageAppService.CheckRenterSlotsOverUnit(dto, unitCode);
+        if (result2)
+        {
+            SnackBar.ShowSnackbar(Snackbar, L["RenterSlotsOverUnitValidation"], Severity.Error);
+            return true;
+        }
+        return false;
     }
 }
