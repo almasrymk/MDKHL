@@ -19,6 +19,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 
 namespace SmartParking.CustomerPackages;
@@ -164,6 +165,17 @@ public class CustomerPackagesAppService :
         ClearPackageDetails(customerPackage);
         await _repository.UpdateAsync(customerPackage, true);
 
+    }
+
+    public async Task DeleteAsync(Guid customerId, string enPlateNumber)
+    {
+        var customerPackage = await _repository.FirstOrDefaultAsync(x => x.CustomerId == customerId && x.EnPlateNumber == enPlateNumber);
+        if (customerPackage is null)
+        {
+            throw new EntityNotFoundException(typeof(CustomerPackage), customerPackage.Id);
+        }
+        ClearPackageDetails(customerPackage);
+        await _repository.UpdateAsync(customerPackage, true);
     }
 
 
