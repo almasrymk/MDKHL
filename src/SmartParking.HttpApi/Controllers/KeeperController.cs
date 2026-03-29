@@ -1,24 +1,20 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
-using SmartParking.Discounts;
 using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Invoices;
 using SmartParking.Mobile.Keepers;
 using SmartParking.OpeningGate;
-using SmartParking.Organizations;
 using SmartParking.Results;
 using SmartParking.Shifts;
-using SmartParking.Utilities;
 using SmartParking.Watchers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc;
-using Volo.Abp.MultiTenancy;
 using Volo.Abp.Users;
 
 namespace SmartParking.Controllers;
@@ -35,20 +31,16 @@ public class KeeperController : AbpController
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly IKeeperTransactionsAppService _keeperTransactionsAppService;
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
-    private readonly IDiscountAppService _discountAppService;
-    private readonly IShiftZoneActionAppService _shiftZoneActionAppService;
 
     private readonly IWatcherAppService _watcherAppService;
     public KeeperController(IKeeperAppService keeperAppService,
         IAuthenticationAppService authenticationAppService,
         ICurrentUser currentUser,
         IInvoiceAppService invoiceAppService,
-        IDiscountAppService discountAppService,
         IUsersAppService usersAppService,
         IGarageTransactionsAppService garageTransactionsAppService = null,
         IKeeperTransactionsAppService keeperTransactionsAppService = null,
-        IWatcherAppService watcherAppService = null,
-        IShiftZoneActionAppService shiftZoneActionAppService = null)
+        IWatcherAppService watcherAppService = null)
     {
         _keeperAppService = keeperAppService;
         _authenticationAppService = authenticationAppService;
@@ -56,10 +48,8 @@ public class KeeperController : AbpController
         _invoiceAppService = invoiceAppService;
         _usersAppService = usersAppService;
         _garageTransactionsAppService = garageTransactionsAppService;
-        _discountAppService = discountAppService;
         _keeperTransactionsAppService = keeperTransactionsAppService;
         _watcherAppService = watcherAppService;
-        _shiftZoneActionAppService = shiftZoneActionAppService;
     }
 
     [HttpPost("login")]
@@ -105,14 +95,14 @@ public class KeeperController : AbpController
 
     [HttpPost("Mdkhl/login")]
 
-    public async Task<Result<LoginAppResultDto>> LoginMdkhlKeeper(LoginMobileInputDto input)
+    public async Task<Result<LoginKeeperAppResponse>> LoginMdkhlKeeper(LoginMobileInputDto input)
     {
         try
         {
             
             if (_currentUser.IsAuthenticated)
             {
-                return Result<LoginAppResultDto>.Invalid(new ValidationError
+                return Result<LoginKeeperAppResponse>.Invalid(new ValidationError
                 {
                     
                     ErrorCode = "400",
@@ -123,7 +113,7 @@ public class KeeperController : AbpController
         }
         catch
         {
-            return Result<LoginAppResultDto>.Invalid(new Results.ValidationError
+            return Result<LoginKeeperAppResponse>.Invalid(new Results.ValidationError
             {
                 ErrorCode = "403",
                 ErrorMessage = "This user not found",
@@ -255,13 +245,6 @@ public class KeeperController : AbpController
     {
         var user = await _usersAppService.UpdateImageAsync(_currentUser.Id, image);
         return Result.Success(user.Image);
-    }
-
-    [HttpGet("getAllDiscount")]
-    [Authorize]
-    public async Task<Result<List<DiscountDto>>> GetAllDiscount()
-    {
-        return await _discountAppService.GetListMobileAsync();
     }
 
     [HttpGet("getpaymentbyinvoiceid")]

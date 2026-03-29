@@ -29,7 +29,7 @@ public class AuthenticationsController : ControllerBase
     [HttpPost("login")]
     [AllowAnonymous]
     [IgnoreAntiforgeryToken]
-    public async Task<Result<LoginResultDto>> LoginAsync(LoginMobileInputDto input)
+    public async Task<Result<BaseLoginAppResponse>> LoginAsync(LoginMobileInputDto input)
     {
         try
         {
@@ -37,7 +37,7 @@ public class AuthenticationsController : ControllerBase
             _currentTenant.Change(tenant?.Id ?? null);
             if (_user.IsAuthenticated)
             {
-                return Result<LoginResultDto>.Invalid(new ValidationError
+                return Result<BaseLoginAppResponse>.Invalid(new ValidationError
                 {
                     ErrorCode = "400",
                     ErrorMessage = "You are already logged in."
@@ -46,7 +46,7 @@ public class AuthenticationsController : ControllerBase
             return await _authenticationApp.LoginAsync(input);
         }catch(Exception ex)
         {
-            return Result<LoginResultDto>.Invalid(new Results.ValidationError
+            return Result<BaseLoginAppResponse>.Invalid(new Results.ValidationError
             {
                 ErrorCode = "403",
                 ErrorMessage = "Invalid credentials."

@@ -182,7 +182,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
 
     }
     /// <inheritdoc/>
-    public async Task<Result<LoginResultDto>> LoginAsync(LoginMobileInputDto input)
+    public async Task<Result<BaseLoginAppResponse>> LoginAsync(LoginMobileInputDto input)
     {
 
         using (_dataFilter.Disable<IMultiTenant>())
@@ -193,7 +193,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 var user = await _userRepository.FirstOrDefaultAsync(u => u.PhoneNumber == input.PhoneNumber);
                 if (user == null || !await _userManager.CheckPasswordAsync(user, input.Password))
                 {
-                    return Result<LoginResultDto>.Invalid(new Results.ValidationError
+                    return Result<BaseLoginAppResponse>.Invalid(new Results.ValidationError
                     {
                         ErrorCode = "403",
                         ErrorMessage = "Invalid credentials."
@@ -202,7 +202,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 }
                 if (user.IsActive == false)
                 {
-                    return Result<LoginResultDto>.Invalid(new Results.ValidationError
+                    return Result<BaseLoginAppResponse>.Invalid(new Results.ValidationError
                     {
                         ErrorCode = "403",
                         ErrorMessage = "Invalid credentials."
@@ -210,7 +210,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 }
                 if (!user.PhoneNumberConfirmed)
                 {
-                    return Result<LoginResultDto>.Invalid(new Results.ValidationError
+                    return Result<BaseLoginAppResponse>.Invalid(new Results.ValidationError
                     {
                         ErrorCode = "423",
                         ErrorMessage = "Verfiy phone number"
@@ -221,7 +221,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
                 CurrentTenant.Change(user.TenantId);
 
                 var roles = await _userManager.GetRolesAsync(user);
-                return Result<LoginResultDto>.Success(new LoginResultDto
+                return Result<BaseLoginAppResponse>.Success(new BaseLoginAppResponse
                 {
                     AccessToken = await _authenticationUtility.GenerateTokenAsync(user) ?? string.Empty,
                     Role = roles.FirstOrDefault(),
@@ -231,7 +231,7 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             }
             catch (Exception ex)
             {
-                return Result<LoginResultDto>.Invalid(new Results.ValidationError
+                return Result<BaseLoginAppResponse>.Invalid(new Results.ValidationError
                 {
                     ErrorCode = "403",
                     ErrorMessage = "Invalid credentials."
@@ -243,10 +243,10 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
     }
     /// <inheritdoc/>
 
-    public async Task<Result<LoginAppResultDto>> LoginAppAsync(LoginMobileInputDto input)
+    public async Task<Result<LoginKeeperAppResponse>> LoginAppAsync(LoginMobileInputDto input)
     {
         var LoginResult = await LoginAsync(input);
-        var LoginAppResultDto = new LoginAppResultDto();
+        var LoginAppResultDto = new LoginKeeperAppResponse();
 
         if (LoginResult.IsSuccess)
         {
@@ -259,9 +259,9 @@ public class AuthenticationAppService : ApplicationService, IAuthenticationAppSe
             LoginAppResultDto.Baseurl = $"{_httpContext.HttpContext.Request.Scheme}:/{tenant.Name}/{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}";
             LoginAppResultDto.OrganizationId = organization;
             LoginAppResultDto.ImageBase64 = await _organizationsAppService.GetOrganizationPictureByOrganizationTenant(new Guid(LoginResult.Value.TenantId));
-            return Result<LoginAppResultDto>.Success(LoginAppResultDto);
+            return Result<LoginKeeperAppResponse>.Success(LoginAppResultDto);
         }
-        return Result<LoginAppResultDto>.Invalid(LoginResult.ValidationErrors);
+        return Result<LoginKeeperAppResponse>.Invalid(LoginResult.ValidationErrors);
     }
    [RemoteService(IsEnabled = false)]
     /// <inheritdoc/>
