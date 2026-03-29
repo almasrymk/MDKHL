@@ -954,6 +954,7 @@
     "NameDuplication": "No Name Duplication for Shift is Allowed",
     "Types": "Type",
     "RenterSlotsOverUnitValidation": "Cannot assign more vehicles than the number of slots available in the unit",
-    "VehiclePackagesReport": "Vehicle Packages Report"
+    "VehiclePackagesReport": "Vehicle Packages Report",
+    "MultipleRentalError": "Unit can't be rented to more than a user at same time"
   }
 }
