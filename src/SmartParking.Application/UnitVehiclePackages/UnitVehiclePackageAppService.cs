@@ -77,6 +77,19 @@ public class UnitVehiclePackageAppService : CrudAppService<
         );
     }
 
+    public async Task DeleteByCustomerUnitPackage(int id)
+    {
+        var result = await _repository.FirstOrDefaultAsync(x => x.CustomerUnitPackageId == id);
+        if (result is null)
+            return;
+        await base.DeleteAsync(result.Id);
+    }
+
+    public async Task<UnitVehiclePackageDto> GetByCustomerUnitPackageId(int id)
+    {
+        var result = await _repository.FirstOrDefaultAsync(x => x.CustomerUnitPackageId == id);
+        return ObjectMapper.Map<UnitVehiclePackge, UnitVehiclePackageDto>(result!);
+    }
 
     #endregion
 
