@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Results;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -25,4 +26,13 @@ public interface IUnitVehiclePackageAppService : ICreateAppService<UnitVehiclePa
     /// <returns>A task that represents the asynchronous operation. The task result contains a data transfer object with all
     /// vehicle packages for the specified customer.</returns>
     Task<PagedResultDto<UnitVehiclePackageDto>> GetAllByCustomerId(Guid customerId, PagedAndSortedResultRequestDto input);
+
+    Task DeleteByCustomerUnitPackage(int id);
+    /// <summary>
+    /// Retrieves the unit vehicle package associated with the specified customer unit package identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the customer unit package to retrieve.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the unit vehicle package data if
+    /// found; otherwise, null.</returns>
+    Task<UnitVehiclePackageDto> GetByCustomerUnitPackageId(int id);
 }
