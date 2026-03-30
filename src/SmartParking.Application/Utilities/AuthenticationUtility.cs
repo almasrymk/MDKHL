@@ -156,7 +156,7 @@ public class AuthenticationUtility : IAuthenticationUtility, ITransientDependenc
             Expires = null,
             Subject = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType),
             IssuedAt = DateTime.UtcNow,
-            Issuer = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}", // replace with yours,
+            Issuer = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}", 
             SigningCredentials = options.SigningCredentials.First(),
             TokenType = OpenIddictConstants.JsonWebTokenTypes.AccessToken,
         };

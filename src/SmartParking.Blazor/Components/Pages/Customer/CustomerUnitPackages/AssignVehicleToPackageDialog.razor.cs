@@ -115,16 +115,6 @@ public partial class AssignVehicleToPackageDialog
 
     public async Task HandleAssign(string customerUnitId)
     {
-        // Open the SelectPackageTypeDialog to let the user choose the package type
-        //var dialog = await DialogService.ShowAsync<SelectPackageTypeDialog>("Select Package Type");
-        //var result = await dialog.Result;
-
-        //if (result.Canceled)
-        //{
-        //    return;
-        //}
-
-        //var selectedPackageType = (CustomerUnitPackageType)result.Data;
 
         try
         {

@@ -5,12 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SmartParking.Authentication;
-public class LoginAppResultDto
+
+public class BaseLoginAppResponse  : BaseLoginResponse
 {
-    public string AccessToken { get; set; }
+   
     public string Role { get; set; }
     public string Baseurl { get; set; }
     public string TenantId { get; set; }
-    public int OrganizationId { get; set; }
-    public string ImageBase64 { get; set; }
+}
+public class BaseLoginResponse
+{
+    public string AccessToken { get; set; }
+
+
 }

@@ -80,12 +80,6 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         var customer = await _customerAppService.GetAsync(customerId);
         if (customer == null)
             return Result.NotFound("Customer not found");
-        if (!customerUnitPackageAssignationDto.IsOwnerPackage)
-        {
-            var package = await GetPackageAsync(packagedto.Id);
-            if (package == null)
-                return Result.NotFound("Package not found");
-        }
 
         return await AssignPackage(customer, packagedto, customerUnitPackageAssignationDto);
     }
@@ -116,7 +110,7 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         var customerUnitPackageDto = CreateUpdateCustomerUnitPackageDto.CreateFrom(customer, package, customerUnitPackageAssignationDto);
 
         var entity = ObjectMapper.Map<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>(customerUnitPackageDto);
-        var data = await _repository.InsertAsync(entity);
+        var data = await _repository.InsertAsync(entity, autoSave: true);
         var dto = ObjectMapper.Map<CustomerUnitPackage, CustomerUnitPackageDto>(data);
         return dto;
     }
