@@ -40,5 +40,13 @@ public interface ICustomerUnitPackageAppService :
     /// <returns>A task that represents the asynchronous operation. The task result is <see langword="true"/> if the renter slots
     /// exceed the unit's limit; otherwise, <see langword="false"/>.</returns>
     Task<bool> CheckRenterSlotsOverUnit(UnitPackageDto dto, string unitCode);
-
+    /// <summary>
+    /// Validates whether a customer is eligible to rent a unit based on the provided package details.
+    /// </summary>
+    /// <param name="CustomerId">The unique identifier of the customer to validate.</param>
+    /// <param name="dto">The package details used to determine rental eligibility for the customer.</param>
+    /// 
+    /// <returns>A task that represents the asynchronous operation. The task result contains <see langword="true"/> if the
+    /// customer is eligible to rent multiple units; otherwise, <see langword="false"/>.</returns>
+    Task<bool> MultipuleCustomerRentalValidation(Guid CustomerId, UnitPackageDto dto, string unitCode);
 }

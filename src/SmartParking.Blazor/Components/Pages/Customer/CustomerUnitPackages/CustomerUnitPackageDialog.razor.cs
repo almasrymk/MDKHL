@@ -5,6 +5,7 @@ using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Blazor.Components.Pages.Cameras;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Currency;
+using SmartParking.CustomerPackages;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
 using SmartParking.Localization;
@@ -32,12 +33,14 @@ public partial class CustomerUnitPackageDialog
 
     [Inject]
     public ICustomerUnitPackageAppService CustomerUnitPackageAppService { get; set; }
+
     [Inject]
     public IOrganizationsAppService OrganizationsAppService { get; set; }
 
-
     [Inject]
     public ISnackbar Snackbar { get; set; }
+
+    
 
     private int TotalItem;
     private TableData itemData = new TableData();
@@ -138,8 +141,33 @@ public partial class CustomerUnitPackageDialog
     private async Task RemovePackage(RowDef row)
     {
         var id = int.Parse(row.Cells[0].Value);
-        await CustomerUnitPackageAppService.DeleteAsync(id); 
-        StateHasChanged();
-        NavigationManager.Refresh();
+        var packageName = row.Cells[1].Value;
+
+        var parameters = new DialogParameters
+        {
+            ["Name"] = packageName,
+        };
+
+        var dialog = await Dialog.ShowAsync<SPDialogDelete>("Delete Package", parameters);
+        var result = await dialog.Result;
+
+        try
+        {
+            if (!result.Canceled)
+            {
+                var customerPackage = await CustomerUnitPackageAppService.GetAsync(id);
+                var unitVehiclePackage = await UnitVehiclePackageAppService.GetByCustomerUnitPackageId(customerPackage.Id);
+                await CustomerUnitPackageAppService.DeleteAsync(id);
+                await UnitVehiclePackageAppService.DeleteByCustomerUnitPackage(id);
+                await CustomerPackagesAppService.DeleteAsync(unitVehiclePackage.CustomerId, unitVehiclePackage.EnPlateNumber);
+                Snackbar.Add(L["PackageDeletedSuccessfully"], Severity.Success);
+                StateHasChanged();
+                NavigationManager.Refresh();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
     }
 }

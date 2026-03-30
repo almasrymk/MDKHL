@@ -1,14 +1,17 @@
 ﻿@using Microsoft.Extensions.Localization
+@using SmartParking.CustomerPackages
 @using SmartParking.Cutomers
 @using SmartParking.Localization
 @using SmartParking.UnitPackages
 @using SmartParking.Blazor.Components.SPComponents
 @using SmartParking.CustomerUnitPackages
+@using SmartParking.UnitVehiclePackages
 @inject IDialogService Dialog
 @inject ICustomerAppService CustomersAppService
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<SmartParkingResource> L
-
+@inject IUnitVehiclePackageAppService UnitVehiclePackageAppService
+@inject ICustomerPackagesAppService CustomerPackagesAppService
 
 
 <PageTitle>@L["AssignPackage"]</PageTitle>

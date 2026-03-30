@@ -45,6 +45,13 @@ namespace SmartParking.CustomerPackages
 
        
         new Task DeleteAsync(int id);
+        /// <summary>
+        /// Asynchronously deletes the vehicle record associated with the specified customer and license plate number.
+        /// </summary>
+        /// <param name="customerId">The unique identifier of the customer whose vehicle record is to be deleted.</param>
+        /// <param name="enPlateNumber">The license plate number of the vehicle to delete. Cannot be null or empty.</param>
+        /// <returns>A task that represents the asynchronous delete operation.</returns>
+        Task DeleteAsync(Guid customerId, string enPlateNumber);
 
     }
 }

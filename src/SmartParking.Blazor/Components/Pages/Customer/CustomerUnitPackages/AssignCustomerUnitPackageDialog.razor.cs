@@ -201,8 +201,14 @@ public partial class AssignCustomerUnitPackageDialog
             Snackbar.Add(@L["PackageSelectValidation"], Severity.Error);
             return true;
         }
-        var result = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(Customer.Id, CustomerPackage);
+        var result = await CustomerUnitPackageAppService.MultipuleCustomerRentalValidation(Customer.Id, CustomerPackage, unitCode);
         if (result)
+        {
+            Snackbar.Add(@L["MultipleRentalError"], Severity.Error);
+            return true;
+        }
+        var result1 = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(Customer.Id, CustomerPackage);
+        if (result1)
         {
             SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"], Severity.Error);
             return true;

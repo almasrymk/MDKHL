@@ -121,6 +121,14 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         return dto;
     }
 
+    public async Task<bool> MultipuleCustomerRentalValidation(Guid CustomerId, UnitPackageDto dto, string unitCode)
+    {
+        return await _repository.AnyAsync(x => x.CustomerId != CustomerId
+        && x.DectivationDate >= dto.Package.ActivationDate
+        && x.UnitCode == unitCode
+        && x.Status != Status.Deleted);
+    }
+
     public async Task<bool> IfCustomerHasMultiplePackageAsync(Guid CustomerId, UnitPackageDto dto)
     {
         return await _repository.AnyAsync(x => x.CustomerId == CustomerId

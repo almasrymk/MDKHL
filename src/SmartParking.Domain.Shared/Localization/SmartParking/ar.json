@@ -984,13 +984,14 @@
     "NameDuplication": "غير مسموح بتكرار اسم الوردية",
     "Types": "النوع",
     "RenterSlotsOverUnitValidation": "لقد تجاوزت العدد المسوح من أماكن الركن لتلك الوحدة",
-     "RenterVehiclesOverUnitValidation": "لقد تجاوزت العدد المسوح من المركبات لتلك الوحدة",
-     "VehicleOverPackageValidation": "هذه السيارة توجد بالفعل في هذه الباقة",
-     "VehicleOverUnitValidation": "هذه السيارة توجد بالفعل في هذه الوحدة",
-     "SelectPackage": "يرجى اختيار باقة",
-     "SelectType": "يرجى اختيار نوع",
-     "SelectStaffForAssigning": "يرجى اختيار موظف للتخصيص",
-     "SelectDeviceForAssigning": "يرجى اختيار جهاز للتخصيص",
-    "ShiftNameDuplication": "اسم الوردية مكرر، يرجى اختيار اسم آخر"
+    "RenterVehiclesOverUnitValidation": "لقد تجاوزت العدد المسوح من المركبات لتلك الوحدة",
+    "VehicleOverPackageValidation": "هذه السيارة توجد بالفعل في هذه الباقة",
+    "VehicleOverUnitValidation": "هذه السيارة توجد بالفعل في هذه الوحدة",
+    "SelectPackage": "يرجى اختيار باقة",
+    "SelectType": "يرجى اختيار نوع",
+    "SelectStaffForAssigning": "يرجى اختيار موظف للتخصيص",
+    "SelectDeviceForAssigning": "يرجى اختيار جهاز للتخصيص",
+    "ShiftNameDuplication": "اسم الوردية مكرر، يرجى اختيار اسم آخر",
+    "MultipleRentalError": "لا يمكن تاجير نفس الوحده لاكثر من مستخدم في نفس الوقت"
   }
 }
