@@ -3,14 +3,12 @@ using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
 
-namespace SmartParking.IntegrationUnit;
+namespace SmartParking.IntegrationUnit.Dtos;
 
-public class CreateUpdateBookingDto
+public class BookingDto
 {
-    public Guid? CustomerId { get; set; }
-    public CreateUpdateCustomerDto CustomerDto { get; set; }
-    public int? VehicleId { get; set; }
-    public CreateUpdateVehicleDto VehicleDto { get; set; }
+    public CustomerDto CustomerDto { get; set; }
+    public VehicleDto VehicleDto { get; set; }
     public string UnitCode { get; set; }
     public DateTime ActivationDate { get; set; }
     public DateTime DeactivationDate { get; set; }

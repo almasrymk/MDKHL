@@ -1,17 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.IntegrationUnit;
+using SmartParking.IntegrationUnit.Dtos;
 using System.Threading.Tasks;
 
 namespace SmartParking.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class Integration : ControllerBase
+public class IntegrationController : ControllerBase
 {
     private readonly IIntegrationUnitAppService _integrationUnitAppService;
 
-    public Integration(IIntegrationUnitAppService integrationUnitAppService)
+    public IntegrationController(IIntegrationUnitAppService integrationUnitAppService)
     {
         _integrationUnitAppService = integrationUnitAppService;
     }
