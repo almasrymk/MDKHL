@@ -77,6 +77,10 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         }
         catch (Volo.Abp.BusinessException ex)
         {
+            if (_unitOfWorkManager.Current != null)
+            {
+                await _unitOfWorkManager.Current.RollbackAsync();
+            }
             return Result.Error(ex.Code);
         }
         catch(InvalidOperationException ex)
