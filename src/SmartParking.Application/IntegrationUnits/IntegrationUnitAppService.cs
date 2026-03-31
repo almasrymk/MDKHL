@@ -3,6 +3,7 @@ using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerPackages.Inputs;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
+using SmartParking.Entities.Customers;
 using SmartParking.Enums;
 using SmartParking.IntegrationUnit;
 using SmartParking.IntegrationUnit.Dtos;
@@ -26,7 +27,6 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
 {
     private readonly ICustomerAppService _customerAppService;
     private readonly IVehiclesAppService _vehicleAppService;
-    private readonly IUnitPackageAppService _unitPackageAppService;
     private readonly IOrganizationsAppService _organizationsAppService;
     private readonly ICustomerUnitPackageAppService _customerUnitPackageAppService;
     private readonly IAssignCustomerPackagesAppService _customerPackageAppService;
@@ -35,7 +35,6 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
 
     public IntegrationUnitAppService(ICustomerAppService customerAppService,
         IVehiclesAppService vehicleAppService,
-        IUnitPackageAppService unitPackageAppService,
         IOrganizationsAppService organizationsAppService,
         ICustomerUnitPackageAppService customerUnitPackageAppService,
         IAssignCustomerPackagesAppService customerPackageAppService,
@@ -44,7 +43,6 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     {
         _customerAppService = customerAppService;
         _vehicleAppService = vehicleAppService;
-        _unitPackageAppService = unitPackageAppService;
         _organizationsAppService = organizationsAppService;
         _customerUnitPackageAppService = customerUnitPackageAppService;
         _customerPackageAppService = customerPackageAppService;
@@ -114,7 +112,9 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
         customerDto.OrganizationId = organization.Id;
         customerDto.RoleId=Guid.Empty;
-        return await _customerAppService.CreateMdkhlAsync(customerDto);
+        var result = await _customerAppService.CreateMdkhlAsync(customerDto);
+        result.OrganizationId = organization.Id;
+        return result;
     }
 
     private async Task<VehicleDto> CreateVehicle(CreateUpdateVehicleIntegrationUnitDto dto, Guid customerId)
