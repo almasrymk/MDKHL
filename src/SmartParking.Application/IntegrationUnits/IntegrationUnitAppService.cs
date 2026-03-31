@@ -3,7 +3,6 @@ using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerPackages.Inputs;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
-using SmartParking.Entities.Customers;
 using SmartParking.Enums;
 using SmartParking.IntegrationUnit;
 using SmartParking.IntegrationUnit.Dtos;
@@ -19,6 +18,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.Uow;
 
 
 namespace SmartParking.IIntegrationUnit;
@@ -32,6 +32,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     private readonly IAssignCustomerPackagesAppService _customerPackageAppService;
     private readonly IUnitVehiclePackageAppService _unitVehiclePackageAppService;
     private readonly IVehicleLookupResolver _vehicleLookupResolver;
+    private readonly IUnitOfWorkManager _unitOfWorkManager;
 
     public IntegrationUnitAppService(ICustomerAppService customerAppService,
         IVehiclesAppService vehicleAppService,
@@ -39,7 +40,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         ICustomerUnitPackageAppService customerUnitPackageAppService,
         IAssignCustomerPackagesAppService customerPackageAppService,
         IUnitVehiclePackageAppService unitVehiclePackageAppService,
-        IVehicleLookupResolver vehicleLookupResolver)
+        IVehicleLookupResolver vehicleLookupResolver,
+        IUnitOfWorkManager unitOfWorkManager)
     {
         _customerAppService = customerAppService;
         _vehicleAppService = vehicleAppService;
@@ -48,6 +50,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         _customerPackageAppService = customerPackageAppService;
         _unitVehiclePackageAppService = unitVehiclePackageAppService;
         _vehicleLookupResolver = vehicleLookupResolver;
+        _unitOfWorkManager = unitOfWorkManager;
     }
     [RemoteService(false)]
     public async Task<Result<BookingDto>> CreateBookingAsync(CreateUpdateBookingDto dto)
@@ -78,11 +81,19 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         }
         catch(InvalidOperationException ex)
         {
+            if (_unitOfWorkManager.Current != null)
+            {
+                await _unitOfWorkManager.Current.RollbackAsync();
+            }
             return Result.Error(ex.Message);
 
         }
         catch (Exception ex)
         {
+            if (_unitOfWorkManager.Current != null)
+            {
+                await _unitOfWorkManager.Current.RollbackAsync();
+            }
             return Result.Error(ex.Message);
         }
     }
