@@ -7,10 +7,13 @@ namespace SmartParking.IntegrationUnit.Dtos;
 
 public class CreateUpdateBookingDto
 {
+    public string UnitCode { get; set; }
     public Guid? CustomerId { get; set; }
-    public CreateUpdateCustomerIntegrationUnitDto CustomerDto { get; set; }
+    public CreateUpdateCustomerIntegrationUnitDto Customer { get; set; }
     public int? VehicleId { get; set; }
-    public CreateUpdateVehicleIntegrationUnitDto VehicleDto { get; set; }
-    public CreateUpdateBookingIntegrationDetailsDto IntegrationDetailsDto { get; set; }
+    public CreateUpdateVehicleIntegrationUnitDto Cars { get; set; }
+    public CreateUpdateBookingIntegreationUnitDto Booking { get; set; }
+    public CreateUpdatePriceIntegreationUnitDto Price { get; set; }
+    //public createupdatebookingintegrationdetailsdto integrationdetailsdto { get; set; }
 
 }
