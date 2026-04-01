@@ -1,11 +1,15 @@
-﻿using SmartParking.CustomerPackages.AssignantionsContarcts;
+﻿using Microsoft.Extensions.Options;
+using SmartParking.CustomerPackages.AssignantionsContarcts;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerPackages.Inputs;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
+using SmartParking.Entities.CustomerUnitPackages;
+using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.IntegrationUnit;
 using SmartParking.IntegrationUnit.Dtos;
+using SmartParking.IntegrationUnit.Options;
 using SmartParking.Lookups.VehicleLookups;
 using SmartParking.Organizations;
 using SmartParking.Packages;
@@ -33,6 +37,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     private readonly IUnitVehiclePackageAppService _unitVehiclePackageAppService;
     private readonly IVehicleLookupResolver _vehicleLookupResolver;
     private readonly IUnitOfWorkManager _unitOfWorkManager;
+    private readonly MyIntegrationOptions _options;
 
     public IntegrationUnitAppService(ICustomerAppService customerAppService,
         IVehiclesAppService vehicleAppService,
@@ -41,7 +46,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         IAssignCustomerPackagesAppService customerPackageAppService,
         IUnitVehiclePackageAppService unitVehiclePackageAppService,
         IVehicleLookupResolver vehicleLookupResolver,
-        IUnitOfWorkManager unitOfWorkManager)
+        IUnitOfWorkManager unitOfWorkManager,
+        IOptions<MyIntegrationOptions> options)
     {
         _customerAppService = customerAppService;
         _vehicleAppService = vehicleAppService;
@@ -51,6 +57,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         _unitVehiclePackageAppService = unitVehiclePackageAppService;
         _vehicleLookupResolver = vehicleLookupResolver;
         _unitOfWorkManager = unitOfWorkManager;
+        _options = options.Value;
     }
     [RemoteService(false)]
     public async Task<Result<BookingDto>> CreateBookingAsync(CreateUpdateBookingDto dto)
@@ -58,20 +65,28 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         try
         {
 
-            var customer = await CreateCustomer(dto.CustomerDto);
-            var vehicle = await CreateVehicle(dto.VehicleDto, customer.Id);
-            var customerUnitPackage = await CreateCustomerUnitPackage(customer,dto.IntegrationDetailsDto, customer.Id);
+            var customer = await CreateCustomer(dto.Customer);
+            var vehicle = await CreateVehicle(dto.Cars, customer.Id);
+            var customerUnitPackage = await CreateCustomerUnitPackage(customer,dto, customer.Id);
             var customerPackages = await CreateCustomerPackage(customerUnitPackage, vehicle);
             var unitVehiclePackages = await CreateUnitVehiclePackage(vehicle, customerUnitPackage);
             BookingDto result = new BookingDto
             {
-                CustomerDto = customer,
-                VehicleDto = vehicle,
-                ActivationDate = dto.IntegrationDetailsDto.ReservationDate,
-                DeactivationDate = dto.IntegrationDetailsDto.DueDate,
-                Price = dto.IntegrationDetailsDto.Price,
-                UnitCode = dto.IntegrationDetailsDto.UnitCode,
-                Discount = dto.IntegrationDetailsDto.Discount
+                Status = Status.Active,
+                CustomerId = customer.Id,
+                PackageId = customerPackages.PackageCode.ToString(),
+                PackageNumber = customerPackages.PackageCode.ToString(),
+                Validity = new ValidityDto
+                {
+                    StartDate = customerUnitPackage.ActivationDate,
+                    EndDate = customerUnitPackage.DectivationDate
+                },
+                
+                Links = new LinksDto
+                {
+                    bookingId = dto.Booking.BookingId,
+                    UnitId = dto.UnitCode
+                }
             };
             return Result.Success(result);
         }
@@ -106,19 +121,27 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     {
         try
         {
-            var customer = await UpdateCustomer(dto.CustomerId!.Value, dto.CustomerDto.MapToCustomerDto(dto.CustomerDto));
-            CreateUpdateVehicleDto vehicleDto = await VehicleValidations(dto.VehicleDto);
+            var customer = await UpdateCustomer(dto.CustomerId!.Value, dto.Customer.MapToCustomerDto(dto.Customer));
+            CreateUpdateVehicleDto vehicleDto = await VehicleValidations(dto.Cars);
             vehicleDto.CustomerId = customer.Id;
             var vehicle = await _vehicleAppService.UpdateAsync(dto.VehicleId!.Value, vehicleDto);
             BookingDto result = new BookingDto
             {
-                CustomerDto = customer,
-                VehicleDto = vehicle,
-                ActivationDate = dto.IntegrationDetailsDto.ReservationDate,
-                DeactivationDate = dto.IntegrationDetailsDto.DueDate,
-                Price = dto.IntegrationDetailsDto.Price,
-                UnitCode = dto.IntegrationDetailsDto.UnitCode,
-                Discount = dto.IntegrationDetailsDto.Discount
+                Status = Status.Active,
+                CustomerId = customer.Id,
+                PackageId = customerPackages.PackageCode.ToString(),
+                PackageNumber = customerPackages.PackageCode.ToString(),
+                Validity = new ValidityDto
+                {
+                    StartDate = dto.Booking.StartDate,
+                    EndDate = dto.Booking.EndDate
+                },
+
+                Links = new LinksDto
+                {
+                    bookingId = dto.Booking.BookingId,
+                    UnitId = dto.UnitCode
+                }
             };
             return result;
         }
@@ -165,43 +188,43 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         using (DataFilter.Disable<IMultiTenant>())
         {
 
-            var modelId = await _vehicleLookupResolver.ResolveModelIdAsync(dto.ModelName);
-            var brandId = await _vehicleLookupResolver.ResolveBrandIdAsync(dto.BrandName);
-            var plateColorId = await _vehicleLookupResolver.ResolvePlateColorIdAsync(dto.PlateColorName);
-            var licenceTypeId = await _vehicleLookupResolver.ResolveLicenceTypeIdAsync(dto.LicenceTypeName);
+            var modelId = await _vehicleLookupResolver.ResolveModelIdAsync(_options.Vehicle.ModelName);
+            var brandId = await _vehicleLookupResolver.ResolveBrandIdAsync(_options.Vehicle.BrandName);
+            var plateColorId = await _vehicleLookupResolver.ResolvePlateColorIdAsync(_options.Vehicle.PlateColorName);
+            var licenceTypeId = await _vehicleLookupResolver.ResolveLicenceTypeIdAsync(_options.Vehicle.LicenceTypeName);
             var vehicleDto = dto.MapToVehicleDto(dto, modelId, brandId, plateColorId, licenceTypeId, CurrentUser.Id);
             return vehicleDto;
         }
     }
 
-    private async Task<CustomerUnitPackageDto> CreateCustomerUnitPackage(CustomerDto customerDto, CreateUpdateBookingIntegrationDetailsDto IntegrationDetailsDto , Guid customerId) 
+    private async Task<CustomerUnitPackageDto> CreateCustomerUnitPackage(CustomerDto customerDto, CreateUpdateBookingDto dto , Guid customerId) 
     {
         CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto = new CustomerUnitPackageAssignationDto
         {
-            UnitCode = IntegrationDetailsDto.UnitCode,
-            Discount = IntegrationDetailsDto.Discount,
-            Vat = IntegrationDetailsDto.Price * 0.15m,
-            DurationOfPackage = (int)(IntegrationDetailsDto.DueDate - IntegrationDetailsDto.ReservationDate).TotalDays,
+            UnitCode = dto.UnitCode,
+            Discount = 0,
+            Vat = dto.Price.Amount * 0.15m,
+            DurationOfPackage = dto.Booking.NoOfDays,
             IsOwnerPackage = false
         };
         PackageDto packageDto = new PackageDto
         {
             EnglishName = OwnerPackageStaticValues.EnglishName,
             ArabicName = OwnerPackageStaticValues.ArabicName,
-            Price = IntegrationDetailsDto.Price,
+            Price = dto.Price.Amount,
             CustomerCategory = "Renter",
             Description = OwnerPackageStaticValues.Description,
             OrganizationId = customerDto.OrganizationId,
             PackageCategoryType = OwnerPackageStaticValues.PackageCategoryType,
-            ActivationDate = IntegrationDetailsDto.ReservationDate,
-            DectivationDate = IntegrationDetailsDto.DueDate,
+            ActivationDate = dto.Booking.StartDate,
+            DectivationDate = dto.Booking.EndDate,
             PublishFrom = OwnerPackageStaticValues.PublishedFrom,
             PublishTo = OwnerPackageStaticValues.PublishedTo,
             Status = OwnerPackageStaticValues.status,
             TenantId = CurrentTenant.Id,
             PackageStatus = OwnerPackageStaticValues.PackageStatus,
             Published = OwnerPackageStaticValues.Published,
-            DurationOfPackage = (int)(IntegrationDetailsDto.DueDate - IntegrationDetailsDto.ReservationDate).TotalDays,
+            DurationOfPackage = dto.Booking.NoOfDays,
         };
         UnitPackageDto unitPackage = new UnitPackageDto
         {
