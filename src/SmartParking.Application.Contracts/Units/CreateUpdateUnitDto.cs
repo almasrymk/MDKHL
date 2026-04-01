@@ -1,4 +1,6 @@
-﻿namespace SmartParking.Units;
+﻿using SmartParking.Enums;
+
+namespace SmartParking.Units;
 
 public class CreateUpdateUnitDto : CreateUpdateBaseDto
 {
@@ -7,4 +9,5 @@ public class CreateUpdateUnitDto : CreateUpdateBaseDto
     public int RenterSlots { get; set; }
     public string Description { get; set; }
     public int OrganizationId { get; set; }
+    public Status Status { get; set; }
 }
