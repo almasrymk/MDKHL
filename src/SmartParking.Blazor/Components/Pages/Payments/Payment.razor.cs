@@ -261,7 +261,23 @@ public partial class Payment
             }
             else
             {
-                amount = vatValue = discountValue = "0.0";
+                try
+                {
+                    var details = await PaymentDetailsAppService.GetByPaymentIdAsync(item.Id);
+                    if (details != null)
+                    {
+                        amount = details.Price.ToString();
+                        vatValue = details.Vat.ToString();
+                        discountValue = details.Discount.ToString();
+                    }
+                    else
+                        amount = vatValue = discountValue = "0.0";
+                }
+                catch (Exception ex) 
+                {
+                    amount = vatValue = discountValue = "0.0";
+                }
+                
             }
             var IconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");
             rowDef.Cells.Add(new KeyValuePair<string, string>($"{_localizer["Amount"]}", $"{amount} {IconHtml}"));
