@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Units;
+using SmartParking.Enums;
 using SmartParking.Organizations;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -40,6 +42,15 @@ public class UnitAppService : CrudAppService<
         return await base.CreateAsync(input);
     }
 
-    
+    public async Task<List<UnitDto>> GetAllActiveUnitsAsync()
+    {
+        var query = await _repository.GetQueryableAsync();
 
+        query = query.Where(u => u.Status == Status.Active);
+
+        var result = await query.ToListAsync();
+
+
+        return ObjectMapper.Map<List<Unit>, List<UnitDto>>(result);
+    }
 }
