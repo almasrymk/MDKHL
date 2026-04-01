@@ -33,7 +33,10 @@ public class UnitAppService : CrudAppService<
         var query = await _repository.GetQueryableAsync();
         var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
         input.TenantId = CurrentTenant.Id;
-        input.OrganizationId = organization.Id;
+        if (organization is not null)
+            input.OrganizationId = organization.Id;
+        else
+            input.OrganizationId = 0;
         return await base.CreateAsync(input);
     }
 
