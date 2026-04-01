@@ -22,8 +22,8 @@ public partial class UnitVehiclePackageView
     [Parameter] public string CustomerId { get; set; }
 
 
+    [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; }
-
 
     public UnitVehiclePackageView(IStringLocalizer<SmartParkingResource> localizer)
     {
