@@ -6,6 +6,7 @@ public class VehicleConfig
     public string ModelName { get; set; }
     public string PlateColorName { get; set; }
     public string LicenceTypeName { get; set; }
+    public string ModelYear { get; set; }
 }
 
 public class MyIntegrationOptions
