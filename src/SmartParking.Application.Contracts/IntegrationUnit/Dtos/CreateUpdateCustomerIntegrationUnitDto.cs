@@ -4,38 +4,39 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SmartParking.IntegrationUnit.Dtos;
 
 public class CreateUpdateCustomerIntegrationUnitDto
 {
-    public string ArabicName { get; set; }
-    public string EnglishName { get; set; }
-    public string PhoneNumber { get; set; }
-    public IdentificationTypes IdentificationType { get; set; }
+    public string Name { get; set; }
+    public string Mobile { get; set; }
+    public string Email { get; set; }
     public string NationalId { get; set; }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public IdentificationTypes IdentificationType { get; set; }
 
     public CreateUpdateCustomerDto MapToCustomerDto( CreateUpdateCustomerIntegrationUnitDto input)
     {
         return new CreateUpdateCustomerDto
         {
             // Combine names (you can adjust logic as needed)
-            FullName = input.EnglishName,
+            FullName = input.Name,
 
             // You can decide what UserName should be (example below)
-            UserName = input.PhoneNumber,
+            UserName = input.Mobile,
 
-            ArabicName = input.ArabicName,
+            ArabicName = "مستاجر",
 
-            // No email in source → set default or generate
-            Email = string.Empty,
+            Email = input.Email,
 
             // No password in source → set default or generate
             Password = "P@ssw0rd",
             RepeatPassword = "P@ssw0rd",
 
-            PhoneNumber = input.PhoneNumber,
+            PhoneNumber = input.Mobile,
             IdentificationType = input.IdentificationType,
             NationalId = input.NationalId,
 

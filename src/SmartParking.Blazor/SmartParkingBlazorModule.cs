@@ -24,6 +24,7 @@ using SmartParking.EntityFrameworkCore;
 using SmartParking.GarageTransactionEndPoints.Factory;
 using SmartParking.GarageTransactions;
 using SmartParking.GarageTransactions.Factory;
+using SmartParking.IntegrationUnit.Options;
 using SmartParking.Localization;
 using SmartParking.MultiTenancy;
 using SmartParking.OpenGate;
@@ -143,6 +144,7 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.GetConfiguration().GetSection("Oppwa"));
         var configuration = context.Services.GetConfiguration();
         var tenantDomains = configuration.GetSection("TenantDomains").Get<string[]>();
+        Configure<MyIntegrationOptions>(configuration);
         context.Services.AddMiniProfiler(options =>
         {
             options.RouteBasePath = "/profiler";
@@ -201,6 +203,9 @@ public class SmartParkingBlazorModule : AbpModule
 
 
         });
+
+        
+
         context.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 

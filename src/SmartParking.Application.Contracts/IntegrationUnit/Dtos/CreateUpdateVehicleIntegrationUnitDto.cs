@@ -1,50 +1,83 @@
 ﻿using SmartParking.Vehicles;
+using SmartParking.Validations;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace SmartParking.IntegrationUnit.Dtos;
 
 public class CreateUpdateVehicleIntegrationUnitDto
 {
-    public string ArPlateLetters { get; set; } = "";
-    public string EnPlateLetters { get; set; } = "";
-    public string ArPlateNumber { get; set; } = "";
-    public string EnPlateNumber { get; set; } = "";
-    public string ModelYear { get; set; }
-    public string ModelName { get; set; }
-    public string BrandName { get; set; }
-    public string PlateColorName { get; set; }
-    public string LicenceTypeName { get; set; }
-    public Guid CustomerId { get; private set; }
-    public void SetCustomerId(Guid customerId)
+    public string PlateNumber { get; set; }
+    public string licenseType { get; set; }
+    //public string ArPlateLetters { get; set; } = "";
+    //public string EnPlateLetters { get; set; } = "";
+    //public string ArPlateNumber { get; set; } = "";
+    //public string EnPlateNumber { get; set; } = "";
+    //public string ModelYear { get; set; }
+    //public string ModelName { get; set; }
+    //public string BrandName { get; set; }
+    //public string PlateColorName { get; set; }
+    //public string LicenceTypeName { get; set; }
+    //public Guid CustomerId { get; private set; }
+    //public void SetCustomerId(Guid customerId)
+    //{
+    //    CustomerId = customerId;
+    //}
+
+    public VehiclePlateDto SeparateAndTranslatePlateNumbers()
     {
-        CustomerId = customerId;
+        if (string.IsNullOrEmpty(PlateNumber))
+        {
+            return null;
+        }
+
+        var numbersOnly = Regex.Replace(PlateNumber, @"[^\d٠-٩]", "");
+        var lettersOnly = Regex.Replace(PlateNumber, @"[\d٠-٩]", "").Trim();
+
+        if (string.IsNullOrEmpty(numbersOnly))
+        {
+            return null;
+        }
+
+        try
+        {
+            var (englishNumbers, arabicNumbers) = VehicleValidation.HandleKeyUp(numbersOnly);
+            var (englishLetters, arabicLetters) = VehicleValidation.HandleKeyUpLetters(lettersOnly);
+            VehiclePlateDto dto = new VehiclePlateDto
+            {
+                ArPlateLetters = arabicLetters,
+                ArPlateNumber = arabicNumbers,
+                EnPlateLetters = englishLetters,
+                EnPlateNumber = englishNumbers
+            };
+            return dto;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
+
     public CreateUpdateVehicleDto MapToVehicleDto(
     CreateUpdateVehicleIntegrationUnitDto input,
-    int modelId,
-    int brandId,
-    int plateColorId,
-    int licenceTypeId,
+    VehicleOptionsDto vehicleOptions,
     Guid? creatorId = null)
     {
+        var dto = SeparateAndTranslatePlateNumbers();
         return new CreateUpdateVehicleDto
         {
-            VehicleModelId = modelId,
-            VehicleBrandId = brandId,
-            PlateColorId = plateColorId,
-            LicenceTypeId = licenceTypeId,
+            VehicleModelId = vehicleOptions.ModelId,
+            VehicleBrandId = vehicleOptions.BrandId,
+            PlateColorId = vehicleOptions.PlateColorId,
+            LicenceTypeId = vehicleOptions.LicenceTypeId,
 
-            ArPlateLetters = input.ArPlateLetters,
-            EnPlateLetters = input.EnPlateLetters,
-            ArPlateNumber = input.ArPlateNumber,
-            EnPlateNumber = input.EnPlateNumber,
+            ArPlateLetters = dto.ArPlateLetters,
+            EnPlateLetters = dto.EnPlateLetters,
+            ArPlateNumber = dto.ArPlateNumber,
+            EnPlateNumber = dto.EnPlateNumber,
 
-            ModelYear = input.ModelYear,
-            CustomerId = input.CustomerId,
+            ModelYear = vehicleOptions.ModelYear,
+            CustomerId = vehicleOptions.CustomerId,
 
             BelongToCompany = false,
             CompanyName = null,

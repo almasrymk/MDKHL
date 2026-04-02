@@ -114,6 +114,19 @@ public class CustomerPackagesAppService :
         }
     }
 
+    public async Task<CustomerPackageDto> GetLatestByCustomerIdAndEnPlateNumber(SearchByPlateAndCustomerIdDto searchByPlateAndCustomerIdDto)
+    {
+        var query = await _repository.GetQueryableAsync();
+        query = query.Where(c => c.CustomerId == searchByPlateAndCustomerIdDto.CustomerId && c.EnPlateNumber == searchByPlateAndCustomerIdDto.EnPlateNumber);
+        var customerPackage = await query.FirstOrDefaultAsync();
+        if (customerPackage == null)
+        {
+            throw new EntityNotFoundException(typeof(CustomerPackage), $"CustomerPackage with CustomerId {searchByPlateAndCustomerIdDto.CustomerId} and EnPlateNumber {searchByPlateAndCustomerIdDto.EnPlateNumber} not found.");
+        }
+        return ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(customerPackage);
+
+    }
+
     public override async Task<CustomerPackageDto> GetAsync(int id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
