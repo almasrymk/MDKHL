@@ -311,7 +311,6 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             EnPlateNumber = vehicle.EnPlateNumber,
             Discount = dto.Discount,
             PriceOfPackage = dto.Price,
-            Vat = dto.Vat,
             PackageEnglishName = dto.EnglishName,
             PackageArabicName = dto.ArabicName,
             CustomerId = dto.CustomerId,
@@ -322,7 +321,11 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             DurationOfPackage = dto.DurationOfPackage,
             PriceOfPackagePerDay = dto.Price / dto.DurationOfPackage,
             DescriptionOfPackage = "Renter package",
-            CustomerCategory = CustomerCategoryStatus.None
+            CustomerCategory = CustomerCategoryStatus.Customer,
+            PublishFromOfPackage= TimeOnly.FromTimeSpan(dto.ActivationDate.TimeOfDay),
+            PublishToOfPackage= TimeOnly.FromTimeSpan(dto.DectivationDate.TimeOfDay),
+            Vat = Math.Round((dto.Price - dto.Discount) * 0.15m, 2),
+            PublishedOfPackage = dto.ActivationDate.TimeOfDay == dto.DectivationDate.TimeOfDay
 
         };
 
