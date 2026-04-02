@@ -144,7 +144,7 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.GetConfiguration().GetSection("Oppwa"));
         var configuration = context.Services.GetConfiguration();
         var tenantDomains = configuration.GetSection("TenantDomains").Get<string[]>();
-        Configure<MyIntegrationOptions>(configuration.GetSection("config"));
+        Configure<MyIntegrationOptions>(configuration);
         context.Services.AddMiniProfiler(options =>
         {
             options.RouteBasePath = "/profiler";
