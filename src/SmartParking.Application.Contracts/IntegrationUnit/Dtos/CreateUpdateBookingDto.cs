@@ -14,6 +14,5 @@ public class CreateUpdateBookingDto
     public CreateUpdateVehicleIntegrationUnitDto Cars { get; set; }
     public CreateUpdateBookingIntegreationUnitDto Booking { get; set; }
     public CreateUpdatePriceIntegreationUnitDto Price { get; set; }
-    //public createupdatebookingintegrationdetailsdto integrationdetailsdto { get; set; }
 
 }

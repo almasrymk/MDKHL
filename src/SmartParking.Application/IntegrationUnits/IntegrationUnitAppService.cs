@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using SmartParking.CustomerPackages;
 using SmartParking.CustomerPackages.AssignantionsContarcts;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerPackages.Inputs;
@@ -36,6 +37,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     private readonly IAssignCustomerPackagesAppService _customerPackageAppService;
     private readonly IUnitVehiclePackageAppService _unitVehiclePackageAppService;
     private readonly IVehicleLookupResolver _vehicleLookupResolver;
+    private readonly ICustomerPackagesAppService _customerPackagesAppService;
     private readonly IUnitOfWorkManager _unitOfWorkManager;
     private readonly MyIntegrationOptions _options;
 
@@ -47,7 +49,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         IUnitVehiclePackageAppService unitVehiclePackageAppService,
         IVehicleLookupResolver vehicleLookupResolver,
         IUnitOfWorkManager unitOfWorkManager,
-        IOptions<MyIntegrationOptions> options)
+        IOptions<MyIntegrationOptions> options,
+        ICustomerPackagesAppService customerPackagesAppService)
     {
         _customerAppService = customerAppService;
         _vehicleAppService = vehicleAppService;
@@ -58,6 +61,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         _vehicleLookupResolver = vehicleLookupResolver;
         _unitOfWorkManager = unitOfWorkManager;
         _options = options.Value;
+        _customerPackagesAppService = customerPackagesAppService;
     }
     [RemoteService(false)]
     public async Task<Result<BookingDto>> CreateBookingAsync(CreateUpdateBookingDto dto)
@@ -125,6 +129,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             CreateUpdateVehicleDto vehicleDto = await VehicleValidations(dto.Cars);
             vehicleDto.CustomerId = customer.Id;
             var vehicle = await _vehicleAppService.UpdateAsync(dto.VehicleId!.Value, vehicleDto);
+            var customerPackages = await _customerPackagesAppService.GetLatestByCustomerIdAndEnPlateNumber(new SearchByPlateAndCustomerIdDto { CustomerId = customer.Id , EnPlateNumber = vehicle.EnPlateNumber});
             BookingDto result = new BookingDto
             {
                 Status = Status.Active,
