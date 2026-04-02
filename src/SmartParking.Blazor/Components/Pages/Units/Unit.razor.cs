@@ -110,6 +110,7 @@ public partial class Unit
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["OwnerSlots"], Name = "OwnerSlots", IsFilterable = true, PropertyName = "OwnerSlots", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["RenterSlots"], Name = "RenterSlots", IsFilterable = true, PropertyName = "RenterSlots", IsSortable = true, TypeFilter = TypeFilter.Number });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["Description"], Name = "Description", IsFilterable = true, PropertyName = "Description", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["Status"], Name = "Status", IsFilterable = false, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Enum });
 
         foreach (var item in units.Items)
         {
@@ -119,6 +120,7 @@ public partial class Unit
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["OwnerSlots"], item.OwnerSlots.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["RenterSlots"], item.RenterSlots.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Description"], Truncate(item.Description, 15)));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{item.Status.ToString()}"]));
             tableData.Rows.Add(rowDef);
         }
 

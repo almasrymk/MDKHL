@@ -43,6 +43,13 @@
             Label=@L["Description"]> </MudTextField>
   </MudItem>
  
+                <MudItem sm="12" md="12" Class="d-flex justify-content-between">
+                    <MudRadioGroup @bind-Value="@Unit.Status" Class="d-flex" ReadOnly = "true">
+                        <MudRadio Value="@(Enums.Status.Active)" Color="MudBlazor.Color.Primary">@L["Status Active"]</MudRadio>
+                        <MudRadio Value="@(Enums.Status.Inactive)" Color="MudBlazor.Color.Secondary">@L["Status InActive"]</MudRadio>
+                    </MudRadioGroup>
+                </MudItem>
+
   </MudGrid>
         </DialogContent>
      <DialogActions>

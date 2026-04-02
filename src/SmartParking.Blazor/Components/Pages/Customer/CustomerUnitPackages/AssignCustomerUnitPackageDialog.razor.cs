@@ -109,8 +109,8 @@ public partial class AssignCustomerUnitPackageDialog
     {
         var result = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         Organizations = result.Items;
-        var unitResult = await UnitAppService.GetListAsync(new PagedAndSortedResultRequestDto());
-        Units = unitResult.Items;
+        var unitResult = await UnitAppService.GetAllActiveUnitsAsync();
+        Units = unitResult;
         await GetOrganization();
         MapOwnerPackageData();
         await base.OnInitializedAsync();

@@ -3,7 +3,6 @@ using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerPackages.Inputs;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
-using SmartParking.Entities.Customers;
 using SmartParking.Enums;
 using SmartParking.IntegrationUnit;
 using SmartParking.IntegrationUnit.Dtos;
@@ -19,6 +18,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.Uow;
 
 
 namespace SmartParking.IIntegrationUnit;
@@ -32,6 +32,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     private readonly IAssignCustomerPackagesAppService _customerPackageAppService;
     private readonly IUnitVehiclePackageAppService _unitVehiclePackageAppService;
     private readonly IVehicleLookupResolver _vehicleLookupResolver;
+    private readonly IUnitOfWorkManager _unitOfWorkManager;
 
     public IntegrationUnitAppService(ICustomerAppService customerAppService,
         IVehiclesAppService vehicleAppService,
@@ -39,7 +40,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         ICustomerUnitPackageAppService customerUnitPackageAppService,
         IAssignCustomerPackagesAppService customerPackageAppService,
         IUnitVehiclePackageAppService unitVehiclePackageAppService,
-        IVehicleLookupResolver vehicleLookupResolver)
+        IVehicleLookupResolver vehicleLookupResolver,
+        IUnitOfWorkManager unitOfWorkManager)
     {
         _customerAppService = customerAppService;
         _vehicleAppService = vehicleAppService;
@@ -48,6 +50,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         _customerPackageAppService = customerPackageAppService;
         _unitVehiclePackageAppService = unitVehiclePackageAppService;
         _vehicleLookupResolver = vehicleLookupResolver;
+        _unitOfWorkManager = unitOfWorkManager;
     }
     [RemoteService(false)]
     public async Task<Result<BookingDto>> CreateBookingAsync(CreateUpdateBookingDto dto)
@@ -74,37 +77,70 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         }
         catch (Volo.Abp.BusinessException ex)
         {
+            if (_unitOfWorkManager.Current != null)
+            {
+                await _unitOfWorkManager.Current.RollbackAsync();
+            }
             return Result.Error(ex.Code);
         }
         catch(InvalidOperationException ex)
         {
+            if (_unitOfWorkManager.Current != null)
+            {
+                await _unitOfWorkManager.Current.RollbackAsync();
+            }
             return Result.Error(ex.Message);
 
         }
         catch (Exception ex)
         {
+            if (_unitOfWorkManager.Current != null)
+            {
+                await _unitOfWorkManager.Current.RollbackAsync();
+            }
             return Result.Error(ex.Message);
         }
     }
     [RemoteService(false)]
     public async Task<Result<BookingDto>> UpdateBookingAsync(CreateUpdateBookingDto dto)
     {
-        var customer = await _customerAppService.UpdateAsync(dto.CustomerId!.Value, dto.CustomerDto.MapToCustomerDto(dto.CustomerDto));
-        CreateUpdateVehicleDto vehicleDto = await VehicleValidations(dto.VehicleDto);
-        var vehicle = await _vehicleAppService.UpdateAsync(dto.VehicleId!.Value, vehicleDto);
-        BookingDto result = new BookingDto
+        try
         {
-            CustomerDto = customer,
-            VehicleDto = vehicle,
-            ActivationDate = dto.IntegrationDetailsDto.ReservationDate,
-            DeactivationDate = dto.IntegrationDetailsDto.DueDate,
-            Price = dto.IntegrationDetailsDto.Price,
-            UnitCode = dto.IntegrationDetailsDto.UnitCode,
-            Discount = dto.IntegrationDetailsDto.Discount
-        };
-        return result;
+            var customer = await UpdateCustomer(dto.CustomerId!.Value, dto.CustomerDto.MapToCustomerDto(dto.CustomerDto));
+            CreateUpdateVehicleDto vehicleDto = await VehicleValidations(dto.VehicleDto);
+            vehicleDto.CustomerId = customer.Id;
+            var vehicle = await _vehicleAppService.UpdateAsync(dto.VehicleId!.Value, vehicleDto);
+            BookingDto result = new BookingDto
+            {
+                CustomerDto = customer,
+                VehicleDto = vehicle,
+                ActivationDate = dto.IntegrationDetailsDto.ReservationDate,
+                DeactivationDate = dto.IntegrationDetailsDto.DueDate,
+                Price = dto.IntegrationDetailsDto.Price,
+                UnitCode = dto.IntegrationDetailsDto.UnitCode,
+                Discount = dto.IntegrationDetailsDto.Discount
+            };
+            return result;
+        }
+        catch (Exception ex) 
+        {
+            if (_unitOfWorkManager.Current != null)
+            {
+                await _unitOfWorkManager.Current.RollbackAsync();
+            }
+            return Result.Error(ex.Message);
+        }
+        
     }
 
+    private async Task<CustomerDto> UpdateCustomer(Guid customerId ,CreateUpdateCustomerDto customerDto)
+    {
+        customerDto.TenantId = CurrentTenant.Id;
+        var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
+        customerDto.OrganizationId = organization.Id;
+        customerDto.RoleId = Guid.Empty;
+        return await _customerAppService.UpdateAsync(customerId ,customerDto);
+    }
     private async Task<CustomerDto> CreateCustomer(CreateUpdateCustomerIntegrationUnitDto dto)
     {
         var customerDto = dto.MapToCustomerDto(dto);
