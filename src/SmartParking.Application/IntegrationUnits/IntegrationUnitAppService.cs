@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using SmartParking.CustomerPackages;
 using SmartParking.CustomerPackages.AssignantionsContarcts;
 using SmartParking.CustomerPackages.Dtos;
@@ -39,6 +40,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     private readonly IVehicleLookupResolver _vehicleLookupResolver;
     private readonly ICustomerPackagesAppService _customerPackagesAppService;
     private readonly IUnitOfWorkManager _unitOfWorkManager;
+    private readonly IConfiguration _configuration;
     private readonly MyIntegrationOptions _options;
 
     public IntegrationUnitAppService(ICustomerAppService customerAppService,
@@ -50,7 +52,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         IVehicleLookupResolver vehicleLookupResolver,
         IUnitOfWorkManager unitOfWorkManager,
         IOptions<MyIntegrationOptions> options,
-        ICustomerPackagesAppService customerPackagesAppService)
+        ICustomerPackagesAppService customerPackagesAppService,
+        IConfiguration configuration)
     {
         _customerAppService = customerAppService;
         _vehicleAppService = vehicleAppService;
@@ -62,6 +65,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         _unitOfWorkManager = unitOfWorkManager;
         _options = options.Value;
         _customerPackagesAppService = customerPackagesAppService;
+        _configuration = configuration;
     }
     [RemoteService(false)]
     public async Task<Result<BookingDto>> CreateBookingAsync(CreateUpdateBookingDto dto)
@@ -85,7 +89,13 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
                     StartDate = customerUnitPackage.ActivationDate,
                     EndDate = customerUnitPackage.DectivationDate
                 },
-                
+                Qr = new QrDto
+                {
+                    Required = true,
+                    QrCodePayload = String.Empty,
+                    QrCodeUrl = $"{_configuration["App:SelfUrl"]?.TrimEnd('/')}/{customerPackages.QRCodePath?.TrimStart('/')}",
+                    ExpiresAt = customerUnitPackage.DectivationDate
+                },
                 Links = new LinksDto
                 {
                     bookingId = dto.Booking.BookingId,
@@ -126,7 +136,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         try
         {
             var customer = await UpdateCustomer(dto.CustomerId!.Value, dto.Customer.MapToCustomerDto(dto.Customer));
-            CreateUpdateVehicleDto vehicleDto = await VehicleValidations(dto.Cars);
+            CreateUpdateVehicleDto vehicleDto = await VehicleValidations(dto.Cars, customer.Id);
             vehicleDto.CustomerId = customer.Id;
             var vehicle = await _vehicleAppService.UpdateAsync(dto.VehicleId!.Value, vehicleDto);
             var customerPackages = await _customerPackagesAppService.GetLatestByCustomerIdAndEnPlateNumber(new SearchByPlateAndCustomerIdDto { CustomerId = customer.Id , EnPlateNumber = vehicle.EnPlateNumber});
@@ -183,21 +193,30 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
 
     private async Task<VehicleDto> CreateVehicle(CreateUpdateVehicleIntegrationUnitDto dto, Guid customerId)
     {
-        dto.SetCustomerId(customerId);
-        CreateUpdateVehicleDto vehicleDto = await VehicleValidations(dto);
+        CreateUpdateVehicleDto vehicleDto = await VehicleValidations(dto, customerId);
         return await _vehicleAppService.CreateAsync(vehicleDto);
     }
 
-    private async Task<CreateUpdateVehicleDto> VehicleValidations(CreateUpdateVehicleIntegrationUnitDto dto)
+    private async Task<CreateUpdateVehicleDto> VehicleValidations(CreateUpdateVehicleIntegrationUnitDto dto, Guid customerId)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-
+            var x = _options.Vehicle.ModelName;
             var modelId = await _vehicleLookupResolver.ResolveModelIdAsync(_options.Vehicle.ModelName);
             var brandId = await _vehicleLookupResolver.ResolveBrandIdAsync(_options.Vehicle.BrandName);
             var plateColorId = await _vehicleLookupResolver.ResolvePlateColorIdAsync(_options.Vehicle.PlateColorName);
             var licenceTypeId = await _vehicleLookupResolver.ResolveLicenceTypeIdAsync(_options.Vehicle.LicenceTypeName);
-            var vehicleDto = dto.MapToVehicleDto(dto, modelId, brandId, plateColorId, licenceTypeId, CurrentUser.Id);
+            var modelYear = _options.Vehicle.ModelYear;
+            VehicleOptionsDto vehicleOptions = new VehicleOptionsDto
+            {
+                ModelId = modelId,
+                BrandId = brandId,
+                PlateColorId = plateColorId,
+                LicenceTypeId = licenceTypeId,
+                ModelYear = modelYear,
+                CustomerId = customerId
+            };
+            var vehicleDto = dto.MapToVehicleDto(dto, vehicleOptions, CurrentUser.Id);
             return vehicleDto;
         }
     }
