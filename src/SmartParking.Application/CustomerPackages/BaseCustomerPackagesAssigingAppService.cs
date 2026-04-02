@@ -26,7 +26,7 @@ using Volo.Abp.MultiTenancy;
 namespace SmartParking.CustomerPackages;
 [RemoteService(false)]
 
-public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppService, ICustomerPackagesAssigningAppService , IApplicationService
+public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppService, ICustomerPackagesAssigningAppService, IApplicationService
 {
     private readonly IRepository<CustomerPackage, int> _repository;
     private readonly IDataFilter _dataFilter;
@@ -281,6 +281,23 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
         return true;
     }
 
+    public async Task<CustomerPackageDto> UpdateCustomerPackage(int customerPackageId, CreateUpdateCustomerPackageDto input)
+    {
+        var entity = await _repository.GetAsync(customerPackageId);
+        if (entity == null)
+        {
+            throw new Exception(
+                LocalizationHelper.GetLocalizedString("CustomerPackage") + " " +
+                LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+        }
+        ObjectMapper.Map(input, entity);
+        if (entity.PackageId == 0)
+            entity.PackageId = null;
+
+        await _repository.UpdateAsync(entity, autoSave: true);
+
+        return ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(entity);
+    }
 
 
     #region Private Methods
@@ -319,5 +336,7 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
         Code += customerCount;
         return Code;
     }
+
+    
     #endregion
 }

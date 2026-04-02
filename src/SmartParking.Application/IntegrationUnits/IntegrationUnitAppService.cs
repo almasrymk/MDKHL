@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using SmartParking.Cameras;
 using SmartParking.CustomerPackages;
 using SmartParking.CustomerPackages.AssignantionsContarcts;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerPackages.Inputs;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
+using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.CustomerUnitPackages;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
@@ -20,6 +22,7 @@ using SmartParking.UnitPackages;
 using SmartParking.UnitVehiclePackages;
 using SmartParking.Vehicles;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -66,6 +69,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         _options = options.Value;
         _customerPackagesAppService = customerPackagesAppService;
         _configuration = configuration;
+       
     }
     [RemoteService(false)]
     public async Task<Result<BookingDto>> CreateBookingAsync(CreateUpdateBookingDto dto)
@@ -136,10 +140,37 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         try
         {
             var customer = await UpdateCustomer(dto.CustomerId!.Value, dto.Customer.MapToCustomerDto(dto.Customer));
-            CreateUpdateVehicleDto vehicleDto = await VehicleValidations(dto.Cars, customer.Id);
-            vehicleDto.CustomerId = customer.Id;
-            var vehicle = await _vehicleAppService.UpdateAsync(dto.VehicleId!.Value, vehicleDto);
-            var customerPackages = await _customerPackagesAppService.GetLatestByCustomerIdAndEnPlateNumber(new SearchByPlateAndCustomerIdDto { CustomerId = customer.Id , EnPlateNumber = vehicle.EnPlateNumber});
+            var searchCustomerPackageDto = new SearchByPlateAndCustomerIdDto
+            {
+                CustomerId = customer.Id,
+                EnPlateNumber = dto.Cars.PlateNumber
+            };
+            var customerPackages = await _customerPackagesAppService.GetLatestByCustomerIdAndEnPlateNumber(searchCustomerPackageDto);
+            var unitVehiclePackage = await _unitVehiclePackageAppService.GetByCustmoerIdAndPlateNumber(searchCustomerPackageDto);
+            var customerUnitPackage = await _customerUnitPackageAppService.GetAsync(unitVehiclePackage.CustomerUnitPackageId);
+
+            var updateCustomerPackage = ObjectMapper.Map<CustomerPackageDto, CreateUpdateCustomerPackageDto>(customerPackages);
+            updateCustomerPackage.ActivationDate = DateOnly.FromDateTime(dto.Booking.StartDate);
+            updateCustomerPackage.ActivationDateOfPackage = dto.Booking.StartDate;
+            updateCustomerPackage.ExpiryDateOfPackage = DateOnly.FromDateTime(dto.Booking.EndDate);
+            updateCustomerPackage.ExpiryDate = dto.Booking.EndDate;
+            updateCustomerPackage.DectivationDateOfPackage = dto.Booking.EndDate;
+            updateCustomerPackage.DurationOfPackage = dto.Booking.NoOfDays;
+
+            await _customerPackageAppService.UpdateCustomerPackage(customerPackages.Id, updateCustomerPackage);
+
+            var updateCustomerUnitPackage = ObjectMapper.Map<CustomerUnitPackageDto, CreateUpdateCustomerUnitPackageDto>(customerUnitPackage);
+            updateCustomerUnitPackage.ActivationDate = dto.Booking.StartDate;
+            updateCustomerUnitPackage.DectivationDate = dto.Booking.EndDate;
+            updateCustomerUnitPackage.DurationOfPackage = dto.Booking.NoOfDays;
+            await _customerUnitPackageAppService.UpdateAsync(customerUnitPackage.Id, updateCustomerUnitPackage);
+
+            var updateUnitVehiclePackage = ObjectMapper.Map<UnitVehiclePackageDto, CreateUpdateUnitVehiclePackageDto>(unitVehiclePackage);
+            updateUnitVehiclePackage.ActivationDate = dto.Booking.StartDate;
+            updateUnitVehiclePackage.DectivationDate = dto.Booking.EndDate;
+            await _unitVehiclePackageAppService.UpdateAsync(unitVehiclePackage.Id, updateUnitVehiclePackage);
+
+
             BookingDto result = new BookingDto
             {
                 Status = Status.Active,
@@ -151,7 +182,13 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
                     StartDate = dto.Booking.StartDate,
                     EndDate = dto.Booking.EndDate
                 },
-
+                Qr = new QrDto
+                {
+                    Required = true,
+                    QrCodePayload = String.Empty,
+                    QrCodeUrl = $"{_configuration["App:SelfUrl"]?.TrimEnd('/')}/{customerPackages.QRCodePath?.TrimStart('/')}",
+                    ExpiresAt = (DateTime)customerPackages.DectivationDateOfPackage!
+                },
                 Links = new LinksDto
                 {
                     bookingId = dto.Booking.BookingId,
@@ -201,7 +238,6 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            var x = _options.Vehicle.ModelName;
             var modelId = await _vehicleLookupResolver.ResolveModelIdAsync(_options.Vehicle.ModelName);
             var brandId = await _vehicleLookupResolver.ResolveBrandIdAsync(_options.Vehicle.BrandName);
             var plateColorId = await _vehicleLookupResolver.ResolvePlateColorIdAsync(_options.Vehicle.PlateColorName);

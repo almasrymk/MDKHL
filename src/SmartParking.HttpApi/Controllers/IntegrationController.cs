@@ -21,7 +21,7 @@ public class IntegrationController : ControllerBase
     [Authorize]
     public async Task<IActionResult> Book(CreateUpdateBookingDto input)
     {
-        if (input.CustomerId is not null && input.VehicleId is not null) 
+        if (input.CustomerId is not null) 
         { 
             var updateResult = await _integrationUnitAppService.UpdateBookingAsync(input);
             if (!updateResult.IsSuccess)

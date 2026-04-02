@@ -76,6 +76,12 @@ public class NormalCustomerPackagesAppService : BaseCustomerPackagesAssigingAppS
         return await base.HandleExistingPackagesForVehicleAsync(customerPackageDto);
     }
 
+    public async Task<CustomerPackageDto> UpdateCustomerPackage(int customerPackageId, CreateUpdateCustomerPackageDto input)
+    {
+        return await base.UpdateCustomerPackage(customerPackageId, input);
+    }
+
+
     #region Private Methods
     /// <summary>
     /// Creates a new <see cref="CustomerPackage"/> instance from the provided package and customer information.

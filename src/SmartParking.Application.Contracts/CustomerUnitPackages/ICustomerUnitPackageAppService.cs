@@ -10,7 +10,8 @@ namespace SmartParking.CustomerUnitPackages;
 
 public interface ICustomerUnitPackageAppService :
     IDeleteAppService<int>,
-    IReadOnlyAppService<CustomerUnitPackageDto, int>
+    IReadOnlyAppService<CustomerUnitPackageDto, int>,
+    IUpdateAppService<CustomerUnitPackageDto, int, CreateUpdateCustomerUnitPackageDto>
 {
     /// <summary>
     /// Retrieves a list of all packages currently assigned to the authenticated customer.
