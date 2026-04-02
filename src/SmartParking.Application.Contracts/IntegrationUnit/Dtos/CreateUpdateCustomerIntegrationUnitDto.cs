@@ -11,8 +11,7 @@ namespace SmartParking.IntegrationUnit.Dtos;
 
 public class CreateUpdateCustomerIntegrationUnitDto
 {
-    public string ArabicName { get; set; }
-    public string EnglishName { get; set; }
+    public string Name { get; set; }
     public string Mobile { get; set; }
     public string Email { get; set; }
     public string NationalId { get; set; }
@@ -24,12 +23,12 @@ public class CreateUpdateCustomerIntegrationUnitDto
         return new CreateUpdateCustomerDto
         {
             // Combine names (you can adjust logic as needed)
-            FullName = input.EnglishName,
+            FullName = input.Name,
 
             // You can decide what UserName should be (example below)
             UserName = input.Mobile,
 
-            ArabicName = input.ArabicName,
+            ArabicName = "مستاجر",
 
             Email = input.Email,
 
