@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
@@ -18,8 +19,10 @@ using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.CustomerUnitPackages;
 
-public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPackage, CustomerUnitPackageDto, int>, 
+public class CustomerUnitPackageAppService : 
+    CrudAppService<CustomerUnitPackage,CustomerUnitPackageDto, int, PagedAndSortedResultRequestDto, CreateUpdateCustomerUnitPackageDto>,
     ICustomerUnitPackageAppService
+    //ReadOnlyAppService<CustomerUnitPackage, CustomerUnitPackageDto, int>,
 
 {
     private readonly IRepository<CustomerUnitPackage, int> _repository;
@@ -53,7 +56,10 @@ public class CustomerUnitPackageAppService : ReadOnlyAppService<CustomerUnitPack
         await _repository.UpdateAsync(customerPackage, true);
     }
 
-    
+    public override async Task<CustomerUnitPackageDto> UpdateAsync(int id, CreateUpdateCustomerUnitPackageDto input)
+    {
+        return await base.UpdateAsync(id, input);
+    }
 
     public async Task<Result<List<CustomerUnitPackageDto>>> GetListOfUnitPackageByCustomer(Guid customerId , int organizationId)
     {

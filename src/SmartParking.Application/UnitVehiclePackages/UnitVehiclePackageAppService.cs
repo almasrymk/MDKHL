@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Cameras;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.UnitVehiclePackges;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.UnitVehiclePackages;
 
@@ -54,7 +56,25 @@ public class UnitVehiclePackageAppService : CrudAppService<
 
     }
 
-    
+    public override async Task<UnitVehiclePackageDto> UpdateAsync(Guid id, CreateUpdateUnitVehiclePackageDto input)
+    {
+        
+        var customerUnitPackage = await _customerUnitPackageAppService.GetAsync(input.CustomerUnitPackageId);
+        //HandleCreateInput(input, customerUnitPackage);
+        var query = await Repository.GetQueryableAsync();
+        var packageBenificeriesNumber = await query.CountAsync(x => x.CustomerUnitPackageId == input.CustomerUnitPackageId && x.Id != id);
+        if (packageBenificeriesNumber > customerUnitPackage.NumberOfSlots)
+        {
+            throw new Exception("You have reached the maximum number of slots for this package");
+        }
+        var customerVehiclesCount = await query.CountAsync(x => x.CustomerId == input.CustomerId && x.Id != id);
+        if (customerVehiclesCount > customerUnitPackage.NumberOfVehicles)
+        {
+            throw new Exception("You have reached the maximum number of vehicles for this package");
+        }
+        return await base.UpdateAsync(id, input);
+    }
+
 
     public async Task<bool> CheckDuplicationForVehicle(Guid CustomerId, string EnPlateNumber)
     {
@@ -91,6 +111,12 @@ public class UnitVehiclePackageAppService : CrudAppService<
         return ObjectMapper.Map<UnitVehiclePackge, UnitVehiclePackageDto>(result!);
     }
 
+    public async Task<UnitVehiclePackageDto> GetByCustmoerIdAndPlateNumber(SearchByPlateAndCustomerIdDto input)
+    {
+        var result = await _repository.FirstOrDefaultAsync(x => x.CustomerId == input.CustomerId && x.EnPlateNumber == input.EnPlateNumber);
+        return ObjectMapper.Map<UnitVehiclePackge, UnitVehiclePackageDto>(result!);
+    }
+
     #endregion
 
     #region private methods
@@ -104,7 +130,7 @@ public class UnitVehiclePackageAppService : CrudAppService<
         input.UnitCode = customerUnitPackage.UnitCode;
     }
 
-    
+
     #endregion
 
 }

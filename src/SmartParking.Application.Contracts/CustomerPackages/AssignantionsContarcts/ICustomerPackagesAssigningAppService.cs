@@ -1,4 +1,5 @@
-﻿using SmartParking.CustomerPackages.Inputs;
+﻿using SmartParking.CustomerPackages.Dtos;
+using SmartParking.CustomerPackages.Inputs;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
@@ -42,4 +43,5 @@ public interface ICustomerPackagesAssigningAppService
     /// </returns>
     Task<PackageDto> GetPackageAsync(int packageId);
     Task<string> HandleQRCode(CreateUpdateCustomerPackageDto customerPackageDto, CustomerDto customer, CustomerPackage customerPackage);
+    Task<CustomerPackageDto> UpdateCustomerPackage(int customerPackageId, CreateUpdateCustomerPackageDto input);
 }

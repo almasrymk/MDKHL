@@ -19,4 +19,6 @@ public interface IAssignCustomerPackagesAppService
     /// The task result contains a <see cref="Result"/> indicating the outcome of the assignment.
     /// </returns>
     Task<Result<CustomerPackageDto>> AssignPackageToCustomerAsync(CreateUpdateCustomerPackageDto createUpdateCustomerPackageDto);
+    Task<CustomerPackageDto> UpdateCustomerPackage(int customerPackageId, CreateUpdateCustomerPackageDto input);
+
 }
