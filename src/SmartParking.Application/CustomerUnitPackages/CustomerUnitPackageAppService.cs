@@ -44,7 +44,7 @@ public class CustomerUnitPackageAppService :
         _customerAppService = customerAppService;
     }
 
-    public async Task DeleteAsync(int id)
+    public override async Task DeleteAsync(int id)
     {
         var customerPackage = await _repository.FindAsync(id);
 
