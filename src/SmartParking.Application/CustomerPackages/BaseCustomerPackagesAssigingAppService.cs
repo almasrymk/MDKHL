@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Castle.Core.Resource;
+using Microsoft.EntityFrameworkCore;
 using SmartParking.CustomerPackages.AssignantionsContarcts;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerPackages.Inputs;
@@ -106,6 +107,25 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
             return pdfPath;
         }
         return "";
+    }
+
+    public async Task<UnitQrDto> HandleUnitQRCode(CreateUpdateCustomerPackageForUnitDto customerPackageDto)
+    {
+        var packageCode = await CreatePackageCodeForUnitPackage(customerPackageDto);
+        UnitQrDto unitQrDto = new UnitQrDto
+        {
+            PackageCode = packageCode
+        };
+        if (packageCode != null)
+        {
+            var qrCodeDto = new CreateUpdateQrCodeDto { PhoneNumber = customerPackageDto.CustomerMobile, OrganizationId = (int)customerPackageDto.OrganizationId!, PackageCode = packageCode };
+            var qrCodeImage = await _customerPackageQRGenerator.CreateAsync(qrCodeDto);
+            string pdfPath = await _pdfGeneratorAppService.GeneratePdfForCustomerPackage(qrCodeDto, qrCodeImage);
+            unitQrDto.QrCodePath = pdfPath;
+            return unitQrDto;
+        }
+        unitQrDto.QrCodePath = "";
+        return unitQrDto;
     }
     /// <summary>
     /// Inserts a new customer package into the database.
@@ -304,6 +324,22 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
 
 
     private async Task<string> CreatePackageCode(CreateUpdateCustomerPackageDto customerPackageDto)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var org = await _organizationsApp.GetAsync(customerPackageDto.OrganizationId);
+            if (!org.DispenserTransaction)
+                return null;
+            string code;
+            do
+            {
+                code = GeneratePackageCode(org.PaymentCode, org.EnglishName);
+            }
+            while (await IsCodeUnique(code));
+            return code;
+        }
+    }
+    private async Task<string> CreatePackageCodeForUnitPackage(CreateUpdateCustomerPackageForUnitDto customerPackageDto)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {

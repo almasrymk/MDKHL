@@ -2,6 +2,7 @@
 using SmartParking.CustomerPackages.Inputs;
 using SmartParking.Payments;
 using SmartParking.Results;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SmartParking.CustomerPackages.AssignantionsContarcts;
@@ -19,6 +20,7 @@ public interface IAssignCustomerPackagesAppService
     /// The task result contains a <see cref="Result"/> indicating the outcome of the assignment.
     /// </returns>
     Task<Result<CustomerPackageDto>> AssignPackageToCustomerAsync(CreateUpdateCustomerPackageDto createUpdateCustomerPackageDto);
+    Task<Result<UnitQrDto>> AssignUnitPackageToCustomerAsync(CreateUpdateCustomerPackageForUnitDto dto);
     Task<CustomerPackageDto> UpdateCustomerPackage(int customerPackageId, CreateUpdateCustomerPackageDto input);
 
 }

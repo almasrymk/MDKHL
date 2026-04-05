@@ -2,10 +2,7 @@
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace SmartParking.IntegrationUnit.Dtos;
 
@@ -14,9 +11,11 @@ public class CreateUpdateCustomerIntegrationUnitDto
     public string Name { get; set; }
     public string Mobile { get; set; }
     public string Email { get; set; }
-    public string NationalId { get; set; }
+    public string NId { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public IdentificationTypes IdentificationType { get; set; }
+    public IdentificationTypes IdType { get; set; }
+    public List<CreateUpdateVehicleIntegrationUnitDto> Cars { get; set; }
+
 
     public CreateUpdateCustomerDto MapToCustomerDto( CreateUpdateCustomerIntegrationUnitDto input)
     {
@@ -37,8 +36,8 @@ public class CreateUpdateCustomerIntegrationUnitDto
             RepeatPassword = "P@ssw0rd",
 
             PhoneNumber = input.Mobile,
-            IdentificationType = input.IdentificationType,
-            NationalId = input.NationalId,
+            IdentificationType = input.IdType,
+            NationalId = input.NId,
 
             // Defaults / business rules
             isActive = true,
