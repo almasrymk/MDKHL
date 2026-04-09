@@ -98,7 +98,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
                 {
                     Required = true,
                     QrCodePayload = String.Empty,
-                    QrCodeUrl = $"{_configuration["App:SelfUrl"]?.TrimEnd('/')}/{customerPackages.QrCodePath?.TrimStart('/')}",
+                    QrCodeUrl = $"/{customerPackages.QrCodePath?.TrimStart('/')}",
                     ExpiresAt = customerUnitPackage.DectivationDate
                 },
                 Links = new LinksDto
@@ -193,7 +193,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
                 {
                     Required = true,
                     QrCodePayload = String.Empty,
-                    QrCodeUrl = $"{_configuration["App:SelfUrl"]?.TrimEnd('/')}/{customerPackages.QRCodePath?.TrimStart('/')}",
+                    QrCodeUrl = $"/{customerPackages.QRCodePath?.TrimStart('/')}",
                     ExpiresAt = (DateTime)customerPackages.DectivationDateOfPackage!
                 },
                 Links = new LinksDto
