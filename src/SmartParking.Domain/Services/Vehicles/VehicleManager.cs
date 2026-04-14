@@ -34,7 +34,7 @@ public  class VehicleManager : DomainService
             if (customerId == null)
             {
                 _logger.LogError($"{DateTime.Now} ====>  Vehicle Not Found ");
-                return null;
+                return Guid.Empty;
             }
             return customerId;
         }

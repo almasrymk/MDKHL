@@ -193,7 +193,6 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
             _logger.LogError(message: $"{DateTime.Now} ====> Mixed Mode Exit Camera without an active package insert in unlinked transactions");
             return await SaveTransactionInOthers(exitTransaction, input);
         }
-        exitTransaction.CustomerCategory = _packageDto is null ? CustomerCategoryStatus.Customer : _packageDto.CustomerCategory;
         //Check On Entrance Time Validation
         if (_entryTransaction.AccurateTime > exitTransaction.AccurateTime)
         {

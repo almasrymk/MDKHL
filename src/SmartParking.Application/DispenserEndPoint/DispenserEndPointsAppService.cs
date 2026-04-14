@@ -86,6 +86,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             packageDto = new();
             var customerId = await _garageTransactionUtilityAppService.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(_garageTransactionDto.PlateNumber);
             packageDto.CustomerId = customerId.HasValue ? customerId.Value : Guid.Empty;
+            _garageTransactionDto.CustomerCategory= packageDto.CustomerId != Guid.Empty ? packageDto.CustomerCategory : CustomerCategoryStatus.Customer;
             var result = await _garageTransactionEndPointsAppService.HandleEntrance(_unlinkedDto, new OrganizationTransactionSettingsDto { HasFreeSlots = _organization.HasFreeSlots, HasPackageOnly = _organization.HasPackageOnly, HasUserAccess = _organization.Settings.CustomerPackage, HasVehicleAccess = _organization.Settings.VehcilePackage },  _garageTransactionDto  , packageDto);
             await _barrierAppService.CallingBarrier(_organization.Id, new BarrierRequest { carNum = request.CarNum, laneNO = request.LaneNO, operatorType = result == false ? 2 : 5 });
             return GetGateResponse(request.CarNum, result, _otherReasons);
@@ -159,7 +160,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
             packageDto = new();
             var customerId = await _garageTransactionUtilityAppService.CheckPlateNumberBelongsToCustomerToGetHisIdAsync(_garageTransactionDto.PlateNumber);
             packageDto.CustomerId = customerId.HasValue ? customerId.Value : Guid.Empty;
-            
+            _garageTransactionDto.CustomerCategory = packageDto.CustomerId != Guid.Empty ? packageDto.CustomerCategory : CustomerCategoryStatus.Customer;
             var result = await _garageTransactionEndPointsAppService.HandleExit(_garageTransactionDto, _organization, input  , packageDto);
             return GetGateResponse(request.CarNum, result, _otherReasons);
         }
