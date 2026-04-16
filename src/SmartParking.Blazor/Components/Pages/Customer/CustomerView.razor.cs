@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using SmartParking.Permissions.CustomerPermissions;
 using SmartParking.Organizations;
 using SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
+using SmartParking.Entities.CustomerUnitPackages;
+using SmartParking.CustomerUnitPackages;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -25,6 +27,9 @@ public partial class CustomerView
     /// Customer data DTO, used to store customer information.
     /// </summary>
     public CreateUpdateCustomerDto customerDataDto { get; set; } = new CreateUpdateCustomerDto();
+
+    private CustomerUnitPackageDto customerUnitPackage { get; set; } = new CustomerUnitPackageDto();
+    private bool CustomerHasUnitPackage { get; set; } = true;
 
     /// <summary>
     /// Customer picture URL.
@@ -70,7 +75,12 @@ public partial class CustomerView
     private async Task Fetch()
     {
         var customer = await CustomerAppService.GetAsync(Guid.Parse(customerId));
-
+        var package = await CustomerUnitPackageAppService.GetCustomerUnitPackageByCustomerIdAsync(Guid.Parse(customerId));
+        if (!package.IsSuccess)
+        {
+            CustomerHasUnitPackage = false;
+        }
+        customerUnitPackage = package.Value;
         IdentityUserId = customer.IdentityId;
 
         customerDataDto = Mapper.Map<CreateUpdateCustomerDto>(customer);

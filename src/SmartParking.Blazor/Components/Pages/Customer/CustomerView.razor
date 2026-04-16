@@ -2,6 +2,7 @@
 @using AutoMapper
 @using Microsoft.Extensions.Localization
 @using SmartParking.Authentication
+@using SmartParking.CustomerUnitPackages
 @using SmartParking.Cutomers
 @using SmartParking.Enums
 @using SmartParking.Localization
@@ -22,6 +23,7 @@
 @inject IUsersAppService UsersAppService
 @inject IAuthorizationService AuthorizationService
 @inject IMapper Mapper 
+@inject ICustomerUnitPackageAppService CustomerUnitPackageAppService
 
 <PageTitle>@L["Details Of Customer"]</PageTitle>
 <div>
@@ -62,6 +64,13 @@
                                 </MudRadioGroup>
                             </MudItem>
                         </MudItem>
+                        @if (OrganizationSettings.UserAccess && CustomerHasUnitPackage)
+                        {
+                            <MudItem sm="4" Class="d-inline-flex justify-content-center">
+                                <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["UnitCode"]" @bind-Value="customerUnitPackage.UnitCode" Required />
+                            </MudItem>
+                        }
+                       
 
                     </MudGrid>
                     <div class="d-flex justify-content-end mt-auto">
