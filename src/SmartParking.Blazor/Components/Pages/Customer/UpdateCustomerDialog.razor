@@ -11,6 +11,12 @@
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Users
 @using SmartParking.Blazor.Components.Shared
+@using SmartParking.Permissions.CustomerPermissions
+@using SmartParking.Blazor.Components.Pages.Customer.Vehicles
+@using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
+@using SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages
+@using SmartParking.Entities.CustomerUnitPackages
+@using SmartParking.CustomerUnitPackages
 @layout Shared.ProfileLayout
 @inject ICustomerAppService CustomerAppService
 @inject NavigationManager Navigation
@@ -22,70 +28,73 @@
 @inject IDialogService DialogService
 @inject IUsersAppService UsersAppService
 @inject IAuthorizationService AuthorizationService
-@inject IMapper Mapper 
+@inject IMapper Mapper
+@inject ICustomerUnitPackageAppService CustomerUnitPackageAppService
 <PageTitle>@L["Edit"]</PageTitle>
 <div>
     <MudGrid>
         <MudItem sm="8">
             <MudPaper Class="h-100 p-3 d-flex flex-column w-100 h-100 main-layout-paper" Style="background-color: #F2F2F2;">
-                <h3 Color="fw-bold">@L["Edit"]</h3>
+                <h3 Color="fw-bold">@L["Details"]</h3>
                 <MudForm Class="flex-grow-1 mt-4">
                     <MudGrid>
 
                         <MudItem sm="4" Class="mb-12">
-                            <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.FullName" Label="@L["EnglishName"]" Required />
+                            <MudTextField ReadOnly="false" T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.FullName" Label="@L["EnglishName"]" Required />
                         </MudItem>
                         <MudItem sm="4" Class="mb-12">
-                            <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.ArabicName" Label="@L["ArabicName"]" Required />
+                            <MudTextField ReadOnly="false" T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.ArabicName" Label="@L["ArabicName"]" Required />
                         </MudItem>
+
                         <MudItem sm="4" Class="mb-12">
-                            <MudTextField T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["MobileNumber"]" @bind-Value="customerDataDto.PhoneNumber" Required />
+                            <MudTextField ReadOnly="false" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["MobileNumber"]" @bind-Value="customerDataDto.PhoneNumber" Required />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.Email" Label="@L["Email"]" />
+                            <MudTextField ReadOnly="false" T="string" Placeholder="@L["Type Here"]" @bind-Value="customerDataDto.Email" Label="@L["Email"]" Required />
                         </MudItem>
                         <MudItem sm="4">
-                            <MudTextField T="string" Placeholder="@L["Type Here"]" Label="@L["NationalId"]" @bind-Value="customerDataDto.NationalId" Required />
+                            <MudTextField ReadOnly="false" T="string" Placeholder="@L["Type Here"]" Label="@L["NationalId"]" @bind-Value="customerDataDto.NationalId" Required />
                         </MudItem>
                         <MudItem sm="4" Class="d-inline-flex justify-content-center">
-                            <MudItem Class="d-flex flex-col justify-content-between">
+                            <MudItem Class="d-flex flex-row justify-content-between">
                                 <MudRadioGroup @bind-Value="@customerDataDto.IdentificationType" Class="d-inline-flex align-content-center">
-                                    <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalIdSwitch"]</MudRadio>
-                                    <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
+                                    @if (customerDataDto.IdentificationType == Enums.IdentificationTypes.NationalID){
+                                        <MudRadio Value="@(Enums.IdentificationTypes.NationalID)" Color="MudBlazor.Color.Primary">@L["NationalId"]</MudRadio>
+                                    }
+                                    else{
+                                        <MudRadio Value="@(Enums.IdentificationTypes.Passport)" Color="MudBlazor.Color.Primary">@L["Passport"]</MudRadio>
+                                    }
                                 </MudRadioGroup>
                             </MudItem>
                         </MudItem>
+                        @if (OrganizationSettings.UserAccess && CustomerHasUnitPackage)
+                        {
+                            <MudItem sm="4" Class="d-inline-flex justify-content-center">
+                                <MudTextField ReadOnly="true" T="string" Placeholder="@L["Type Here"]" InputType="InputType.Text" Label="@L["UnitCode"]" @bind-Value="customerUnitPackage.UnitCode" Required />
+                            </MudItem>
+                        }
 
                     </MudGrid>
                     <div class="d-flex justify-content-end mt-auto">
-                       <DialogActions>
-                                 <DialogActionComponent 
-        ButtonOneColor="MudBlazor.Color.Dark" 
-        ButtonTwoColor="MudBlazor.Color.Primary" 
-        ButtonOneLabel="@L["Cancel"]" 
-        ButtonTwoLabel="@L["Create"]" 
-        ButtonOneClick="CancelEdit" 
-        ButtonTwoClick="SubmitEdit" 
-        ButtonOneVariant="MudBlazor.Variant.Filled" 
-        ButtonTwoVariant="MudBlazor.Variant.Filled" />
-                    </DialogActions>
-
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Dark" OnClick="CancelEdit">@L["Back"]</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="SubmitEdit" Class="ms-2">@L["Save"]</MudButton>
                     </div>
                 </MudForm>
 
             </MudPaper>
         </MudItem>
-        <MudItem sm="4">    
+        <MudItem sm="4">
             <MudPaper Class="h-100 p-3  w-100 h-100 main-layout-paper d-flex flex-column align-items-center justify-content-between" Style="background-color: #F2F2F2;">
+
                 <div class="d-flex flex-column align-content-center mt-5">
-                    <MudImage Src="@Picture" onerror="this.src='images/users/149071.png'" Class="bg_w_foto " Width="200" Height="200" />
+                    <MudImage Src="@Picture" Class="bg_w_foto " onerror="this.src='images/users/149071.png'" Width="200" Height="200" />
                     <div class="d-flex flex-column align-items-center">
                         <MudText Class="fw-bold">@(CultureInfo.CurrentCulture.Name == "en"?customerDataDto.FullName:customerDataDto.ArabicName)</MudText>
                         <MudText>@(customerDataDto.Email is null ? customerDataDto.PhoneNumber : customerDataDto.Email)</MudText>
                     </div>
                 </div>
                 <MudGrid Class="mt-3">
-                    @if (CurrentTenant.Id is not null)
+                    @if(CurrentTenant.Id is not null)
                     {
                         <MudItem sm="12">
                             <MudPaper class="text-center p-2">
@@ -93,18 +102,53 @@
                             </MudPaper>
                         </MudItem>
                     }
+
                         <MudItem sm="6">
                             <MudPaper class="text-center p-2">
                                 <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewVehicle">@L["Cars"]</MudLink>
                             </MudPaper>
                         </MudItem>
-                    <MudItem sm="6">
-                        <MudPaper class="text-center p-2">
-                            <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewPackage">
-                                 @L["Packages"]
-                            </MudLink>
-                        </MudPaper>
-                    </MudItem>
+
+                     @if (OrganizationSettings.UserAccess)
+                        {
+                        <MudItem sm="6">
+                            <MudPaper class="text-center p-2">
+
+                                    <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewPackage">
+                                    @L["VehiclePackages"]
+                                    </MudLink>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem sm="6">
+                            <MudPaper class="text-center p-2">
+
+                                <MudLink Color="MudBlazor.Color.Dark" OnClick="AssignUnitPackage">
+                                    @L["Packages"]
+                                </MudLink>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem sm="6">
+                            <MudPaper class="text-center p-2">
+
+                                <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewUnitVehiclePackage">
+                                    @L["UnitVehiclePackage"]
+                                </MudLink>
+                            </MudPaper>
+                        </MudItem>
+                    }
+                    else
+                    {
+
+                        <MudItem sm="6">
+                            <MudPaper class="text-center p-2">
+
+                                <MudLink Color="MudBlazor.Color.Dark" OnClick="ViewPackage">
+                                    @L["Packages"]
+                                </MudLink>
+                            </MudPaper>
+                        </MudItem>
+
+                    }
                 </MudGrid>
             </MudPaper>
         </MudItem>
