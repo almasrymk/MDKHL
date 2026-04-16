@@ -1,6 +1,6 @@
 ﻿using SmartParking.Enums;
 
-namespace SmartParking.Blazor.Components.Shared.Utilities;
+namespace SmartParking.Utilities.StaticValues;
 
 public static class PackageStaticValues
 {
@@ -18,4 +18,5 @@ public static class PackageStaticValues
     public const string CustomerCategory = "Owner";
     public const PackageCategoryTypes PackageCategoryType = PackageCategoryTypes.CustomPackage;
     public const Status status = Status.Active;
-} 
+}
+
