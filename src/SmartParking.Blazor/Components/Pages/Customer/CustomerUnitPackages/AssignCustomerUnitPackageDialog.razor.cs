@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
-using SmartParking.Blazor.Components.Shared.Utilities;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
 using SmartParking.Enums;
@@ -9,8 +8,8 @@ using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.UnitPackages;
 using SmartParking.Units;
+using SmartParking.Utilities.StaticValues;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
 
