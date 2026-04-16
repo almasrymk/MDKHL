@@ -5,6 +5,7 @@ using SmartParking.Entities.Units;
 using SmartParking.Enums;
 using SmartParking.Results;
 using SmartParking.UnitPackages;
+using SmartParking.Utilities.StaticValues;
 using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
@@ -103,6 +104,7 @@ public class CustomerUnitPackageAppService :
         return await _repository.AnyAsync(x => x.CustomerId != CustomerId
         && x.DectivationDate >= dto.Package.ActivationDate
         && x.UnitCode == unitCode
+        && x.EnglishName != PackageStaticValues.EnglishName
         && x.Status != Status.Deleted);
     }
 
