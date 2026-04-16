@@ -98,29 +98,6 @@ public class CustomerUnitPackageAppService :
         }
     }
 
-    #region Private methods
-
-    private async Task<UnitPackageDto> GetPackageAsync(int packageId)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var package = await _packageRepository.FirstOrDefaultAsync(p => p.Id == packageId);
-            return ObjectMapper.Map<UnitPackage, UnitPackageDto>(package);
-        }
-    }
-
-    private async Task<Result<CustomerUnitPackageDto>> AssignPackage(CustomerDto customer, UnitPackageDto package , CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto)
-    {
-        CustomerCategoryStatus category;
-
-        var customerUnitPackageDto = CreateUpdateCustomerUnitPackageDto.CreateFrom(customer, package, customerUnitPackageAssignationDto);
-
-        var entity = ObjectMapper.Map<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>(customerUnitPackageDto);
-        var data = await _repository.InsertAsync(entity, autoSave: true);
-        var dto = ObjectMapper.Map<CustomerUnitPackage, CustomerUnitPackageDto>(data);
-        return dto;
-    }
-
     public async Task<bool> MultipuleCustomerRentalValidation(Guid CustomerId, UnitPackageDto dto, string unitCode)
     {
         return await _repository.AnyAsync(x => x.CustomerId != CustomerId
@@ -147,21 +124,59 @@ public class CustomerUnitPackageAppService :
         return count >= unit!.RenterSlots;
     }
 
-    public async Task<bool> CheckCustomerUnitPackageVehicleLimitations(Guid CustomerId , int numberOfVehicles)
+    public async Task<bool> CheckCustomerUnitPackageVehicleLimitations(Guid CustomerId, int numberOfVehicles)
     {
-      var customerUnitPackge = await _repository.FirstOrDefaultAsync(x=>x.CustomerId == CustomerId);
-        if (customerUnitPackge == null) {
+        var customerUnitPackge = await _repository.FirstOrDefaultAsync(x => x.CustomerId == CustomerId);
+        if (customerUnitPackge == null)
+        {
             throw new Exception("NotFound");
-            
+
         }
         return customerUnitPackge!.NumberOfVehicles > numberOfVehicles;
     }
 
+    public async Task<Result<CustomerUnitPackageDto>> GetCustomerUnitPackageByCustomerIdAsync(Guid id)
+    {
+        
+            var customerUnitPackage = await _repository.FirstOrDefaultAsync(x => x.CustomerId == id && x.Status != Status.Deleted);
+            if (customerUnitPackage == null)
+            {
+                return Result.NotFound("Customer unit package not found");
+            }
+            var customerUnitPackageDto = ObjectMapper.Map<CustomerUnitPackage, CustomerUnitPackageDto>(customerUnitPackage);
+            return Result<CustomerUnitPackageDto>.Success(customerUnitPackageDto);
+        
+    }
     public async Task<bool> CheckPackageOverUnits(string UnitCode)
     {
         return await _repository.AnyAsync(x => x.UnitCode == UnitCode && x.EnglishName == "Owner Package");
     }
 
+
+    #region Private methods
+
+    private async Task<UnitPackageDto> GetPackageAsync(int packageId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var package = await _packageRepository.FirstOrDefaultAsync(p => p.Id == packageId);
+            return ObjectMapper.Map<UnitPackage, UnitPackageDto>(package);
+        }
+    }
+
+    private async Task<Result<CustomerUnitPackageDto>> AssignPackage(CustomerDto customer, UnitPackageDto package , CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto)
+    {
+        CustomerCategoryStatus category;
+
+        var customerUnitPackageDto = CreateUpdateCustomerUnitPackageDto.CreateFrom(customer, package, customerUnitPackageAssignationDto);
+
+        var entity = ObjectMapper.Map<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>(customerUnitPackageDto);
+        var data = await _repository.InsertAsync(entity, autoSave: true);
+        var dto = ObjectMapper.Map<CustomerUnitPackage, CustomerUnitPackageDto>(data);
+        return dto;
+    }
+
+    
 
     #endregion
 

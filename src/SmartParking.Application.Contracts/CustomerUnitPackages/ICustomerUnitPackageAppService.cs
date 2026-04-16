@@ -50,4 +50,6 @@ public interface ICustomerUnitPackageAppService :
     /// <returns>A task that represents the asynchronous operation. The task result contains <see langword="true"/> if the
     /// customer is eligible to rent multiple units; otherwise, <see langword="false"/>.</returns>
     Task<bool> MultipuleCustomerRentalValidation(Guid CustomerId, UnitPackageDto dto, string unitCode);
+
+    Task<Result<CustomerUnitPackageDto>> GetCustomerUnitPackageByCustomerIdAsync(Guid id);
 }
