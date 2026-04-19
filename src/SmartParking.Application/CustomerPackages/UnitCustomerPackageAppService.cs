@@ -47,7 +47,7 @@ public class UnitCustomerPackageAppService : BaseCustomerPackagesAssigingAppServ
             await HandleExistingPackagesForVehicleAsync(createUpdateCustomerPackageDto);
             if (createUpdateCustomerPackageDto.PackageId != 0)
             {
-                var package = await GetUnitPackageAsync(createUpdateCustomerPackageDto!.PackageId);
+                var package = await GetUnitPackageAsync((int)createUpdateCustomerPackageDto!.PackageId);
                 if (package == null)
                     throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
                 customerPackage = CreateCustomerPackage(createUpdateCustomerPackageDto,package.Package);

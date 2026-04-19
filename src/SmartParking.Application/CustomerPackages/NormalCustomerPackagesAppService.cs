@@ -55,7 +55,7 @@ public class NormalCustomerPackagesAppService : BaseCustomerPackagesAssigingAppS
             await HandleExistingPackagesForVehicleAsync(createUpdateCustomerPackageDto);
             if (createUpdateCustomerPackageDto.PackageId != 0)
             {
-                var package = await GetPackageAsync(createUpdateCustomerPackageDto!.PackageId);
+                var package = await GetPackageAsync((int)createUpdateCustomerPackageDto!.PackageId);
                 if (package == null)
                     throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
                 customerPackage = CreateCustomerPackage(createUpdateCustomerPackageDto, package);
