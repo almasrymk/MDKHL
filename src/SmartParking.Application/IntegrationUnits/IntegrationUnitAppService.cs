@@ -140,7 +140,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     {
         try
         {
-            var customer = await UpdateCustomer(dto.CustomerId!.Value, dto.Customer.MapToCustomerDto(dto.Customer));
+            var customerDto = await _customerAppService.GetCustomerByPhoneNumberAsync(dto.PhoneNumber);
+            var customer = await UpdateCustomer(customerDto.Id, dto.Customer.MapToCustomerDto(dto.Customer));
             var searchCustomerPackageDto = new SearchByPlateAndCustomerIdDto
             {
                 CustomerId = customer.Id
