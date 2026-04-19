@@ -24,6 +24,8 @@ using SmartParking.UnitVehiclePackages;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -145,12 +147,19 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             {
                 CustomerId = customer.Id
             };
+
+            var Cars = await _vehicleAppService.GetVehiclesByCustomerIdAsync(customer.Id);
+
+            
+
             CustomerPackageDto customerPackages = new CustomerPackageDto();
             UnitVehiclePackageDto unitVehiclePackage = new UnitVehiclePackageDto();
             CustomerUnitPackageDto customerUnitPackage = new CustomerUnitPackageDto();
-            for (int i = 0; i < dto.Customer.Cars.Count; i++)
+            
+            for (int i = 0; i < Cars.Count(); i++)
             {
-                searchCustomerPackageDto.EnPlateNumber = dto.Customer.Cars[i].PlateNumber;
+                
+                searchCustomerPackageDto.EnPlateNumber = Cars[i].EnPlateNumber;
                 customerPackages = await _customerPackagesAppService.GetLatestByCustomerIdAndEnPlateNumber(searchCustomerPackageDto);
                 unitVehiclePackage = await _unitVehiclePackageAppService.GetByCustmoerIdAndPlateNumber(searchCustomerPackageDto);
                 customerUnitPackage = await _customerUnitPackageAppService.GetAsync(unitVehiclePackage.CustomerUnitPackageId);
@@ -176,7 +185,47 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
                 updateUnitVehiclePackage.DectivationDate = dto.Booking.EndDate;
                 await _unitVehiclePackageAppService.UpdateAsync(unitVehiclePackage.Id, updateUnitVehiclePackage);
             }
-            
+
+            // 1. Cars that are in the Database (Cars) but NOT in the incoming DTO
+            // Logic: "Where NO car in the DTO matches this database car's plate"
+            var oldCars = Cars
+                .Where(car => !dto.Customer.Cars.Any(c => c.PlateNumber == car.EnPlateNumber))
+                .ToList();
+
+            // 2. Cars that are in the DTO but NOT in the Database (Cars)
+            // Logic: "Where NO car in the Database matches this DTO car's plate"
+            var newCars = dto.Customer.Cars
+                .Where(c => !Cars.Any(car => car.EnPlateNumber == c.PlateNumber))
+                .ToList();
+            int counter = 0;
+            foreach (var car in oldCars)
+            {
+                CreateUpdateVehicleIntegrationUnitDto createUpdateVehicleIntegrationUnitDto = new CreateUpdateVehicleIntegrationUnitDto
+                {
+                    PlateNumber = newCars[counter].PlateNumber,
+                };
+                var vehiclePlateDto = createUpdateVehicleIntegrationUnitDto.SeparateAndTranslatePlateNumbers();
+                CreateUpdateVehicleDto CreateUpdateVehicleDto = ObjectMapper.Map<VehicleDto, CreateUpdateVehicleDto>(car);
+                CreateUpdateVehicleDto.ArPlateNumber = vehiclePlateDto.ArPlateNumber;
+                CreateUpdateVehicleDto.EnPlateNumber = vehiclePlateDto.EnPlateNumber;
+                CreateUpdateVehicleDto.ArPlateLetters = vehiclePlateDto.ArPlateLetters;
+                CreateUpdateVehicleDto.EnPlateLetters = vehiclePlateDto.EnPlateLetters;
+                var updatedVehicleDto = await _vehicleAppService.UpdateAsync(car.Id, CreateUpdateVehicleDto);
+                searchCustomerPackageDto.EnPlateNumber = car.EnPlateNumber;
+                customerPackages = await _customerPackagesAppService.GetLatestByCustomerIdAndEnPlateNumber(searchCustomerPackageDto);
+                var createUpdateCustomerPackageDto = ObjectMapper.Map<CustomerPackageDto, CreateUpdateCustomerPackageDto>(customerPackages);
+                createUpdateCustomerPackageDto.PackageId = null;
+                await _customerPackagesAppService.UpdateAsync(customerPackages.Id, createUpdateCustomerPackageDto);
+                unitVehiclePackage = await _unitVehiclePackageAppService.GetByCustmoerIdAndPlateNumber(searchCustomerPackageDto);
+                var createUpdateUnitVehiclePackageDto = ObjectMapper.Map<UnitVehiclePackageDto, CreateUpdateUnitVehiclePackageDto>(unitVehiclePackage);
+                createUpdateUnitVehiclePackageDto.EnPlateNumber = dto.Customer.Cars[counter].PlateNumber;
+                await _unitVehiclePackageAppService.UpdateAsync(unitVehiclePackage.Id, createUpdateUnitVehiclePackageDto);
+                customerUnitPackage = await _customerUnitPackageAppService.GetAsync(unitVehiclePackage.CustomerUnitPackageId);
+                var createUpdateCustomerUnitPackageDto = ObjectMapper.Map<CustomerUnitPackageDto, CreateUpdateCustomerUnitPackageDto>(customerUnitPackage);
+                await _customerUnitPackageAppService.UpdateAsync(customerUnitPackage.Id, createUpdateCustomerUnitPackageDto);
+                counter++;
+            }
+
 
             BookingDto result = new BookingDto
             {
