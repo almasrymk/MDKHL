@@ -1,4 +1,5 @@
 ﻿
+using iText.Layout.Element;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Lookups.VehiclesLookups;
@@ -7,6 +8,7 @@ using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Validations;
 using System;
+using System.Collections.Generic;
 using System.Linq.Dynamic.Core;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -200,6 +202,17 @@ public class VehiclesAppService :
             return null;
         }
 
+    }
+
+    
+
+    public async Task<List<VehicleDto>> GetVehiclesByCustomerIdAsync(Guid customerId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var vehicles = await _repository.GetListAsync(v => v.CustomerId == customerId);
+            return ObjectMapper.Map<List<Vehicle>, List<VehicleDto>>(vehicles);
+        }
     }
 
     #endregion

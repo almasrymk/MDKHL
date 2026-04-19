@@ -9,7 +9,7 @@ public class CreateUpdateCustomerPackageDto
 {
     // Core relation fields
     public Guid CustomerId { get; set; }
-    public int PackageId { get; set; }
+    public int? PackageId { get; set; }
     public int OrganizationId { get; set; }
     public CustomerPackageStatus CustomerPackageStatus { get; set; }
     public Guid? TenantId { get; set; }
