@@ -348,6 +348,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             PackageStatus = OwnerPackageStaticValues.PackageStatus,
             Published = OwnerPackageStaticValues.Published,
             DurationOfPackage = dto.Booking.NoOfDays,
+            
         };
         UnitPackageDto unitPackage = new UnitPackageDto
         {
@@ -386,8 +387,10 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             PublishFromOfPackage = TimeOnly.FromTimeSpan(dto.ActivationDate.TimeOfDay),
             PublishToOfPackage = TimeOnly.FromTimeSpan(dto.DectivationDate.TimeOfDay),
             Vat = Math.Round((dto.Price - dto.Discount) * 0.15m, 2),
-            PublishedOfPackage = dto.ActivationDate.TimeOfDay == dto.DectivationDate.TimeOfDay,
+            PublishedOfPackage = true,
             CustomerMobile = mobileNumber,
+            
+
         };
         List<CustomerPackageVehicleDto> vehiclesDto = new List<CustomerPackageVehicleDto>();
         foreach (var vehicle in vehicles)
