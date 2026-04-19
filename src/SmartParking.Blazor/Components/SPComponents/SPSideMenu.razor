@@ -133,7 +133,7 @@
                  {
                      <MudNavLink Href="/subscription" Icon="@Icons.Material.Filled.Group">@L["Subscriptions"]</MudNavLink>
                  }
-                 @if(AuthorizationService.IsGrantedAsync(UnitPermissions.Default).Result && _isUserAccess)
+                 @if(AuthorizationService.IsGrantedAsync(UnitPermissions.Default).Result && _isUserAccess && !_isAdmin)
                  {
                      <MudNavLink Href="/units" Icon="@Icons.Material.Filled.House">@L["Units"]</MudNavLink>
                  }
@@ -175,7 +175,7 @@
                              <MudNavLink Href="/paymentsbankreports" Icon="@Icons.Material.Filled.Payment">@L["PaymentMehtodReport"]</MudNavLink>
                              <MudNavLink Href="/paymentscustomerreports" Icon="@Icons.Material.Filled.AttachMoney">@L["CustomerAndPaymentReport"]</MudNavLink>
                              <MudNavLink Href="/discount/report" Icon="@Icons.Material.Filled.Discount">@L["DiscountsReport"]</MudNavLink>
-                            @if (AuthorizationService.IsGrantedAsync(UnitVehiclePackagePermissions.Default).Result && _isUserAccess)
+                            @if (AuthorizationService.IsGrantedAsync(UnitVehiclePackagePermissions.Default).Result && _isUserAccess && !_isAdmin)
                             {
                                 <MudNavLink Href="/unit-vehicle-packages" Icon="@Icons.Material.Filled.DataThresholding">@L["UnitVehiclePackages"]</MudNavLink>
                             }
@@ -249,6 +249,7 @@
 
     private bool _isLoaded = false;
     private bool _isUserAccess;
+    private bool _isAdmin = false;
     private bool _isShift = false;
     public void HandleLogout()
     {
@@ -258,7 +259,11 @@
     {
         var organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
 
-        _isUserAccess = organization?.OrganizationSettings?.UserAccess ?? true;
+        if(organization is null)
+        {
+            _isAdmin = true;
+        }
+    _isUserAccess = organization?.OrganizationSettings?.UserAccess ?? true;
         _isShift = organization?.OrganizationSettings?.UseShifts ?? true;
 
         _isLoaded = true;
