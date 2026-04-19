@@ -167,4 +167,5 @@ public interface ICustomerAppService : ICrudAppService<CustomerDto, Guid, PagedA
     Task<PagedResultDto<CustomerDto>> GetListAsyncNoOrganization(PagedAndSortedAndSearchResultRequestDto input);
 
     Task<CustomerDto> CheckIfCustomerAlreadyExistInOrganization(CreateUpdateCustomerDto createUpdateCustomerDto);
+    Task<CustomerDto> GetCustomerByPhoneNumberAsync(string phoneNumber);
 }

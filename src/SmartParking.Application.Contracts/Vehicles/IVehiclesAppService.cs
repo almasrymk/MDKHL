@@ -1,5 +1,6 @@
 ﻿using SmartParking.Cutomers;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -70,5 +71,7 @@ namespace SmartParking.Vehicles
         /// <returns>CustomerId</returns>
         Task<Guid?> GetCustomerRelatedToVehicle(string PlateNumber);
 
+
+        Task<List<VehicleDto>> GetVehiclesByCustomerIdAsync(Guid customerId);
     }
 }

@@ -10,6 +10,9 @@ using SmartParking.Blazor.Components.Pages.Customer.CustomerPackage;
 using SmartParking.Blazor.Components.Shared;
 using Microsoft.AspNetCore.Authorization;
 using SmartParking.Permissions.CustomerPermissions;
+using SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
+using SmartParking.Entities.CustomerUnitPackages;
+using SmartParking.CustomerUnitPackages;
 
 namespace SmartParking.Blazor.Components.Pages.Customer;
 
@@ -25,6 +28,8 @@ public partial class UpdateCustomerDialog
     public string Picture { get; set; }
     public Guid IdentityUserId { get; set; }
     public OrganizationSettingsDto OrganizationSettings { get; set; } = new OrganizationSettingsDto();
+    private CustomerUnitPackageDto customerUnitPackage { get; set; } = new CustomerUnitPackageDto();
+    private bool CustomerHasUnitPackage { get; set; } = true;
 
     /// <summary>
     /// Initializes the component.
@@ -52,6 +57,12 @@ public partial class UpdateCustomerDialog
     private async Task Fetch()
     {
         var customer = await CustomerAppService.GetAsync(Guid.Parse(customerId));
+        var package = await CustomerUnitPackageAppService.GetCustomerUnitPackageByCustomerIdAsync(Guid.Parse(customerId));
+        if (!package.IsSuccess)
+        {
+            CustomerHasUnitPackage = false;
+        }
+        customerUnitPackage = package.Value;
         IdentityUserId = customer.IdentityId;
         customerDataDto = Mapper.Map<CreateUpdateCustomerDto>(customer);
         customerDataDto.IdentificationType = customer.identificationTypes;
@@ -135,5 +146,29 @@ public partial class UpdateCustomerDialog
             ["CustomerId"] = customerId,
         };
         return await DialogService.ShowAsync<ViewCustomerPackageDialog>(L["Packages"], parameters);
+    }
+
+    /// <summary>
+    /// Displays a dialog to assign unit package to customer.
+    /// </summary>
+    private async Task<IDialogReference> AssignUnitPackage()
+    {
+        var parameters = new DialogParameters
+        {
+            ["CustomerId"] = customerId,
+        };
+        return await DialogService.ShowAsync<CustomerUnitPackageDialog>(L["Packages"], parameters);
+    }
+
+    /// <summary>
+    /// Displays a dialog to view unit vehicle package.
+    /// </summary>
+    private async Task<IDialogReference> ViewUnitVehiclePackage()
+    {
+        var parameters = new DialogParameters
+        {
+            ["CustomerId"] = customerId,
+        };
+        return await DialogService.ShowAsync<UnitVehiclePackageView>(L["UnitVehiclePackage"], parameters);
     }
 }

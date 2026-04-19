@@ -5,6 +5,7 @@ using SmartParking.Entities.Units;
 using SmartParking.Enums;
 using SmartParking.Results;
 using SmartParking.UnitPackages;
+using SmartParking.Utilities.StaticValues;
 using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
@@ -98,6 +99,62 @@ public class CustomerUnitPackageAppService :
         }
     }
 
+    public async Task<bool> MultipuleCustomerRentalValidation(Guid CustomerId, UnitPackageDto dto, string unitCode)
+    {
+        return await _repository.AnyAsync(x => x.CustomerId != CustomerId
+        && x.DectivationDate >= dto.Package.ActivationDate
+        && x.UnitCode == unitCode
+        && x.EnglishName != PackageStaticValues.EnglishName
+        && x.Status != Status.Deleted);
+    }
+
+    public async Task<bool> IfCustomerHasMultiplePackageAsync(Guid CustomerId, UnitPackageDto dto)
+    {
+        return await _repository.AnyAsync(x => x.CustomerId == CustomerId
+            && x.ActivationDate <= dto.Package.DectivationDate
+            && x.DectivationDate >= dto.Package.ActivationDate);
+    }
+    public async Task<bool> CheckRenterSlotsOverUnit(UnitPackageDto dto, string unitCode)
+    {
+
+        var unit = await _unitRepository.FirstOrDefaultAsync(x => x.Code == unitCode);
+
+        var count = await _repository.CountAsync(x => x.ActivationDate <= dto.Package.DectivationDate
+            && x.DectivationDate >= dto.Package.ActivationDate
+            && x.UnitCode == unitCode);
+
+        return count >= unit!.RenterSlots;
+    }
+
+    public async Task<bool> CheckCustomerUnitPackageVehicleLimitations(Guid CustomerId, int numberOfVehicles)
+    {
+        var customerUnitPackge = await _repository.FirstOrDefaultAsync(x => x.CustomerId == CustomerId);
+        if (customerUnitPackge == null)
+        {
+            throw new Exception("NotFound");
+
+        }
+        return customerUnitPackge!.NumberOfVehicles > numberOfVehicles;
+    }
+
+    public async Task<Result<CustomerUnitPackageDto>> GetCustomerUnitPackageByCustomerIdAsync(Guid id)
+    {
+        
+            var customerUnitPackage = await _repository.FirstOrDefaultAsync(x => x.CustomerId == id && x.Status != Status.Deleted);
+            if (customerUnitPackage == null)
+            {
+                return Result.NotFound("Customer unit package not found");
+            }
+            var customerUnitPackageDto = ObjectMapper.Map<CustomerUnitPackage, CustomerUnitPackageDto>(customerUnitPackage);
+            return Result<CustomerUnitPackageDto>.Success(customerUnitPackageDto);
+        
+    }
+    public async Task<bool> CheckPackageOverUnits(string UnitCode)
+    {
+        return await _repository.AnyAsync(x => x.UnitCode == UnitCode && x.EnglishName == "Owner Package");
+    }
+
+
     #region Private methods
 
     private async Task<UnitPackageDto> GetPackageAsync(int packageId)
@@ -121,47 +178,7 @@ public class CustomerUnitPackageAppService :
         return dto;
     }
 
-    public async Task<bool> MultipuleCustomerRentalValidation(Guid CustomerId, UnitPackageDto dto, string unitCode)
-    {
-        return await _repository.AnyAsync(x => x.CustomerId != CustomerId
-        && x.DectivationDate >= dto.Package.ActivationDate
-        && x.UnitCode == unitCode
-        && x.Status != Status.Deleted);
-    }
-
-    public async Task<bool> IfCustomerHasMultiplePackageAsync(Guid CustomerId, UnitPackageDto dto)
-    {
-        return await _repository.AnyAsync(x => x.CustomerId == CustomerId
-            && x.ActivationDate <= dto.Package.DectivationDate
-            && x.DectivationDate >= dto.Package.ActivationDate);
-    }
-    public async Task<bool> CheckRenterSlotsOverUnit(UnitPackageDto dto, string unitCode)
-    {
-
-        var unit = await _unitRepository.FirstOrDefaultAsync(x => x.Code == unitCode);
-
-        var count = await _repository.CountAsync(x => x.ActivationDate <= dto.Package.DectivationDate
-            && x.DectivationDate >= dto.Package.ActivationDate
-            && x.UnitCode == unitCode);
-
-        return count >= unit!.RenterSlots;
-    }
-
-    public async Task<bool> CheckCustomerUnitPackageVehicleLimitations(Guid CustomerId , int numberOfVehicles)
-    {
-      var customerUnitPackge = await _repository.FirstOrDefaultAsync(x=>x.CustomerId == CustomerId);
-        if (customerUnitPackge == null) {
-            throw new Exception("NotFound");
-            
-        }
-        return customerUnitPackge!.NumberOfVehicles > numberOfVehicles;
-    }
-
-    public async Task<bool> CheckPackageOverUnits(string UnitCode)
-    {
-        return await _repository.AnyAsync(x => x.UnitCode == UnitCode && x.EnglishName == "Owner Package");
-    }
-
+    
 
     #endregion
 

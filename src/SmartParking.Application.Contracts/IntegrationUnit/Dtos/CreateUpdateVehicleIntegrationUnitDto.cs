@@ -9,20 +9,7 @@ public class CreateUpdateVehicleIntegrationUnitDto
 {
     public string PlateNumber { get; set; }
     public string licenseType { get; set; }
-    //public string ArPlateLetters { get; set; } = "";
-    //public string EnPlateLetters { get; set; } = "";
-    //public string ArPlateNumber { get; set; } = "";
-    //public string EnPlateNumber { get; set; } = "";
-    //public string ModelYear { get; set; }
-    //public string ModelName { get; set; }
-    //public string BrandName { get; set; }
-    //public string PlateColorName { get; set; }
-    //public string LicenceTypeName { get; set; }
-    //public Guid CustomerId { get; private set; }
-    //public void SetCustomerId(Guid customerId)
-    //{
-    //    CustomerId = customerId;
-    //}
+    
 
     public VehiclePlateDto SeparateAndTranslatePlateNumbers()
     {

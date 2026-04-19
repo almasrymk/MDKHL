@@ -532,6 +532,16 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             return count;
         }
     }
+    
+    public async Task<CustomerDto> GetCustomerByPhoneNumberAsync(string phoneNumber)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var entity = await _repository.FirstOrDefaultAsync(c => c.IdentityUser.PhoneNumber == phoneNumber);
+            return ObjectMapper.Map<Customer, CustomerDto>(entity);
+        }
+    }
+
     #endregion
 
     #region private methods 
