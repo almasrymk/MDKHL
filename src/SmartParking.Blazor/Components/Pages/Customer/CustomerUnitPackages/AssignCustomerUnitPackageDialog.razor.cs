@@ -206,7 +206,7 @@ public partial class AssignCustomerUnitPackageDialog
             Snackbar.Add(@L["MultipleRentalError"], Severity.Error);
             return true;
         }
-        var result1 = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(Customer.Id, CustomerPackage);
+        var result1 = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(unitCode, CustomerPackage);
         if (result1)
         {
             SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"], Severity.Error);
