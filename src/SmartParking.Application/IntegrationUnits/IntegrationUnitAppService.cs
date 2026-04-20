@@ -8,6 +8,7 @@ using SmartParking.CustomerPackages.Inputs;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Cameras.Watchers;
+using SmartParking.Entities.Customers;
 using SmartParking.Entities.CustomerUnitPackages;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Vehicles;
@@ -20,6 +21,7 @@ using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.Results;
 using SmartParking.UnitPackages;
+using SmartParking.Units;
 using SmartParking.UnitVehiclePackages;
 using SmartParking.Vehicles;
 using System;
@@ -38,6 +40,7 @@ namespace SmartParking.IIntegrationUnit;
 public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitAppService
 {
     private readonly ICustomerAppService _customerAppService;
+    private readonly IUnitAppService _unitAppService;
     private readonly IVehiclesAppService _vehicleAppService;
     private readonly IOrganizationsAppService _organizationsAppService;
     private readonly ICustomerUnitPackageAppService _customerUnitPackageAppService;
@@ -59,7 +62,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         IUnitOfWorkManager unitOfWorkManager,
         IOptions<MyIntegrationOptions> options,
         ICustomerPackagesAppService customerPackagesAppService,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IUnitAppService unitAppService)
     {
         _customerAppService = customerAppService;
         _vehicleAppService = vehicleAppService;
@@ -72,23 +76,32 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         _options = options.Value;
         _customerPackagesAppService = customerPackagesAppService;
         _configuration = configuration;
-       
+        _unitAppService = unitAppService;
     }
     [RemoteService(false)]
     public async Task<Result<BookingDto>> CreateBookingAsync(CreateUpdateBookingDto dto)
     {
         try
         {
-
+            var unit = await _unitAppService.GetActiveUnitByCodeAsync(dto.UnitId);
+            if (!unit.IsSuccess)
+            {
+                return Result.Error(@L["UnitNotFound"]);
+            }
             var customer = await CreateCustomer(dto.Customer);
             var vehicles = await CreateVehicle(dto.Customer.Cars, customer.Id);
+            var resultValidate = await ValidateCustomerUnitPackage(customer.Id, dto, false);
+            if (!resultValidate.IsSuccess)
+            {
+                throw new Exception(resultValidate.Errors.FirstOrDefault()!);
+            }
             var customerUnitPackage = await CreateCustomerUnitPackage(customer,dto, customer.Id);
             var customerPackages = await CreateCustomerPackage(customerUnitPackage, vehicles, customer.MobileNumber);
             var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage);
             BookingDto result = new BookingDto
             {
                 Status = Status.Active,
-                CustomerId = customer.Id,
+                PhoneNumber = customer.MobileNumber,
                 PackageId = customerPackages.PackageCode.ToString(),
                 PackageNumber = customerPackages.PackageCode.ToString(),
                 Validity = new ValidityDto
@@ -142,109 +155,72 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     {
         try
         {
-            var customerDto = await _customerAppService.GetCustomerByPhoneNumberAsync(dto.CustomerId);
+            var customerDto = await _customerAppService.GetCustomerByPhoneNumberAsync(dto.phoneNumber);
             var customer = await UpdateCustomer(customerDto.Id, dto.Customer.MapToCustomerDto(dto.Customer));
+
+            
+
             var searchCustomerPackageDto = new SearchByPlateAndCustomerIdDto
             {
                 CustomerId = customer.Id
             };
 
-            var Cars = await _vehicleAppService.GetVehiclesByCustomerIdAsync(customer.Id);
 
-            
+
+
 
             CustomerPackageDto customerPackages = new CustomerPackageDto();
             UnitVehiclePackageDto unitVehiclePackage = new UnitVehiclePackageDto();
             CustomerUnitPackageDto customerUnitPackage = new CustomerUnitPackageDto();
-            
+
+            var Cars = await _vehicleAppService.GetVehiclesByCustomerIdAsync(customer.Id);
+
+
             for (int i = 0; i < Cars.Count(); i++)
             {
-                
+
                 searchCustomerPackageDto.EnPlateNumber = Cars[i].EnPlateNumber;
                 customerPackages = await _customerPackagesAppService.GetLatestByCustomerIdAndEnPlateNumber(searchCustomerPackageDto);
                 unitVehiclePackage = await _unitVehiclePackageAppService.GetByCustmoerIdAndPlateNumber(searchCustomerPackageDto);
                 customerUnitPackage = await _customerUnitPackageAppService.GetAsync(unitVehiclePackage.CustomerUnitPackageId);
 
-                var updateCustomerPackage = ObjectMapper.Map<CustomerPackageDto, CreateUpdateCustomerPackageDto>(customerPackages);
-                updateCustomerPackage.ActivationDate = DateOnly.FromDateTime(dto.Booking.StartDate);
-                updateCustomerPackage.ActivationDateOfPackage = dto.Booking.StartDate;
-                updateCustomerPackage.ExpiryDateOfPackage = DateOnly.FromDateTime(dto.Booking.EndDate);
-                updateCustomerPackage.ExpiryDate = dto.Booking.EndDate;
-                updateCustomerPackage.DectivationDateOfPackage = dto.Booking.EndDate;
-                updateCustomerPackage.DurationOfPackage = dto.Booking.NoOfDays;
+                await _unitVehiclePackageAppService.DeleteByCustomerUnitPackage(customerUnitPackage.Id);
+                await _customerUnitPackageAppService.DeleteAsync(customerUnitPackage.Id);
+                await _customerPackagesAppService.DeleteAsync(customerPackages.Id);
+                await _vehicleAppService.DeleteAsync(Cars[i].Id);
 
-                await _customerPackageAppService.UpdateCustomerPackage(customerPackages.Id, updateCustomerPackage);
-
-                var updateCustomerUnitPackage = ObjectMapper.Map<CustomerUnitPackageDto, CreateUpdateCustomerUnitPackageDto>(customerUnitPackage);
-                updateCustomerUnitPackage.ActivationDate = dto.Booking.StartDate;
-                updateCustomerUnitPackage.DectivationDate = dto.Booking.EndDate;
-                updateCustomerUnitPackage.DurationOfPackage = dto.Booking.NoOfDays;
-                await _customerUnitPackageAppService.UpdateAsync(customerUnitPackage.Id, updateCustomerUnitPackage);
-
-                var updateUnitVehiclePackage = ObjectMapper.Map<UnitVehiclePackageDto, CreateUpdateUnitVehiclePackageDto>(unitVehiclePackage);
-                updateUnitVehiclePackage.ActivationDate = dto.Booking.StartDate;
-                updateUnitVehiclePackage.DectivationDate = dto.Booking.EndDate;
-                await _unitVehiclePackageAppService.UpdateAsync(unitVehiclePackage.Id, updateUnitVehiclePackage);
             }
 
-            // 1. Cars that are in the Database (Cars) but NOT in the incoming DTO
-            // Logic: "Where NO car in the DTO matches this database car's plate"
-            var oldCars = Cars
-                .Where(car => !dto.Customer.Cars.Any(c => c.PlateNumber == car.EnPlateNumber))
-                .ToList();
+            await _unitOfWorkManager.Current!.SaveChangesAsync();
 
-            // 2. Cars that are in the DTO but NOT in the Database (Cars)
-            // Logic: "Where NO car in the Database matches this DTO car's plate"
-            var newCars = dto.Customer.Cars
-                .Where(c => !Cars.Any(car => car.EnPlateNumber == c.PlateNumber))
-                .ToList();
-            int counter = 0;
-            foreach (var car in oldCars)
+            var vehicles = await CreateVehicle(dto.Customer.Cars, customer.Id);
+            var resultValidate = await ValidateCustomerUnitPackage(customer.Id, dto, false);
+            if (!resultValidate.IsSuccess)
             {
-                CreateUpdateVehicleIntegrationUnitDto createUpdateVehicleIntegrationUnitDto = new CreateUpdateVehicleIntegrationUnitDto
-                {
-                    PlateNumber = newCars[counter].PlateNumber,
-                };
-                var vehiclePlateDto = createUpdateVehicleIntegrationUnitDto.SeparateAndTranslatePlateNumbers();
-                CreateUpdateVehicleDto CreateUpdateVehicleDto = ObjectMapper.Map<VehicleDto, CreateUpdateVehicleDto>(car);
-                CreateUpdateVehicleDto.ArPlateNumber = vehiclePlateDto.ArPlateNumber;
-                CreateUpdateVehicleDto.EnPlateNumber = vehiclePlateDto.EnPlateNumber;
-                CreateUpdateVehicleDto.ArPlateLetters = vehiclePlateDto.ArPlateLetters;
-                CreateUpdateVehicleDto.EnPlateLetters = vehiclePlateDto.EnPlateLetters;
-                var updatedVehicleDto = await _vehicleAppService.UpdateAsync(car.Id, CreateUpdateVehicleDto);
-                searchCustomerPackageDto.EnPlateNumber = car.EnPlateNumber;
-                customerPackages = await _customerPackagesAppService.GetLatestByCustomerIdAndEnPlateNumber(searchCustomerPackageDto);
-                var createUpdateCustomerPackageDto = ObjectMapper.Map<CustomerPackageDto, CreateUpdateCustomerPackageDto>(customerPackages);
-                createUpdateCustomerPackageDto.PackageId = null;
-                await _customerPackagesAppService.UpdateAsync(customerPackages.Id, createUpdateCustomerPackageDto);
-                unitVehiclePackage = await _unitVehiclePackageAppService.GetByCustmoerIdAndPlateNumber(searchCustomerPackageDto);
-                var createUpdateUnitVehiclePackageDto = ObjectMapper.Map<UnitVehiclePackageDto, CreateUpdateUnitVehiclePackageDto>(unitVehiclePackage);
-                createUpdateUnitVehiclePackageDto.EnPlateNumber = dto.Customer.Cars[counter].PlateNumber;
-                await _unitVehiclePackageAppService.UpdateAsync(unitVehiclePackage.Id, createUpdateUnitVehiclePackageDto);
-                customerUnitPackage = await _customerUnitPackageAppService.GetAsync(unitVehiclePackage.CustomerUnitPackageId);
-                var createUpdateCustomerUnitPackageDto = ObjectMapper.Map<CustomerUnitPackageDto, CreateUpdateCustomerUnitPackageDto>(customerUnitPackage);
-                await _customerUnitPackageAppService.UpdateAsync(customerUnitPackage.Id, createUpdateCustomerUnitPackageDto);
-                counter++;
+                throw new Exception(resultValidate.Errors.FirstOrDefault()!);
             }
+            var createdcustomerUnitPackage = await CreateCustomerUnitPackage(customer, dto, customer.Id);
+            var createdcustomerPackages = await CreateCustomerPackage(customerUnitPackage, vehicles, customer.MobileNumber);
+            var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage);
 
 
             BookingDto result = new BookingDto
             {
                 Status = Status.Active,
-                CustomerId = customer.Id,
-                PackageId = customerPackages.PackageCode.ToString(),
-                PackageNumber = customerPackages.PackageCode.ToString(),
+                PhoneNumber = customer.MobileNumber,
+                PackageId = createdcustomerPackages.PackageCode.ToString(),
+                PackageNumber = createdcustomerPackages.PackageCode.ToString(),
                 Validity = new ValidityDto
                 {
-                    StartDate = dto.Booking.StartDate,
-                    EndDate = dto.Booking.EndDate
+                    StartDate = createdcustomerUnitPackage.ActivationDate,
+                    EndDate = createdcustomerUnitPackage.DectivationDate
                 },
                 Qr = new QrDto
                 {
                     Required = true,
                     QrCodePayload = String.Empty,
-                    QrCodeUrl = $"/{customerPackages.QRCodePath?.TrimStart('/')}",
-                    ExpiresAt = (DateTime)customerPackages.DectivationDateOfPackage!
+                    QrCodeUrl = $"/{createdcustomerPackages.QrCodePath?.TrimStart('/')}",
+                    ExpiresAt = createdcustomerUnitPackage.DectivationDate
                 },
                 Links = new LinksDto
                 {
@@ -432,5 +408,38 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         }
         
         return unitVehiclePackages;
+    }
+
+    private async Task<Result<bool>> ValidateCustomerUnitPackage(Guid customerId, CreateUpdateBookingDto dto, bool isUpdate) 
+    {
+        UnitPackageDto CustomerPackage = new UnitPackageDto
+        {
+            Package = new PackageDto
+            {
+                ActivationDate = dto.Booking.StartDate,
+                DectivationDate = dto.Booking.EndDate,
+            }
+        };
+
+
+        var result = await _customerUnitPackageAppService.MultipuleCustomerRentalValidation(customerId, CustomerPackage, dto.UnitId);
+        if (result)
+        {
+            return Result<bool>.Error(@L["MultipleRentalError"]);
+        }
+        if (!isUpdate)
+        {
+            var result1 = await _customerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(dto.UnitId, CustomerPackage);
+            if (result1)
+            {
+                return Result<bool>.Error(@L["CustomerHasActivePackage"]);
+            }
+        }
+        var result2 = await _customerUnitPackageAppService.CheckRenterSlotsOverUnit(CustomerPackage, dto.UnitId);
+        if (result2)
+        {
+            return Result<bool>.Error(@L["RenterSlotsOverUnitValidation"]);
+        }
+        return Result<bool>.Success(true);
     }
 }

@@ -30,7 +30,7 @@ public class IntegrationController : ControllerBase
          {
              WriteIndented = true
          }));
-        if (input.CustomerId is not null) 
+        if (input.phoneNumber is not null) 
         { 
             var updateResult = await _integrationUnitAppService.UpdateBookingAsync(input);
             if (!updateResult.IsSuccess)
