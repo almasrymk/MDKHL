@@ -34,6 +34,7 @@ public partial class AssignCustomerUnitPackageDialog
     private MudForm form;
     public List<UnitPackageDto> selectedPackageDto { get; set; } = new List<UnitPackageDto>();
     private bool IsCustom { get; set; } = false;
+    private bool IsCustomRenter { get; set; } = false;
     private IReadOnlyList<UnitDto> Units { get; set; } = new List<UnitDto>();
     private string unitCode;
     private UnitDto selectedUnit { get; set; } = new();

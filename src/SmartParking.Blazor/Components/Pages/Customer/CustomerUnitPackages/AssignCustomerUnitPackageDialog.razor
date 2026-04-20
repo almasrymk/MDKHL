@@ -68,7 +68,7 @@
                     }
                     @if (organizationId != 0 || CurrentTenant.Id is not null)
                     {
-                        <MudItem sm="12">
+                        <MudItem sm="8">
                              <MudRadioGroup T="CustomerUnitPackageType?" 
                                            Value="SelectedPackageType" 
                                            ValueChanged="OnPackageTypeChanged">
@@ -79,6 +79,9 @@
                                     </MudRadio>
                                 }
                             </MudRadioGroup>
+                        </MudItem>
+                        <MudItem sm="4">
+                             <MudCheckBox @bind-Value="IsCustom"  Label=@L["Custom"]></MudCheckBox>
                         </MudItem>
 
                         @if(SelectedPackageType == CustomerUnitPackageType.Renter)
