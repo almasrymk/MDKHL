@@ -4,6 +4,7 @@ using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.UnitVehiclePackges;
+using SmartParking.Enums;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
@@ -113,7 +114,7 @@ public class UnitVehiclePackageAppService : CrudAppService<
 
     public async Task<UnitVehiclePackageDto> GetByCustmoerIdAndPlateNumber(SearchByPlateAndCustomerIdDto input)
     {
-        var result = await _repository.FirstOrDefaultAsync(x => x.CustomerId == input.CustomerId && x.EnPlateNumber == input.EnPlateNumber);
+        var result = await _repository.FirstOrDefaultAsync(x => x.CustomerId == input.CustomerId && x.EnPlateNumber == input.EnPlateNumber && x.IsDeleted == false);
         return ObjectMapper.Map<UnitVehiclePackge, UnitVehiclePackageDto>(result!);
     }
 
