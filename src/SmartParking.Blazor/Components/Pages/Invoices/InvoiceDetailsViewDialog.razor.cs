@@ -3,6 +3,7 @@ using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Entities.Discounts;
 using SmartParking.Invoices;
 using SmartParking.Packages;
+using SmartParking.Payments.PaymentRelations;
 
 namespace SmartParking.Blazor.Components.Pages.Invoices;
 
@@ -10,6 +11,7 @@ public partial class InvoiceDetailsViewDialog
 {
     [Parameter] public InvoiceDto? Invoice { get; set; }
     [Parameter] public CustomerPackageDto? Package { get; set; }
+    [Parameter] public PaymentDetailsDto? PaymentDetails { get; set; }
     [Parameter] public string CommercialRegisteration { get; set; }
     [Parameter] public Guid PaymentId { get; set; }
     [Parameter] public string OrganizationAddress { get; set; }
@@ -46,10 +48,12 @@ public partial class InvoiceDetailsViewDialog
         else
         {
 
-            price = Package.PriceOfPackage.Value;
+            price = Package.PriceOfPackage ?? PaymentDetails.Price;
             title = "Package";
             description = Code;
-            HasDiscount = Package.Discount != default;
+            if (Package.PriceOfPackage != null)
+                HasDiscount = Package.Discount != default;
+            HasDiscount = PaymentDetails.Discount != default;
         }
         imagepath = await QRCodeAppService.CreateQRCOdeImageAsync(QRCode);
         StateHasChanged();
