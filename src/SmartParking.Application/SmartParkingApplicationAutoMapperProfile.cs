@@ -114,6 +114,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForPath(dest => dest.OrganizationSettings.VehcileAccess, opt => opt.MapFrom(src => src.Settings.VehcilePackage))
             .ForPath(dest => dest.OrganizationSettings.UserAccess, opt => opt.MapFrom(src => src.Settings.CustomerPackage))
             .ForPath(dest => dest.OrganizationSettings.UseShifts, opt => opt.MapFrom(src => src.Settings.UseShifts))
+            .ForPath(dest => dest.OrganizationSettings.OwnerSlots, opt => opt.MapFrom(src => src.Settings.OwnerSlots))
+            .ForPath(dest => dest.OrganizationSettings.RentalSlots, opt => opt.MapFrom(src => src.Settings.RentalSlots))
+            .ForPath(dest => dest.OrganizationSettings.IsSlotsEditable, opt => opt.MapFrom(src => src.Settings.IsSlotsEditable))
             .ReverseMap();
 
 
@@ -130,6 +133,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForPath(dest => dest.Settings.VehcilePackage, opt => opt.MapFrom(src => src.OrganizationSettingsDto.VehcileAccess))
             .ForPath(dest => dest.Settings.CustomerPackage, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UserAccess))
             .ForPath(dest => dest.Settings.UseShifts, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UseShifts))
+            .ForPath(dest => dest.Settings.OwnerSlots, opt => opt.MapFrom(src => src.OrganizationSettingsDto.OwnerSlots))
+            .ForPath(dest => dest.Settings.RentalSlots, opt => opt.MapFrom(src => src.OrganizationSettingsDto.RentalSlots))
+            .ForPath(dest => dest.Settings.IsSlotsEditable, opt => opt.MapFrom(src => src.OrganizationSettingsDto.IsSlotsEditable))
             .ReverseMap();
 
         CreateMap<OrganizationSettingsDto, OrganizationSettings>()
