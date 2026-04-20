@@ -48,6 +48,7 @@ public abstract class CustomerPackageTransactionBaseAppService : SmartParkingApp
 
             var query = await Repository.GetQueryableAsync();
             query = ApplyActivePackageFilters(query, garageTransactionDto);
+            query = query.Where(x => x.ActivationDateOfPackage <= garageTransactionDto.AccurateTime && x.DectivationDateOfPackage >= garageTransactionDto.AccurateTime);
 
             var customerPackage = await query.FirstOrDefaultAsync();
             return ObjectMapper.Map<CustomerPackage, CustomerPackageTransactionDto>(customerPackage);
