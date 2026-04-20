@@ -39,6 +39,9 @@ public partial class OrganizationView
         organizationSettings.VehcileAccess = organization.OrganizationSettings.VehcileAccess;
         organizationSettings.UserAccess = organization.OrganizationSettings.UserAccess;
         organizationSettings.UseShifts = organization.OrganizationSettings.UseShifts;
+        organizationSettings.OwnerSlots = organization.OrganizationSettings.OwnerSlots;
+        organizationSettings.RentalSlots = organization.OrganizationSettings.RentalSlots;
+        organizationSettings.IsSlotsEditable = organization.OrganizationSettings.IsSlotsEditable;
         ClosingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
         ClosingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
        CRExpiryDate =   organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));
