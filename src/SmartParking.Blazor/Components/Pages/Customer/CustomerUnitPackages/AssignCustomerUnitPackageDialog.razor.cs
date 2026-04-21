@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using AutoMapper.Internal.Mappers;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.CustomerUnitPackages;
@@ -147,7 +148,43 @@ public partial class AssignCustomerUnitPackageDialog
 
         }
 
-        preAssignState.UnitPackage = CustomerPackage;
+        if (IsCustom)
+        {
+            _createUpdateUnitPackageDto.Package.EnglishName = "Custom Package";
+            _createUpdateUnitPackageDto.Package.ArabicName = "باقه خاصه";
+            _createUpdateUnitPackageDto.Package.Description = "Description";
+            _createUpdateUnitPackageDto.Package.TenantId = CurrentTenant.Id;
+            var pkg = new UnitPackageDto
+            {
+                NumberOfSlots = _createUpdateUnitPackageDto.NumberOfSlots,
+                NumberOfVehicles = _createUpdateUnitPackageDto.NumberOfVehicles,
+                Package = new PackageDto
+                {
+                    TenantId = _createUpdateUnitPackageDto.Package.TenantId,
+                    DurationOfPackage = _createUpdateUnitPackageDto.Package.DurationOfPackage,
+                    EnglishName = _createUpdateUnitPackageDto.Package.EnglishName,
+                    ActivationDate = _createUpdateUnitPackageDto.Package.ActivationDate,
+                    ArabicName = _createUpdateUnitPackageDto.Package.ArabicName,
+                    DectivationDate = _createUpdateUnitPackageDto.Package.DeactivationDate,
+                    Description = _createUpdateUnitPackageDto.Package.Description,
+                    CustomerCategory = _createUpdateUnitPackageDto.Package.CustomerCategory.ToString(),
+                    OrganizationArabicName = OrganizationDto.ArabicName,
+                    OrganizationEnglishName = OrganizationDto.EnglishName,
+                    OrganizationId = OrganizationDto.Id,
+                    PackageCategoryType = _createUpdateUnitPackageDto.Package.PackageCategoryType,
+                    PackageStatus = _createUpdateUnitPackageDto.Package.PackageStatus,
+                    Price = _createUpdateUnitPackageDto.Package.Price,
+
+                }
+            };
+            preAssignState.UnitPackage = pkg;
+        }
+        else
+        {
+            preAssignState.UnitPackage = CustomerPackage;
+
+        }
+
         preAssignState.Customer = Customer;
         preAssignState.UnitCode = unitCode;
         preAssignState.CustomerUnitPackageType = SelectedPackageType.Value;

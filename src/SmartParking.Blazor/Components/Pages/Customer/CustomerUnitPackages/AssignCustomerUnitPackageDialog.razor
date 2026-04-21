@@ -11,6 +11,7 @@
 @using SmartParking.UnitPackages
 @using SmartParking.Units
 @using Volo.Abp.MultiTenancy
+@using Volo.Abp.ObjectMapping
 @inject ICurrentTenant CurrentTenant
 @inject IUnitPackageAppService PackageAppService
 @inject IOrganizationsAppService OrganizationAppService
@@ -20,6 +21,7 @@
 @inject ISnackbar Snackbar
 @inject ICustomerUnitPackageAppService CustomerUnitPackageAppService
 @inject IUnitAppService UnitAppService 
+@inject IObjectMapper ObjectMapper
 
 
 
@@ -80,9 +82,13 @@
                                 }
                             </MudRadioGroup>
                         </MudItem>
-                        <MudItem sm="4">
-                             <MudCheckBox @bind-Value="IsCustom"  Label=@L["Custom"]></MudCheckBox>
-                        </MudItem>
+                        if (SelectedPackageType.Value == CustomerUnitPackageType.Renter)
+                        {
+                            <MudItem sm="4">
+                                <MudCheckBox @bind-Value="IsCustom" Label=@L["Custom"]></MudCheckBox>
+                            </MudItem>
+                        }
+                        
 
                         @if(SelectedPackageType == CustomerUnitPackageType.Renter)
                         {
