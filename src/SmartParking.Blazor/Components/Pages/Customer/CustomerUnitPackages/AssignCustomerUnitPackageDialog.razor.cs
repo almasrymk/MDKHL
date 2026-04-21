@@ -98,8 +98,10 @@ public partial class AssignCustomerUnitPackageDialog
         selectedUnit = Units.Where(x => x.Code == unitCode).FirstOrDefault();
         if (SelectedPackageType == CustomerUnitPackageType.Owner)
         {
+            IsCustom = false;
             ShowOwnerPackageInTable();
         }
+        StateHasChanged();
     }
     
 
@@ -123,7 +125,7 @@ public partial class AssignCustomerUnitPackageDialog
     private async Task SubmitEdit()
     {
 
-        if (unitCode is null)
+        if (unitCode is null && SelectedPackageType.Value != CustomerUnitPackageType.Other)
         {
             Snackbar.Add(@L["CodeSelectValidation"], Severity.Error);
             return;
@@ -215,14 +217,15 @@ public partial class AssignCustomerUnitPackageDialog
     private void OnPackageTypeChanged(CustomerUnitPackageType? value)
     {
         SelectedPackageType = value;
-        if(SelectedPackageType == CustomerUnitPackageType.Owner)
+
+        if (SelectedPackageType == CustomerUnitPackageType.Owner)
         {
+            IsCustom = false; // 🔴 أهم سطر
             ShowOwnerPackageInTable();
         }
-        
-        StateHasChanged(); // This manually pushes the update to the UI
-    }
 
+        StateHasChanged();
+    }
     private void ShowOwnerPackageInTable()
     {
         ownerPackage.NumberOfSlots = selectedUnit.OwnerSlots;

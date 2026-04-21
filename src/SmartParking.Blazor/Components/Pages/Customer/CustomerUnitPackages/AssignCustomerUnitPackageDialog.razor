@@ -28,11 +28,13 @@
 <PageTitle>@L["Assign Package"]</PageTitle>
 
 <div class="modal-wrapper w-100">
-    <MudDialog class="d-flex mud-modal w-100">
+    <MudDialog Class="mud-modal">
         <TitleContent>
             <MudText Typo="Typo.h6">@L["Assign Package"] </MudText>
         </TitleContent>
         <DialogContent>
+                <div style="max-height: 70vh; overflow-y: auto; overflow-x: hidden;">
+
             <MudForm Class="flex-grow-0 mt-4 h-100 w- p-3 d-flex flex-column w-100 h-100 main-layout-paper" @ref="form">
                 <MudGrid>
                     @if (CurrentTenant.Id is null)
@@ -82,15 +84,16 @@
                                 }
                             </MudRadioGroup>
                         </MudItem>
-                        if (SelectedPackageType.Value == CustomerUnitPackageType.Renter)
+                        if (SelectedPackageType.Value == CustomerUnitPackageType.Renter || SelectedPackageType.Value == CustomerUnitPackageType.Other)
                         {
                             <MudItem sm="4">
-                                <MudCheckBox @bind-Value="IsCustom" Label=@L["Custom"]></MudCheckBox>
-                            </MudItem>
+                                    <MudCheckBox @bind-Value="IsCustom"
+                                                 Disabled="@(SelectedPackageType == CustomerUnitPackageType.Owner)"
+                                                 Label=@L["Custom"] />
+                                </MudItem>
                         }
                         
-
-                        @if(SelectedPackageType == CustomerUnitPackageType.Renter)
+                        @if (SelectedPackageType == CustomerUnitPackageType.Renter || SelectedPackageType == CustomerUnitPackageType.Other)
                         {
                              <MudItem sm="12" md="6">
                             <MudSelect T="string"
@@ -114,23 +117,26 @@
                         </MudItem>  
                         }
 
-                       
+                        if (SelectedPackageType.Value != CustomerUnitPackageType.Other)
+                        {
+                            <MudItem sm="12" md="6">
+                                <MudSelect T="string"
+                                           Label="@L["UnitCode"]"
+                                           HelperText=@L["Helper Text"]
+                                           Required="true"
+                                           RequiredError="@L["CodeSelectValidation"]"
+                                           ValueChanged="UnitCodeChange">
+                                    @foreach (var unit in Units)
+                                    {
+                                        <MudSelectItem Value="unit.Code">
+                                            @unit.Code
+                                        </MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                        }
 
-                        <MudItem sm = "12" md="6">
-                            <MudSelect T="string"
-                                Label="@L["UnitCode"]"
-                                HelperText=@L["Helper Text"]
-                                Required="true"
-                                RequiredError="@L["CodeSelectValidation"]"
-                                ValueChanged="UnitCodeChange">
-                                @foreach(var unit in Units)
-                                {
-                                    <MudSelectItem Value="unit.Code">
-                                        @unit.Code
-                                    </MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudItem>
+                        
 
                         
 
@@ -167,7 +173,7 @@
 
                
                     }
-                    else if (IsCustom)
+                        else if (IsCustom && SelectedPackageType.Value != CustomerUnitPackageType.Owner)
                     {
                         <MudItem sm="10">
                             @if (CultureInfo.CurrentCulture.Name == "en")
@@ -180,18 +186,18 @@
                                 <MudTextField T="string" Label="@L["CustomPackage"]" Placeholder="@L["CustomPackage"]" ReadOnly @bind-Value="_customerPackageDto.EnglishName"> @L["CustomPackage"] </MudTextField>
                             }
                         </MudItem>
-                        <MudItem sm="12">
-                            <CustomUnitPackage UnitPackageDto="_createUpdateUnitPackageDto">
 
-                            </CustomUnitPackage>
-                        </MudItem>
+                            <MudItem sm="12" md="12">
+                                <CustomUnitPackage UnitPackageDto="_createUpdateUnitPackageDto" />
+                            </MudItem>
+
 
                     }
 
                 </MudGrid>
 
 
-                @if (!IsCustom)
+                    @if (!IsCustom)
                 {
                     <MudTable T="UnitPackageDto" Items="selectedPackageDto" Style="width:100%">
                         <HeaderContent>
@@ -229,7 +235,9 @@
                 }
 
             </MudForm>
+            </div>
         </DialogContent>
+        
         <DialogActions>
             <DialogActionComponent ButtonOneColor="MudBlazor.Color.Dark"
                                    ButtonTwoColor="MudBlazor.Color.Primary"
@@ -250,5 +258,7 @@
 <style>
     .mud-modal {
         border-radius: 0 20px 0 20px;
+        max-width: 900px;
+        margin: auto;
     }
 </style>

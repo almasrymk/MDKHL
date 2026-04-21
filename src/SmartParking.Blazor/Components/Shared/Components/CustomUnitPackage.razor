@@ -5,8 +5,8 @@
 @using SmartParking.Enums
 @inject IStringLocalizer<SmartParkingResource> L
 
-<MudGrid>
-    <MudItem sm="6">
+<MudGrid Spacing="2">
+    <MudItem xs="12" md="6">
         <MudDatePicker Label="@L["StartDate"]"
                        DateChanged="OnActivationDateChanged"
                        PickerVariant="PickerVariant.Dialog"
@@ -16,7 +16,7 @@
                        MinDate="new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)"
                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
     </MudItem>
-    <MudItem sm="6">
+    <MudItem xs="12" md="6">
         <MudDatePicker Label="@L["EndDate"]"
                        DateChanged="OnDeactivationDateChanged"
                        PickerVariant="PickerVariant.Dialog"
@@ -30,8 +30,8 @@
     </MudItem>
 </MudGrid>
 
-<MudGrid>
-    <MudItem sm="6">
+<MudGrid Spacing="2">
+    <MudItem xs="12" md="6">
         <MudTimePicker Label="@L["PublishFrom"]"
                        PickerVariant="PickerVariant.Dialog"
                        Time="_publishFrom"
@@ -39,7 +39,7 @@
                        Required="true"
                        RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
     </MudItem>
-    <MudItem sm="6">
+    <MudItem xs="12" md="6">
         <MudTimePicker Label="@L["PublishTo"]"
                        PickerVariant="PickerVariant.Dialog"
                        Time="_publishTo"
@@ -51,15 +51,15 @@
     </MudItem>
 </MudGrid>
 
-<MudGrid>
-    <MudItem sm="6">
+<MudGrid Spacing="2">
+    <MudItem xs="12" md="6">
         <MudNumericField T="decimal" @bind-Value="UnitPackageDto.Package.Price"
                          HideSpinButtons Min="0"
                          Label="@L["Price"]"
                          Required="true"
                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
     </MudItem>
-    <MudItem sm="6">
+    <MudItem xs="12" md="6">
         <MudNumericField T="int" @bind-Value="UnitPackageDto.Package.DurationOfPackage"
                          HideSpinButtons Min="0"
                          Label="@L["DurationOfPackage"]"
@@ -69,15 +69,15 @@
     </MudItem>
 </MudGrid>
 
-<MudGrid>
-    <MudItem sm="6">
+<MudGrid Spacing="2">
+    <MudItem xs="12" md="6">
         <MudNumericField T="int" @bind-Value="UnitPackageDto.NumberOfVehicles"
                          HideSpinButtons Min="0"
                          Label="@L["NumberOfVehicles"]"
                          Required="true"
                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
     </MudItem>
-    <MudItem sm="6">
+    <MudItem xs="12" md="6">
         <MudNumericField T="int" @bind-Value="UnitPackageDto.NumberOfSlots"
                          HideSpinButtons Min="0"
                          Label="@L["NumberOfSlots"]"
