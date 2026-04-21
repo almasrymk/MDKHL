@@ -3,5 +3,6 @@
 public enum CustomerUnitPackageType
 {
     Owner,
-    Renter
+    Renter,
+    Other
 }
