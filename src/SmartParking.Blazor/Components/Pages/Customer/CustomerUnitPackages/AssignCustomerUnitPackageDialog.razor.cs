@@ -133,6 +133,13 @@ public partial class AssignCustomerUnitPackageDialog
 
         if (SelectedPackageType == CustomerUnitPackageType.Renter)
         {
+            var package = Packages.FirstOrDefault();
+            
+            CustomerPackage.NumberOfSlots = package.NumberOfSlots;
+            CustomerPackage.NumberOfVehicles = package.NumberOfVehicles;
+            CustomerPackage.Package = package.Package;
+            
+            CustomerPackage.Package.TenantId = CurrentTenant.Id;
             var result = await HandleRenterPackage(CustomerPackage, unitCode);
             if (result)
                 return;
@@ -179,6 +186,7 @@ public partial class AssignCustomerUnitPackageDialog
 
                 }
             };
+            
             preAssignState.UnitPackage = pkg;
         }
         else
@@ -220,7 +228,7 @@ public partial class AssignCustomerUnitPackageDialog
 
         if (SelectedPackageType == CustomerUnitPackageType.Owner)
         {
-            IsCustom = false; // 🔴 أهم سطر
+            IsCustom = false;
             ShowOwnerPackageInTable();
         }
 
