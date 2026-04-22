@@ -4,6 +4,7 @@ using SmartParking.UnitPackages;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
 namespace SmartParking.CustomerUnitPackages;
@@ -21,6 +22,13 @@ public interface ICustomerUnitPackageAppService :
     /// The task result contains a <see cref="Result{T}"/> with a list of <see cref="CustomerPackageDto"/> assigned to the customer.
     /// </returns>
     Task<Result<List<CustomerUnitPackageDto>>> GetListOfUnitPackageByCustomer(Guid customerId, int organizationId);
+    /// <summary>
+    /// Get all customer unit packages by customer id
+    /// </summary>
+    /// <param name="customerId"></param>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    Task<PagedResultDto<CustomerUnitPackageDto>> GetAllByCustomerId(Guid customerId, PagedAndSortedResultRequestDto input);
 
 
 
