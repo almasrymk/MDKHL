@@ -153,7 +153,7 @@ public class CustomerUnitPackageAppService :
     }
     public async Task<bool> CheckPackageOverUnits(string UnitCode)
     {
-        return await _repository.AnyAsync(x => x.UnitCode == UnitCode && x.EnglishName == "Owner Package");
+        return await _repository.AnyAsync(x => x.UnitCode == UnitCode && x.EnglishName == "Owner Package" && x.Status != Status.Deleted);
     }
 
 
