@@ -26,6 +26,7 @@ public class CustomerUnitPackage : BaseEntity
     public int OrganizationId { get; set; }
     public CustomerCategoryStatus CustomerCategory { get; set; }
     public string UnitCode { get; set; }
+    public CustomerUnitPackageType UnitPackageType { get; set; }
 
 
 }
