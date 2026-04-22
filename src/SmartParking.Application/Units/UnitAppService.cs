@@ -34,13 +34,45 @@ public class UnitAppService : CrudAppService<
     public override async Task<UnitDto> CreateAsync(CreateUpdateUnitDto input)
     {
         var query = await _repository.GetQueryableAsync();
+        var unit = await query.Where(x => x.Code == input.Code 
+        && x.OrganizationId == input.OrganizationId 
+        && x.TenantId == CurrentTenant.Id)
+            .FirstOrDefaultAsync();
+        if (unit != null) 
+        {
+            throw new Exception("There is already a unit with this code");    
+        }
         var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
         input.TenantId = CurrentTenant.Id;
         if (organization is not null)
+        {
             input.OrganizationId = organization.Id;
+            input.OwnerSlots = organization.OrganizationSettings.OwnerSlots;
+            input.RenterSlots = organization.OrganizationSettings.RentalSlots;
+        }
         else
             input.OrganizationId = 0;
         return await base.CreateAsync(input);
+    }
+
+    public override async Task<UnitDto> UpdateAsync(int id, CreateUpdateUnitDto input)
+    {
+        
+        var result = await GetAsync(id);
+        if(result.Code != input.Code)
+        {
+            var query = await _repository.GetQueryableAsync();
+            var unit = await query.Where(x => x.Code == input.Code
+            && x.OrganizationId == input.OrganizationId
+            && x.TenantId == CurrentTenant.Id)
+                .FirstOrDefaultAsync();
+            if (unit != null)
+            {
+                throw new Exception("There is already a unit with this code");
+            }
+        }
+        
+        return await base.UpdateAsync(id, input);
     }
 
     public async Task<List<UnitDto>> GetAllActiveUnitsAsync()
