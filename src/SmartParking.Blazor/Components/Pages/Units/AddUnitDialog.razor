@@ -50,28 +50,55 @@
                 RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                 Label=@L["UnitCode"]/>
            </MudItem>
-        <MudItem sm="12" md="6">
-              <MudNumericField @bind-Value="createUpdateUnit.OwnerSlots"
-                For="@(() => createUpdateUnit.OwnerSlots)"
-                Variant="Variant.Text"
-                Class="w-100"
-                Placeholder=@L["Type Here"]
-                Required="true"
-                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                Label=@L["OwnerSlots"]
-                HideSpinButtons="true" />
-           </MudItem>
-        <MudItem sm="12" md="6">
-              <MudNumericField @bind-Value="createUpdateUnit.RenterSlots"
-                For="@(() => createUpdateUnit.RenterSlots)"
-                Variant="Variant.Text"
-                Class="w-100"
-                Placeholder=@L["Type Here"]
-                Required="true"
-                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
-                Label=@L["RenterSlots"]
-                HideSpinButtons="true" />
-           </MudItem>
+                    @if (organizationDto.OrganizationSettings.IsSlotsEditable)
+                    {
+                                    <MudItem sm="12" md="6">
+                          <MudNumericField @bind-Value="createUpdateUnit.OwnerSlots"
+                            For="@(() => createUpdateUnit.OwnerSlots)"
+                            Variant="Variant.Text"
+                            Class="w-100"
+                            Placeholder=@L["Type Here"]
+                            Required="true"
+                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                            Label=@L["OwnerSlots"]
+                            HideSpinButtons="true" />
+                       </MudItem>
+                    <MudItem sm="12" md="6">
+                          <MudNumericField @bind-Value="createUpdateUnit.RenterSlots"
+                            For="@(() => createUpdateUnit.RenterSlots)"
+                            Variant="Variant.Text"
+                            Class="w-100"
+                            Placeholder=@L["Type Here"]
+                            Required="true"
+                            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                            Label=@L["RenterSlots"]
+                            HideSpinButtons="true" />
+                        </MudItem>
+                    }
+                    else
+                    {
+                        <MudItem sm="12" md="6">
+                          <MudNumericField @bind-Value="organizationDto.OrganizationSettings.OwnerSlots"
+                            For="@(() => createUpdateUnit.OwnerSlots)"
+                            Variant="Variant.Text"
+                            Class="w-100"
+                            Placeholder=@L["Type Here"]
+                            ReadOnly="true"
+                            Label=@L["OwnerSlots"]
+                            HideSpinButtons="true" />
+                       </MudItem>
+                    <MudItem sm="12" md="6">
+                          <MudNumericField @bind-Value="organizationDto.OrganizationSettings.RentalSlots"
+                            For="@(() => createUpdateUnit.RenterSlots)"
+                            Variant="Variant.Text"
+                            Class="w-100"
+                            Placeholder=@L["Type Here"]
+                            ReadOnly="true"
+                            Label=@L["RenterSlots"]
+                            HideSpinButtons="true" />
+                        </MudItem>
+                    }
+
            
      <MudItem sm="12">
     <MudTextField @bind-Value="createUpdateUnit.Description"
@@ -114,6 +141,10 @@
 
     private MudForm form;
     private CreateUpdateUnitDto createUpdateUnit = new CreateUpdateUnitDto();
+    private OrganizationDto organizationDto = new OrganizationDto()
+    {
+        OrganizationSettings = new OrganizationSettingsDto()
+    };
 
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; }
@@ -122,8 +153,8 @@
     {
         if (CurrentTenant.Id != null)
         {
-            var org = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
-            createUpdateUnit.OrganizationId = org.Id;
+            organizationDto = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+            createUpdateUnit.OrganizationId = organizationDto.Id;
         }
         await base.OnInitializedAsync();
     }

@@ -955,6 +955,9 @@
     "Types": "Type",
     "RenterSlotsOverUnitValidation": "Cannot assign more vehicles than the number of slots available in the unit",
     "VehiclePackagesReport": "Vehicle Packages Report",
-    "MultipleRentalError": "Unit can't be rented to more than a user at same time"
+    "MultipleRentalError": "Unit can't be rented to more than a user at same time",
+    "OwnerSlots": "Owner Slots",
+    "RenterSlots": "Renter Slots",
+    "IsSlotsEditable": "Editable Slots"
   }
 }

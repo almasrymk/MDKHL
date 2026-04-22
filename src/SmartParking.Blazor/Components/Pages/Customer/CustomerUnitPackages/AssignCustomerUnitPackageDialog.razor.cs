@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using AutoMapper.Internal.Mappers;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.CustomerUnitPackages;
@@ -34,6 +35,7 @@ public partial class AssignCustomerUnitPackageDialog
     private MudForm form;
     public List<UnitPackageDto> selectedPackageDto { get; set; } = new List<UnitPackageDto>();
     private bool IsCustom { get; set; } = false;
+    private bool IsCustomRenter { get; set; } = false;
     private IReadOnlyList<UnitDto> Units { get; set; } = new List<UnitDto>();
     private string unitCode;
     private UnitDto selectedUnit { get; set; } = new();
@@ -96,8 +98,10 @@ public partial class AssignCustomerUnitPackageDialog
         selectedUnit = Units.Where(x => x.Code == unitCode).FirstOrDefault();
         if (SelectedPackageType == CustomerUnitPackageType.Owner)
         {
+            IsCustom = false;
             ShowOwnerPackageInTable();
         }
+        StateHasChanged();
     }
     
 
@@ -121,7 +125,7 @@ public partial class AssignCustomerUnitPackageDialog
     private async Task SubmitEdit()
     {
 
-        if (unitCode is null)
+        if (unitCode is null && SelectedPackageType.Value != CustomerUnitPackageType.Other)
         {
             Snackbar.Add(@L["CodeSelectValidation"], Severity.Error);
             return;
@@ -146,7 +150,43 @@ public partial class AssignCustomerUnitPackageDialog
 
         }
 
-        preAssignState.UnitPackage = CustomerPackage;
+        if (IsCustom)
+        {
+            _createUpdateUnitPackageDto.Package.EnglishName = "Custom Package";
+            _createUpdateUnitPackageDto.Package.ArabicName = "باقه خاصه";
+            _createUpdateUnitPackageDto.Package.Description = "Description";
+            _createUpdateUnitPackageDto.Package.TenantId = CurrentTenant.Id;
+            var pkg = new UnitPackageDto
+            {
+                NumberOfSlots = _createUpdateUnitPackageDto.NumberOfSlots,
+                NumberOfVehicles = _createUpdateUnitPackageDto.NumberOfVehicles,
+                Package = new PackageDto
+                {
+                    TenantId = _createUpdateUnitPackageDto.Package.TenantId,
+                    DurationOfPackage = _createUpdateUnitPackageDto.Package.DurationOfPackage,
+                    EnglishName = _createUpdateUnitPackageDto.Package.EnglishName,
+                    ActivationDate = _createUpdateUnitPackageDto.Package.ActivationDate,
+                    ArabicName = _createUpdateUnitPackageDto.Package.ArabicName,
+                    DectivationDate = _createUpdateUnitPackageDto.Package.DeactivationDate,
+                    Description = _createUpdateUnitPackageDto.Package.Description,
+                    CustomerCategory = _createUpdateUnitPackageDto.Package.CustomerCategory.ToString(),
+                    OrganizationArabicName = OrganizationDto.ArabicName,
+                    OrganizationEnglishName = OrganizationDto.EnglishName,
+                    OrganizationId = OrganizationDto.Id,
+                    PackageCategoryType = _createUpdateUnitPackageDto.Package.PackageCategoryType,
+                    PackageStatus = _createUpdateUnitPackageDto.Package.PackageStatus,
+                    Price = _createUpdateUnitPackageDto.Package.Price,
+
+                }
+            };
+            preAssignState.UnitPackage = pkg;
+        }
+        else
+        {
+            preAssignState.UnitPackage = CustomerPackage;
+
+        }
+
         preAssignState.Customer = Customer;
         preAssignState.UnitCode = unitCode;
         preAssignState.CustomerUnitPackageType = SelectedPackageType.Value;
@@ -177,14 +217,15 @@ public partial class AssignCustomerUnitPackageDialog
     private void OnPackageTypeChanged(CustomerUnitPackageType? value)
     {
         SelectedPackageType = value;
-        if(SelectedPackageType == CustomerUnitPackageType.Owner)
+
+        if (SelectedPackageType == CustomerUnitPackageType.Owner)
         {
+            IsCustom = false; // 🔴 أهم سطر
             ShowOwnerPackageInTable();
         }
-        
-        StateHasChanged(); // This manually pushes the update to the UI
-    }
 
+        StateHasChanged();
+    }
     private void ShowOwnerPackageInTable()
     {
         ownerPackage.NumberOfSlots = selectedUnit.OwnerSlots;
@@ -206,7 +247,7 @@ public partial class AssignCustomerUnitPackageDialog
             Snackbar.Add(@L["MultipleRentalError"], Severity.Error);
             return true;
         }
-        var result1 = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(Customer.Id, CustomerPackage);
+        var result1 = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(unitCode, CustomerPackage);
         if (result1)
         {
             SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"], Severity.Error);

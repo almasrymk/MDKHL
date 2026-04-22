@@ -133,8 +133,18 @@ public partial class CustomerUnitPackageDialog
             ["Customer"] = customer,
         };
 
-        await Dialog.ShowAsync<AssignCustomerUnitPackageDialog>("Assign Customer Package", parameters);
+        // Define the size and options here
+        var options = new DialogOptions
+        {
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true,
+            CloseButton = true
+        };
 
+        await Dialog.ShowAsync<AssignCustomerUnitPackageDialog>(
+            "Assign Customer Package",
+            parameters,
+            options); // Pass the options as the third argument
     }
 
 

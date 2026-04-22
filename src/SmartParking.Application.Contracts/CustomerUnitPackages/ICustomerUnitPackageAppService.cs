@@ -26,7 +26,7 @@ public interface ICustomerUnitPackageAppService :
 
     Task<Result<CustomerUnitPackageDto>> AssignPackageToCustomerAsync(UnitPackageDto packageDto, Guid customerId , CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto);
 
-    Task<bool> IfCustomerHasMultiplePackageAsync(Guid CustomerId, UnitPackageDto dto);
+    Task<bool> IfCustomerHasMultiplePackageAsync(string UnitCode, UnitPackageDto dto);
     Task<bool> CheckCustomerUnitPackageVehicleLimitations(Guid CustomerId, int numberOfVehicles);
     /// <summary>
     /// Determines whether the specified package is associated to same unit code before or not.

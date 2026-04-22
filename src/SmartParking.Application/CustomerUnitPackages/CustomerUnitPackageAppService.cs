@@ -108,11 +108,13 @@ public class CustomerUnitPackageAppService :
         && x.Status != Status.Deleted);
     }
 
-    public async Task<bool> IfCustomerHasMultiplePackageAsync(Guid CustomerId, UnitPackageDto dto)
+    public async Task<bool> IfCustomerHasMultiplePackageAsync(string UnitCode, UnitPackageDto dto)
     {
-        return await _repository.AnyAsync(x => x.CustomerId == CustomerId
+        return await _repository.AnyAsync(x => x.UnitCode == UnitCode
+            && x.EnglishName != PackageStaticValues.EnglishName
             && x.ActivationDate <= dto.Package.DectivationDate
-            && x.DectivationDate >= dto.Package.ActivationDate);
+            && x.DectivationDate >= dto.Package.ActivationDate
+            && x.Status != Status.Deleted);
     }
     public async Task<bool> CheckRenterSlotsOverUnit(UnitPackageDto dto, string unitCode)
     {

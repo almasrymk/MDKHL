@@ -78,6 +78,35 @@
 
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
 
+                        <MudItem sm="6">
+                            <MudTextField 
+                                ReadOnly="true"
+                                T="int" 
+                                InputType="InputType.Text" 
+                                @bind-Value="organizationSettings.OwnerSlots" 
+                                Placeholder=@L["Type Here"] 
+                                Label=@L["OwnerSlots"] />
+
+                        </MudItem>
+
+                        <MudItem sm="6">
+                            <MudTextField 
+                                ReadOnly="true"
+                                T="int" 
+                                InputType="InputType.Text" 
+                                @bind-Value="organizationSettings.RentalSlots" 
+                                Placeholder=@L["Type Here"] 
+                                Label=@L["RentalSlots"] />
+
+                        </MudItem>
+
+                        <MudItem sm="6">
+                            <MudSwitch Label=@L["IsSlotsEditable"] @bind-Value="organizationSettings.IsSlotsEditable" ReadOnly
+                                       Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
+
                         <MudItem sm="4">
                             <MudTextField ReadOnly="true" T="string" @bind-Value="organization.PhoneNum" Label=@L["Contact Phone"] />
                         </MudItem>

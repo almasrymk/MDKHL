@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartParking.Results;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -13,4 +14,5 @@ public interface IUnitAppService : ICrudAppService<
     CreateUpdateUnitDto>
 {
     Task<List<UnitDto>> GetAllActiveUnitsAsync();
+    Task<Result<UnitDto>> GetActiveUnitByCodeAsync(string unitCode);
 }

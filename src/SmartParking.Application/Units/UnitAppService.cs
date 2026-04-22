@@ -2,6 +2,7 @@
 using SmartParking.Entities.Units;
 using SmartParking.Enums;
 using SmartParking.Organizations;
+using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,5 +53,16 @@ public class UnitAppService : CrudAppService<
 
 
         return ObjectMapper.Map<List<Unit>, List<UnitDto>>(result);
+    }
+
+    public async Task<Result<UnitDto>> GetActiveUnitByCodeAsync(string unitCode)
+    {
+        var query = await _repository.GetQueryableAsync();
+        var unit = await query.FirstOrDefaultAsync(u => u.Code == unitCode && u.Status == Status.Active);
+        if (unit == null)
+        {
+            return Result<UnitDto>.Error($"Unit with code '{unitCode}' not found.");
+        }
+        return Result<UnitDto>.Success(ObjectMapper.Map<Unit, UnitDto>(unit));
     }
 }

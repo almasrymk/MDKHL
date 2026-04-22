@@ -89,6 +89,34 @@
 
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
 
+                        <MudItem sm="6">
+                            <MudTextField 
+                                T="int" 
+                                InputType="InputType.Text" 
+                                @bind-Value="_organizationSettingsDto.OwnerSlots" 
+                                Placeholder=@L["Type Here"] 
+                                Label=@L["OwnerSlots"] />
+
+                        </MudItem>
+
+                        <MudItem sm="6">
+                            <MudTextField 
+                                T="int" 
+                                InputType="InputType.Text" 
+                                @bind-Value="_organizationSettingsDto.RentalSlots" 
+                                Placeholder=@L["Type Here"] 
+                                Label=@L["RentalSlots"] />
+
+                        </MudItem>
+
+                        <MudItem sm="6">
+                            <MudSwitch Label=@L["IsSlotsEditable"] @bind-Value="_organizationSettingsDto.IsSlotsEditable"
+                                       Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
+
+
 
                         <MudGrid Class="ma-1">
                             <MudItem sm="4">

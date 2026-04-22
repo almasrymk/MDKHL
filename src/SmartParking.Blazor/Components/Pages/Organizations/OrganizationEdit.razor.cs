@@ -137,7 +137,10 @@ public partial class OrganizationEdit
         {
             VehcileAccess = _organizationSettingsDto.VehcileAccess,
             UserAccess = _organizationSettingsDto.UserAccess,
-            UseShifts = _organizationSettingsDto.UseShifts
+            UseShifts = _organizationSettingsDto.UseShifts,
+            OwnerSlots = _organizationSettingsDto.OwnerSlots,
+            RentalSlots = _organizationSettingsDto.RentalSlots,
+            IsSlotsEditable = _organizationSettingsDto.IsSlotsEditable
         };
         
         //_createUpdateOrganiztionDto.OrganizationSettingsDto.VehcileAccess = _organizationSettingsDto.VehcileAccess;
@@ -230,6 +233,9 @@ public partial class OrganizationEdit
         _organizationSettingsDto.UserAccess = organization.OrganizationSettings.UserAccess;
         _organizationSettingsDto.VehcileAccess = organization.OrganizationSettings.VehcileAccess;
         _organizationSettingsDto.UseShifts = organization.OrganizationSettings.UseShifts;
+        _organizationSettingsDto.RentalSlots = organization.OrganizationSettings.RentalSlots;
+        _organizationSettingsDto.OwnerSlots = organization.OrganizationSettings.OwnerSlots;
+        _organizationSettingsDto.IsSlotsEditable = organization.OrganizationSettings.IsSlotsEditable;
         //StateHasChanged();
 
     }

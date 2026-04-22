@@ -2,6 +2,7 @@
 using MudBlazor;
 using SmartParking.Blazor.Components.Pages.Invoices;
 using SmartParking.CustomerPackages.Dtos;
+using SmartParking.CustomerUnitPackages;
 using SmartParking.Enums;
 using SmartParking.Payments;
 using SmartParking.Payments.PaymentRelations;
@@ -23,13 +24,13 @@ public partial class DetailsPayment
     private string LocalizedPaymentStatus{ get; set; }
     private string LocalizedPaymentCurrency{ get; set; }
     private string LocalizedPaymentInvoiceType{ get; set; }
-
+    private PaymentDetailsDto paymentRelation { get; set; } = new PaymentDetailsDto();
 
 
     private async Task FetchPayment()
     {
         Payment = await paymentWebAppService.GetMdkhlAsync(Guid.Parse(Id));
-        PaymentDetailsDto paymentRelation = new();
+        //PaymentDetailsDto paymentRelation = new();
         if (Payment.customerPackageDto == null && Payment.Invoice==null)
              paymentRelation = await PaymentRelationAppService.GetByPaymentIdAsync(Payment.Id);
         Payment.customerPackageDto ??= new CustomerPackageDto();
@@ -87,22 +88,23 @@ public partial class DetailsPayment
         var parameters = new DialogParameters
         {
 
-            ["Invoice"] = Payment.Invoice is not null ? Payment.Invoice:null,
+            ["Invoice"] = Payment.Invoice is not null ? Payment.Invoice : null,
             ["PaymentId"] = Payment.Id,
-            ["Package"]= Payment.customerPackageDto is not null ? Payment.customerPackageDto : null,
+            ["Package"] = Payment.customerPackageDto is not null ? Payment.customerPackageDto : null,
             ["CommercialRegisteration"] = Payment.Organization.TaxNumber,
             ["OrganizationAddress"] = Payment.Organization.Address,
-            ["Code"] = Payment.PaymentNumber??"",
+            ["Code"] = Payment.PaymentNumber ?? "",
             ["PaymentPrice"] = Payment.Amount,
             ["CashierName"] = Payment.CashierName,
-            ["OrganizationArabicName"] =Payment.Organization.ArabicName,
-            ["OrganizationEnglishName"] =Payment.Organization.EnglishName,
-            ["OrganizationPicture"] =Payment.Organization.OrganizationPicture,
-            ["QRCode"] =Payment.QrCodeInvoice,
+            ["OrganizationArabicName"] = Payment.Organization.ArabicName,
+            ["OrganizationEnglishName"] = Payment.Organization.EnglishName,
+            ["OrganizationPicture"] = Payment.Organization.OrganizationPicture,
+            ["QRCode"] = Payment.QrCodeInvoice,
             ["Total"] = Total,
             ["Amount"] = Amount,
             ["Vat"] = Vat,
             ["Discount"] = Discount,
+            ["PaymentDetails"] = paymentRelation
         };
         return DialogService.ShowAsync<InvoiceDetailsViewDialog>("", parameters);
 
