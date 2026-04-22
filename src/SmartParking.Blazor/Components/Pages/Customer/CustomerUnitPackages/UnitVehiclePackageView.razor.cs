@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.CustomerUnitPackages;
 using SmartParking.Localization;
 using SmartParking.UnitVehiclePackages;
 using System.Globalization;
@@ -50,7 +51,7 @@ public partial class UnitVehiclePackageView
             filters = pageInfo.Filters
         };
 
-        var unitsDto = await UnitVehiclePackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId), input);
+        var unitsDto = await CustomerUnitPackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId), input);
         TotalItem = (int)unitsDto.TotalCount;
         await CreateTable(unitsDto);
     }
@@ -70,7 +71,7 @@ public partial class UnitVehiclePackageView
             SearchingTerm = termSearch
         };
 
-        var unitsDto = await UnitVehiclePackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId) ,input);
+        var unitsDto = await CustomerUnitPackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId) ,input);
         TotalItem = (int)unitsDto.TotalCount;
         await CreateTable(unitsDto);
     }
@@ -85,12 +86,12 @@ public partial class UnitVehiclePackageView
             SearchingTerm = pageInfo.SearchTerm
         };
 
-        var unitsDto = await UnitVehiclePackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId), input);
+        var unitsDto = await CustomerUnitPackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId), input);
         TotalItem = (int)unitsDto.TotalCount;
         await CreateTable(unitsDto);
     }
 
-    private async Task CreateTable(PagedResultDto<UnitVehiclePackageDto> packages)
+    private async Task CreateTable(PagedResultDto<CustomerUnitPackageDto> packages)
     {
         var tableData = new TableData()
         {
@@ -105,10 +106,6 @@ public partial class UnitVehiclePackageView
             tableData.Columns.Add(new ColumnDef() { DisplayName = L["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["UnitCode"], Name = "UnitCode", IsFilterable = true, PropertyName = "UnitCode", IsSortable = true, TypeFilter = TypeFilter.Text });
-        if (CultureInfo.CurrentCulture.Name == "en")
-            tableData.Columns.Add(new ColumnDef() { DisplayName = L["EnPlateNumber"], Name = "EnPlateNumber", IsFilterable = true, PropertyName = "EnPlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
-        else
-            tableData.Columns.Add(new ColumnDef() { DisplayName = L["ArPlateNumber"], Name = "ArPlateNumber", IsFilterable = true, PropertyName = "ArPlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["ActivationDate"], Name = "ActivationDate", IsFilterable = true, PropertyName = "ActivationDate", IsSortable = true, TypeFilter = TypeFilter.Date });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["DeactivationDate"], Name = "DeactivationDate", IsFilterable = true, PropertyName = "DeactivationDate", IsSortable = true, TypeFilter = TypeFilter.Date });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["CustomerUnitPackageType"], Name = "CustomerUnitPackageType", IsFilterable = true, PropertyName = "CustomerUnitPackageType", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -116,25 +113,22 @@ public partial class UnitVehiclePackageView
 
         foreach (var item in packages.Items)
         {
-            var customerUnitPackage = await CustomerUnitPackageAppService.GetAsync(item.CustomerUnitPackageId);
-            var englishName = customerUnitPackage.EnglishName;
-            var arabicName = customerUnitPackage.ArabicName;
+            //var customerUnitPackage = await CustomerUnitPackageAppService.GetAsync(item.CustomerUnitPackageId);
+            //var englishName = customerUnitPackage.EnglishName;
+            //var arabicName = customerUnitPackage.ArabicName;
             var customer = await CustomerAppService.GetAsync(item.CustomerId);
             var customerName = customer.FullName;
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["UnitCode"], item.UnitCode ?? ""));
             if (CultureInfo.CurrentCulture.Name == "en")
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["EnglishName"], englishName ?? ""));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(L["EnglishName"], item.EnglishName ?? ""));
             else
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["ArabicName"], arabicName ?? ""));
-            if (CultureInfo.CurrentCulture.Name == "en")
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["EnPlateNumber"], item.EnPlateNumber ?? ""));
-            else
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["ArPlateNumber"], item.ArPlateNumber ?? ""));
+                rowDef.Cells.Add(new KeyValuePair<string, string>(L["ArabicName"], item.ArabicName ?? ""));
+            
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["ActivationDate"], item.ActivationDate.ToString("yyyy-MM-dd")));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["DeactivationDate"], item.DectivationDate.ToString("yyyy-MM-dd")));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["CustomerUnitPackageType"], item.CustomerUnitPackageType.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["CustomerUnitPackageType"], item.UnitPackageType.ToString()));
             tableData.Rows.Add(rowDef);
         }
 
