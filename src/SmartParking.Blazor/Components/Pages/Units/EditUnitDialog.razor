@@ -50,7 +50,9 @@
                 RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                 Label=@L["Code"]/>
            </MudItem>
-        <MudItem sm="12" md="6">
+           @if (organizationDto.OrganizationSettings.IsSlotsEditable)
+                    {
+                        <MudItem sm="12" md="6">
               <MudNumericField @bind-Value="Unit.OwnerSlots"
                 For="@(() => Unit.OwnerSlots)"
                 Variant="Variant.Text"
@@ -72,7 +74,35 @@
                 Label=@L["RenterSlots"]
                 HideSpinButtons="true" />
            </MudItem>
-        <MudItem sm="12">
+                    }
+                    else
+                    {
+                        <MudItem sm="12" md="6">
+                            <MudNumericField @bind-Value="Unit.OwnerSlots"
+                                             For="@(() => Unit.OwnerSlots)"
+                                             Variant="Variant.Text"
+                                             Class="w-100"
+                                             Placeholder=@L["Type Here"]
+                                             Required="true"
+                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                                             Label=@L["OwnerSlots"]
+                                             HideSpinButtons="true" 
+                                             ReadOnly="true"/>
+                        </MudItem>
+                        <MudItem sm="12" md="6">
+                            <MudNumericField @bind-Value="Unit.RenterSlots"
+                                             For="@(() => Unit.RenterSlots)"
+                                             Variant="Variant.Text"
+                                             Class="w-100"
+                                             Placeholder=@L["Type Here"]
+                                             Required="true"
+                                             RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
+                                             Label=@L["RenterSlots"]
+                                             HideSpinButtons="true" 
+                                             ReadOnly="true"/>
+                        </MudItem>
+                    }
+    <MudItem sm="12">
  <MudTextField @bind-Value="Unit.Description"
       For="@(() => Unit.Description)"
         Variant="Variant.Outlined"
@@ -126,9 +156,14 @@ ButtonOneColor="MudBlazor.Color.Dark"
 
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; }
+    private OrganizationDto organizationDto = new OrganizationDto()
+        {
+            OrganizationSettings = new OrganizationSettingsDto()
+        };
 
     protected override async Task OnInitializedAsync()
     {
+        organizationDto = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
         var unit = await UnitAppService.GetAsync(UpdatedId);
         Unit = ObjectMapper.Map<UnitDto, CreateUpdateUnitDto>(unit);
     }

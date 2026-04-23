@@ -26,6 +26,8 @@ public class CreateUpdateCustomerUnitPackageDto
     public int OrganizationId { get; set; }
     public CustomerCategoryStatus CustomerCategory { get; set; }
     public string UnitCode { get; set; }
+    public CustomerUnitPackageType UnitPackageType { get; set; }
+
 
     public static CreateUpdateCustomerUnitPackageDto CreateFrom(
     CustomerDto customer,
@@ -63,7 +65,8 @@ public class CreateUpdateCustomerUnitPackageDto
             DurationOfPackage = assignDto.DurationOfPackage,
             Vat = assignDto.Vat,
             Discount = assignDto.Discount,
-            UnitCode = assignDto.UnitCode
+            UnitCode = assignDto.UnitCode,
+            UnitPackageType = assignDto.UnitPackageType
         };
     }
 

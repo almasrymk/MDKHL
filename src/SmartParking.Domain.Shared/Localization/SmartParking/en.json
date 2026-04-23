@@ -960,5 +960,7 @@
     "RenterSlots": "Renter Slots",
     "IsSlotsEditable": "Editable Slots",
     "OwnerVehicles": "Owner Vehicles",
+    "IsSlotsEditable": "Editable Slots",
+    "CustomerUnitPackage": "Customer Unit Package"
   }
 }

@@ -106,6 +106,7 @@
         CustomerUnitPackage.DurationOfPackage = UnitPackageDto?.Package?.DurationOfPackage ?? 99999;
         CustomerUnitPackage.UnitCode = preAssignState.UnitCode;
         CustomerUnitPackage.IsOwnerPackage = preAssignState.CustomerUnitPackageType == CustomerUnitPackageType.Owner ? true : false;
+        CustomerUnitPackage.UnitPackageType = preAssignState.CustomerUnitPackageType;
         packagePrice = UnitPackageDto.Package.Price;
         if (UnitPackageDto.Package.Published)
         {

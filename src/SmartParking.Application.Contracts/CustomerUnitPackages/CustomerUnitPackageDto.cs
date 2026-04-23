@@ -28,6 +28,8 @@ public class CustomerUnitPackageDto
     public CustomerPackageStatus CustomerPackageStatus { get; set; }
     public string UnitCode { get; set; }
     public Status Status { get; set; }
+    public CustomerUnitPackageType UnitPackageType { get; set; }
+
 
 
     public CreateUpdateCustomerPackageDto ToCreateUpdateCustomerPackageDto(

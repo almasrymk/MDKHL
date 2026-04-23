@@ -14,4 +14,6 @@ public class CustomerUnitPackageAssignationDto
     public decimal Vat { get; set; }
     public string UnitCode { get; set; }
     public bool IsOwnerPackage { get; set; }
+    public CustomerUnitPackageType UnitPackageType { get; set; }
+
 }

@@ -24,10 +24,10 @@
 
 <MudDialog>
     <TitleContent>
-        <MudText Typo="Typo.h6">@L["UnitVehiclePackages"]</MudText>
+        <MudText Typo="Typo.h6">@L["CustomerUnitPackage"]</MudText>
     </TitleContent>
     <DialogContent>
-        <SPDataGrid PageName=@L["UnitVehiclePackages"]
+        <SPDataGrid PageName=@L["CustomerUnitPackage"]
                     ShowView="AuthorizationService.IsGrantedAsync(UnitVehiclePackagePermissions.Default).Result"
                     Data="@itemData"
                     TotalItemsInTable="TotalItem"

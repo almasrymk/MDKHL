@@ -169,7 +169,8 @@ public partial class CustomerUnitPackageDialog
                 var unitVehiclePackage = await UnitVehiclePackageAppService.GetByCustomerUnitPackageId(customerPackage.Id);
                 await CustomerUnitPackageAppService.DeleteAsync(id);
                 await UnitVehiclePackageAppService.DeleteByCustomerUnitPackage(id);
-                await CustomerPackagesAppService.DeleteAsync(unitVehiclePackage.CustomerId, unitVehiclePackage.EnPlateNumber);
+                if(unitVehiclePackage is not null)
+                    await CustomerPackagesAppService.DeleteAsync(unitVehiclePackage.CustomerId, unitVehiclePackage.EnPlateNumber);
                 Snackbar.Add(L["PackageDeletedSuccessfully"], Severity.Success);
                 StateHasChanged();
                 NavigationManager.Refresh();

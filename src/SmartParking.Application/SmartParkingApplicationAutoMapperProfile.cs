@@ -609,7 +609,18 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<CreateUpdateCustomerPackageForUnitDto, CreateUpdateCustomerPackageDto>();
         CreateMap<CreateUpdateCustomerPackageForUnitDto, CustomerPackage>();
-        CreateMap<CreateUpdateUnitPackageDto, UnitPackageDto>();
+        CreateMap<CreateUpdateUnitPackageDto, UnitPackageDto>()
+            .ForPath(d => d.Package, o => o.MapFrom(s => s.Package))
+            .ForPath(d => d.Package.ArabicName, o => o.MapFrom(s => s.Package.ArabicName))
+            .ForPath(d => d.Package.EnglishName, o => o.MapFrom(s => s.Package.EnglishName))
+            .ForPath(d => d.Package.ActivationDate, o => o.MapFrom(s => s.Package.ActivationDate))
+            .ForPath(d => d.Package.DectivationDate, o => o.MapFrom(s => s.Package.DeactivationDate))
+            .ForPath(d => d.Package.CustomerCategory, o => o.MapFrom(s => s.Package.CustomerCategory))
+            .ForPath(d => d.Package.Description, o => o.MapFrom(s => s.Package.Description))
+            .ForPath(d => d.Package.Price, o => o.MapFrom(s => s.Package.Price))
+            .ForPath(d => d.Package.PackageStatus, o => o.MapFrom(s => s.Package.PackageStatus))
+            .ForPath(d => d.Package.DurationOfPackage, o => o.MapFrom(s => s.Package.DurationOfPackage))
+            .ForPath(d => d.Package.Published, o => o.MapFrom(s => s.Package.Published));
         CreateMap<CreateUpdatePackageDto, PackageDto>();
     }
 

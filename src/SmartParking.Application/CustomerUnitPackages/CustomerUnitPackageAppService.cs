@@ -2,9 +2,11 @@
 using SmartParking.Entities.CustomerUnitPackages;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Units;
+using SmartParking.Entities.UnitVehiclePackges;
 using SmartParking.Enums;
 using SmartParking.Results;
 using SmartParking.UnitPackages;
+using SmartParking.UnitVehiclePackages;
 using SmartParking.Utilities.StaticValues;
 using SmartParking.Validations;
 using System;
@@ -17,6 +19,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.CustomerUnitPackages;
 
@@ -153,9 +156,25 @@ public class CustomerUnitPackageAppService :
     }
     public async Task<bool> CheckPackageOverUnits(string UnitCode)
     {
-        return await _repository.AnyAsync(x => x.UnitCode == UnitCode && x.EnglishName == "Owner Package");
+        return await _repository.AnyAsync(x => x.UnitCode == UnitCode && x.EnglishName == "Owner Package" && x.Status != Status.Deleted);
     }
 
+    public async Task<PagedResultDto<CustomerUnitPackageDto>> GetAllByCustomerId(Guid customerId, PagedAndSortedResultRequestDto input)
+    {
+        var query = await _repository.GetQueryableAsync();
+        query = query.Where(x => x.CustomerId == customerId
+        && x.Status != Status.Deleted);
+        var totalCount = await AsyncExecuter.CountAsync(query);
+        query = query
+            .Skip(input.SkipCount)
+            .Take(input.MaxResultCount);
+        var packages = await AsyncExecuter.ToListAsync(query);
+        var packagesDto = ObjectMapper.Map<List<CustomerUnitPackage>, List<CustomerUnitPackageDto>>(packages);
+        return new PagedResultDto<CustomerUnitPackageDto>(
+            totalCount,
+            packagesDto
+        );
+    }
 
     #region Private methods
 

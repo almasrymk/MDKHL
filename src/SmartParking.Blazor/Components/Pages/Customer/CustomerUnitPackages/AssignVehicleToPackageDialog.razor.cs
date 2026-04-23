@@ -118,13 +118,14 @@ public partial class AssignVehicleToPackageDialog
 
         try
         {
-            var flag = await UnitVehiclePackageAppService.CheckDuplicationForVehicle(CustomerId, Vehicle.EnPlateNumber);
+            
+            var customerUnitPackage = customerUnitPackages.FirstOrDefault(x => x.Id == int.Parse(customerUnitId));
+            var flag = await UnitVehiclePackageAppService.CheckDuplicationForVehicle(CustomerId, Vehicle.EnPlateNumber, customerUnitPackage.UnitCode);
             if (flag)
             {
                 SnackBar.ShowSnackbar(Snackbar, L["DuplicateVehicleForCustomer"], Severity.Error);
                 return;
             }
-            var customerUnitPackage = customerUnitPackages.FirstOrDefault(x => x.Id == int.Parse(customerUnitId));
             var vehicleCounts = await customerPackagesValidations.GetNumberOfVehiclesPackagesInOrganizationForCustomer(CustomerId, customerUnitPackage.OrganizationId);
             var result1 = await CustomerUnitPackageAppService.CheckCustomerUnitPackageVehicleLimitations(CustomerId, vehicleCounts);
             if (!result1)
@@ -145,7 +146,7 @@ public partial class AssignVehicleToPackageDialog
                 PublishTo = customerUnitPackage.PublishTo,
                 EnPlateNumber = Vehicle.EnPlateNumber,
                 ArPlateNumber = Vehicle.ArPlateNumber,
-                CustomerUnitPackageType = customerUnitPackage.UnitPackageId == 0 ? CustomerUnitPackageType.Owner : CustomerUnitPackageType.Renter
+                CustomerUnitPackageType = customerUnitPackage.UnitPackageType
             };
             await UnitVehiclePackageAppService.CreateAsync(createUpdateUnitVehiclePackageDto);
             if (result2 != null)
