@@ -68,6 +68,7 @@ public partial class AssignCustomerUnitPackageDialog
         ownerPackage.Package.OrganizationArabicName = OrganizationDto.ArabicName;
         ownerPackage.Package.OrganizationEnglishName = OrganizationDto.EnglishName;
         ownerPackage.Package.TenantId = OrganizationDto.TenantId;
+        ownerPackage.NumberOfVehicles = OrganizationDto.OrganizationSettings.OwnerVehicles;
     }
 
 
@@ -237,7 +238,7 @@ public partial class AssignCustomerUnitPackageDialog
     private void ShowOwnerPackageInTable()
     {
         ownerPackage.NumberOfSlots = selectedUnit.OwnerSlots;
-        ownerPackage.NumberOfVehicles = selectedUnit.OwnerSlots;
+        ownerPackage.NumberOfVehicles = OrganizationDto.OrganizationSettings.OwnerVehicles;
         selectedPackageDto.Clear();
         selectedPackageDto.Add(ownerPackage);
         CustomerPackage = ownerPackage;
