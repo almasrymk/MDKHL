@@ -1,0 +1,248 @@
+@using SmartParking.CustomerUnitPackages
+@using SmartParking.Cutomers
+@using SmartParking.Localization
+@using Microsoft.Extensions.Localization
+@using System.Globalization
+@using SmartParking.Enums
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ICustomerAppService CustomerAppService
+@inject ICustomerUnitPackageAppService CustomerUnitPackageAppService
+
+<div class="modal-wrapper">
+    <MudDialog class="mud-modal">
+        <TitleContent>
+            <MudText Typo="Typo.h6">@L["PackageDetails"]</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <!-- Row 1: ID and Unit Code -->
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="PackageId"
+                        Label=@L["Id"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="Package.UnitCode"
+                        Label=@L["UnitCode"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <!-- Row 2: Customer Name -->
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="CustomerFullName"
+                        Label=@L["CustomerName"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="PackageTypeDisplay"
+                        Label=@L["PackageType"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <!-- Row 3: Package Names -->
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="Package.EnglishName"
+                        Label=@L["EnglishName"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="Package.ArabicName"
+                        Label=@L["ArabicName"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <!-- Row 4: Duration and Slots -->
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="DurationOfPackageStr"
+                        Label=@L["DurationOfPackage"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="NumberOfSlotsStr"
+                        Label=@L["NumberOfSlots"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <!-- Row 5: Vehicles and Status -->
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="NumberOfVehiclesStr"
+                        Label=@L["NumberOfVehicles"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="CustomerPackageStatusStr"
+                        Label=@L["Status"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <!-- Row 6: Activation and Deactivation Dates -->
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="ActivationDateStr"
+                        Label=@L["ActivationDate"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="DeactivationDateStr"
+                        Label=@L["DeactivationDate"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <!-- Row 7: Time Range -->
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="PublishFromStr"
+                        Label=@L["PublishFrom"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="PublishToStr"
+                        Label=@L["PublishTo"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <!-- Row 8: Pricing Information -->
+                <MudItem sm="12" md="4">
+                    <MudTextField @bind-Value="PriceStr"
+                        Label=@L["Price"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <MudItem sm="12" md="4">
+                    <MudTextField @bind-Value="DiscountStr"
+                        Label=@L["Discount"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+
+                <MudItem sm="12" md="4">
+                    <MudTextField @bind-Value="VatStr"
+                        Label=@L["Vat"]
+                        Variant="Variant.Text"
+                        ReadOnly="true"
+                        Disabled="true" />
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="Cancel" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">@L["Close"]</MudButton>
+        </DialogActions>
+    </MudDialog>
+</div>
+
+<style>
+    .mud-modal
+    {
+        border-radius: 0 20px 0 20px;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public CustomerUnitPackageDto Package { get; set; } = new CustomerUnitPackageDto();
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    private CustomerDto Customer { get; set; } = new CustomerDto();
+
+    private string PackageId { get; set; }
+    private string CustomerFullName { get; set; }
+    private string PackageTypeDisplay { get; set; }
+    private string DurationOfPackageStr { get; set; }
+    private string NumberOfSlotsStr { get; set; }
+    private string NumberOfVehiclesStr { get; set; }
+    private string CustomerPackageStatusStr { get; set; }
+    private string ActivationDateStr { get; set; }
+    private string DeactivationDateStr { get; set; }
+    private string PublishFromStr { get; set; }
+    private string PublishToStr { get; set; }
+    private string PriceStr { get; set; }
+    private string DiscountStr { get; set; }
+    private string VatStr { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        PackageId = Package.Id.ToString();
+        DurationOfPackageStr = Package.DurationOfPackage.ToString();
+        NumberOfSlotsStr = Package.NumberOfSlots.ToString();
+        NumberOfVehiclesStr = Package.NumberOfVehicles.ToString();
+        ActivationDateStr = Package.ActivationDate.ToString("yyyy-MM-dd");
+        DeactivationDateStr = Package.DectivationDate.ToString("yyyy-MM-dd");
+        PublishFromStr = Package.PublishFrom.ToString("HH:mm");
+        PublishToStr = Package.PublishTo.ToString("HH:mm");
+        PriceStr = Package.Price.ToString("F2");
+        DiscountStr = Package.Discount.ToString("F2");
+        VatStr = Package.Vat.ToString("F2");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Package?.CustomerId != Guid.Empty)
+        {
+            Customer = await CustomerAppService.GetAsync(Package.CustomerId);
+            CustomerFullName = CultureInfo.CurrentCulture.Name == "en" ? Customer.FullName : Customer.ArabicName;
+        }
+
+        PackageTypeDisplay = GetPackageTypeDisplay();
+        CustomerPackageStatusStr = Package.CustomerPackageStatus.ToString();
+    }
+
+    /// <summary>
+    /// Gets the formatted package type display name.
+    /// </summary>
+    private string GetPackageTypeDisplay()
+    {
+        return Package?.UnitPackageType switch
+        {
+            CustomerUnitPackageType.Owner => L["Owner"],
+            CustomerUnitPackageType.Renter => L["Renter"],
+            CustomerUnitPackageType.Other => L["Other"],
+            _ => L["Unknown"]
+        };
+    }
+
+    /// <summary>
+    /// Closes the dialog.
+    /// </summary>
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

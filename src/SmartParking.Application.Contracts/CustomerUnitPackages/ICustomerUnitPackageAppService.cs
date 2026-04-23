@@ -60,4 +60,10 @@ public interface ICustomerUnitPackageAppService :
     Task<bool> MultipuleCustomerRentalValidation(Guid CustomerId, UnitPackageDto dto, string unitCode);
 
     Task<Result<CustomerUnitPackageDto>> GetCustomerUnitPackageByCustomerIdAsync(Guid id);
+    /// <summary>
+    /// get all pronight packages for the authenticated customer with pagination and sorting capabilities.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    Task<PagedResultDto<CustomerUnitPackageDto>> GetAllPronightPackages(PagedAndSortedResultRequestDto input);
 }

@@ -178,6 +178,8 @@
                             @if (AuthorizationService.IsGrantedAsync(UnitVehiclePackagePermissions.Default).Result && _isUserAccess && !_isAdmin)
                             {
                                 <MudNavLink Href="/unit-vehicle-packages" Icon="@Icons.Material.Filled.DataThresholding">@L["UnitVehiclePackages"]</MudNavLink>
+                                <MudNavLink Href="/customer-unit-packages" Icon="@Icons.Material.Filled.DataThresholding">@L["CustomerUnitPackage"]</MudNavLink>
+                                <MudNavLink Href="/pronight-packages" Icon="@Icons.Material.Filled.DataThresholding">@L["PronightBooking"]</MudNavLink>
                             }
                          }
 

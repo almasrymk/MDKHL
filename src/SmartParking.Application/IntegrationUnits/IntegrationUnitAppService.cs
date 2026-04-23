@@ -23,6 +23,7 @@ using SmartParking.Results;
 using SmartParking.UnitPackages;
 using SmartParking.Units;
 using SmartParking.UnitVehiclePackages;
+using SmartParking.Utilities.StaticValues;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
@@ -322,21 +323,21 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         };
         PackageDto packageDto = new PackageDto
         {
-            EnglishName = OwnerPackageStaticValues.EnglishName,
-            ArabicName = OwnerPackageStaticValues.ArabicName,
+            EnglishName = ProNightStaticValues.EnglishName,
+            ArabicName = ProNightStaticValues.ArabicName,
             Price = dto.Price.Amount,
             CustomerCategory = "Renter",
-            Description = OwnerPackageStaticValues.Description,
+            Description = ProNightStaticValues.Description,
             OrganizationId = customerDto.OrganizationId,
-            PackageCategoryType = OwnerPackageStaticValues.PackageCategoryType,
+            PackageCategoryType = ProNightStaticValues.PackageCategoryType,
             ActivationDate = dto.Booking.StartDate,
             DectivationDate = dto.Booking.EndDate,
-            PublishFrom = OwnerPackageStaticValues.PublishedFrom,
-            PublishTo = OwnerPackageStaticValues.PublishedTo,
-            Status = OwnerPackageStaticValues.status,
+            PublishFrom = ProNightStaticValues.PublishedFrom,
+            PublishTo = ProNightStaticValues.PublishedTo,
+            Status = ProNightStaticValues.status,
             TenantId = CurrentTenant.Id,
-            PackageStatus = OwnerPackageStaticValues.PackageStatus,
-            Published = OwnerPackageStaticValues.Published,
+            PackageStatus = ProNightStaticValues.PackageStatus,
+            Published = ProNightStaticValues.Published,
             DurationOfPackage = dto.Booking.NoOfDays,
             
         };

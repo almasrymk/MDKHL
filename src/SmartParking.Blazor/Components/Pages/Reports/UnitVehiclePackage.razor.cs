@@ -146,7 +146,7 @@ public partial class UnitVehiclePackage
                 rowDef.Cells.Add(new KeyValuePair<string, string>(L["ArPlateNumber"], item.ArPlateNumber ?? ""));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["ActivationDate"], item.ActivationDate.ToString("yyyy-MM-dd")));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["DeactivationDate"], item.DectivationDate.ToString("yyyy-MM-dd")));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["CustomerUnitPackageType"], item.CustomerUnitPackageType.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["CustomerUnitPackageType"], L[item.CustomerUnitPackageType.ToString()]));
             tableData.Rows.Add(rowDef);
         }
 
