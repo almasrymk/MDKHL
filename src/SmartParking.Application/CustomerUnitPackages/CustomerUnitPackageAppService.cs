@@ -176,6 +176,22 @@ public class CustomerUnitPackageAppService :
         );
     }
 
+    public async Task<PagedResultDto<CustomerUnitPackageDto>> GetAllPronightPackages(PagedAndSortedResultRequestDto input)
+    {
+        var query = await _repository.GetQueryableAsync();
+        query = query.Where(x => x.EnglishName == ProNightStaticValues.EnglishName);
+        var totalCount = await AsyncExecuter.CountAsync(query);
+        query = query
+            .Skip(input.SkipCount)
+            .Take(input.MaxResultCount);
+        var packages = await AsyncExecuter.ToListAsync(query);
+        var packagesDto = ObjectMapper.Map<List<CustomerUnitPackage>, List<CustomerUnitPackageDto>>(packages);
+        return new PagedResultDto<CustomerUnitPackageDto>(
+            totalCount,
+            packagesDto
+        );
+    }
+
     #region Private methods
 
     private async Task<UnitPackageDto> GetPackageAsync(int packageId)
