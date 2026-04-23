@@ -49,10 +49,6 @@ public class UnitVehiclePackageAppService : CrudAppService<
             throw new Exception("You have reached the maximum number of slots for this package");
         }
         var customerVehiclesCount = await query.CountAsync(x => x.CustomerId == input.CustomerId);
-        if (customerVehiclesCount > customerUnitPackage.NumberOfVehicles)
-        {
-            throw new Exception("You have reached the maximum number of vehicles for this package");
-        }
         return await base.CreateAsync(input);
 
     }
