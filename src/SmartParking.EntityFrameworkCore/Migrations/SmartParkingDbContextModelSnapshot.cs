@@ -381,6 +381,9 @@ namespace SmartParking.Migrations
                     b.Property<int>("UnitPackageId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("UnitPackageType")
+                        .HasColumnType("integer");
+
                     b.Property<decimal>("Vat")
                         .HasColumnType("numeric");
 
@@ -5702,6 +5705,18 @@ namespace SmartParking.Migrations
 
                             b1.Property<bool>("CustomerPackage")
                                 .HasColumnType("boolean");
+
+                            b1.Property<bool>("IsSlotsEditable")
+                                .HasColumnType("boolean");
+
+                            b1.Property<int>("OwnerSlots")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("OwnerVehicles")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("RentalSlots")
+                                .HasColumnType("integer");
 
                             b1.Property<bool>("UseShifts")
                                 .HasColumnType("boolean");
