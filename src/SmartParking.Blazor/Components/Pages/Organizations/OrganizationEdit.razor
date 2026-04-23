@@ -114,6 +114,15 @@
                                        Color="MudBlazor.Color.Primary" />
                         </MudItem>
 
+                        <MudItem sm="6">
+                            <MudTextField T="int"
+                                          InputType="InputType.Text"
+                                          @bind-Value="_organizationSettingsDto.OwnerVehicles"
+                                          Placeholder=@L["Type Here"]
+                                          Label=@L["OwnerVehicles"] />
+
+                        </MudItem>
+
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
 
 

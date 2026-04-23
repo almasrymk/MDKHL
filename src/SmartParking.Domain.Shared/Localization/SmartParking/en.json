@@ -958,6 +958,7 @@
     "MultipleRentalError": "Unit can't be rented to more than a user at same time",
     "OwnerSlots": "Owner Slots",
     "RenterSlots": "Renter Slots",
-    "IsSlotsEditable": "Editable Slots"
+    "IsSlotsEditable": "Editable Slots",
+    "OwnerVehicles": "Owner Vehicles",
   }
 }
