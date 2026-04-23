@@ -93,7 +93,7 @@
                                 </MudItem>
                         }
                         
-                        @if (SelectedPackageType == CustomerUnitPackageType.Renter || SelectedPackageType == CustomerUnitPackageType.Other)
+                        @if ((SelectedPackageType == CustomerUnitPackageType.Renter || SelectedPackageType == CustomerUnitPackageType.Other) && !IsCustom)
                         {
                              <MudItem sm="12" md="6">
                             <MudSelect T="string"
