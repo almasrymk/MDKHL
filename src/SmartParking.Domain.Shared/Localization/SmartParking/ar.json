@@ -1001,6 +1001,7 @@
     "UnitVehiclePackages": "باقات وحده السيارات",
     "Renter": "مؤجر",
     "Owner": "مالك",
-    "Other": "اخر"
-    "OwnerVehicles": "مركبات المالك",
+    "Other": "اخر",
+    "OwnerVehicles": "مركبات المالك"
+  }
 }

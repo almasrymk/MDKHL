@@ -964,8 +964,6 @@
     "Renter": "Renter",
     "Owner": "Owner",
     "Other": "Other",
-    "Units": "الوحدات"
-    "OwnerVehicles": "Owner Vehicles",
-    "IsSlotsEditable": "Editable Slots"
+    "OwnerVehicles": "Owner Vehicles"
   }
 }
