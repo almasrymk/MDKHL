@@ -959,6 +959,11 @@
     "OwnerSlots": "Owner Slots",
     "RenterSlots": "Renter Slots",
     "IsSlotsEditable": "Editable Slots",
-    "CustomerUnitPackage": "Customer Unit Package"
+    "CustomerUnitPackage": "Customer Unit Package",
+    "PronightBooking": "Pronight Booking",
+    "Renter": "Renter",
+    "Owner": "Owner",
+    "Other": "Other",
+    "Units": "الوحدات"
   }
 }

@@ -996,6 +996,11 @@
     "OwnerSlots": "أماكن المالك",
     "RentalSlots": "أماكن المستأجر",
     "IsSlotsEditable": "تعديل أماكن الركن",
-    "CustomerUnitPackage": "باقات وحده العميل"
+    "CustomerUnitPackage": "باقات وحده العميل",
+    "PronightBooking": "حجوزات برونايت",
+    "UnitVehiclePackages": "باقات وحده السيارات",
+    "Renter": "مؤجر",
+    "Owner": "مالك",
+    "Other": "اخر"
   }
 }
