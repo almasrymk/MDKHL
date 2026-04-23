@@ -328,7 +328,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             Price = dto.Price.Amount,
             CustomerCategory = "Renter",
             Description = ProNightStaticValues.Description,
-            OrganizationId = customerDto.OrganizationId,
+            OrganizationId = organization.Id,
             PackageCategoryType = ProNightStaticValues.PackageCategoryType,
             ActivationDate = dto.Booking.StartDate,
             DectivationDate = dto.Booking.EndDate,
