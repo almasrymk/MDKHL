@@ -71,7 +71,7 @@ public class CustomerUnitPackageAppService :
         {
             var query = await _repository.GetQueryableAsync();
             query = query
-                .Where(c => c.Customer.Id == customerId && c.OrganizationId==organizationId)
+                .Where(c => c.Customer.Id == customerId && c.OrganizationId==organizationId && c.Status != Status.Deleted)
                 .OrderBy(c => Math.Abs((c.ActivationDate - DateTime.UtcNow).TotalSeconds));
             
 

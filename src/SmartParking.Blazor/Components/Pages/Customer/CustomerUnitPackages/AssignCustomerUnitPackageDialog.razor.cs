@@ -134,16 +134,20 @@ public partial class AssignCustomerUnitPackageDialog
 
         if (SelectedPackageType == CustomerUnitPackageType.Renter)
         {
-            var package = Packages.FirstOrDefault();
+            if (!IsCustom)
+            {
+                var package = Packages.FirstOrDefault();
+
+                CustomerPackage.NumberOfSlots = package.NumberOfSlots;
+                CustomerPackage.NumberOfVehicles = package.NumberOfVehicles;
+                CustomerPackage.Package = package.Package;
+
+                CustomerPackage.Package.TenantId = CurrentTenant.Id;
+                var result = await HandleRenterPackage(CustomerPackage, unitCode);
+                if (result)
+                    return;
+            }
             
-            CustomerPackage.NumberOfSlots = package.NumberOfSlots;
-            CustomerPackage.NumberOfVehicles = package.NumberOfVehicles;
-            CustomerPackage.Package = package.Package;
-            
-            CustomerPackage.Package.TenantId = CurrentTenant.Id;
-            var result = await HandleRenterPackage(CustomerPackage, unitCode);
-            if (result)
-                return;
         }
 
         else
@@ -184,11 +188,20 @@ public partial class AssignCustomerUnitPackageDialog
                     PackageCategoryType = _createUpdateUnitPackageDto.Package.PackageCategoryType,
                     PackageStatus = _createUpdateUnitPackageDto.Package.PackageStatus,
                     Price = _createUpdateUnitPackageDto.Package.Price,
+                    Published = _createUpdateUnitPackageDto.Package.Published,
+                    
 
                 }
             };
             
+            if (SelectedPackageType == CustomerUnitPackageType.Renter)
+            {
+                var result = await HandleRenterPackage(pkg, unitCode);
+                if (result)
+                    return;
+            }
             preAssignState.UnitPackage = pkg;
+
         }
         else
         {
@@ -250,13 +263,13 @@ public partial class AssignCustomerUnitPackageDialog
             Snackbar.Add(@L["PackageSelectValidation"], Severity.Error);
             return true;
         }
-        var result = await CustomerUnitPackageAppService.MultipuleCustomerRentalValidation(Customer.Id, CustomerPackage, unitCode);
+        var result = await CustomerUnitPackageAppService.MultipuleCustomerRentalValidation(Customer.Id, dto, unitCode);
         if (result)
         {
             Snackbar.Add(@L["MultipleRentalError"], Severity.Error);
             return true;
         }
-        var result1 = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(unitCode, CustomerPackage);
+        var result1 = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(unitCode, dto);
         if (result1)
         {
             SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"], Severity.Error);

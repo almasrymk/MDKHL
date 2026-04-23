@@ -30,26 +30,40 @@
     </MudItem>
 </MudGrid>
 
-<MudGrid Spacing="2">
-    <MudItem xs="12" md="6">
-        <MudTimePicker Label="@L["PublishFrom"]"
-                       PickerVariant="PickerVariant.Dialog"
-                       Time="_publishFrom"
-                       TimeChanged="OnPublishFromChanged"
-                       Required="true"
-                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
-    </MudItem>
-    <MudItem xs="12" md="6">
-        <MudTimePicker Label="@L["PublishTo"]"
-                       PickerVariant="PickerVariant.Dialog"
-                       Time="_publishTo"
-                       TimeChanged="OnPublishToChanged"
-                       MinTime="_publishFrom"
-                       Required="true"
-                       Validation="ValidatePublishTo"
-                       RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
-    </MudItem>
-</MudGrid>
+<MudItem sm="4">
+    <MudSwitch T="bool"
+               @bind-Value="UnitPackageDto.Package.Published"
+               Label="@L["Published"]"
+               LabelPosition="LabelPosition.Start"
+               Color="MudBlazor.Color.Primary" />
+</MudItem>
+
+
+@if (!UnitPackageDto.Package.Published)
+{
+
+
+    <MudGrid Spacing="2">
+        <MudItem xs="12" md="6">
+            <MudTimePicker Label="@L["PublishFrom"]"
+            PickerVariant="PickerVariant.Dialog"
+            Time="_publishFrom"
+            TimeChanged="OnPublishFromChanged"
+            Required="true"
+            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTimePicker Label="@L["PublishTo"]"
+            PickerVariant="PickerVariant.Dialog"
+            Time="_publishTo"
+            TimeChanged="OnPublishToChanged"
+            MinTime="_publishFrom"
+            Required="true"
+            Validation="ValidatePublishTo"
+            RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+        </MudItem>
+    </MudGrid>
+}
 
 <MudGrid Spacing="2">
     <MudItem xs="12" md="6">

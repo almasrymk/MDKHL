@@ -88,8 +88,14 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             {
                 return Result.Error(@L["UnitNotFound"]);
             }
-            var customer = await CreateCustomer(dto.Customer);
+            var getCustomer = await _customerAppService.GetCustomerByPhoneNumberAsync(dto.Customer.Mobile);
+            var customer = (getCustomer is null) ? await CreateCustomer(dto.Customer) : getCustomer;
             var vehicles = await CreateVehicle(dto.Customer.Cars, customer.Id);
+            var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
+            if (vehicles.Count > organization.OrganizationSettings.RentalSlots)
+            {
+                throw new Exception("Count of vehicles bigger than number of slots");
+            }
             var resultValidate = await ValidateCustomerUnitPackage(customer.Id, dto, false);
             if (!resultValidate.IsSuccess)
             {
@@ -264,8 +270,14 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     private async Task<List<VehicleDto>> CreateVehicle(List<CreateUpdateVehicleIntegrationUnitDto> dto, Guid customerId)
     {
         List<VehicleDto> vehicles = new List<VehicleDto>();
+        var cars = await _vehicleAppService.GetVehiclesByCustomerIdAsync(customerId);
         foreach (var vehicle in dto)
         {
+            if (cars.Any(x => x.EnPlateNumber == vehicle.PlateNumber))
+            {
+                vehicles.Add(cars.Where(x => x.EnPlateNumber == vehicle.PlateNumber).FirstOrDefault());
+                continue;
+            }
             CreateUpdateVehicleDto vehicleDto = await VehicleValidations(vehicle, customerId);
             var result = await _vehicleAppService.CreateAsync(vehicleDto);
             vehicles.Add(result);
@@ -298,13 +310,15 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
 
     private async Task<CustomerUnitPackageDto> CreateCustomerUnitPackage(CustomerDto customerDto, CreateUpdateBookingDto dto , Guid customerId) 
     {
+        var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
         CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto = new CustomerUnitPackageAssignationDto
         {
             UnitCode = dto.UnitId,
             Discount = 0,
             Vat = dto.Price.Amount * 0.15m,
             DurationOfPackage = dto.Booking.NoOfDays,
-            IsOwnerPackage = false
+            IsOwnerPackage = false,
+            UnitPackageType = CustomerUnitPackageType.Renter
         };
         PackageDto packageDto = new PackageDto
         {
@@ -329,8 +343,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         UnitPackageDto unitPackage = new UnitPackageDto
         {
             Package = packageDto,
-            NumberOfSlots = 1,
-            NumberOfVehicles = 1
+            NumberOfSlots = organization.OrganizationSettings.RentalSlots,
+            NumberOfVehicles = organization.OrganizationSettings.RentalSlots
         };
         var result = await _customerUnitPackageAppService.AssignPackageToCustomerAsync(unitPackage, customerId, customerUnitPackageAssignationDto);
         if (!result.IsSuccess)
