@@ -5,6 +5,7 @@ using SmartParking.CustomerPackages;
 using SmartParking.CustomerPackages.AssignantionsContarcts;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerPackages.Inputs;
+using SmartParking.CustomerPackages.QRGenerator;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Cameras.Watchers;
@@ -27,6 +28,7 @@ using SmartParking.Utilities.StaticValues;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
+using System.IO.Packaging;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
@@ -105,24 +107,20 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             var customerUnitPackage = await CreateCustomerUnitPackage(customer,dto, customer.Id);
             var customerPackages = await CreateCustomerPackage(customerUnitPackage, vehicles, customer.MobileNumber);
             var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage);
+            var PackageResult = await HandlePackageResponseDto(customerPackages);
+            var QrResult = await HandleQrResponseDto(customerPackages, customerUnitPackage);
             BookingDto result = new BookingDto
             {
                 Status = Status.Active,
                 PhoneNumber = customer.MobileNumber,
-                PackageId = customerPackages.PackageCode.ToString(),
-                PackageNumber = customerPackages.PackageCode.ToString(),
+
+                Package = PackageResult,
                 Validity = new ValidityDto
                 {
                     StartDate = customerUnitPackage.ActivationDate,
                     EndDate = customerUnitPackage.DectivationDate
                 },
-                Qr = new QrDto
-                {
-                    Required = true,
-                    QrCodePayload = String.Empty,
-                    QrCodeUrl = $"/{customerPackages.QrCodePath?.TrimStart('/')}",
-                    ExpiresAt = customerUnitPackage.DectivationDate
-                },
+                Qr = QrResult,
                 Links = new LinksDto
                 {
                     bookingId = dto.Booking.BookingId,
@@ -209,26 +207,20 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             var createdcustomerUnitPackage = await CreateCustomerUnitPackage(customer, dto, customer.Id);
             var createdcustomerPackages = await CreateCustomerPackage(customerUnitPackage, vehicles, customer.MobileNumber);
             var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage);
-
+            var PackageResult = await HandlePackageResponseDto(createdcustomerPackages);
+            var QrResult = await HandleQrResponseDto(createdcustomerPackages, createdcustomerUnitPackage);
 
             BookingDto result = new BookingDto
             {
                 Status = Status.Active,
                 PhoneNumber = customer.MobileNumber,
-                PackageId = createdcustomerPackages.PackageCode.ToString(),
-                PackageNumber = createdcustomerPackages.PackageCode.ToString(),
+                Package = PackageResult,
                 Validity = new ValidityDto
                 {
                     StartDate = createdcustomerUnitPackage.ActivationDate,
                     EndDate = createdcustomerUnitPackage.DectivationDate
                 },
-                Qr = new QrDto
-                {
-                    Required = true,
-                    QrCodePayload = String.Empty,
-                    QrCodeUrl = $"/{createdcustomerPackages.QrCodePath?.TrimStart('/')}",
-                    ExpiresAt = createdcustomerUnitPackage.DectivationDate
-                },
+                Qr = QrResult,
                 Links = new LinksDto
                 {
                     bookingId = dto.Booking.BookingId,
@@ -354,9 +346,11 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         }
         return result.Value;
     }
-    private async Task<UnitQrDto> CreateCustomerPackage(CustomerUnitPackageDto dto, List<VehicleDto> vehicles, string mobileNumber) 
+    private async Task<List<UnitQrDto>> CreateCustomerPackage(CustomerUnitPackageDto dto, List<VehicleDto> vehicles, string mobileNumber) 
     {
-        CreateUpdateCustomerPackageForUnitDto createUpdateCustomerPackageForUnitDto = new CreateUpdateCustomerPackageForUnitDto
+        
+
+        CreateUpdateCustomerPackageDto createUpdateCustomerPackageDto  = new CreateUpdateCustomerPackageDto
         {
             ActivationDate = DateOnly.FromDateTime(dto.ActivationDate),
             DectivationDateOfPackage = dto.DectivationDate,
@@ -379,25 +373,27 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             PublishToOfPackage = TimeOnly.FromTimeSpan(dto.DectivationDate.TimeOfDay),
             Vat = Math.Round((dto.Price - dto.Discount) * 0.15m, 2),
             PublishedOfPackage = true,
-            CustomerMobile = mobileNumber,
-            
-
+            ActivationTime = TimeOnly.FromTimeSpan(dto.ActivationDate.TimeOfDay),
+            ExpiryDateOfPackage = DateOnly.FromDateTime(dto.DectivationDate),
+            ExpiryTimeOfPackage = TimeOnly.FromTimeSpan(dto.DectivationDate.TimeOfDay),
+            IsCustomPackage = false,
         };
+        List<UnitQrDto> qrCodeDtos = new List<UnitQrDto>();
         List<CustomerPackageVehicleDto> vehiclesDto = new List<CustomerPackageVehicleDto>();
         foreach (var vehicle in vehicles)
         {
-            vehiclesDto.Add(new CustomerPackageVehicleDto
+            createUpdateCustomerPackageDto.ArPlateNumber = vehicle.ArPlateNumber;
+            createUpdateCustomerPackageDto.EnPlateNumber = vehicle.EnPlateNumber;
+            var res = await _customerPackageAppService.AssignPackageToCustomerAsync(createUpdateCustomerPackageDto);
+            qrCodeDtos.Add(new UnitQrDto
             {
-                ArPlateNumber = vehicle.ArPlateNumber,
-                EnPlateNumber = vehicle.EnPlateNumber,
-                LicenseTypeImage = vehicle.LicenceTypeImage,
-                VehicleModelImage = vehicle.ModelImage
+                PlateNumber = vehicle.EnPlateNumber,
+                PackageCode = res.Value.PackageCode.ToString(),
+                QrCodePath = res.Value.QRCodePath
             });
         }
-        createUpdateCustomerPackageForUnitDto.Vehicles = vehiclesDto;
-        var result = await _customerPackageAppService.AssignUnitPackageToCustomerAsync(createUpdateCustomerPackageForUnitDto);
 
-        return result;
+        return qrCodeDtos;
     }
     private async Task<List<UnitVehiclePackageDto>> CreateUnitVehiclePackage(List<VehicleDto> vehicles, CustomerUnitPackageDto customerUnitPackage)
     {
@@ -456,5 +452,33 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             return Result<bool>.Error(@L["RenterSlotsOverUnitValidation"]);
         }
         return Result<bool>.Success(true);
+    }
+
+    private async Task<List<PronightPackageResponseDto>> HandlePackageResponseDto(List<UnitQrDto> dtos)
+    {
+        List<PronightPackageResponseDto> result = new List<PronightPackageResponseDto>();
+        foreach (var dto in dtos)
+        {
+            result.Add(new PronightPackageResponseDto
+            {
+                PlateNumber = dto.PlateNumber,
+                PackageCode = dto.PackageCode,
+            });
+        }
+        return result;
+    }
+    private async Task<List<QrDto>> HandleQrResponseDto(List<UnitQrDto> dtos, CustomerUnitPackageDto customerUnitPackage)
+    {
+        List<QrDto> result = new List<QrDto>();
+        foreach (var dto in dtos)
+        {
+            result.Add(new QrDto
+            {
+                Required = true,
+                QrCodeUrl = dto.QrCodePath,
+                ExpiresAt = customerUnitPackage.DectivationDate
+            });
+        }
+        return result;
     }
 }
