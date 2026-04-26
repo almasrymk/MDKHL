@@ -185,11 +185,10 @@ public partial class AssignCustomerUnitPackageDialog
                     OrganizationArabicName = OrganizationDto.ArabicName,
                     OrganizationEnglishName = OrganizationDto.EnglishName,
                     OrganizationId = OrganizationDto.Id,
-                    PackageCategoryType = _createUpdateUnitPackageDto.Package.PackageCategoryType,
+                    PackageCategoryType = PackageCategoryTypes.CustomPackage,
                     PackageStatus = _createUpdateUnitPackageDto.Package.PackageStatus,
                     Price = _createUpdateUnitPackageDto.Package.Price,
                     Published = _createUpdateUnitPackageDto.Package.Published,
-                    
 
                 }
             };
