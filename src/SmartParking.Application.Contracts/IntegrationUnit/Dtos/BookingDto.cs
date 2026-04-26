@@ -9,11 +9,11 @@ namespace SmartParking.IntegrationUnit.Dtos;
 public class BookingDto
 {
     public Status Status { get; set; } = Status.Active;
+
     public string PhoneNumber { get; set; }
-    public string PackageId { get; set; }
-    public string PackageNumber { get; set; }
+    public List<PronightPackageResponseDto> Package { get; set; }
     public ValidityDto Validity { get; set; }
-    public QrDto Qr { get; set; }
+    public List<QrDto> Qr { get; set; }
     public LinksDto Links { get; set; }
 
 }
