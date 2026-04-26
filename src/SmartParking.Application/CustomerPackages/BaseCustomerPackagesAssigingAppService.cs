@@ -127,6 +127,24 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
         unitQrDto.QrCodePath = "";
         return unitQrDto;
     }
+    public async Task<UnitQrDto> HandlePronightQRCode(CreateUpdateCustomerPackageForUnitDto customerPackageDto)
+    {
+        var packageCode = await CreatePackageCodeForUnitPackage(customerPackageDto);
+        UnitQrDto unitQrDto = new UnitQrDto
+        {
+            PackageCode = packageCode
+        };
+        if (packageCode != null)
+        {
+            var qrCodeDto = new CreateUpdateQrCodeDto { PhoneNumber = customerPackageDto.CustomerMobile, OrganizationId = (int)customerPackageDto.OrganizationId!, PackageCode = packageCode };
+            var qrCodeImage = await _customerPackageQRGenerator.CreateAsync(qrCodeDto);
+            string pdfPath = await _pdfGeneratorAppService.GeneratePdfForCustomerPackage(qrCodeDto, qrCodeImage);
+            unitQrDto.QrCodePath = pdfPath;
+            return unitQrDto;
+        }
+        unitQrDto.QrCodePath = "";
+        return unitQrDto;
+    }
     /// <summary>
     /// Inserts a new customer package into the database.
     /// </summary>
