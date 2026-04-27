@@ -4,6 +4,7 @@ using SmartParking.CustomerUnitPackages;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.GarageTransactions;
 using SmartParking.Repositories;
+using SmartParking.UnitVehiclePackages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,56 +22,42 @@ public class CustomerPackageHandlerAppService : ICustomerPackageHandlerAppServic
     private readonly IGarageTransactionValidationsRepository _garageTransactionValidationsRepository;
     private readonly IDataFilter _dataFilter;
     private readonly IRepository<GarageTransaction, int> _garageTransactionRepository;
+    private readonly IUnitVehiclePackageAppService _unitVehiclePackageAppService;
 
-    public CustomerPackageHandlerAppService(IEnumerable<ICustomerPackageTransactionActionsAppService> services, 
-        ICustomerUnitPackageAppService customerUnitPackageAppService, 
-        IGarageTransactionValidationsRepository garageTransactionValidationsRepository, 
-        IDataFilter dataFilter, 
-        IRepository<GarageTransaction, int> garageTransactionRepository)
+    public CustomerPackageHandlerAppService(IEnumerable<ICustomerPackageTransactionActionsAppService> services,
+        ICustomerUnitPackageAppService customerUnitPackageAppService,
+        IGarageTransactionValidationsRepository garageTransactionValidationsRepository,
+        IDataFilter dataFilter,
+        IRepository<GarageTransaction, int> garageTransactionRepository,
+        IUnitVehiclePackageAppService unitVehiclePackageAppService)
     {
         _services = services;
         _customerUnitPackageAppService = customerUnitPackageAppService;
         _garageTransactionValidationsRepository = garageTransactionValidationsRepository;
         _dataFilter = dataFilter;
         _garageTransactionRepository = garageTransactionRepository;
+        _unitVehiclePackageAppService = unitVehiclePackageAppService;
     }
 
-    public async Task<bool> CheckIfCustomerPackageHasAvailableSlots(Guid customerId, int organizationId)
+    public async Task<bool> CheckIfCustomerPackageHasAvailableSlots(Guid customerId, int organizationId, string packageCode)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
 
-            // 1. Get the list of all units and their slot capacities
+            var unit = await _unitVehiclePackageAppService.GetUnitVehiclePackageByPackageCode(packageCode);
+
             var unitPackagesResult = await _customerUnitPackageAppService.GetListOfUnitPackageByCustomer(customerId, organizationId);
-            var unitPackages = unitPackagesResult.Value; // Assuming .Value is List<UnitPackageDto>
+            var unitPackages = unitPackagesResult.Value; 
 
             if (unitPackages == null || !unitPackages.Any())
             {
                 return false;
             }
 
-            // 2. Get the current occupancy (cars inside) grouped by UnitCode
-            // This method should return List<UnitOccupancyDto> { UnitCode, VehicleCount }
             var occupancyList = await _garageTransactionValidationsRepository.GetCountOfVehiclesInsideByUnitAsync(customerId, organizationId);
-
-            // 3. Check each unit to see if at least one has an available slot
-            foreach (var unit in unitPackages)
-            {
-                // Find how many cars are currently inside for THIS specific unit
-                var currentOccupancy = occupancyList
+            var currentOccupancy = occupancyList
                     .FirstOrDefault(x => x.UnitCode == unit.UnitCode)?.VehicleCount ?? 0;
-
-                if (unit.NumberOfSlots >= (currentOccupancy + 1))
-                {
-                    continue;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return (unitPackages.Where(x => x.UnitCode == unit.UnitCode).FirstOrDefault().NumberOfSlots >= currentOccupancy + 1);
         }
     }
 

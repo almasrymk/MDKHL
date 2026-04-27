@@ -145,7 +145,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         };
         if (organizationTransactionSettings.HasUserAccess && !string.IsNullOrEmpty(customerPackageDto?.EnPlateNumber))
         {
-            var vehiclelimitations = await _customerPackagesHandlerAppService.CheckIfCustomerPackageHasAvailableSlots(customerPackageDto.CustomerId, GarageTransaction.OrganizationID);
+            var vehiclelimitations = await _customerPackagesHandlerAppService.CheckIfCustomerPackageHasAvailableSlots(customerPackageDto.CustomerId, GarageTransaction.OrganizationID, customerPackageDto.PackageCode);
             finalResult &= vehiclelimitations;
         }
 
