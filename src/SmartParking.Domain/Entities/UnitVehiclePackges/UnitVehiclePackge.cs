@@ -17,6 +17,7 @@ public class UnitVehiclePackge : FullAuditedEntity<Guid>, IMultiTenant
     public string ArPlateNumber { get; set; }
     public int CustomerUnitPackageId { get; set; }
     public CustomerUnitPackageType CustomerUnitPackageType { get; set; }
+    public string PackageCode { get; set; }
 
     public Guid? TenantId {  get; set; }
 }

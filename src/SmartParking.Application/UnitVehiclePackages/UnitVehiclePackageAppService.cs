@@ -116,6 +116,12 @@ public class UnitVehiclePackageAppService : CrudAppService<
         return ObjectMapper.Map<UnitVehiclePackge, UnitVehiclePackageDto>(result!);
     }
 
+    public async Task<UnitVehiclePackageDto> GetUnitVehiclePackageByPackageCode(string packageCode)
+    {
+        var result = await _repository.FirstOrDefaultAsync(x => x.PackageCode == packageCode && x.IsDeleted == false);
+        return ObjectMapper.Map<UnitVehiclePackge, UnitVehiclePackageDto>(result!);
+    }
+
     #endregion
 
     #region private methods

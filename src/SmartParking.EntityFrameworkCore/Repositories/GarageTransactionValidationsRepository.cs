@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmartParking.Data.Models;
 using SmartParking.Entities.Analysis;
 using SmartParking.Entities.GarageTransactions;
-using SmartParking.Entities.Organizations;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Enums;
 using System;
@@ -56,6 +56,37 @@ public class GarageTransactionValidationsRepository : EfCoreRepository<SmartPark
             };
 
         var result = await query.ToListAsync();
+        return result;
+    }
+
+    public async Task<List<UnitOccupancyDto>> GetCountOfVehiclesInsideByUnitAsync(Guid customerId, int organizationId)
+    {
+        var accurateTime = DateTime.Now;
+        var dbContext = await GetDbContextAsync();
+
+        var query = from uvp in dbContext.UnitVehiclePackges
+                    join gt in dbContext.GarageTransactions on organizationId equals gt.OrganizationID
+
+                    where uvp.ActivationDate <= accurateTime
+                    && uvp.DectivationDate >= accurateTime
+                    && uvp.PackageCode == gt.TicketId
+                    && gt.IsIn == true
+
+                    select new
+                    {
+                        uvp.UnitCode,
+                        uvp.EnPlateNumber
+                    };
+
+        var result = await query
+            .Distinct()
+            .GroupBy(x => x.UnitCode)
+            .Select(g => new UnitOccupancyDto
+            {
+                UnitCode = g.Key,
+                VehicleCount = g.Count()
+            }).ToListAsync();
+
         return result;
     }
 }

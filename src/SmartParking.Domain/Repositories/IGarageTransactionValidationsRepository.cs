@@ -1,4 +1,5 @@
-﻿using SmartParking.Entities.Analysis;
+﻿using SmartParking.Data.Models;
+using SmartParking.Entities.Analysis;
 using SmartParking.Entities.GarageTransactions;
 using System;
 using System.Collections.Generic;
@@ -12,4 +13,5 @@ namespace SmartParking.Repositories;
 public interface IGarageTransactionValidationsRepository : IRepository<GarageTransaction,int>
 {
     Task<List<CustomerPackageTransactionDto>> CountOfVehicleRelatedToCustomerPackageParkingInGarage(Guid customerId, int organizationId);
+    Task<List<UnitOccupancyDto>> GetCountOfVehiclesInsideByUnitAsync(Guid customerId, int organizationId);
 }

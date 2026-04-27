@@ -146,7 +146,8 @@ public partial class AssignVehicleToPackageDialog
                 PublishTo = customerUnitPackage.PublishTo,
                 EnPlateNumber = Vehicle.EnPlateNumber,
                 ArPlateNumber = Vehicle.ArPlateNumber,
-                CustomerUnitPackageType = customerUnitPackage.UnitPackageType
+                CustomerUnitPackageType = customerUnitPackage.UnitPackageType,
+                PackageCode = result2.Value.PackageCode
             };
             await UnitVehiclePackageAppService.CreateAsync(createUpdateUnitVehiclePackageDto);
             if (result2 != null)
