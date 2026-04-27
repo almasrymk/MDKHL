@@ -126,7 +126,8 @@ public partial class AssignVehicleToPackageDialog
                 SnackBar.ShowSnackbar(Snackbar, L["DuplicateVehicleForCustomer"], Severity.Error);
                 return;
             }
-            var vehicleCounts = await customerPackagesValidations.GetNumberOfVehiclesPackagesInOrganizationForCustomer(CustomerId, customerUnitPackage.OrganizationId);
+            var assigned = await UnitVehiclePackageAppService.GetAllByCustomerUnitPackageId(customerUnitPackage.Id);
+            var vehicleCounts = assigned.Count();
             var result1 = await CustomerUnitPackageAppService.CheckCustomerUnitPackageVehicleLimitations(CustomerId, vehicleCounts);
             if (!result1)
             {

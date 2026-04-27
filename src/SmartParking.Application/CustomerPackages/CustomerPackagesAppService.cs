@@ -53,18 +53,21 @@ public class CustomerPackagesAppService :
     #region public methods
 
     ///<inheritdoc/>
-    public async Task<Result<List<CustomerPackageDto>>> GetPackageByCustomer()
+    public async Task<Result<List<CustomerPackageDto>>> GetPackageByCustomer(int organizationId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
+            var tenant = CurrentTenant.Id;
             var query = await _repository.GetQueryableAsync();
-            query = query.Where(c => c.Customer.IdentityUserId == CurrentUser.Id);
+            query = query.Where(c => c.Customer.IdentityUserId == CurrentUser.Id && c.OrganizationId == organizationId);
 
             var result = await AsyncExecuter.ToListAsync(query);
 
             var packageMap = ObjectMapper.Map<List<CustomerPackage>, List<CustomerPackageDto>>(result);
             return Result<List<CustomerPackageDto>>.Success(packageMap);
+
         }
+        
     }
 
     public async Task AddDefaultPackageToCustomerAsync(DefaultCustomerPackageDto defaultCustomerPackageDto)
@@ -165,6 +168,7 @@ public class CustomerPackagesAppService :
     private void ClearPackageDetails(CustomerPackage customerPackage)
     {
         customerPackage.CustomerPackageStatus = CustomerPackageStatus.Deleted;
+        customerPackage.Status = Status.Deleted;
     }
 
     public override async Task DeleteAsync(int id)

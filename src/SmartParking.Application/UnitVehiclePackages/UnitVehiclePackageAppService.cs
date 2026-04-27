@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SmartParking.Cameras;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerUnitPackages;
@@ -103,7 +104,7 @@ public class UnitVehiclePackageAppService : CrudAppService<
             return;
         await base.DeleteAsync(result.Id);
     }
-
+    [HttpGet("api/app/unit-vehicle-package/{id}/single-by-customer")]
     public async Task<UnitVehiclePackageDto> GetByCustomerUnitPackageId(int id)
     {
         var result = await _repository.FirstOrDefaultAsync(x => x.CustomerUnitPackageId == id);
@@ -120,6 +121,14 @@ public class UnitVehiclePackageAppService : CrudAppService<
     {
         var result = await _repository.FirstOrDefaultAsync(x => x.PackageCode == packageCode && x.IsDeleted == false);
         return ObjectMapper.Map<UnitVehiclePackge, UnitVehiclePackageDto>(result!);
+    }
+    [HttpGet("api/app/unit-vehicle-package/{id}/all-by-customer")]
+    public async Task<List<UnitVehiclePackageDto>> GetAllByCustomerUnitPackageId(int id)
+    {
+        var query = await _repository.GetQueryableAsync();
+        query = query.Where(x => x.CustomerUnitPackageId == id);
+        var result = await AsyncExecuter.ToListAsync(query);
+        return ObjectMapper.Map<List<UnitVehiclePackge>, List<UnitVehiclePackageDto>>(result);
     }
 
     #endregion

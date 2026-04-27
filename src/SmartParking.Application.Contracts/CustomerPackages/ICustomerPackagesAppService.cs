@@ -26,7 +26,7 @@ namespace SmartParking.CustomerPackages
         /// A task that represents the asynchronous operation. 
         /// The task result contains a <see cref="Result{T}"/> with a list of <see cref="CustomerPackageDto"/> assigned to the customer.
         /// </returns>
-        Task<Result<List<CustomerPackageDto>>> GetPackageByCustomer();
+        Task<Result<List<CustomerPackageDto>>> GetPackageByCustomer(int organizationId);
 
         Task AddDefaultPackageToCustomerAsync(DefaultCustomerPackageDto defaultCustomerPackageDto);
 

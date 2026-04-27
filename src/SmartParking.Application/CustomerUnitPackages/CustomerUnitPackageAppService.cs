@@ -128,7 +128,7 @@ public class CustomerUnitPackageAppService :
             && x.DectivationDate >= dto.Package.ActivationDate
             && x.UnitCode == unitCode);
 
-        return count >= unit!.RenterSlots;
+        return count > unit!.RenterSlots;
     }
 
     public async Task<bool> CheckCustomerUnitPackageVehicleLimitations(Guid CustomerId, int numberOfVehicles)
