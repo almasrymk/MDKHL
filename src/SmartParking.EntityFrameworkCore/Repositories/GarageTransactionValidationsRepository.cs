@@ -2,8 +2,6 @@
 using SmartParking.Data.Models;
 using SmartParking.Entities.Analysis;
 using SmartParking.Entities.GarageTransactions;
-using SmartParking.Entities.Organizations;
-using SmartParking.Entities.UnitVehiclePackges;
 using SmartParking.EntityFrameworkCore;
 using SmartParking.Enums;
 using System;
@@ -66,38 +64,18 @@ public class GarageTransactionValidationsRepository : EfCoreRepository<SmartPark
         var accurateTime = DateTime.Now;
         var dbContext = await GetDbContextAsync();
 
-        var query = from uvp in dbContext.Set<UnitVehiclePackge>()
-                        // 1. Find cars currently inside the organization's garage
+        var query = from uvp in dbContext.UnitVehiclePackges
                     join gt in dbContext.GarageTransactions on organizationId equals gt.OrganizationID
 
-                    where uvp.CustomerId == customerId
-                          && uvp.ActivationDate <= accurateTime
-                          && uvp.DectivationDate >= accurateTime
-                          && gt.IsIn == true
-                          && gt.PlateNumber != null
+                    where uvp.ActivationDate <= accurateTime
+                    && uvp.DectivationDate >= accurateTime
+                    && uvp.PackageCode == gt.TicketId
+                    && gt.IsIn == true
 
-                          // 2. STRICT MATCH: The car inside MUST exactly match the plate assigned to THIS UnitCode
-                          && (
-                              (uvp.ArPlateNumber != null && gt.PlateNumber == uvp.ArPlateNumber) ||
-                              (uvp.EnPlateNumber != null && gt.PlateNumber == uvp.EnPlateNumber)
-                          )
-
-                          // 3. Verify an active package exists for this specific plate (Prevents cross-join duplication)
-                          && dbContext.CustomerPackages.Any(cp =>
-                                cp.CustomerId == customerId
-                                && cp.OrganizationId == organizationId
-                                && cp.CustomerPackageStatus == CustomerPackageStatus.Active
-                                && cp.ActivationDateOfPackage <= accurateTime
-                                && cp.ExpiryDate >= accurateTime
-                                && (
-                                    (cp.ArPlateNumber != null && gt.PlateNumber == cp.ArPlateNumber) ||
-                                    (cp.EnPlateNumber != null && gt.PlateNumber == cp.EnPlateNumber)
-                                )
-                          )
                     select new
                     {
                         uvp.UnitCode,
-                        gt.PlateNumber // Selecting only Unit and Plate guarantees we count unique cars
+                        uvp.EnPlateNumber
                     };
 
         var result = await query
@@ -106,9 +84,8 @@ public class GarageTransactionValidationsRepository : EfCoreRepository<SmartPark
             .Select(g => new UnitOccupancyDto
             {
                 UnitCode = g.Key,
-                VehicleCount = g.Count() // Now strictly counts how many distinct cars are in this specific unit
-            })
-            .ToListAsync();
+                VehicleCount = g.Count()
+            }).ToListAsync();
 
         return result;
     }
