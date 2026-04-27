@@ -53,4 +53,10 @@ public interface IUnitVehiclePackageAppService : ICreateAppService<UnitVehiclePa
     /// <returns>A task that represents the asynchronous operation. The task result contains the unit vehicle package data if
     /// found; otherwise, null.</returns>
     Task<UnitVehiclePackageDto> GetUnitVehiclePackageByPackageCode(string packageCode);
+    /// <summary>
+    /// Gets a list of all unit vehicle packages associated with the specified customer unit package identifier.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    Task<List<UnitVehiclePackageDto>> GetAllByCustomerUnitPackageId(int id);
 }

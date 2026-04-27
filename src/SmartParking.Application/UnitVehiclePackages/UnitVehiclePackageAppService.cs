@@ -122,6 +122,14 @@ public class UnitVehiclePackageAppService : CrudAppService<
         return ObjectMapper.Map<UnitVehiclePackge, UnitVehiclePackageDto>(result!);
     }
 
+    public async Task<List<UnitVehiclePackageDto>> GetAllByCustomerUnitPackageId(int id)
+    {
+        var query = await _repository.GetQueryableAsync();
+        query = query.Where(x => x.CustomerUnitPackageId == id);
+        var result = await AsyncExecuter.ToListAsync(query);
+        return ObjectMapper.Map<List<UnitVehiclePackge>, List<UnitVehiclePackageDto>>(result);
+    }
+
     #endregion
 
     #region private methods
