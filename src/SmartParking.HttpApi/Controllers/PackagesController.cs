@@ -41,9 +41,9 @@ public class PackagesController : ControllerBase
     }    
     [HttpGet("mypackages")]
     [Authorize]
-    public async Task<Result<List<CustomerPackageDto>>> GetPackagesCustomer()
+    public async Task<Result<List<CustomerPackageDto>>> GetPackagesCustomer(int organizationId)
     {
-        return await _customerPackagesApp.GetPackageByCustomer();
+        return await _customerPackagesApp.GetPackageByCustomer(organizationId);
     }
     [HttpPost("assignpackage")]
     [Authorize]
