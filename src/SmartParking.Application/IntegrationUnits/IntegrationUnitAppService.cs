@@ -106,7 +106,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             }
             var customerUnitPackage = await CreateCustomerUnitPackage(customer,dto, customer.Id);
             var customerPackages = await CreateCustomerPackage(customerUnitPackage, vehicles, customer.MobileNumber);
-            var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage);
+            var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage, customerPackages);
             var PackageResult = await HandlePackageResponseDto(customerPackages);
             var QrResult = await HandleQrResponseDto(customerPackages, customerUnitPackage);
             BookingDto result = new BookingDto
@@ -206,7 +206,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             }
             var createdcustomerUnitPackage = await CreateCustomerUnitPackage(customer, dto, customer.Id);
             var createdcustomerPackages = await CreateCustomerPackage(customerUnitPackage, vehicles, customer.MobileNumber);
-            var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage);
+            var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage, createdcustomerPackages);
             var PackageResult = await HandlePackageResponseDto(createdcustomerPackages);
             var QrResult = await HandleQrResponseDto(createdcustomerPackages, createdcustomerUnitPackage);
 
@@ -395,7 +395,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
 
         return qrCodeDtos;
     }
-    private async Task<List<UnitVehiclePackageDto>> CreateUnitVehiclePackage(List<VehicleDto> vehicles, CustomerUnitPackageDto customerUnitPackage)
+    private async Task<List<UnitVehiclePackageDto>> CreateUnitVehiclePackage(List<VehicleDto> vehicles, CustomerUnitPackageDto customerUnitPackage, List<UnitQrDto> unitQrDtos)
     {
         List<UnitVehiclePackageDto> unitVehiclePackages = new List<UnitVehiclePackageDto>();
         foreach (var vehicle in vehicles)
@@ -411,7 +411,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
                 ActivationDate = customerUnitPackage.ActivationDate,
                 DectivationDate = customerUnitPackage.DectivationDate,
                 PublishFrom = customerUnitPackage.PublishFrom,
-                PublishTo = customerUnitPackage.PublishTo
+                PublishTo = customerUnitPackage.PublishTo,
+                PackageCode = unitQrDtos.Where(x => x.PlateNumber == vehicle.EnPlateNumber).FirstOrDefault()!.PackageCode
             };
             
             var result = await _unitVehiclePackageAppService.CreateAsync(dto);
