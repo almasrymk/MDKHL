@@ -3389,6 +3389,9 @@ namespace SmartParking.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("LastModifierId");
 
+                    b.Property<string>("PackageCode")
+                        .HasColumnType("text");
+
                     b.Property<TimeOnly>("PublishFrom")
                         .HasColumnType("time without time zone");
 
