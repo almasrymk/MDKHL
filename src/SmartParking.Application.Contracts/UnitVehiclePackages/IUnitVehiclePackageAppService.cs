@@ -46,4 +46,11 @@ public interface IUnitVehiclePackageAppService : ICreateAppService<UnitVehiclePa
     /// <returns>A task that represents the asynchronous operation. The task result contains the vehicle package information
     /// matching the specified customer ID and plate number, or null if no match is found.</returns>
     Task<UnitVehiclePackageDto> GetByCustmoerIdAndPlateNumber(SearchByPlateAndCustomerIdDto input);
+    /// <summary>
+    /// Retrieves the unit vehicle package associated with the specified package code.
+    /// </summary>
+    /// <param name="packageCode">The unique code identifying the unit vehicle package to retrieve. Cannot be null or empty.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the unit vehicle package data if
+    /// found; otherwise, null.</returns>
+    Task<UnitVehiclePackageDto> GetUnitVehiclePackageByPackageCode(string packageCode);
 }
