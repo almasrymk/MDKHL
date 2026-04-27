@@ -168,6 +168,7 @@ public class CustomerPackagesAppService :
     private void ClearPackageDetails(CustomerPackage customerPackage)
     {
         customerPackage.CustomerPackageStatus = CustomerPackageStatus.Deleted;
+        customerPackage.Status = Status.Deleted;
     }
 
     public override async Task DeleteAsync(int id)
