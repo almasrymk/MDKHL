@@ -249,13 +249,13 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             return result;
         }
     }
-    public async Task<TransactionOrganizationDto> GetOrganization(int OrganizationID)
+    public async Task<TransactionOrganizationDto> GetOrganization(string OrganizationCode)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
             var query  = await _organizationRepoistory.GetQueryableAsync();
             var result = await (from x in query
-                                where x.Id == OrganizationID
+                                where x.Code == OrganizationCode
                                 select
                                 new TransactionOrganizationDto
                                 {
@@ -286,6 +286,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
                                     TenantId = x.TenantId!.Value,
                                     UserAccess=x.Settings.CustomerPackage,
                                     VehicleAccess=x.Settings.VehcilePackage  
+
                                 }).FirstOrDefaultAsync();
 
             return result; 
