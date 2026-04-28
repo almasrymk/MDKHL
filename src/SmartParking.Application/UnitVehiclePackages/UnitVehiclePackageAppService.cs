@@ -99,16 +99,17 @@ public class UnitVehiclePackageAppService : CrudAppService<
 
     public async Task DeleteByCustomerUnitPackage(int id)
     {
-        var result = await _repository.FirstOrDefaultAsync(x => x.CustomerUnitPackageId == id);
+        var result = await _repository.GetListAsync(x => x.CustomerUnitPackageId == id);
         if (result is null)
             return;
-        await base.DeleteAsync(result.Id);
+        foreach (var item in result)
+            await base.DeleteAsync(item.Id);
     }
     [HttpGet("api/app/unit-vehicle-package/{id}/single-by-customer")]
-    public async Task<UnitVehiclePackageDto> GetByCustomerUnitPackageId(int id)
+    public async Task<List<UnitVehiclePackageDto>> GetByCustomerUnitPackageId(int id)
     {
-        var result = await _repository.FirstOrDefaultAsync(x => x.CustomerUnitPackageId == id);
-        return ObjectMapper.Map<UnitVehiclePackge, UnitVehiclePackageDto>(result!);
+        var result = await _repository.GetListAsync(x => x.CustomerUnitPackageId == id);
+        return ObjectMapper.Map<List<UnitVehiclePackge>, List<UnitVehiclePackageDto>>(result);
     }
 
     public async Task<UnitVehiclePackageDto> GetByCustmoerIdAndPlateNumber(SearchByPlateAndCustomerIdDto input)
