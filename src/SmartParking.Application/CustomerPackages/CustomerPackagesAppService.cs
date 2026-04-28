@@ -184,12 +184,15 @@ public class CustomerPackagesAppService :
 
     }
 
-    public async Task DeleteAsync(Guid customerId, string enPlateNumber)
+    public async Task DeleteAsync(CustomerPackageDeletionFromUnitDto dto)
     {
-        var customerPackage = await _repository.FirstOrDefaultAsync(x => x.CustomerId == customerId && x.EnPlateNumber == enPlateNumber);
+        var customerPackage = await _repository.FirstOrDefaultAsync(x => x.CustomerId == dto.CustomerId
+        && x.EnPlateNumber == dto.PlateNumber 
+        && x.ActivationDateOfPackage == dto.ActivationDate
+        && x.DectivationDateOfPackage == dto.DeactivationDate);
         if (customerPackage is null)
         {
-            throw new EntityNotFoundException(typeof(CustomerPackage), customerPackage.Id);
+            throw new EntityNotFoundException(typeof(CustomerPackage));
         }
         ClearPackageDetails(customerPackage);
         await _repository.UpdateAsync(customerPackage, true);

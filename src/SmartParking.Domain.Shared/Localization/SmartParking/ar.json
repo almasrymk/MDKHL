@@ -1002,6 +1002,10 @@
     "Renter": "مؤجر",
     "Owner": "مالك",
     "Other": "اخر",
-    "OwnerVehicles": "مركبات المالك"
+    "OwnerVehicles": "مركبات المالك",
+    "UnitCode": "كود الوحده",
+    "DeactivationDate": "تاريخ الانتهاء",
+    "CustomerUnitPackageType": "النوع",
+    "CustomerUnitPackageDetails": "تفاصيل باقه وحده العميل"
   }
 }

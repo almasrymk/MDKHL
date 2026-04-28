@@ -128,7 +128,7 @@ public partial class UnitVehiclePackageView
             
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["ActivationDate"], item.ActivationDate.ToString("yyyy-MM-dd")));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["DeactivationDate"], item.DectivationDate.ToString("yyyy-MM-dd")));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["CustomerUnitPackageType"], item.UnitPackageType.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["CustomerUnitPackageType"], L[item.UnitPackageType.ToString()]));
             tableData.Rows.Add(rowDef);
         }
 
@@ -138,15 +138,15 @@ public partial class UnitVehiclePackageView
 
     private async Task<IDialogReference> OnClickRowView(RowDef row)
     {
-        var id = Guid.Parse(row.Cells[0].Value);
-        var packageDto = await UnitVehiclePackageAppService.GetAsync(id);
+        var id = int.Parse(row.Cells[0].Value);
+        var packageDto = await CustomerUnitPackageAppService.GetAsync(id);
 
         var parameters = new DialogParameters
         {
             ["Package"] = packageDto
         };
 
-        return await Dialog.ShowAsync<DetailsUnitVehiclePackageDialog>("View Unit Vehicle Package", parameters);
+        return await Dialog.ShowAsync<CustomerUnitPackageDetailsDialog>("View Unit Vehicle Package", parameters);
     }
 
     public string Truncate(string str, int maxLength)

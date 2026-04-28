@@ -104,7 +104,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             {
                 throw new Exception(resultValidate.Errors.FirstOrDefault()!);
             }
-            var customerUnitPackage = await CreateCustomerUnitPackage(customer,dto, customer.Id);
+            var customerUnitPackage = await CreateCustomerUnitPackage(customer,dto, customer.Id, unit);
             var customerPackages = await CreateCustomerPackage(customerUnitPackage, vehicles, customer.MobileNumber);
             var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage, customerPackages);
             var PackageResult = await HandlePackageResponseDto(customerPackages);
@@ -160,6 +160,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     {
         try
         {
+            var unit = await _unitAppService.GetActiveUnitByCodeAsync(dto.UnitId);
             var customerDto = await _customerAppService.GetCustomerByPhoneNumberAsync(dto.phoneNumber);
             var customer = await UpdateCustomer(customerDto.Id, dto.Customer.MapToCustomerDto(dto.Customer));
 
@@ -204,7 +205,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             {
                 throw new Exception(resultValidate.Errors.FirstOrDefault()!);
             }
-            var createdcustomerUnitPackage = await CreateCustomerUnitPackage(customer, dto, customer.Id);
+            var createdcustomerUnitPackage = await CreateCustomerUnitPackage(customer, dto, customer.Id, unit);
             var createdcustomerPackages = await CreateCustomerPackage(customerUnitPackage, vehicles, customer.MobileNumber);
             var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage, createdcustomerPackages);
             var PackageResult = await HandlePackageResponseDto(createdcustomerPackages);
@@ -285,7 +286,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             var modelId = await _vehicleLookupResolver.ResolveModelIdAsync(_options.Vehicle.ModelName);
             var brandId = await _vehicleLookupResolver.ResolveBrandIdAsync(_options.Vehicle.BrandName);
             var plateColorId = await _vehicleLookupResolver.ResolvePlateColorIdAsync(_options.Vehicle.PlateColorName);
-            var licenceTypeId = await _vehicleLookupResolver.ResolveLicenceTypeIdAsync(_options.Vehicle.LicenceTypeName);
+            var licenceTypeId = await _vehicleLookupResolver.ResolveLicenceTypeIdAsync(dto.licenseType);
             var modelYear = _options.Vehicle.ModelYear;
             VehicleOptionsDto vehicleOptions = new VehicleOptionsDto
             {
@@ -301,7 +302,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         }
     }
 
-    private async Task<CustomerUnitPackageDto> CreateCustomerUnitPackage(CustomerDto customerDto, CreateUpdateBookingDto dto , Guid customerId) 
+    private async Task<CustomerUnitPackageDto> CreateCustomerUnitPackage(CustomerDto customerDto, CreateUpdateBookingDto dto , Guid customerId, UnitDto unitDto) 
     {
         var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
         CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto = new CustomerUnitPackageAssignationDto
@@ -336,8 +337,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         UnitPackageDto unitPackage = new UnitPackageDto
         {
             Package = packageDto,
-            NumberOfSlots = organization.OrganizationSettings.RentalSlots,
-            NumberOfVehicles = organization.OrganizationSettings.RentalSlots
+            NumberOfSlots = !(organization.OrganizationSettings.IsSlotsEditable) ? organization.OrganizationSettings.RentalSlots : unitDto.RenterSlots,
+            NumberOfVehicles = !(organization.OrganizationSettings.IsSlotsEditable) ? organization.OrganizationSettings.RentalSlots : unitDto.RenterSlots
         };
         var result = await _customerUnitPackageAppService.AssignPackageToCustomerAsync(unitPackage, customerId, customerUnitPackageAssignationDto);
         if (!result.IsSuccess)
