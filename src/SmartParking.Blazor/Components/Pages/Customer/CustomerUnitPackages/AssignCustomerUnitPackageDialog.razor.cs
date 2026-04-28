@@ -181,7 +181,7 @@ public partial class AssignCustomerUnitPackageDialog
                     ArabicName = _createUpdateUnitPackageDto.Package.ArabicName,
                     DectivationDate = _createUpdateUnitPackageDto.Package.DeactivationDate,
                     Description = _createUpdateUnitPackageDto.Package.Description,
-                    CustomerCategory = _createUpdateUnitPackageDto.Package.CustomerCategory.ToString(),
+                    CustomerCategory = CustomerCategoryStatus.Employee.ToString(),
                     OrganizationArabicName = OrganizationDto.ArabicName,
                     OrganizationEnglishName = OrganizationDto.EnglishName,
                     OrganizationId = OrganizationDto.Id,

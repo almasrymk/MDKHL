@@ -159,11 +159,14 @@ public class CustomerUnitPackageAppService :
         return await _repository.AnyAsync(x => x.UnitCode == UnitCode && x.EnglishName == "Owner Package" && x.Status != Status.Deleted);
     }
 
-    public async Task<PagedResultDto<CustomerUnitPackageDto>> GetAllByCustomerId(Guid customerId, PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<CustomerUnitPackageDto>> GetAllByCustomerId(Guid customerId, PagedAndSortedResultRequestDto input, bool includeDeleted)
     {
         var query = await _repository.GetQueryableAsync();
-        query = query.Where(x => x.CustomerId == customerId
-        && x.Status != Status.Deleted);
+        query = query.Where(x => x.CustomerId == customerId);
+        if (!includeDeleted)
+        {
+            query = query.Where(x => x.Status != Status.Deleted);
+        }
         var totalCount = await AsyncExecuter.CountAsync(query);
         query = query
             .Skip(input.SkipCount)
@@ -175,6 +178,7 @@ public class CustomerUnitPackageAppService :
             packagesDto
         );
     }
+
 
     public async Task<PagedResultDto<CustomerUnitPackageDto>> GetAllPronightPackages(PagedAndSortedResultRequestDto input)
     {

@@ -4,7 +4,6 @@ using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Localization;
-using SmartParking.UnitVehiclePackages;
 using System.Globalization;
 using Volo.Abp.Application.Dtos;
 
@@ -29,9 +28,6 @@ public partial class UnitVehiclePackageView
     public UnitVehiclePackageView(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
-        //CreatePolicyName = UnitVehiclePackagePermissions.Create;
-        //   UpdatePolicyName = UnitVehiclePackagePermissions.Edit;
-        //DeletePolicyName = UnitVehiclePackagePermissions.Delete;
     }
 
     protected async override Task OnInitializedAsync()
@@ -51,7 +47,7 @@ public partial class UnitVehiclePackageView
             filters = pageInfo.Filters
         };
 
-        var unitsDto = await CustomerUnitPackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId), input);
+        var unitsDto = await CustomerUnitPackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId), input, includeDeleted: true);
         TotalItem = (int)unitsDto.TotalCount;
         await CreateTable(unitsDto);
     }
@@ -71,7 +67,7 @@ public partial class UnitVehiclePackageView
             SearchingTerm = termSearch
         };
 
-        var unitsDto = await CustomerUnitPackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId) ,input);
+        var unitsDto = await CustomerUnitPackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId) ,input, includeDeleted: true);
         TotalItem = (int)unitsDto.TotalCount;
         await CreateTable(unitsDto);
     }
@@ -86,7 +82,7 @@ public partial class UnitVehiclePackageView
             SearchingTerm = pageInfo.SearchTerm
         };
 
-        var unitsDto = await CustomerUnitPackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId), input);
+        var unitsDto = await CustomerUnitPackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId), input, includeDeleted: true);
         TotalItem = (int)unitsDto.TotalCount;
         await CreateTable(unitsDto);
     }
@@ -109,13 +105,11 @@ public partial class UnitVehiclePackageView
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["ActivationDate"], Name = "ActivationDate", IsFilterable = true, PropertyName = "ActivationDate", IsSortable = true, TypeFilter = TypeFilter.Date });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["DeactivationDate"], Name = "DeactivationDate", IsFilterable = true, PropertyName = "DeactivationDate", IsSortable = true, TypeFilter = TypeFilter.Date });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["CustomerUnitPackageType"], Name = "CustomerUnitPackageType", IsFilterable = true, PropertyName = "CustomerUnitPackageType", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["Status"], Name = "Status", IsFilterable = true, PropertyName = "Status", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 
         foreach (var item in packages.Items)
         {
-            //var customerUnitPackage = await CustomerUnitPackageAppService.GetAsync(item.CustomerUnitPackageId);
-            //var englishName = customerUnitPackage.EnglishName;
-            //var arabicName = customerUnitPackage.ArabicName;
             var customer = await CustomerAppService.GetAsync(item.CustomerId);
             var customerName = customer.FullName;
             var rowDef = new RowDef();
@@ -129,6 +123,7 @@ public partial class UnitVehiclePackageView
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["ActivationDate"], item.ActivationDate.ToString("yyyy-MM-dd")));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["DeactivationDate"], item.DectivationDate.ToString("yyyy-MM-dd")));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["CustomerUnitPackageType"], L[item.UnitPackageType.ToString()]));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], L[item.Status.ToString()]));
             tableData.Rows.Add(rowDef);
         }
 

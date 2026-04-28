@@ -37,7 +37,7 @@ public interface IUnitVehiclePackageAppService : ICreateAppService<UnitVehiclePa
     /// <param name="id">The unique identifier of the customer unit package to retrieve.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the unit vehicle package data if
     /// found; otherwise, null.</returns>
-    Task<UnitVehiclePackageDto> GetByCustomerUnitPackageId(int id);
+    Task<List<UnitVehiclePackageDto>> GetByCustomerUnitPackageId(int id);
     /// <summary>
     /// Retrieves the vehicle package information associated with the specified customer ID and vehicle plate number.
     /// </summary>

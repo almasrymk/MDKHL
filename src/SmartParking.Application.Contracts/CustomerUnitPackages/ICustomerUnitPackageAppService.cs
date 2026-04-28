@@ -28,7 +28,7 @@ public interface ICustomerUnitPackageAppService :
     /// <param name="customerId"></param>
     /// <param name="input"></param>
     /// <returns></returns>
-    Task<PagedResultDto<CustomerUnitPackageDto>> GetAllByCustomerId(Guid customerId, PagedAndSortedResultRequestDto input);
+    Task<PagedResultDto<CustomerUnitPackageDto>> GetAllByCustomerId(Guid customerId, PagedAndSortedResultRequestDto input, bool includeDeleted);
 
 
 

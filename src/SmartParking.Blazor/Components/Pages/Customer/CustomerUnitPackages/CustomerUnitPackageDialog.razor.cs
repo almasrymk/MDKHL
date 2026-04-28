@@ -159,11 +159,12 @@ public partial class CustomerUnitPackageDialog
             if (!result.Canceled)
             {
                 var customerPackage = await CustomerUnitPackageAppService.GetAsync(id);
-                var unitVehiclePackage = await UnitVehiclePackageAppService.GetByCustomerUnitPackageId(customerPackage.Id);
+                var unitVehiclePackages = await UnitVehiclePackageAppService.GetByCustomerUnitPackageId(customerPackage.Id);
                 await CustomerUnitPackageAppService.DeleteAsync(id);
                 await UnitVehiclePackageAppService.DeleteByCustomerUnitPackage(id);
-                if(unitVehiclePackage is not null)
-                    await CustomerPackagesAppService.DeleteAsync(new CustomerPackageDeletionFromUnitDto { CustomerId = customerPackage.CustomerId, PlateNumber = unitVehiclePackage.EnPlateNumber, ActivationDate = customerPackage.ActivationDate, DeactivationDate = customerPackage.DectivationDate});
+                if(unitVehiclePackages is not null)
+                    foreach (var unitVehiclePackage in unitVehiclePackages)
+                        await CustomerPackagesAppService.DeleteAsync(new CustomerPackageDeletionFromUnitDto { CustomerId = customerPackage.CustomerId, PlateNumber = unitVehiclePackage.EnPlateNumber, ActivationDate = customerPackage.ActivationDate, DeactivationDate = customerPackage.DectivationDate});
                 Snackbar.Add(L["PackageDeletedSuccessfully"], Severity.Success);
                 StateHasChanged();
                 NavigationManager.Refresh();
