@@ -6,12 +6,14 @@
 @using SmartParking.Blazor.Components.SPComponents
 @using SmartParking.CustomerUnitPackages
 @using SmartParking.UnitVehiclePackages
+@using Volo.Abp.Uow
 @inject IDialogService Dialog
 @inject ICustomerAppService CustomersAppService
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IUnitVehiclePackageAppService UnitVehiclePackageAppService
 @inject ICustomerPackagesAppService CustomerPackagesAppService
+@inject IUnitOfWorkManager UnitOfWorkManager
 
 
 <PageTitle>@L["AssignPackage"]</PageTitle>
