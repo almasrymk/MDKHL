@@ -93,7 +93,7 @@ public class DispenserAppService : CrudAppService<Dispenser, DispenserDto, int, 
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            await _dispenserService.DispenserDeviceIDExistsOnUpdate(input.DeviceId, id);
+         //   await _dispenserService.DispenserDeviceIDExistsOnUpdate(input.DeviceId, id);
             return await base.UpdateAsync(id, input);
         }
     }
@@ -160,7 +160,7 @@ public class DispenserAppService : CrudAppService<Dispenser, DispenserDto, int, 
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            await _dispenserService.DispenserDeviceIDExistsOnCreate(input.DeviceId);
+          //  await _dispenserService.DispenserDeviceIDExistsOnCreate(input.DeviceId);
             return await base.CreateAsync(input);
         }
     }

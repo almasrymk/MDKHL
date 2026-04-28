@@ -28,6 +28,7 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task<CustomerDto> GetCurrentCustomer();
     Task<CustomerDto> GetCustomer(Guid customerId);
     Task<TransactionOrganizationDto> GetOrganization(string OrganizationCode);
+    Task<TransactionOrganizationDto> GetOrganization(int OrganizationId);
     Task<CreateUpdateGarageTransactionDto> InitiateExitGarageTransactionForMobileCheckout(GarageTransactionDto garageTransactionDto);
     Task<CreateUpdateInvoiceDto> InitiateInvoice(DateTime entranceTime, CreateUpdateGarageTransactionDto exitTransaction, int totalHours, decimal price, bool isPackage, CustomerDto customer = null);
 }

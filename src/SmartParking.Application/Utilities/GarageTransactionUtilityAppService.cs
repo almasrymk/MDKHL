@@ -379,6 +379,49 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
         return latestTransaction;
     }
 
+    public async Task<TransactionOrganizationDto> GetOrganization(int OrganizationId)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _organizationRepoistory.GetQueryableAsync();
+            var result = await(from x in query
+                               where x.Id == OrganizationId
+                               select
+                               new TransactionOrganizationDto
+                               {
+                                   Id = x.Id,
+                                   ArabicName = x.ArabicName,
+                                   EnglishName = x.EnglishName,
+                                   Status = x.Status,
+                                   Code = x.Code,
+                                   FirstHourPrice = x.FirstHourPrice,
+                                   SecondHourPrice = x.SecondHourPrice,
+                                   ThirdHourPrice = x.ThirdHourPrice,
+                                   AdditionalHourPrice = x.AdditionalHourPrice,
+                                   FullDayPrice = x.FullDayPrice,
+                                   IsNumberOfHoursExceeded = x.IsNumberOfHoursExceeded,
+                                   NumberOfHours = x.NumberOfHours,
+                                   IsClose = x.IsClose,
+                                   ClosingHoursStart = x.ClosingHoursStart,
+                                   ClosingHoursEnd = x.ClosingHoursEnd,
+                                   District = x.District,
+                                   ActiveCameras = x.ActiveCameras,
+                                   FreeMinutes = x.FreeMinutes,
+                                   Graceperiod = x.Graceperiod,
+                                   HasFreeSlots = x.HasFreeSlots,
+                                   HasPackageOnly = x.HasPackageOnly,
+                                   PaymentCode = x.PaymentCode,
+                                   DispenserTransaction = x.DispenserTransaction,
+                                   CameraTransaction = x.CameraTransaction,
+                                   TenantId = x.TenantId!.Value,
+                                   UserAccess = x.Settings.CustomerPackage,
+                                   VehicleAccess = x.Settings.VehcilePackage
+
+                               }).FirstOrDefaultAsync();
+
+            return result;
+        }
+    }
 }
 
 
