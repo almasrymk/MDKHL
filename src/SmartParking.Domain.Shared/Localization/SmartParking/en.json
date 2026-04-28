@@ -964,6 +964,7 @@
     "Renter": "Renter",
     "Owner": "Owner",
     "Other": "Other",
-    "OwnerVehicles": "Owner Vehicles"
+    "OwnerVehicles": "Owner Vehicles",
+    "CustomerUnitPackageDetails": "Customer Unit Package Details"
   }
 }
