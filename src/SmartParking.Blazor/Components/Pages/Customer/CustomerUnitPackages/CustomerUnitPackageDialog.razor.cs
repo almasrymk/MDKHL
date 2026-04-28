@@ -1,21 +1,14 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Blazor.Components.Pages.Cameras;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Currency;
-using SmartParking.CustomerPackages;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
-using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.UnitPackages;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
@@ -170,7 +163,7 @@ public partial class CustomerUnitPackageDialog
                 await CustomerUnitPackageAppService.DeleteAsync(id);
                 await UnitVehiclePackageAppService.DeleteByCustomerUnitPackage(id);
                 if(unitVehiclePackage is not null)
-                    await CustomerPackagesAppService.DeleteAsync(unitVehiclePackage.CustomerId, unitVehiclePackage.EnPlateNumber);
+                    await CustomerPackagesAppService.DeleteAsync(new CustomerPackageDeletionFromUnitDto { CustomerId = customerPackage.CustomerId, PlateNumber = unitVehiclePackage.EnPlateNumber, ActivationDate = customerPackage.ActivationDate, DeactivationDate = customerPackage.DectivationDate});
                 Snackbar.Add(L["PackageDeletedSuccessfully"], Severity.Success);
                 StateHasChanged();
                 NavigationManager.Refresh();
@@ -178,6 +171,10 @@ public partial class CustomerUnitPackageDialog
         }
         catch (Exception ex)
         {
+            if (UnitOfWorkManager.Current != null)
+            {
+                await UnitOfWorkManager.Current.RollbackAsync();
+            }
             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
         }
     }
