@@ -120,19 +120,17 @@
                         if (SelectedPackageType.Value != CustomerUnitPackageType.Other)
                         {
                             <MudItem sm="12" md="6">
-                                <MudSelect T="string"
-                                           Label="@L["UnitCode"]"
-                                           HelperText=@L["Helper Text"]
-                                           Required="true"
-                                           RequiredError="@L["CodeSelectValidation"]"
-                                           ValueChanged="UnitCodeChange">
-                                    @foreach (var unit in Units)
-                                    {
-                                        <MudSelectItem Value="unit.Code">
-                                            @unit.Code
-                                        </MudSelectItem>
-                                    }
-                                </MudSelect>
+                                <MudAutocomplete T="string"
+                                                 Label="@L["UnitCode"]"
+                                                 HelperText="@L["Helper Text"]"
+                                                 Required="true"
+                                                 RequiredError="@L["CodeSelectValidation"]"
+                                                 SearchFunc="SearchUnits"
+                                                 ValueChanged="UnitCodeChange"
+                                                 ResetValueOnEmptyText="true"
+                                                 CoerceText="true"
+                                                 CoerceValue="false"
+                                                 MaxItems="null" />
                             </MudItem>
                         }
 

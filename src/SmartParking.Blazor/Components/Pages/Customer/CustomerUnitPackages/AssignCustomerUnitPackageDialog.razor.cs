@@ -93,6 +93,18 @@ public partial class AssignCustomerUnitPackageDialog
     }
 
 
+    private async Task<IEnumerable<string>> SearchUnits(string value, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(value))
+            return Units.Select(u => u.Code).ToList();
+
+        return await Task.FromResult(
+            Units.Where(u => u.Code.Contains(value, StringComparison.OrdinalIgnoreCase))
+                 .Select(u => u.Code)
+                 .ToList()
+        );
+    }
+
     private void UnitCodeChange(string code)
     {
         unitCode = code;
