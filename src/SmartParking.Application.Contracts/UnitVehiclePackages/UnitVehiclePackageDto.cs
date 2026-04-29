@@ -17,6 +17,7 @@ public class UnitVehiclePackageDto : FullAuditedEntityDto<Guid>
     public int CustomerUnitPackageId { get; set; }
     public CustomerUnitPackageType CustomerUnitPackageType { get; set; }
     public string PackageCode { get; set; }
+    public int CustomerPackgeId { get; set; }
 
 
 }

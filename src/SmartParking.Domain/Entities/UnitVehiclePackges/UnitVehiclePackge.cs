@@ -18,6 +18,6 @@ public class UnitVehiclePackge : FullAuditedEntity<Guid>, IMultiTenant
     public int CustomerUnitPackageId { get; set; }
     public CustomerUnitPackageType CustomerUnitPackageType { get; set; }
     public string PackageCode { get; set; }
-
+    public int CustomerPackgeId { get; set; }
     public Guid? TenantId {  get; set; }
 }
