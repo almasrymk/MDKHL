@@ -44,7 +44,6 @@ public class UnitCustomerPackageAppService : BaseCustomerPackagesAssigingAppServ
             var customer = await GetCustomerByCustomerIdAsync(createUpdateCustomerPackageDto.CustomerId);
             await CheckSubscriptionCustomersLimitsAsync(createUpdateCustomerPackageDto.OrganizationId);
             CustomerPackage customerPackage;
-            await HandleExistingPackagesForVehicleAsync(createUpdateCustomerPackageDto);
             if (createUpdateCustomerPackageDto.PackageId != 0 && createUpdateCustomerPackageDto.PackageId != null)
             {
                 var package = await GetUnitPackageAsync((int)createUpdateCustomerPackageDto!.PackageId);
