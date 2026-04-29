@@ -155,6 +155,8 @@
         {
             organizationDto = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
             createUpdateUnit.OrganizationId = organizationDto.Id;
+            createUpdateUnit.OwnerSlots = organizationDto.OrganizationSettings.OwnerSlots;
+            createUpdateUnit.RenterSlots = organizationDto.OrganizationSettings.RentalSlots;
         }
         await base.OnInitializedAsync();
     }
@@ -163,6 +165,7 @@
     {
         try
         {
+            createUpdateUnit.TenantId = CurrentTenant.Id;
             await UnitAppService.CreateAsync(createUpdateUnit);
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]} Unit", Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));

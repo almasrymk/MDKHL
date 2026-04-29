@@ -47,8 +47,11 @@ public class UnitAppService : CrudAppService<
         if (organization is not null)
         {
             input.OrganizationId = organization.Id;
-            input.OwnerSlots = organization.OrganizationSettings.OwnerSlots;
-            input.RenterSlots = organization.OrganizationSettings.RentalSlots;
+            if (!organization.OrganizationSettings.IsSlotsEditable)
+            {
+                input.OwnerSlots = organization.OrganizationSettings.OwnerSlots;
+                input.RenterSlots = organization.OrganizationSettings.RentalSlots;
+            }
         }
         else
             input.OrganizationId = 0;
