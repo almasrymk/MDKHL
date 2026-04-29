@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SmartParking.Cameras;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerUnitPackages;
-using SmartParking.Entities.Cameras.Watchers;
+using SmartParking.Entities.Organizations;
 using SmartParking.Entities.UnitVehiclePackges;
 using SmartParking.Enums;
 using SmartParking.Vehicles;
@@ -14,7 +13,6 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.UnitVehiclePackages;
 
@@ -28,13 +26,16 @@ public class UnitVehiclePackageAppService : CrudAppService<
 {
     private readonly ICustomerUnitPackageAppService _customerUnitPackageAppService;
     private readonly IRepository<UnitVehiclePackge, Guid> _repository;
+    private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
     public UnitVehiclePackageAppService(IRepository<UnitVehiclePackge, Guid> repository,
         IVehiclesAppService vehiclesAppService,
-        ICustomerUnitPackageAppService customerUnitPackageAppService)
+        ICustomerUnitPackageAppService customerUnitPackageAppService,
+        IRepository<CustomerPackage, int> customerPackageRepository)
         : base(repository)
     {
         _customerUnitPackageAppService = customerUnitPackageAppService;
         _repository = repository;
+        _customerPackageRepository = customerPackageRepository;
     }
 
     #region public methods
@@ -45,11 +46,11 @@ public class UnitVehiclePackageAppService : CrudAppService<
         //HandleCreateInput(input, customerUnitPackage);
         var query = await Repository.GetQueryableAsync();
         var packageBenificeriesNumber = await query.CountAsync(x => x.CustomerUnitPackageId == input.CustomerUnitPackageId);
-            if (packageBenificeriesNumber > customerUnitPackage.NumberOfSlots)
+        if (packageBenificeriesNumber > customerUnitPackage.NumberOfSlots)
         {
             throw new Exception("You have reached the maximum number of slots for this package");
         }
-        var customerVehiclesCount = await query.CountAsync(x => x.CustomerId == input.CustomerId);
+        await HandleExistingPackagesForVehicleAsync(input);
         return await base.CreateAsync(input);
 
     }
@@ -136,13 +137,68 @@ public class UnitVehiclePackageAppService : CrudAppService<
 
     #region private methods
 
-    private void HandleCreateInput(CreateUpdateUnitVehiclePackageDto input, CustomerUnitPackageDto customerUnitPackage)
+    private async Task HandleExistingPackagesForVehicleAsync(CreateUpdateUnitVehiclePackageDto dto)
     {
-        input.ActivationDate = customerUnitPackage.ActivationDate;
-        input.DectivationDate = customerUnitPackage.DectivationDate;
-        input.PublishFrom = customerUnitPackage.PublishFrom;
-        input.PublishTo = customerUnitPackage.PublishTo;
-        input.UnitCode = customerUnitPackage.UnitCode;
+        var newExpiryDate = dto.ActivationDate.AddDays(-1);
+        var newActivationDate = dto.DectivationDate.AddDays(1);
+
+        var query = await _repository.GetQueryableAsync();
+
+        var ids = query
+            .Where(p =>
+                p.UnitCode == dto.UnitCode &&
+                p.EnPlateNumber == dto.EnPlateNumber &&
+                (
+                    p.ActivationDate <= dto.DectivationDate &&   // Existing starts before new one ends
+                    p.DectivationDate >= dto.ActivationDate      // Existing ends after new one starts
+                ) 
+            )
+            .Select(p => p.CustomerPackgeId)
+            .Distinct();
+
+            
+
+        var cpQuery = await _customerPackageRepository.GetQueryableAsync();
+
+        await cpQuery
+            .Where(p => ids.Contains(p.Id))
+            .ExecuteUpdateAsync(p => p
+
+            // 1. Update Status to Inactive ONLY if the Activation Dates match
+            .SetProperty(x => x.Status,
+                x => x.ActivationDateOfPackage == dto.ActivationDate
+                    ? Status.Inactive
+                    : x.Status)
+
+            // 2. Update ExpiryDate if the existing package is strictly BEFORE the new one
+            .SetProperty(x => x.ExpiryDate,
+                x => x.ActivationDateOfPackage < dto.ActivationDate
+                    ? newExpiryDate
+                    : x.ExpiryDate)
+
+            // 3. Update ActivationDate if the existing package is strictly AFTER the new one
+            .SetProperty(x => x.ActivationDateOfPackage,
+                x => x.ActivationDateOfPackage > dto.ActivationDate
+                    ? (newActivationDate < x.DectivationDateOfPackage ? newActivationDate : x.DectivationDateOfPackage)
+                    : x.ActivationDateOfPackage)
+        );
+
+        await query
+            .Where(p => ids.Contains(p.CustomerPackgeId)
+            )
+            .ExecuteUpdateAsync(p => p
+
+                .SetProperty(x => x.DectivationDate,
+                    x => x.ActivationDate < dto.ActivationDate
+                        ? newExpiryDate
+                        : x.DectivationDate)
+
+                .SetProperty(x => x.ActivationDate,
+                    x => x.ActivationDate > dto.ActivationDate
+                        ? (newActivationDate < x.DectivationDate ? newActivationDate : x.DectivationDate)
+                        : x.ActivationDate)
+            );
+
     }
 
 

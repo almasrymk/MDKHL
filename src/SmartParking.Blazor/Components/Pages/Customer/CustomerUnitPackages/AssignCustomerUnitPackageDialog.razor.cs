@@ -268,12 +268,12 @@ public partial class AssignCustomerUnitPackageDialog
             Snackbar.Add(@L["MultipleRentalError"], Severity.Error);
             return true;
         }
-        var result1 = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(unitCode, dto);
-        if (result1)
-        {
-            SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"], Severity.Error);
-            return true;
-        }
+        //var result1 = await CustomerUnitPackageAppService.IfCustomerHasMultiplePackageAsync(unitCode, dto);
+        //if (result1)
+        //{
+        //    SnackBar.ShowSnackbar(Snackbar, L["CustomerHasActivePackage"], Severity.Error);
+        //    return true;
+        //}
         var result2 = await CustomerUnitPackageAppService.CheckRenterSlotsOverUnit(dto, unitCode);
         if (result2)
         {
