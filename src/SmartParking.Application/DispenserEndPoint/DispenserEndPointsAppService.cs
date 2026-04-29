@@ -21,7 +21,6 @@ using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.DispenserEndPoint;
 
-[Route("/api/app/dispenser-end-points")]
 public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEndPointsAppService
 {
     private readonly IGarageTransactionEndPointsAppService _garageTransactionEndPointsAppService;
@@ -61,7 +60,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
 
     // ── Public endpoints ─────────────────────────────────────────────────────
 
-    [HttpPost("/entry/{OrganizationCode}")]
+    [HttpPost("api/app/dispenser-end-points/entry/{OrganizationCode}")]
     public async Task<IBaseGateResponseDto> Entry(string OrganizationCode, EntryDto request)
     {
         _logger.LogError($"{DateTime.Now} => start entry");
@@ -98,7 +97,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
         }
     }
 
-    [HttpPost("/pre-entry/{OrganizationCode}")]
+    [HttpPost("api/app/dispenser-end-points/pre-entry/{OrganizationCode}")]
     public async Task<IBaseGateResponseDto> PreEntry(string OrganizationCode, PackageCodeEntryDto request)
     {
         _logger.LogError($"{DateTime.Now} => start pre entry");
@@ -133,7 +132,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
         }
     }
 
-    [HttpPost("/exit/{OrganizationCode}")]
+    [HttpPost("api/app/dispenser-end-points/exit/{OrganizationCode}")]
     public async Task<IBaseGateResponseDto> Exit(string OrganizationCode, ExitDto request)
     {
         _logger.LogError($"{DateTime.Now} => start exit");
@@ -164,7 +163,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
         }
     }
 
-    [HttpPost("/pre-exit/{OrganizationCode}")]
+    [HttpPost("api/app/dispenser-end-points/pre-exit/{OrganizationCode}")]
     public async Task<IBaseGateResponseDto> PreExit(string OrganizationCode, PackageCodeExitDto request)
     {
         _logger.LogError($"{DateTime.Now} => start pre exit");
