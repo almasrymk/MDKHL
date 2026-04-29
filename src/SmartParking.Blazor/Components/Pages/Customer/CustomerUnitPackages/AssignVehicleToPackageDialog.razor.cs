@@ -120,12 +120,12 @@ public partial class AssignVehicleToPackageDialog
         {
             
             var customerUnitPackage = customerUnitPackages.FirstOrDefault(x => x.Id == int.Parse(customerUnitId));
-            var flag = await UnitVehiclePackageAppService.CheckDuplicationForVehicle(CustomerId, Vehicle.EnPlateNumber, customerUnitPackage.UnitCode);
-            if (flag)
-            {
-                SnackBar.ShowSnackbar(Snackbar, L["DuplicateVehicleForCustomer"], Severity.Error);
-                return;
-            }
+            //var flag = await UnitVehiclePackageAppService.CheckDuplicationForVehicle(CustomerId, Vehicle.EnPlateNumber, customerUnitPackage.UnitCode);
+            //if (flag)
+            //{
+            //    SnackBar.ShowSnackbar(Snackbar, L["DuplicateVehicleForCustomer"], Severity.Error);
+            //    return;
+            //}
             var assigned = await UnitVehiclePackageAppService.GetAllByCustomerUnitPackageId(customerUnitPackage.Id);
             var vehicleCounts = assigned.Count();
             var result1 = await CustomerUnitPackageAppService.CheckCustomerUnitPackageVehicleLimitations(CustomerId, vehicleCounts);
@@ -148,7 +148,8 @@ public partial class AssignVehicleToPackageDialog
                 EnPlateNumber = Vehicle.EnPlateNumber,
                 ArPlateNumber = Vehicle.ArPlateNumber,
                 CustomerUnitPackageType = customerUnitPackage.UnitPackageType,
-                PackageCode = result2.Value.PackageCode
+                PackageCode = result2.Value.PackageCode,
+                CustomerPackgeId = result2.Value.Id
             };
             await UnitVehiclePackageAppService.CreateAsync(createUpdateUnitVehiclePackageDto);
             if (result2 != null)
@@ -160,6 +161,10 @@ public partial class AssignVehicleToPackageDialog
         }
         catch (Exception ex)
         {
+            if (UnitOfWorkManager.Current != null)
+            {
+                await UnitOfWorkManager.Current.RollbackAsync();
+            }
             SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.ADD]} {L[AlertMessages.AlertMessages.FAILED]}: {ex.Message} ", Severity.Error);
         }
 
