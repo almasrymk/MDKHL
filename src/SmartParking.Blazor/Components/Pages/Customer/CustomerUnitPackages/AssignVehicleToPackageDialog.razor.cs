@@ -135,6 +135,7 @@ public partial class AssignVehicleToPackageDialog
                 return;
             }
             var CustomerPackage = customerUnitPackage.ToCreateUpdateCustomerPackageDto(Vehicle.EnPlateNumber, Vehicle.ArPlateNumber);
+            CustomerPackage.CustomerCategory = customerUnitPackage.CustomerCategory;
             var result2 = await AssignCustomerPackagesAppService.AssignPackageToCustomerAsync(CustomerPackage);
             CreateUpdateUnitVehiclePackageDto createUpdateUnitVehiclePackageDto = new CreateUpdateUnitVehiclePackageDto()
             {
