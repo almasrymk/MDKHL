@@ -165,6 +165,11 @@ public class UnitVehiclePackageAppService : CrudAppService<
             .ExecuteUpdateAsync(p => p
 
             // 1. Update Status to Inactive ONLY if the Activation Dates match
+            .SetProperty(x => x.CustomerPackageStatus,
+                x => x.ActivationDateOfPackage == dto.ActivationDate
+                    ? CustomerPackageStatus.Expired
+                    : x.CustomerPackageStatus)
+
             .SetProperty(x => x.Status,
                 x => x.ActivationDateOfPackage == dto.ActivationDate
                     ? Status.Inactive
@@ -172,7 +177,7 @@ public class UnitVehiclePackageAppService : CrudAppService<
 
             // 2. Update ExpiryDate if the existing package is strictly BEFORE the new one
             .SetProperty(x => x.ExpiryDate,
-                x => x.ActivationDateOfPackage < dto.ActivationDate
+                x => x.ActivationDateOfPackage <= dto.ActivationDate
                     ? newExpiryDate
                     : x.ExpiryDate)
 
