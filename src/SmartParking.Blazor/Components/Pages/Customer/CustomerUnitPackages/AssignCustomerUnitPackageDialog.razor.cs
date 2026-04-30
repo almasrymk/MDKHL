@@ -193,7 +193,7 @@ public partial class AssignCustomerUnitPackageDialog
                     ArabicName = _createUpdateUnitPackageDto.Package.ArabicName,
                     DectivationDate = _createUpdateUnitPackageDto.Package.DeactivationDate,
                     Description = _createUpdateUnitPackageDto.Package.Description,
-                    CustomerCategory = CustomerCategoryStatus.Employee.ToString(),
+                    CustomerCategory = CustomerCategoryStatus.Customer.ToString(),
                     OrganizationArabicName = OrganizationDto.ArabicName,
                     OrganizationEnglishName = OrganizationDto.EnglishName,
                     OrganizationId = OrganizationDto.Id,
@@ -263,6 +263,7 @@ public partial class AssignCustomerUnitPackageDialog
     {
         ownerPackage.NumberOfSlots = selectedUnit.OwnerSlots;
         ownerPackage.NumberOfVehicles = OrganizationDto.OrganizationSettings.OwnerVehicles;
+        ownerPackage.Package.CustomerCategory = CustomerCategoryStatus.Customer.ToString();
         selectedPackageDto.Clear();
         selectedPackageDto.Add(ownerPackage);
         CustomerPackage = ownerPackage;

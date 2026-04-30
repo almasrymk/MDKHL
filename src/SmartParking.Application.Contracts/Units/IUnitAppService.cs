@@ -15,4 +15,6 @@ public interface IUnitAppService : ICrudAppService<
 {
     Task<List<UnitDto>> GetAllActiveUnitsAsync();
     Task<Result<UnitDto>> GetActiveUnitByCodeAsync(string unitCode);
+    Task<PagedResultDto<UnitDto>> Search(PagedAndSortedAndSearchResultRequestDto input);
+    Task<PagedResultDto<UnitDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 }

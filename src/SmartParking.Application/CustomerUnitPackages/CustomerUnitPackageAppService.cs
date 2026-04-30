@@ -126,7 +126,8 @@ public class CustomerUnitPackageAppService :
 
         var count = await _repository.CountAsync(x => x.ActivationDate <= dto.Package.DectivationDate
             && x.DectivationDate >= dto.Package.ActivationDate
-            && x.UnitCode == unitCode);
+            && x.UnitCode == unitCode
+            && x.Status != Status.Deleted);
 
         return count > unit!.RenterSlots;
     }

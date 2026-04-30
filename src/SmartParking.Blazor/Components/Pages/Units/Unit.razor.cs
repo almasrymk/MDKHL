@@ -77,7 +77,7 @@ public partial class Unit
             SearchingTerm = termSearch
         };
 
-        var unitsDto = await UnitAppService.GetListAsync(input);
+        var unitsDto = await UnitAppService.Search(input);
         TotalItem = (int)unitsDto.TotalCount;
         await CreateTable(unitsDto);
     }

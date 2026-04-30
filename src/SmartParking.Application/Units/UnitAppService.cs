@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartParking.Entities.Units;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using SmartParking.Organizations;
 using SmartParking.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -99,5 +101,44 @@ public class UnitAppService : CrudAppService<
             return Result<UnitDto>.Error($"Unit with code '{unitCode}' not found.");
         }
         return Result<UnitDto>.Success(ObjectMapper.Map<Unit, UnitDto>(unit));
+    }
+
+    public async Task<PagedResultDto<UnitDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
+    {
+        var queryable = await _repository.GetQueryableAsync();
+
+        if (!string.IsNullOrWhiteSpace(input.SearchingTerm))
+        {
+            queryable = queryable.Where(u =>
+                u.Code.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                u.Description.ToLower().Contains(input.SearchingTerm.ToLower()));
+        }
+
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+
+        var units = await AsyncExecuter.ToListAsync(queryable);
+        var unitsDto = ObjectMapper.Map<List<Unit>, List<UnitDto>>(units);
+
+        return new PagedResultDto<UnitDto>(totalCount, unitsDto);
+    }
+
+    public async Task<PagedResultDto<UnitDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+        var queryable = await _repository.GetQueryableAsync();
+
+        var filterExpression = BuildExpression<Unit>.BuildFilterExpression(input.filters);
+        if (filterExpression is not null)
+        {
+            queryable = queryable.Where(filterExpression);
+        }
+
+        var totalCount = await AsyncExecuter.CountAsync(queryable);
+        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+
+        var units = await AsyncExecuter.ToListAsync(queryable);
+        var unitsDto = ObjectMapper.Map<List<Unit>, List<UnitDto>>(units);
+
+        return new PagedResultDto<UnitDto>(totalCount, unitsDto);
     }
 }

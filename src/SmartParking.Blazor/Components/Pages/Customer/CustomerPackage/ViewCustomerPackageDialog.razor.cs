@@ -158,8 +158,10 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 CustomerPackageStatus displayStatus = BlazorPackageValidations.GetDisplayStatus(item);
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{displayStatus.ToString()}"]));
-                
-                
+
+                if (displayStatus != CustomerPackageStatus.Active)
+                    continue;
+
                 tableData.Rows.Add(rowDef);
             }
             itemData = tableData;
