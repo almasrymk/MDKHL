@@ -164,7 +164,7 @@ public partial class CustomerUnitPackageDialog
                 await UnitVehiclePackageAppService.DeleteByCustomerUnitPackage(id);
                 if(unitVehiclePackages is not null)
                     foreach (var unitVehiclePackage in unitVehiclePackages)
-                        await CustomerPackagesAppService.DeleteAsync(new CustomerPackageDeletionFromUnitDto { CustomerId = customerPackage.CustomerId, PlateNumber = unitVehiclePackage.EnPlateNumber, ActivationDate = customerPackage.ActivationDate, DeactivationDate = customerPackage.DectivationDate});
+                        await CustomerPackagesAppService.DeleteAsync(unitVehiclePackage.CustomerPackgeId);
                 Snackbar.Add(L["PackageDeletedSuccessfully"], Severity.Success);
                 StateHasChanged();
                 NavigationManager.Refresh();
