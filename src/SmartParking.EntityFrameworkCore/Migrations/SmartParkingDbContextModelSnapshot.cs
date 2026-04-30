@@ -3355,6 +3355,9 @@ namespace SmartParking.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("CustomerPackgeId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("CustomerUnitPackageId")
                         .HasColumnType("integer");
 
