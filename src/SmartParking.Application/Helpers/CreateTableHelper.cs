@@ -601,7 +601,6 @@ public static class CreateTableHelper
         else
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageName"), Name = "PackageName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "Package.EnglishName", IsFilterable = true });
-            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageTypeEnName"), Name = "PackageTypeName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "PackageType.EnglishName", IsFilterable = true });
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CountUsePackage"), Name = "CountUsePackage", TypeFilter = TypeFilter.Number, IsSortable = true, PropertyName = "CountUsePackage", IsFilterable = true });
         tableData.Columns.Add(new ColumnDef() { DisplayName = $"{LocalizationHelper.GetLocalizedString("ValueOfPackage")}", Name = "ValueOfPackage", TypeFilter = TypeFilter.Number, IsSortable = true, PropertyName = "ValueOfPackage", IsFilterable = true , TypeOfColumn = typeof(decimal) });
@@ -626,7 +625,6 @@ public static class CreateTableHelper
             else
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageName"), payment.Package.EnglishName));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageTypeEnName"), payment.PackageType.EnglishName));
             }
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CountUsePackage"), payment.CountUsePackage.ToString()));            
             rowDef.Cells.Add(new KeyValuePair<string, string>(
