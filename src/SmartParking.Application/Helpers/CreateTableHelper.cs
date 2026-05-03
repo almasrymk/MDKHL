@@ -456,7 +456,7 @@ public static class CreateTableHelper
                     ? payment.Invoice.InvoicePrice.ToString()
                     : (payment.CustomerPackage?.PriceOfPackage?.ToString() ?? "0.0");
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Amount"), $"{amount} {IconHtml}"));
-            var vatValue = payment.Invoice==null ? payment.CustomerPackage?.Vat.ToString() : Math.Round((payment.Invoice?.InvoicePrice ??0) * 0.15m, 2).ToString();
+            var vatValue = payment.Invoice==null ? payment.CustomerPackage?.Vat.ToString() : Math.Round(((payment.Invoice?.InvoicePrice ??0)-(payment.Invoice?.Discount ?? 0)) * 0.15m, 2).ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentVat"), $"{vatValue} {IconHtml}"));
             var discountValue = payment.Invoice == null ? payment.CustomerPackage?.Discount.ToString() : payment.Invoice?.Discount.ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Discount"), $"{discountValue} {IconHtml}"));
