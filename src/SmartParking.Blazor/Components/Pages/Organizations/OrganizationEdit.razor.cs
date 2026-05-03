@@ -238,7 +238,7 @@ public partial class OrganizationEdit
         _organizationSettingsDto.OwnerSlots = organization.OrganizationSettings.OwnerSlots;
         _organizationSettingsDto.IsSlotsEditable = organization.OrganizationSettings.IsSlotsEditable;
         _organizationSettingsDto.OwnerVehicles = organization.OrganizationSettings.OwnerVehicles;
-        //StateHasChanged();
+        StateHasChanged();
 
     }
 
