@@ -159,7 +159,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{displayStatus.ToString()}"]));
 
-                if (displayStatus != CustomerPackageStatus.Active)
+                if (displayStatus == CustomerPackageStatus.Deleted || displayStatus == CustomerPackageStatus.Expired)
                     continue;
 
                 tableData.Rows.Add(rowDef);
