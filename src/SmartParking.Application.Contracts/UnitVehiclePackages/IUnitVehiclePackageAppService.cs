@@ -20,7 +20,7 @@ public interface IUnitVehiclePackageAppService : ICreateAppService<UnitVehiclePa
     /// <param name="UnitCode">The code of the unit to check for vehicle duplication. Cannot be null or empty.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains <see langword="true"/> if a
     /// duplicate vehicle exists for the customer; otherwise, <see langword="false"/>.</returns>
-    Task<bool> CheckDuplicationForVehicle(Guid CustomerId, string EnPlateNumber, string unitCode);
+    Task<bool> CheckDuplicationForVehicle(string EnPlateNumber, int customerUnitPackageId);
 
     /// <summary>
     /// Retrieves all unit vehicle package information associated with the specified customer.

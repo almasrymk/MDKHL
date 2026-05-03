@@ -75,11 +75,10 @@ public class UnitVehiclePackageAppService : CrudAppService<
     }
 
 
-    public async Task<bool> CheckDuplicationForVehicle(Guid CustomerId, string EnPlateNumber, string UnitCode)
+    public async Task<bool> CheckDuplicationForVehicle(string EnPlateNumber, int customerUnitPackageId)
     {
          return await _repository.AnyAsync(x => x.EnPlateNumber == EnPlateNumber 
-         && x.CustomerId == CustomerId 
-         && x.UnitCode == UnitCode);
+         && x.CustomerUnitPackageId == customerUnitPackageId);
     }
 
     public async Task<PagedResultDto<UnitVehiclePackageDto>> GetAllByCustomerId(Guid customerId, PagedAndSortedResultRequestDto input)

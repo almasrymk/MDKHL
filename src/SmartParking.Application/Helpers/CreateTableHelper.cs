@@ -456,7 +456,7 @@ public static class CreateTableHelper
                     ? payment.Invoice.InvoicePrice.ToString()
                     : (payment.CustomerPackage?.PriceOfPackage?.ToString() ?? "0.0");
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Amount"), $"{amount} {IconHtml}"));
-            var vatValue = payment.Invoice==null ? payment.CustomerPackage?.Vat.ToString() : Math.Round((payment.Invoice?.InvoicePrice ??0) * 0.15m, 2).ToString();
+            var vatValue = payment.Invoice==null ? payment.CustomerPackage?.Vat.ToString() : Math.Round(((payment.Invoice?.InvoicePrice ??0)-(payment.Invoice?.Discount ?? 0)) * 0.15m, 2).ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PaymentVat"), $"{vatValue} {IconHtml}"));
             var discountValue = payment.Invoice == null ? payment.CustomerPackage?.Discount.ToString() : payment.Invoice?.Discount.ToString();
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("Discount"), $"{discountValue} {IconHtml}"));
@@ -601,7 +601,6 @@ public static class CreateTableHelper
         else
         {
             tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageName"), Name = "PackageName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "Package.EnglishName", IsFilterable = true });
-            tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("PackageTypeEnName"), Name = "PackageTypeName", TypeFilter = TypeFilter.Text, IsSortable = true, PropertyName = "PackageType.EnglishName", IsFilterable = true });
         }
         tableData.Columns.Add(new ColumnDef() { DisplayName = LocalizationHelper.GetLocalizedString("CountUsePackage"), Name = "CountUsePackage", TypeFilter = TypeFilter.Number, IsSortable = true, PropertyName = "CountUsePackage", IsFilterable = true });
         tableData.Columns.Add(new ColumnDef() { DisplayName = $"{LocalizationHelper.GetLocalizedString("ValueOfPackage")}", Name = "ValueOfPackage", TypeFilter = TypeFilter.Number, IsSortable = true, PropertyName = "ValueOfPackage", IsFilterable = true , TypeOfColumn = typeof(decimal) });
@@ -626,7 +625,6 @@ public static class CreateTableHelper
             else
             {
                 rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageName"), payment.Package.EnglishName));
-                rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("PackageTypeEnName"), payment.PackageType.EnglishName));
             }
             rowDef.Cells.Add(new KeyValuePair<string, string>(LocalizationHelper.GetLocalizedString("CountUsePackage"), payment.CountUsePackage.ToString()));            
             rowDef.Cells.Add(new KeyValuePair<string, string>(

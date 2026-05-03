@@ -120,12 +120,12 @@ public partial class AssignVehicleToPackageDialog
         {
             
             var customerUnitPackage = customerUnitPackages.FirstOrDefault(x => x.Id == int.Parse(customerUnitId));
-            //var flag = await UnitVehiclePackageAppService.CheckDuplicationForVehicle(CustomerId, Vehicle.EnPlateNumber, customerUnitPackage.UnitCode);
-            //if (flag)
-            //{
-            //    SnackBar.ShowSnackbar(Snackbar, L["DuplicateVehicleForCustomer"], Severity.Error);
-            //    return;
-            //}
+            var flag = await UnitVehiclePackageAppService.CheckDuplicationForVehicle(Vehicle.EnPlateNumber, customerUnitPackage.Id);
+            if (flag)
+            {
+                SnackBar.ShowSnackbar(Snackbar, L["DuplicateVehicleForCustomer"], Severity.Error);
+                return;
+            }
             var assigned = await UnitVehiclePackageAppService.GetAllByCustomerUnitPackageId(customerUnitPackage.Id);
             var vehicleCounts = assigned.Count();
             var result1 = await CustomerUnitPackageAppService.CheckCustomerUnitPackageVehicleLimitations(CustomerId, vehicleCounts);

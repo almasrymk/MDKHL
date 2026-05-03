@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
@@ -374,8 +375,9 @@ public partial class Package
             ["Name"] = Name,
 
         };
-        var Subscribers = int.Parse(row.Cells[4].Value);
-        if (Subscribers > 0)
+        var status = row.Cells[4].Value;
+        var Subscribers = Enum.Parse<Status>((status == "In Active") ? "Inactive" : status);
+        if ((int)Subscribers > 0)
         {
             SnackBar.ShowSnackbar(Snackbar,L["DelPackage"], Severity.Warning);
             return;
@@ -412,7 +414,7 @@ public partial class Package
         catch (Exception ex)
         {
 
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {ex.Message} ", Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.FAILED]} {L[AlertMessages.AlertMessages.DELETE]} : {L["DelPackage"]}", Severity.Error);
         }
 
 

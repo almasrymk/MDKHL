@@ -186,6 +186,7 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
 
             if (packageDto is null)
                 return FailResponse(request.CarNum, PackageNotFound);
+            transactionDto.CustomerCategory = packageDto.CustomerCategory;
 
             var result = await _garageTransactionEndPointsAppService
                                .HandleExit(transactionDto, organization, endPointDto, packageDto);
