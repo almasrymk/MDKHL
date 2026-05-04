@@ -30,7 +30,9 @@ public static class CustomerPackageExtensions
 
        return query = query.Where(x =>
             x.OrganizationId == organizationId &&
-            x.CustomerPackageStatus == CustomerPackageStatus.Active );
+            x.CustomerPackageStatus == CustomerPackageStatus.Active )
+            .OrderByDescending(x=>x.ExpiryDate)
+            .ThenByDescending(x=>x.ActivationDateOfPackage);
 
     }
 }
