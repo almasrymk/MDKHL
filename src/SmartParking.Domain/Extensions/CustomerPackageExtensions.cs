@@ -30,7 +30,7 @@ public static class CustomerPackageExtensions
 
        return query = query.Where(x =>
             x.OrganizationId == organizationId &&
-            x.CustomerPackageStatus == CustomerPackageStatus.Active )
+            x.CustomerPackageStatus == CustomerPackageStatus.Active && x.ExpiryDate.Date >= DateTime.Now.Date)
             .OrderByDescending(x=>x.ExpiryDate)
             .ThenByDescending(x=>x.ActivationDateOfPackage);
 
