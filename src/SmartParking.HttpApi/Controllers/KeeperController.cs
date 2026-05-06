@@ -176,7 +176,7 @@ public class KeeperController : AbpController
         var invoice = await _keeperAppService.CheckoutAsync(InvoiceId, paymentMethodType, DiscountValue);
         var gt = await _garageTransactionsAppService.GetAsync(invoice.Value.GarageTransactionExitId);
         string code = gt.LaneNO;
-        if (!string.IsNullOrEmpty(gt.LaneNO))
+        if (string.IsNullOrEmpty(gt.LaneNO))
         {
             code =await _watcherAppService.GetWatcherCodeByWatcherIdAsync(gt.CameraId.Value);
         }
