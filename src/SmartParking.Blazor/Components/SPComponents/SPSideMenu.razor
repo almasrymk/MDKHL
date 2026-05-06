@@ -92,12 +92,12 @@
                 }
                 
 
-                 @if (AuthorizationService.IsGrantedAnyAsync(CameraPermissions.Default).Result)
+                 @if (AuthorizationService.IsGrantedAnyAsync(CameraPermissions.Default).Result && _isCamera)
                  {
                      <MudNavLink Href="/cameras" Icon="@Icons.Material.Filled.CameraAlt">@L["Cameras"]</MudNavLink>
                  }
 
-                @if (AuthorizationService.IsGrantedAnyAsync(DispenserPermissions.Default).Result || currenttenant.Id == null)
+                @if ((AuthorizationService.IsGrantedAnyAsync(DispenserPermissions.Default).Result || currenttenant.Id == null) && _isDispencer)
                  {
                      <MudNavLink Href="/dispensers" Icon="@Icons.Material.Filled.EmojiTransportation">@L["Dispensers"]</MudNavLink>
                  }
@@ -253,6 +253,8 @@
     private bool _isUserAccess;
     private bool _isAdmin = false;
     private bool _isShift = false;
+    private bool _isDispencer = false;
+    private bool _isCamera = false;
     public void HandleLogout()
     {
         NavigationManager.NavigateTo("/logOut", true);
@@ -260,6 +262,9 @@
     protected override async Task OnInitializedAsync()
     {
         var organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
+
+        _isDispencer = organization?.DispenserTransaction ?? true;
+        _isCamera = organization?.CameraTransaction ?? true;
 
         if(organization is null)
         {
