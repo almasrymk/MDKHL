@@ -43,7 +43,11 @@ namespace SmartParking.Blazor.Components.Pages.MyAccount
         private TimeSpan? _closingHoursEnd { get; set; }
         private string _code { get; set; }
         private string _address { get; set; }
-        private CreateUpdateOrganiztionDto _createUpdateOrganization { get; set; } = new();
+        //private CreateUpdateOrganiztionDto _createUpdateOrganization { get; set; } = new(new CreateUpdateOrganizationSettingsDto());
+        private CreateUpdateOrganiztionDto _createUpdateOrganization { get; set; } = new CreateUpdateOrganiztionDto
+        {
+            OrganizationSettingsDto = new OrganizationSettingsDto()
+        };
         private int _organizationId;
         private readonly IMapper _mapper;
         private bool _status = true;
@@ -162,7 +166,7 @@ namespace SmartParking.Blazor.Components.Pages.MyAccount
             _organizationPicture = organization.OrganizationPicture ?? "";
             _address = organization.Address;
             _createUpdateOrganization = _mapper.Map<CreateUpdateOrganiztionDto>(organization);
-
+            _createUpdateOrganization.OrganizationSettingsDto = organization.OrganizationSettings;
             _status = organization.Status == Enums.Status.Active;
 
             if (CultureInfo.CurrentCulture.Name == "en")
