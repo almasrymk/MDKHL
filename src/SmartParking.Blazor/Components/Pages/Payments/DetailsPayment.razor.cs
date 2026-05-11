@@ -42,9 +42,13 @@ public partial class DetailsPayment
             Total = Payment.Amount == 0 ? "0.0" : Payment.Amount.ToString();
             Amount = dto.PriceOfPackage?.ToString() ?? paymentRelation.Price.ToString();
             if (dto.Vat.ToString() is null || dto.Vat == 0)
-                Vat =  paymentRelation.Vat.ToString();
+                Vat = paymentRelation.Vat.ToString();
+            else
+                Vat = dto.Vat.ToString();
             if (dto.Discount.ToString() is null || dto.Discount == 0)
                 Discount = paymentRelation.Discount.ToString();
+            else
+                Discount = dto.Discount.ToString();
             Payment?.customerPackageDto?.PackageArabicName = 
                 Payment?.customerPackageDto?.PackageArabicName is not null ? Payment?.customerPackageDto?.PackageArabicName : paymentRelation.ArabicName;
             Payment?.customerPackageDto?.PackageEnglishName = 
