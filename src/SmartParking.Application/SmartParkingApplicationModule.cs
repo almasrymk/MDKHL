@@ -55,6 +55,7 @@ public class SmartParkingApplicationModule : AbpModule
         context.Services.AddScoped<ILocalizationFactoryAppService, InvoiceLocalizationAppService>();
         context.Services.AddScoped<InvoicePDFAppService>();
         context.Services.AddScoped<PackagePDFAppService>();
+        context.Services.AddScoped<UnitPackagePDFAppService>();
         context.Services.AddScoped<IPdfGeneratorFactoryAppService, PdfGeneratorFactoryAppService>();
         context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsCameraActionsAppService>();
         context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsDispenserActionsAppService>();

@@ -78,4 +78,37 @@ public class InvoiceLocalizationAppService :SmartParkingAppService, ILocalizatio
             PaymentPrice: dto.PaymentAmount
         );
     }
+
+    public UnitPackageLocalizationData CreateUnitPackageLocalization(UnitPackageLocalizationCreateDto dto)
+    {
+        var culture = CultureInfo.CurrentCulture.Name;
+        bool isArabic = culture == "ar";
+
+        return new UnitPackageLocalizationData(
+            CurrentPath: Directory.GetCurrentDirectory(),
+            QRCodePath: dto.QRCodePath,
+            UnitPackageNumber: isArabic ? "رقم باقة الوحدة" : "Unit Package Number",
+            SimplifiedTaxInvoice: isArabic ? "فاتورة ضريبية مبسطة" : "Simplified Tax Invoice",
+            HeaderVatReceiptPayment: isArabic ? "سداد ضريبة القيمة المضافة" : "VAT Payment Receipt",
+            Vats: isArabic ? "الضريبة (15%)" : "VAT",
+            Sar: isArabic ? "ريال سعودي" : "SAR",
+            CashierNo: isArabic ? "اسم الكاشير" : "Cashier Name",
+            OrganizationName: isArabic ? "اسم المنشأة" : "Organization Name",
+            OrganizationAddress: isArabic ? "عنوان المنشأة" : "Organization Address",
+            UnitCode: isArabic ? "كود الوحدة" : "Unit Code",
+            SubscriptionDate: isArabic ? "تاريخ التفعيل" : "Subscription Time",
+            ExpirationDate: isArabic ? "تاريخ الإنتهاء" : "Expiration Time",
+            Subscription: isArabic ? "الاشتراك" : "Subscription",
+            Duration: isArabic ? "المدة" : "Duration",
+            Days: isArabic ? "أيام" : "Days",
+            TotalPreVAT: isArabic ? "المجموع" : "Total Before VAT",
+            TotalIncludeVAT: isArabic ? "الإجمالي " : "Total After VAT",
+            Discount: isArabic ? "الخصم" : "Discount",
+            After: isArabic ? "بعد" : "After",
+            UnitPackageNumberView: isArabic ? "باقة وحدة" : "Unit Package",
+            Price: dto.Price,
+            PaymentPrice: dto.PaymentAmount,
+            PaymentNumber: isArabic ? "رقم الفاتورة" : "Payment Number"
+        );
+    }
 }
