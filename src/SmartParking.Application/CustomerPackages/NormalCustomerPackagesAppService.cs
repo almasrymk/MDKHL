@@ -121,6 +121,7 @@ public class NormalCustomerPackagesAppService : BaseCustomerPackagesAssigingAppS
         return await base.UpdateCustomerPackage(customerPackageId, input);
     }
 
+    
 
     #region Private Methods
     /// <summary>

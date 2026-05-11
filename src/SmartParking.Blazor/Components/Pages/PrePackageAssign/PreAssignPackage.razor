@@ -122,7 +122,8 @@
             CustomerPackageDto.Vat = Math.Round( (packagePrice - CustomerPackageDto.Discount) * 0.15m, 2);
             CustomerPackageDto.Customer = CustomerDto;
             var dto = CreateUpdateCustomerPackageDto.From(CustomerPackageDto);
-            var assignPackage = await CustomerPackagesAppService.AssignPackageToCustomerAsync(dto);
+            var defultPackage = await CustomerPackagesAppService.UpdateDefaultCustomerPackage(dto);
+            var assignPackage = (!defultPackage.IsSuccess) ? await CustomerPackagesAppService.AssignPackageToCustomerAsync(dto) : defultPackage;
 
             if (assignPackage.Errors.Count() >0)
                 throw new Exception(LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.FAILED) + " " +

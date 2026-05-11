@@ -44,4 +44,10 @@ public interface ICustomerPackagesAssigningAppService
     Task<PackageDto> GetPackageAsync(int packageId);
     Task<string> HandleQRCode(CreateUpdateCustomerPackageDto customerPackageDto, CustomerDto customer, CustomerPackage customerPackage);
     Task<CustomerPackageDto> UpdateCustomerPackage(int customerPackageId, CreateUpdateCustomerPackageDto input);
+    /// <summary>
+    /// method to update the default package for a customer. This method will be used when the customer wants to change their default package to a new one.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    Task<Result<CustomerPackageDto>> UpdateDefaultCustomerPackage(CreateUpdateCustomerPackageDto input);
 }
