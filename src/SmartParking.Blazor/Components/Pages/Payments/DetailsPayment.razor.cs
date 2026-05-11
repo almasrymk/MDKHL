@@ -2,7 +2,6 @@
 using MudBlazor;
 using SmartParking.Blazor.Components.Pages.Invoices;
 using SmartParking.CustomerPackages.Dtos;
-using SmartParking.CustomerUnitPackages;
 using SmartParking.Enums;
 using SmartParking.Payments;
 using SmartParking.Payments.PaymentRelations;
@@ -81,9 +80,54 @@ public partial class DetailsPayment
        await FetchPayment();
         
     }
-    private Task ViewInvoiceDetails()
+    private async Task<Task<IDialogReference>> ViewInvoiceDetails()
     {
+        Dictionary<string, Object> data = new();
+        if (Payment.Invoice is not null)
+        {
+            
+            data.Add("Cashier", Payment.CashierName);
+            data.Add("OrganizationArName", Payment.Organization.ArabicName);
+            data.Add("OrganizationAddress", Payment.Organization.Address);
+            data.Add("PlateNumber", Payment.Invoice.PlateNumber);
+            data.Add("EntranceTime", Payment.Invoice.EntranceTime.ToString());
+            data.Add("ExitTime", Payment.Invoice.InvoiceTime.ToString());
+            data.Add("Subscription", "Invoice");
+            data.Add("Duration", Payment.Invoice.TotalHours.ToString());
+            
+        }
 
+        else if(Payment.customerPackageDto is not null && Payment.customerPackageDto.CustomerId != Guid.Empty)
+        {
+            data.Add("Cashier", Payment.CashierName);
+            data.Add("OrganizationArName", Payment.Organization.ArabicName);
+            data.Add("OrganizationAddress", Payment.Organization.Address);
+            data.Add("PlateNumber", Payment.EnPlateNumber);
+            data.Add("EntranceTime", Payment.customerPackageDto.ActivationDateOfPackage.ToString());
+            data.Add("ExitTime", Payment.customerPackageDto.ExpiryDate.ToString());
+            data.Add("Subscription", "Package");
+            data.Add("Duration", Payment.customerPackageDto.DurationOfPackage.ToString());
+        }
+        else
+        {
+            var customerUnitPackage = await CustomerUnitPackageAppService.GetAsync(paymentRelation.PayableId);
+
+            data.Add("Cashier", Payment.CashierName);
+            data.Add("OrganizationArName", Payment.Organization.ArabicName);
+            data.Add("OrganizationAddress", Payment.Organization.Address);
+            data.Add("UnitCode", customerUnitPackage.UnitCode);
+            data.Add("EntranceTime", customerUnitPackage.ActivationDate.ToString());
+            data.Add("ExitTime", customerUnitPackage.DectivationDate.ToString());
+            data.Add("Subscription", "UnitPackage");
+            data.Add("Duration", customerUnitPackage.DurationOfPackage.ToString());
+        }
+
+        //var parameters = new DialogParameters
+        //{
+        //    ["JsonString"] = System.Text.Json.JsonSerializer.Serialize(data)
+        //};
+
+        //return DialogService.ShowAsync<DynamicPrintDialog>("", parameters);
 
         var parameters = new DialogParameters
         {
@@ -104,7 +148,8 @@ public partial class DetailsPayment
             ["Amount"] = Amount,
             ["Vat"] = Vat,
             ["Discount"] = Discount,
-            ["PaymentDetails"] = paymentRelation
+            ["PaymentDetails"] = paymentRelation,
+            ["JsonString"] = System.Text.Json.JsonSerializer.Serialize(data)
         };
         return DialogService.ShowAsync<InvoiceDetailsViewDialog>("", parameters);
 

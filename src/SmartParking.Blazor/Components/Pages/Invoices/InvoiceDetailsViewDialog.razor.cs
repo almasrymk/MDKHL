@@ -4,6 +4,7 @@ using SmartParking.Entities.Discounts;
 using SmartParking.Invoices;
 using SmartParking.Packages;
 using SmartParking.Payments.PaymentRelations;
+using System.Text.Json;
 
 namespace SmartParking.Blazor.Components.Pages.Invoices;
 
@@ -27,6 +28,8 @@ public partial class InvoiceDetailsViewDialog
     [Parameter] public string Vat { get; set; }
     [Parameter] public string Discount { get; set; }
     [Parameter] public string Total { get; set; }
+    [Parameter] public string JsonString { get; set; }
+    private Dictionary<string, object> _data;
     public decimal price { get; set; }
     public string title { get; set; }
     public string description { get; set; }
@@ -34,6 +37,18 @@ public partial class InvoiceDetailsViewDialog
 
     protected override async Task OnInitializedAsync()
     {
+        if (!string.IsNullOrEmpty(JsonString))
+        {
+            try
+            {
+                // Deserialize the JSON string into a dictionary
+                _data = JsonSerializer.Deserialize<Dictionary<string, object>>(JsonString);
+            }
+            catch (Exception ex)
+            {
+                _data = new Dictionary<string, object> { { "Error", "Invalid JSON format" } };
+            }
+        }
         if (Invoice is not null)
         {
             price = Invoice.InvoicePrice;
