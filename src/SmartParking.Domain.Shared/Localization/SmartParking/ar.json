@@ -1006,6 +1006,9 @@
     "UnitCode": "كود الوحده",
     "DeactivationDate": "تاريخ الانتهاء",
     "CustomerUnitPackageType": "النوع",
-    "CustomerUnitPackageDetails": "تفاصيل باقه وحده العميل"
+    "CustomerUnitPackageDetails": "تفاصيل باقه وحده العميل",
+    "OrganizationArName": "أسم المنشأه",
+    "Cashier": "اسم الكاشير",
+    "OrganizationAddress": "عنوان المنشاه"
   }
 }
