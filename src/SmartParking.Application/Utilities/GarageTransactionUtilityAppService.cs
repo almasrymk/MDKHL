@@ -12,6 +12,7 @@ using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Localization;
+using SmartParking.Mappers;
 using SmartParking.Organizations;
 using SmartParking.Services.GarageTransactions;
 using SmartParking.Services.Vehicles;
@@ -208,8 +209,9 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
    
     public async Task<GarageTransactionDto> GetTransactionById(int garagetransactionId)
     {
-         var garageTransactionDto= await _garageTransactionManager.GetTransactionById(garagetransactionId);
-        return ObjectMapper.Map<GarageTransaction,GarageTransactionDto>(garageTransactionDto);
+        var garageTransaction= await _garageTransactionManager.GetTransactionById(garagetransactionId);
+        var dto = garageTransaction.ToDto();
+        return dto;
 
     }
     public async Task<bool> ReserverSlotsOfGarageDependsOnCategoryAsync(int garageId, bool hasFreeSlots ,  CustomerCategoryStatus customer)

@@ -19,9 +19,16 @@
                               Height="70" />
                 </MudItem>
                 <MudItem xs="6" Class="text-center">
-                    <MudImage Src="@organizationDto.OrganizationPicture"
-                              Alt="LogoOrg"
-                              Height="70" />
+                    @if (!string.IsNullOrEmpty(organizationDto?.OrganizationPicture))
+                    {
+                        <MudImage Src="@organizationDto.OrganizationPicture"
+                                  Alt="LogoOrg"
+                                  Height="70" />
+                    }
+                    else
+                    {
+                        <MudProgressCircular Color="MudBlazor.Color.Default" Indeterminate="true" Size="MudBlazor.Size.Small" />
+                    }
                 </MudItem>
             </MudGrid>
         </MudPaper>

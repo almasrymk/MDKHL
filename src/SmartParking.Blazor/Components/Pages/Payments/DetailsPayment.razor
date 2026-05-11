@@ -1,6 +1,7 @@
 ﻿@page "/payments/view/{Id}"
 @using Microsoft.Extensions.Localization
 @using SmartParking.Currency
+@using SmartParking.CustomerUnitPackages
 @using SmartParking.Enums
 @using SmartParking.Invoices
 @using SmartParking.Localization
@@ -18,6 +19,7 @@
 @inject IDialogService DialogService
 @inject CurrentTenant currentTenant
 @inject IPaymentDetailsAppService PaymentRelationAppService
+@inject ICustomerUnitPackageAppService CustomerUnitPackageAppService
 
 
 <PageTitle>@L["View Details"]</PageTitle>

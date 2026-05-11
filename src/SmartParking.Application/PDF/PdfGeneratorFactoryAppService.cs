@@ -30,12 +30,16 @@ public class PdfGeneratorFactoryAppService : SmartParkingAppService, IPdfGenerat
              var service = _serviceProvider.GetRequiredService<InvoicePDFAppService>();
             return await service.CreatePdf(payment,PageSize);
         }
-        else if (payment.customerPackageDto is not null )
+        else if (payment.customerPackageDto is not null && payment.customerPackageDto.CustomerId != Guid.Empty)
         {
             var service= _serviceProvider.GetRequiredService<PackagePDFAppService>();
             return await service.CreatePdf(payment, PageSize);
         }
+        else
+        {
+            var service = _serviceProvider.GetRequiredService<UnitPackagePDFAppService>();
+            return await service.CreatePdf(payment, PageSize);
+        }
 
-        throw new InvalidOperationException("Payment is not associated with either Invoice or CustomerPackage.");
     }
 }

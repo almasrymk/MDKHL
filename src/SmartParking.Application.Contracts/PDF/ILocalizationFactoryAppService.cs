@@ -16,4 +16,5 @@ public interface ILocalizationFactoryAppService : IApplicationService
 {
     InvoiceLocalizationData Create(InvoiceLocalizationCreateDto dto);
     PackageLocalizationData CreatePackageLocalization(PackageLocalizationCreateDto dto);
+    UnitPackageLocalizationData CreateUnitPackageLocalization(UnitPackageLocalizationCreateDto dto);
 }
