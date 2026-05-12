@@ -10,6 +10,7 @@ using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Localization;
+using SmartParking.Mappers;
 using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.PDF;
@@ -337,6 +338,22 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
         return ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(entity);
     }
 
+    public async Task<Result<CustomerPackageDto>> UpdateDefaultCustomerPackage(CreateUpdateCustomerPackageDto input)
+    {
+        var query = await _repository.GetQueryableAsync();
+        var entity = await query.FirstOrDefaultAsync(cp => cp.CustomerId == input.CustomerId && cp.OrganizationId == input.OrganizationId && cp.EnPlateNumber == null);
+        if (entity is null)
+        {
+            return Result.Error();
+        }
+        input.MapToEntity(entity);
+        await _repository.UpdateAsync(entity, autoSave: true);
+
+        var dto = entity.ToDto();
+        return Result.Success(dto);
+
+    }
+
 
     #region Private Methods
 
@@ -391,6 +408,6 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
         return Code;
     }
 
-    
+
     #endregion
 }

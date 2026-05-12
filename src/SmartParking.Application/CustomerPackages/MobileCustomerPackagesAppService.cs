@@ -53,6 +53,9 @@ public class MobileCustomerPackagesAppService : BaseCustomerPackagesAssigingAppS
             customerPackage.TenantId = package.TenantId;
 
             customerPackage.QRCodePath = await HandleQRCode(dto, customer, customerPackage);
+            var defaultPackage = await UpdateDefaultCustomerPackage(dto);
+            if (defaultPackage.IsSuccess)
+                return defaultPackage;
             CustomerPackage result = await InsertCustomerPackageAsync(customerPackage);
             return ToDto(result);
 

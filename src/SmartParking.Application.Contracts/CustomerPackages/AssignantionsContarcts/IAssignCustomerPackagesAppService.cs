@@ -22,5 +22,6 @@ public interface IAssignCustomerPackagesAppService
     Task<Result<CustomerPackageDto>> AssignPackageToCustomerAsync(CreateUpdateCustomerPackageDto createUpdateCustomerPackageDto);
     Task<Result<UnitQrDto>> AssignUnitPackageToCustomerAsync(CreateUpdateCustomerPackageForUnitDto dto);
     Task<CustomerPackageDto> UpdateCustomerPackage(int customerPackageId, CreateUpdateCustomerPackageDto input);
+    Task<Result<CustomerPackageDto>> UpdateDefaultCustomerPackage(CreateUpdateCustomerPackageDto input);
 
 }
