@@ -210,6 +210,8 @@
         PriceStr = Package.Price.ToString("F2");
         DiscountStr = Package.Discount.ToString("F2");
         VatStr = Package.Vat.ToString("F2");
+        CustomerPackageStatusStr = L[Package.CustomerPackageStatus.ToString()];
+
     }
 
     protected override async Task OnInitializedAsync()
@@ -222,6 +224,7 @@
 
         PackageTypeDisplay = GetPackageTypeDisplay();
         CustomerPackageStatusStr = Package.CustomerPackageStatus.ToString();
+
     }
 
     /// <summary>

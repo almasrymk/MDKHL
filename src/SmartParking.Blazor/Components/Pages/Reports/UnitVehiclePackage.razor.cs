@@ -135,7 +135,11 @@ public partial class UnitVehiclePackage
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["UnitCode"], item.UnitCode ?? ""));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["FullName"], customerName ?? ""));
+            if (CultureInfo.CurrentCulture.Name == "en")
+                rowDef.Cells.Add(new KeyValuePair<string, string>(L["FullName"], customerName ?? ""));
+            else
+                rowDef.Cells.Add(new KeyValuePair<string, string>(L["FullName"], customer.ArabicName ?? ""));
+
             if (CultureInfo.CurrentCulture.Name == "en")
                 rowDef.Cells.Add(new KeyValuePair<string, string>(L["EnglishName"], englishName ?? ""));
             else
