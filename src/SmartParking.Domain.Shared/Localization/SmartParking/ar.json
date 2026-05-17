@@ -1009,6 +1009,10 @@
     "CustomerUnitPackageDetails": "تفاصيل باقه وحده العميل",
     "OrganizationArName": "أسم المنشأه",
     "Cashier": "اسم الكاشير",
-    "OrganizationAddress": "عنوان المنشاه"
+    "OrganizationAddress": "عنوان المنشاه",
+    "Units": "الوحدات",
+    "RenterSlots": "اماكن المستاجر",
+    "Permission:Unit": "اداره الوحدات",
+    "Permission:UnitVehiclePackage": "اداره باقات سياره الوحده"
   }
 }
