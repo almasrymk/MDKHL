@@ -26,6 +26,7 @@ using SmartParking.Entities.Payments;
 using SmartParking.Entities.Shifts;
 using SmartParking.Entities.StateManagements;
 using SmartParking.Entities.Subscriptions;
+using SmartParking.Entities.UnitPackageIntegrations;
 using SmartParking.Entities.Units;
 using SmartParking.Entities.UnitVehiclePackges;
 using SmartParking.Entities.Vehicles;
@@ -60,6 +61,7 @@ using SmartParking.Shifts.ShiftZones;
 using SmartParking.StateManagements;
 using SmartParking.Subscriptions;
 using SmartParking.SubscriptionTypes;
+using SmartParking.UnitPackageIntegrations.Dtos;
 using SmartParking.UnitPackages;
 using SmartParking.Units;
 using SmartParking.UnitVehiclePackages;
@@ -622,6 +624,9 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForPath(d => d.Package.DurationOfPackage, o => o.MapFrom(s => s.Package.DurationOfPackage))
             .ForPath(d => d.Package.Published, o => o.MapFrom(s => s.Package.Published));
         CreateMap<CreateUpdatePackageDto, PackageDto>();
+
+        CreateMap<UnitPackageIntegration, UnitPackageIntegrationDto>();
+        CreateMap<CreateUpdateUnitPackageIntegrationDto, UnitPackageIntegration>();
     }
 
 }
