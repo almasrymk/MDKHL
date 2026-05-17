@@ -15,6 +15,7 @@ using SmartParking.Entities.Payments;
 using SmartParking.Entities.Shifts;
 using SmartParking.Entities.StateManagements;
 using SmartParking.Entities.Subscriptions;
+using SmartParking.Entities.UnitPackageIntegrations;
 using SmartParking.Entities.Units;
 using SmartParking.Entities.UnitVehiclePackges;
 using SmartParking.Entities.Vehicles;
@@ -124,6 +125,7 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<Unit> Units { get; set; }
     public DbSet<UnitVehiclePackge> UnitVehiclePackges { get; set; }
     public DbSet<PaymentDetails> PaymentDetails { get; set; }
+    public DbSet<UnitPackageIntegration> UnitPackageIntegrations { get; set; }
 
     #endregion
 
