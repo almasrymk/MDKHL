@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using SmartParking.Entities.GarageTransactions;
+﻿using SmartParking.Entities.GarageTransactions;
 using SmartParking.GarageTransactions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SmartParking.Mappers
 {
@@ -11,6 +12,24 @@ namespace SmartParking.Mappers
         public static GarageTransactionDto ToDto(this GarageTransaction entity)
         {
             if (entity == null) return null;
+
+            var now = DateTime.Now;
+
+            var remainingTime =
+                !entity.CheckoutMobile.HasValue
+                    ? (DateTime?)null
+                    : entity.CheckoutMobile.Value.AddMinutes(entity.Organization?.Graceperiod ?? 0) <= now
+                        ? DateTime.MinValue
+                        : entity.CheckoutMobile.Value.AddMinutes(entity.Organization?.Graceperiod ?? 0);
+
+            var isPending =
+                entity.CheckoutMobile.HasValue &&
+                entity.CheckoutMobile.Value.AddMinutes(entity.Organization?.Graceperiod ?? 0) > now;
+
+            var canCheckout =
+                entity.CheckoutMobile.HasValue
+                    ? entity.CheckoutMobile.Value.AddMinutes(entity.Organization?.Graceperiod ?? 0) <= now
+                    : entity.CameraType == Enums.WatcherType.Entry;
 
             return new GarageTransactionDto
             {
@@ -27,20 +46,24 @@ namespace SmartParking.Mappers
                 IsIn = entity.IsIn,
                 CheckoutMobile = entity.CheckoutMobile,
                 IsMapped = entity.IsMapped,
-                RemainingTime = entity.RemainingTime,
-                IsPending = entity.IsPending,
                 CustomerCategory = entity.CustomerCategory,
-                CanCheckout = entity.CanCheckout,
                 DispenserId = entity.DispenserId,
                 LaneNO = entity.LaneNO,
                 TicketId = entity.TicketId,
 
-                // Mapping complex properties from Navigations
+                // Computed properties
+                RemainingTime = remainingTime,
+                IsPending = isPending,
+                CanCheckout = canCheckout,
+
+                // Navigation properties
                 OrganizationArabicName = entity.Organization?.ArabicName,
                 OrganizationEnglishName = entity.Organization?.EnglishName,
                 GarageArabicName = entity.Garage?.NameAr,
                 GarageEnglishName = entity.Garage?.NameEn,
                 ArabicName = entity.Garage?.NameAr,
+
+                // Auditing
                 CreationTime = entity.CreationTime,
                 CreatorId = entity.CreatorId,
                 LastModificationTime = entity.LastModificationTime,
@@ -50,7 +73,6 @@ namespace SmartParking.Mappers
                 IsDeleted = entity.IsDeleted
             };
         }
-
         // 2. CreateUpdateDto -> Entity (Create)
         public static GarageTransaction ToEntity(this CreateUpdateGarageTransactionDto dto)
         {

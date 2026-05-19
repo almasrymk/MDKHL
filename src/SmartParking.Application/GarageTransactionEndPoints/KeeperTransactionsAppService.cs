@@ -43,6 +43,11 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
     {
         var entryGarageTransaction = await _garageTransactionUtilityAppService.GetTransactionById(entryTransactionId);
         var invoice = await PreCheckout(entryTransactionId);
+        return await CheckoutProcess( entryGarageTransaction, invoice);
+    }
+
+    private async Task<Result<InvoiceDto>> CheckoutProcess(GarageTransactionDto entryGarageTransaction, CreateUpdateInvoiceDto invoice)
+    {
         if (entryGarageTransaction.CanCheckout == false)
         {
             if (entryGarageTransaction.IsIn == false)
@@ -50,12 +55,17 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
             else
                 throw new Exception("You have to wait Grace Period");
         }
-        var createdExitTransaction =await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction);
-        await _garageTransactionUtilityAppService.UpdateEntryTransactionCheckouFromMobile(entryTransactionId);
+        var createdExitTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction);
+        await _garageTransactionUtilityAppService.UpdateEntryTransactionCheckouFromMobile(entryGarageTransaction.Id);
         var garageTransaction = await _garageTransactionsAppService.CreateAsync(createdExitTransaction);
-        invoice.Value.GarageTransactionExitId = garageTransaction.Id;
-        invoice.Value.ExitTransactionImage = garageTransaction.VehiclePicture;
-        return await _invoiceAppService.CreateAsync(invoice.Value);
+        invoice.GarageTransactionExitId = garageTransaction.Id;
+        invoice.ExitTransactionImage = garageTransaction.VehiclePicture;
+        return await _invoiceAppService.CreateAsync(invoice);
+    }
+
+    public async Task<Result<InvoiceDto>> Checkout(GarageTransactionDto entryGarageTransaction, CreateUpdateInvoiceDto PreInvoice)
+    {
+        return await CheckoutProcess(entryGarageTransaction, PreInvoice);
     }
 
     public async Task<bool> OpenGate(OpenGateDto openGateDto)

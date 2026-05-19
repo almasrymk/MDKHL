@@ -38,19 +38,27 @@ public partial class PreCheckoutForInvoice
 
     private async Task PayInvoice()
     {
-        var invoice = await keeperTransactionsAppService.Checkout(GarageTransactionId);
-        Id = invoice.Value.Id;
-        if (Discount != default)
+        try
         {
-            await InvoiceAppService.UpdateDiscountForInvoice(Id, Discount);
+            var invoice = await keeperTransactionsAppService.Checkout(GarageTransactionDto, Invoice);
+            Id = invoice.Value.Id;
+            if (Discount != default)
+            {
+                await InvoiceAppService.UpdateDiscountForInvoice(Id, Discount);
+            }
+            PaymentCheckoutDto payment = await RequestToPaymentCheckout();
+            if (payment != null)
+            {
+                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]}  {L["Checkout"]}", MudBlazor.Severity.Success);
+                await Task.Delay(1000);
+                Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
+            }
         }
-        PaymentCheckoutDto payment = await RequestToPaymentCheckout();
-        if (payment != null)
+        catch (Exception ex)
         {
-            SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]}  {L["Checkout"]}", MudBlazor.Severity.Success);
-            await Task.Delay(1000);
-            Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
+            SnackBar.ShowSnackbar(Snackbar, L["GracePeriodValidation"], MudBlazor.Severity.Error);
         }
+
     }
 
     private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()
@@ -81,7 +89,7 @@ public partial class PreCheckoutForInvoice
         }
         catch(Exception ex)
         {
-            SnackBar.ShowSnackbar(Snackbar, L["GracePeriodValidation"], MudBlazor.Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, L[$"{ex.Message}"], MudBlazor.Severity.Error);
         }
         
 

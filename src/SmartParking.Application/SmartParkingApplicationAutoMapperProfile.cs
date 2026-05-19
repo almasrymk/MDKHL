@@ -339,7 +339,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
           ))
           .ForMember(d => d.CanCheckout, s => s.MapFrom(src =>
               src.CheckoutMobile.HasValue ?
-              src.CheckoutMobile.Value.AddMinutes(src.Organization.Graceperiod) <= DateTime.Now :  src.CreationTime.AddMinutes(src.Organization.Graceperiod) <= DateTime.Now
+              src.CheckoutMobile.Value.AddMinutes(src.Organization.Graceperiod) <= DateTime.Now :  src.CameraType == WatcherType.Entry
           )).ReverseMap();
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>().ReverseMap();        
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransactionDto>().ReverseMap();       

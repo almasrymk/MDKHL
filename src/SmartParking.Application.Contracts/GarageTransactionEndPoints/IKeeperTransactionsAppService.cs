@@ -1,4 +1,5 @@
-﻿using SmartParking.Invoices;
+﻿using SmartParking.GarageTransactions;
+using SmartParking.Invoices;
 using SmartParking.OpeningGate;
 using SmartParking.Results;
 using System;
@@ -19,6 +20,7 @@ public interface IKeeperTransactionsAppService : IApplicationService
     /// <returns>Invoice dto</returns>
 
     Task<Result<InvoiceDto>> Checkout(int entryTransactionId);
+    Task<Result<InvoiceDto>> Checkout(GarageTransactionDto entryGarageTransaction, CreateUpdateInvoiceDto PreInvoice);
 
     /// <summary>
     /// Method used to calculate pre invoice for keeper on entry transaction
