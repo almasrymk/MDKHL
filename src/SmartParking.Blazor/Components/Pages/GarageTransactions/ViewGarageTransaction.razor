@@ -2,6 +2,7 @@
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Cameras
 @using SmartParking.Cameras.Watchers.Dispensers
+@using SmartParking.CustomerPackages.CustomerPackageTransactions
 @using SmartParking.GarageTransactionEndPoints
 @using SmartParking.GarageTransactions
 @using SmartParking.Garages
@@ -16,6 +17,7 @@
 @inject IOrganizationsAppService OrganizationsAppService
 @inject ICamerasAppService CamerasAppService
 @inject IDispenserAppService DispenserAppService
+@inject ICustomerPackageHandlerAppService _customerPackagesHandlerAppService;
 @inject IGarageTransactionEndPointsAppService GarageTransactionAppService
 @inject IAuthorizationService AuthorizationService
 @inject NavigationManager Navigation
@@ -121,7 +123,7 @@
 
 				<MudButton Color="MudBlazor.Color.Dark" Variant="Variant.Filled" OnClick="OnCloseViewOnly">@L["Back"]</MudButton>
 
-				@if (AuthorizationService.IsGrantedAnyAsync(GarageTransactionPermissions.Checkout).Result && (GarageTransaction.CanCheckout == true ))
+				@if (AuthorizationService.IsGrantedAnyAsync(GarageTransactionPermissions.Checkout).Result && (GarageTransaction.CanCheckout == true ) && !_hasActivePackage)
 				{
 					<MudButton Variant="Variant.Filled"  Color="MudBlazor.Color.Primary" OnClick="PreCheckout"> @L["Checkout"]</MudButton>
 				}
