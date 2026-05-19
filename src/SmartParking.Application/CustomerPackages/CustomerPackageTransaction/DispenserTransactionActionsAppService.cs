@@ -14,7 +14,7 @@ using Volo.Abp.MultiTenancy;
 namespace SmartParking.CustomerPackages.CustomerPackageTransaction;
 [RemoteService(false)]
 
-public class DispenserTransactionActionsAppService : CustomerPackageTransactionBaseAppService
+public class DispenserTransactionActionsAppService : CustomerPackageTransactionBaseAppService 
 {
 
 

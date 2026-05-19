@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SmartParking.GarageTransactionEndPoints.Factory;
 
-public class GarageTransactionsActionsFactoryAppService : IGarageTransactionsActionsFactoryAppService
+public class GarageTransactionsActionsFactoryAppService : IGarageTransactionsActionsFactoryAppService 
 {
     private readonly IEnumerable<IGarageTransactionActionsAppService> _services;
 

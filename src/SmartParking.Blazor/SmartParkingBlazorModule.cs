@@ -170,10 +170,7 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.AddScoped<PreAssignPackageUnitState>();
         context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsCameraActionsAppService>();
         context.Services.AddScoped<IGarageTransactionActionsAppService, GarageTransactionsDispenserActionsAppService>();
-        context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, CameraTransactionActionsAppService>();
-        context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, DispenserTransactionActionsAppService>();
         context.Services.AddScoped<IGarageTransactionsActionsFactoryAppService, GarageTransactionsActionsFactoryAppService>();
-        context.Services.AddScoped<ICustomerPackageHandlerAppService, CustomerPackageHandlerAppService>();
         context.Services.AddScoped<IWatcherAppService, WatcherAppService>();
         context.Services.AddScoped<IAssignCustomerPackagesMobileAppService, MobileCustomerPackagesAppService>();
         context.Services.AddScoped<IAssignCustomerPackagesAppService, NormalCustomerPackagesAppService>();

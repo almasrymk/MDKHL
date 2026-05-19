@@ -12,11 +12,13 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using SmartParking.CustomerPackages.Dtos;
+using Volo.Abp.DependencyInjection;
+using SmartParking.CustomerPackages.Mappings;
 
 namespace SmartParking.CustomerPackages.CustomerPackageTransaction;
 
 [RemoteService(false)]
-public abstract class CustomerPackageTransactionBaseAppService : SmartParkingAppService, ICustomerPackageTransactionActionsAppService
+public abstract class CustomerPackageTransactionBaseAppService : ITransientDependency, ICustomerPackageTransactionActionsAppService
 {
     protected readonly IDataFilter DataFilter;
     protected readonly IRepository<CustomerPackage, int> Repository;
@@ -50,7 +52,7 @@ public abstract class CustomerPackageTransactionBaseAppService : SmartParkingApp
             query = ApplyActivePackageFilters(query, garageTransactionDto);
 
             var customerPackage = await query.FirstOrDefaultAsync();
-            return ObjectMapper.Map<CustomerPackage, CustomerPackageTransactionDto>(customerPackage);
+            return customerPackage.MapToCustomerPackageTransactionDto();
         }
     }
 
