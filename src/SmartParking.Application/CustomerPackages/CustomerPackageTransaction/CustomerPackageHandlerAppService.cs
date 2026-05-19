@@ -12,10 +12,12 @@ using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using SmartParking;
+using Volo.Abp.DependencyInjection;
 
 namespace SmartParking.CustomerPackages.CustomerPackageTransactions;
 [RemoteService(false)]
-public class CustomerPackageHandlerAppService : ICustomerPackageHandlerAppService
+public class CustomerPackageHandlerAppService :  ICustomerPackageHandlerAppService , ITransientDependency
 {
     private readonly IEnumerable<ICustomerPackageTransactionActionsAppService> _services;
     private readonly ICustomerUnitPackageAppService _customerUnitPackageAppService;
@@ -70,13 +72,27 @@ public class CustomerPackageHandlerAppService : ICustomerPackageHandlerAppServic
 
     public async Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackage(GarageTransactionDto garageTransactionDto)
     {
-        foreach (var action in _services) {
-            if (action.CanHandle(garageTransactionDto))
+        foreach (var action in _services)
+        {
+            Console.WriteLine($"Handler: {action.GetType().Name}");
+
+            var canHandle = action.CanHandle(garageTransactionDto);
+
+            Console.WriteLine($"CanHandle: {canHandle}");
+
+            if (canHandle)
             {
-               return await action.GetOneActiveCustomerPackage(garageTransactionDto);
+                Console.WriteLine("Before GetOneActiveCustomerPackage");
+
+                var result =
+                    await action.GetOneActiveCustomerPackage(garageTransactionDto);
+
+                Console.WriteLine("After GetOneActiveCustomerPackage");
+
+                return result;
             }
-        
         }
+
         return null;
     }
 

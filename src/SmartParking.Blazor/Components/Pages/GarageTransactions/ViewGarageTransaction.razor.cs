@@ -4,6 +4,7 @@ using MudBlazor;
 using SmartParking.GarageTransactions;
 using SmartParking.Organizations;
 using System.Globalization;
+using SmartParking.CustomerPackages.CustomerPackageTransactions;
 
 namespace SmartParking.Blazor.Components.Pages.GarageTransactions;
 
@@ -12,6 +13,9 @@ partial class ViewGarageTransaction
     [CascadingParameter]
     private IMudDialogInstance MudDialogAdd { get; set; }
     [Parameter] public GarageTransactionDto GarageTransaction { get; set; }
+    [Inject]
+    public ICustomerPackageHandlerAppService _customerPackagesHandlerAppService { get; set; }
+
     string cameraCode = "";
     string OrgName = "";
     string GarageName = "";
@@ -61,14 +65,13 @@ partial class ViewGarageTransaction
             var Camera = await CamerasAppService.GetAsync(GarageTransaction.CameraId.Value);
             cameraCode = Camera.DeviceId;
         }
-        else if(GarageTransaction.DispenserId != null)
+        else 5if(GarageTransaction.DispenserId != null)
         {
             var Dispenser = await DispenserAppService.GetAsync(GarageTransaction.DispenserId.Value);
             cameraCode = Dispenser.DeviceId;
 
         }
         CustomerCategory = GarageTransaction.CustomerCategory.ToString();
-        await base.OnInitializedAsync();
     }
 
     private void PreCheckout()
