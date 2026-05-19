@@ -124,7 +124,7 @@
                         @if (AuthorizationService.IsGrantedAnyAsync(CheckoutPermissions.CancelTransaction).Result)
                         {
                             <MudItem xs="@(ConfirmSize / 2)" Class="text-center pe-1">
-                                <MudButton FullWidth="true" Variant="Variant.Filled" Color="MudBlazor.Color.Error" Disabled="NoInvoice" OnClick="Cancel">@L["Cancel"]</MudButton>
+                                <MudButton FullWidth="true" Variant="Variant.Filled" Color="MudBlazor.Color.Error" Disabled="NoInvoice || IsPaying" OnClick="Cancel">@L["Cancel"]</MudButton>
                             </MudItem>
                         }
                         @if (AuthorizationService.IsGrantedAnyAsync(CheckoutPermissions.OpenGate).Result)
