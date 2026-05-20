@@ -178,6 +178,9 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.AddScoped<ICustomerPackagesCreationValidationsAppService, CustomerPackageCreationValidationsAppService>();
         context.Services.AddScoped<ISubscriptionActionsAppService, SubsctiptionActionsAppService>();
         context.Services.AddScoped<IWatcherAppService, WatcherAppService>();
+        context.Services.AddScoped<ICustomerPackageHandlerAppService, CustomerPackageHandlerAppService>();
+        context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, CameraTransactionActionsAppService>();
+        context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, DispenserTransactionActionsAppService>();
 
 
         // Define the supported cultures
