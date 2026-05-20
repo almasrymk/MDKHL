@@ -65,7 +65,7 @@ partial class ViewGarageTransaction
             var Camera = await CamerasAppService.GetAsync(GarageTransaction.CameraId.Value);
             cameraCode = Camera.DeviceId;
         }
-        else 5if(GarageTransaction.DispenserId != null)
+        else if(GarageTransaction.DispenserId != null)
         {
             var Dispenser = await DispenserAppService.GetAsync(GarageTransaction.DispenserId.Value);
             cameraCode = Dispenser.DeviceId;
