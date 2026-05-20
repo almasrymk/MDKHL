@@ -2,7 +2,6 @@
 using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.Entities.Organizations;
 using SmartParking.GarageTransactions;
-using System;
 using SmartParking.Extensions;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -12,13 +11,14 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using SmartParking.CustomerPackages.Dtos;
-using Volo.Abp.DependencyInjection;
 using SmartParking.CustomerPackages.Mappings;
+using Volo.Abp.DependencyInjection;
+using Volo.Abp.Uow;
 
 namespace SmartParking.CustomerPackages.CustomerPackageTransaction;
 
 [RemoteService(false)]
-public abstract class CustomerPackageTransactionBaseAppService : ITransientDependency, ICustomerPackageTransactionActionsAppService
+public abstract class CustomerPackageTransactionBaseAppService : ICustomerPackageTransactionActionsAppService, IScopedDependency, IUnitOfWorkEnabled
 {
     protected readonly IDataFilter DataFilter;
     protected readonly IRepository<CustomerPackage, int> Repository;
@@ -41,19 +41,25 @@ public abstract class CustomerPackageTransactionBaseAppService : ITransientDepen
     /// </summary>
     public virtual async Task<CustomerPackageTransactionDto> GetOneActiveCustomerPackage(GarageTransactionDto garageTransactionDto)
     {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            if (!ValidateGarageTransactionDto(garageTransactionDto))
+        //using (var uow = _unitOfWorkManager.Begin(
+        //   new AbpUnitOfWorkOptions { IsTransactional = false }))
+        //{
+            using (DataFilter.Disable<IMultiTenant>())
             {
-                return null!;
+                if (!ValidateGarageTransactionDto(garageTransactionDto))
+                {
+                    return null!;
+                }
+
+                var query = await Repository.GetQueryableAsync();
+                query = ApplyActivePackageFilters(query, garageTransactionDto);
+
+                var customerPackage = await query.FirstOrDefaultAsync();
+                if (customerPackage is null)
+                    return null;
+                return customerPackage.MapToCustomerPackageTransactionDto();
             }
-
-            var query = await Repository.GetQueryableAsync();
-            query = ApplyActivePackageFilters(query, garageTransactionDto);
-
-            var customerPackage = await query.FirstOrDefaultAsync();
-            return customerPackage.MapToCustomerPackageTransactionDto();
-        }
+        //}
     }
 
     /// <summary>

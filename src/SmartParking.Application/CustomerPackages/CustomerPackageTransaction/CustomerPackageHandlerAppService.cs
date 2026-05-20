@@ -12,12 +12,10 @@ using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
-using SmartParking;
-using Volo.Abp.DependencyInjection;
 
 namespace SmartParking.CustomerPackages.CustomerPackageTransactions;
 [RemoteService(false)]
-public class CustomerPackageHandlerAppService :  ICustomerPackageHandlerAppService , ITransientDependency
+public class CustomerPackageHandlerAppService :  ICustomerPackageHandlerAppService
 {
     private readonly IEnumerable<ICustomerPackageTransactionActionsAppService> _services;
     private readonly ICustomerUnitPackageAppService _customerUnitPackageAppService;
