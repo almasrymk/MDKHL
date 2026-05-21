@@ -1013,6 +1013,7 @@
     "Units": "الوحدات",
     "RenterSlots": "اماكن المستاجر",
     "Permission:Unit": "اداره الوحدات",
-    "Permission:UnitVehiclePackage": "اداره باقات سياره الوحده"
+    "Permission:UnitVehiclePackage": "اداره باقات سياره الوحده",
+    "Invoice is already paid": "الفاتوره مدفوعه مسبقا"
   }
 }
