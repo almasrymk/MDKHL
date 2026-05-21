@@ -168,7 +168,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             {
                 return Result.Error(@L["UnitNotFound"]);
             }
-            var customerDto = await _customerAppService.GetCustomerByPhoneNumberAsync(dto.phoneNumber);
+            var customerDto = await _customerAppService.GetCustomerByPhoneNumberAsync(dto.CustomerId);
             var customer = await UpdateCustomer(customerDto.Id, dto.Customer.MapToCustomerDto(dto.Customer));
             var resultValidate = await ValidateCustomerUnitPackage(customer.Id, dto, false);
             if (!resultValidate.IsSuccess)
