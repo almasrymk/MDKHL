@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Asn1.X509.Qualified;
 using SmartParking.BarrierAppService;
+using SmartParking.CustomerPackages.CustomerPackageTransaction;
+using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.DispenserEndPoint;
 using SmartParking.Events;
 using SmartParking.GarageTransactionEndPoints.Factory;
@@ -26,7 +29,6 @@ using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
-using Volo.Abp.Threading;
 
 namespace SmartParking;
 
@@ -64,6 +66,11 @@ public class SmartParkingApplicationModule : AbpModule
         context.Services.AddTransient<IInvoiceActionsAppService, InvoiceCameraActionsAppService>();
         context.Services.AddTransient<IInvoiceActionsAppService, InvoiceDispenserActionsAppService>();
         context.Services.AddScoped<IWatcherAppService, WatcherAppService>();
+        context.Services.AddScoped<ICustomerPackageHandlerAppService, CustomerPackageHandlerAppService>();
+        context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, CameraTransactionActionsAppService>();
+        context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, DispenserTransactionActionsAppService>();
+
+
 
         context.Services.AddTransient<WebSocketHeartbeatWorker>();
         Configure<AbpAutoMapperOptions>(options =>

@@ -996,9 +996,9 @@
     "OwnerSlots": "أماكن المالك",
     "RentalSlots": "أماكن المستأجر",
     "IsSlotsEditable": "تعديل أماكن الركن",
-    "CustomerUnitPackage": "باقات وحده العميل",
+    "CustomerUnitPackage": "باقات الوحدات / العميل",
     "PronightBooking": "حجوزات برونايت",
-    "UnitVehiclePackages": "باقات وحده السيارات",
+    "UnitVehiclePackages": "باقات الوحدات / السيارات",
     "Renter": "مؤجر",
     "Owner": "مالك",
     "Other": "اخر",
@@ -1013,6 +1013,7 @@
     "Units": "الوحدات",
     "RenterSlots": "اماكن المستاجر",
     "Permission:Unit": "اداره الوحدات",
-    "Permission:UnitVehiclePackage": "اداره باقات سياره الوحده"
+    "Permission:UnitVehiclePackage": "اداره باقات سياره الوحده",
+    "Invoice is already paid": "الفاتوره مدفوعه مسبقا"
   }
 }
