@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SmartParking.IntegrationUnit;
 using SmartParking.IntegrationUnit.Dtos;
-using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -13,12 +12,13 @@ namespace SmartParking.Controllers;
 [ApiController]
 public class IntegrationController : ControllerBase
 {
-    private readonly IIntegrationUnitAppService _integrationUnitAppService;
     private readonly ILogger<IntegrationController> _logger;
-    public IntegrationController(IIntegrationUnitAppService integrationUnitAppService, ILogger<IntegrationController> logger)
+    private readonly IIntegrationHandler _integrationHandler;
+    public IntegrationController(ILogger<IntegrationController> logger, 
+        IIntegrationHandler integrationHandler)
     {
-        _integrationUnitAppService = integrationUnitAppService;
         _logger = logger;
+        _integrationHandler = integrationHandler;
     }
 
     [HttpPost("book")]
@@ -30,20 +30,11 @@ public class IntegrationController : ControllerBase
          {
              WriteIndented = true
          }));
-        if (input.CustomerId is not null) 
-        { 
-            var updateResult = await _integrationUnitAppService.UpdateBookingAsync(input);
-            if (!updateResult.IsSuccess)
-            {
-                return BadRequest(updateResult);
-            }
-            return Ok(updateResult);
-        }
-
-        var result = await _integrationUnitAppService.CreateBookingAsync(input);
+        var result = await _integrationHandler.HandleBookingAsync(input);
         if (!result.IsSuccess)
         {
-            return BadRequest(result);
+            _logger.LogError("Booking failed: {Errors}", string.Join(", ", result.Errors));
+            return BadRequest(result.Errors);
         }
         return Ok(result);
     }
