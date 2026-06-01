@@ -1,7 +1,11 @@
 ﻿@inherits LayoutComponentBase
 @using MudBlazor
 @using SmartParking.Organizations
+@using SmartParking.Localization
+@using Microsoft.Extensions.Localization
+
 @inject IOrganizationsAppService organizationAppService
+@inject IStringLocalizer<SmartParkingResource> L
 
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -94,7 +98,8 @@
             <MudItem xs="12">
                 <div class="d-flex align-center flex-wrap" style="gap: 8px;">
                     <MudText Typo="Typo.body2" Class="mud-text-white">
-                        © 2024 Copyright TOT. All rights reserved.
+                        @* © 2024 Copyright TOT. All rights reserved. *@
+                        @L["All Copy Right Reserved for MDKHL 2024 - Access Control for people and vehicles"]
                     </MudText>
 
                     <MudText Typo="Typo.body2" Class="d-none d-sm-block mud-text-white">
