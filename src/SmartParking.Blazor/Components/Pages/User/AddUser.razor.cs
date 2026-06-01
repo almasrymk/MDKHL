@@ -32,6 +32,10 @@ public partial class AddUser
     }
     private async Task HandleBlur()
     {
+        if (string.IsNullOrEmpty(textField.Value))
+        {
+            return;
+        }
         var user = await UsersAppService.CheckPhoneIsUnique(textField.Value);
         if (user != null)
         {
