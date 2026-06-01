@@ -78,14 +78,8 @@ public abstract class CustomerPackageTransactionBaseAppService : ICustomerPackag
         GarageTransactionDto garageTransactionDto)
     {
 
-        //var accurateTime = garageTransactionDto.AccurateTime.Value;
-        //var timeOfDay = TimeOnly.FromTimeSpan(accurateTime.TimeOfDay);
        query = query.GetLastActivePackage(garageTransactionDto.OrganizationID);
-
-        // Apply identification filters (plate or ticket)
         query = ApplyIdentificationFilters(query, garageTransactionDto);
-
-
 
         return query;
     }
