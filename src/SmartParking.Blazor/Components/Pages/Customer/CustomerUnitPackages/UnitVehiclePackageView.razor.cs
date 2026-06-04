@@ -82,7 +82,7 @@ public partial class UnitVehiclePackageView
             SearchingTerm = pageInfo.SearchTerm
         };
 
-        var unitsDto = await CustomerUnitPackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId), input, includeDeleted: true);
+        var unitsDto = await CustomerUnitPackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId), input, includeDeleted: false, onlyActive: true);
         TotalItem = (int)unitsDto.TotalCount;
         await CreateTable(unitsDto);
     }
