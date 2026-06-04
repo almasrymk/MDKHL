@@ -111,7 +111,7 @@ public partial class CustomerUnitPackageDialog
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["NumberOfVehicles"], item.NumberOfVehicles.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["NumberOfSlots"], item.NumberOfSlots.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Published"], item.PublishTo==item.PublishFrom ? 24 + L["Hour"] : $" {item.PublishFrom} " + " - " + $" {item.PublishTo}"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], L[item.CustomerPackageStatus.ToString()]));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], (item.DectivationDate < DateTime.UtcNow) ? L["Expired"] : L[item.CustomerPackageStatus.ToString()]));
 
             tableData.Rows.Add(rowDef);
         }
