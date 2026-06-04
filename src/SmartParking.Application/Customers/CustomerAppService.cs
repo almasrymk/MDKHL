@@ -646,17 +646,20 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 MobileNumber = c.IdentityUser.PhoneNumber,
                 NationalId = c.NationalId,
                 PlateNumberArabic = vehicles.Count(e => e.CustomerId == c.Id) > 1 ? "متعدد" : vehicles.FirstOrDefault(e => e.CustomerId == c.Id)!.ArPlateNumber,
-                PlateNumberEnglish = vehicles.Count(e => e.CustomerId == c.Id) > 1 ? "متعدد" : vehicles.FirstOrDefault(e => e.CustomerId == c.Id)!.EnPlateNumber,
-                _packageEnglishNames = string.Join(", ", c.CustomerPackages
-                           .Where(_ =>
-                               (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true) && _.Status != Status.Deleted && _.DectivationDateOfPackage >= DateTime.UtcNow)
-                           .Select(cp => cp.PackageEnglishName)
-                           .Where(name => !string.IsNullOrWhiteSpace(name))),
-                _packageArabicNames = string.Join(", ", c.CustomerPackages
-                           .Where(_ =>
-                               (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true) && _.Status != Status.Deleted && _.DectivationDateOfPackage >= DateTime.UtcNow)
-                           .Select(cp => cp.PackageArabicName)
-                           .Where(name => !string.IsNullOrWhiteSpace(name))),
+                PlateNumberEnglish = vehicles.Count(e => e.CustomerId == c.Id) > 1 ? "Multi" : vehicles.FirstOrDefault(e => e.CustomerId == c.Id)!.EnPlateNumber,
+                _packageEnglishNames = c.CustomerPackages.Count(_ => (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true) && _.Status != Status.Deleted && _.DectivationDateOfPackage >= DateTime.UtcNow) > 1
+                    ? "Multi"
+                    : string.Join(", ", c.CustomerPackages
+                        .Where(_ => (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true) && _.Status != Status.Deleted && _.DectivationDateOfPackage >= DateTime.UtcNow)
+                        .Select(cp => cp.PackageEnglishName)
+                        .Where(name => !string.IsNullOrWhiteSpace(name))),
+
+                _packageArabicNames = c.CustomerPackages.Count(_ => (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true) && _.Status != Status.Deleted && _.DectivationDateOfPackage >= DateTime.UtcNow) > 1
+                    ? "متعدد"
+                    : string.Join(", ", c.CustomerPackages
+                        .Where(_ => (!customerCategory.HasValue || _.CustomerCategory == customerCategory) && (CurrentTenant.IsAvailable ? _.TenantId == CurrentTenant.Id.Value : true) && _.Status != Status.Deleted && _.DectivationDateOfPackage >= DateTime.UtcNow)
+                        .Select(cp => cp.PackageArabicName)
+                        .Where(name => !string.IsNullOrWhiteSpace(name))),
                 OrganizationArabicName = string.Join(", ", c.CustomerPackages
                                                     .Select(cp => cp.Organization.ArabicName).Distinct()),
                 OrganizationEnglishName = string.Join(", ", c.CustomerPackages
