@@ -19,8 +19,8 @@ public partial class OrganizationSubscription
         {
             Navigation.NavigateTo("/Account/AccessDenied", true);
         }
-        var orgId = await OrganizationAppService.GetOrganizationIdByTenant(currentTenant.Id);
-        var Organization = await OrganizationAppService.GetAsync(orgId);
+
+        var Organization = await OrganizationAppService.GetOrganizationByTenant(currentTenant.Id);
         SubscriptionArName = Organization.SubscriptionArabicName;
         SubscriptionEnName = Organization.SubscriptionEnglishName;
         NumbersOfGarages = Organization.NumbersOfGarages;

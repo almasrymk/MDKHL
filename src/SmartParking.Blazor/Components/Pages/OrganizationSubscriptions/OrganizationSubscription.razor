@@ -21,13 +21,13 @@
     @if (CultureInfo.CurrentCulture.Name == "en")
     {
         <MudItem sm="4">
-            <MudNumericField ReadOnly="true" @bind-Value="SubscriptionEnName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
+            <MudTextField ReadOnly="true" @bind-Value="SubscriptionEnName"  Label=@L["SubscriptionName"] />
         </MudItem>
     }
     else
     {
         <MudItem sm="4">
-            <MudNumericField ReadOnly="true" @bind-Value="SubscriptionArName" HideSpinButtons="true" Label=@L["SubscriptionName"] />
+            <MudTextField ReadOnly="true" @bind-Value="SubscriptionArName"  Label=@L["SubscriptionName"] />
         </MudItem>
     }
     <MudItem sm="4">
