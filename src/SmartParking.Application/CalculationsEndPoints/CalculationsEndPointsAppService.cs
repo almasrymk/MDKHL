@@ -112,10 +112,14 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
             return 0;
         }
 
-        DateTime packageStart = GetPackageDateTime(entranceTime, packageDto.PublishFromOfPackage);
+        //DateTime packageStart = GetPackageDateTime(entranceTime, packageDto.PublishFromOfPackage);
 
 
-        DateTime packageEnd = GetPackageDateTime(entranceTime, packageDto.PublishToOfPackage);
+        //DateTime packageEnd = GetPackageDateTime(entranceTime, packageDto.PublishToOfPackage);
+
+        DateTime packageStart = (DateTime)packageDto.ActivationDateOfPackage;
+
+        DateTime packageEnd = (DateTime)packageDto.DectivationDateOfPackage;
 
         if (packageEnd < packageStart)
         {

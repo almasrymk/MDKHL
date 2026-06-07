@@ -102,6 +102,18 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageName"], Name = "PackageEnglishName", IsFilterable = false, PropertyName = "PackageEnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
             }
 
+            if(CurrentTenant.Id is null)
+            {
+                if (CultureInfo.CurrentCulture.Name == "ar")
+                {
+                    tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Organization"], Name = "OrganizationArabicName", IsFilterable = false, PropertyName = "PackageArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
+                }
+                else
+                {
+                    tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Organization"], Name = "OrganizationEnglishName", IsFilterable = false, PropertyName = "PackageEnglishName", IsSortable = false, TypeFilter = TypeFilter.Text });
+                }
+            }
+
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["customer category"], Name = "CustomerCategory", IsFilterable = false, PropertyName = "CustomerCategory", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Price"], Name = "PriceOfPackage", IsFilterable = false, PropertyName = "PriceOfPackage", IsSortable = false, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PackageDuration"], Name = "DurationOfPackage", IsFilterable = false, PropertyName = "DurationOfPackage", IsSortable = false, TypeFilter = TypeFilter.Text });
@@ -130,6 +142,17 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 else
                 {
                     rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PackageName"], item.PackageEnglishName));
+                }
+                if (CurrentTenant.Id is null)
+                {
+                    if (CultureInfo.CurrentCulture.Name == "ar")
+                    {
+                        rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Organization"], item.Organization.ArabicName));
+                    }
+                    else
+                    {
+                        rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Organization"], item.Organization.EnglishName));
+                    }
                 }
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["customer category"], item.CustomerCategory.ToString()));
                 var iconHtml = CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "15px");

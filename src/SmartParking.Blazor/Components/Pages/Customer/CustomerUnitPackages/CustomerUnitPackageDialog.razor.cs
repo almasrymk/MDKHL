@@ -6,6 +6,7 @@ using SmartParking.Currency;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
+using SmartParking.Enums;
 using SmartParking.Organizations;
 using SmartParking.UnitPackages;
 using System.Globalization;
@@ -53,10 +54,12 @@ public partial class CustomerUnitPackageDialog
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn
         };
+
         customer = await CustomersAppService.GetAsync(Guid.Parse(CustomerId));
         organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
-        var result = await CustomerUnitPackageAppService.GetListOfUnitPackageByCustomer(Guid.Parse(CustomerId) , organization.Id);
-        await CreateTable(result);
+        var data = await CustomerUnitPackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId), input, includeDeleted: true);
+        //var result = await CustomerUnitPackageAppService.GetListOfUnitPackageByCustomer(Guid.Parse(CustomerId) , organization.Id);
+        await CreateTable(data.Items.ToList());
     }
 
     private async Task CreateTable(List<CustomerUnitPackageDto> packages)
@@ -89,8 +92,7 @@ public partial class CustomerUnitPackageDialog
 
         foreach (var item in packages)
         {
-            if (item.Status == Enums.Status.Deleted)
-                continue;
+            
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             if (CultureInfo.CurrentCulture.Name == "en")
@@ -111,7 +113,7 @@ public partial class CustomerUnitPackageDialog
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["NumberOfVehicles"], item.NumberOfVehicles.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["NumberOfSlots"], item.NumberOfSlots.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Published"], item.PublishTo==item.PublishFrom ? 24 + L["Hour"] : $" {item.PublishFrom} " + " - " + $" {item.PublishTo}"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], L[item.CustomerPackageStatus.ToString()]));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], (item.Status == Status.Deleted) ? L[item.Status.ToString()] : (item.DectivationDate < DateTime.UtcNow) ? L["Expired"] : ((item.ActivationDate > DateTime.UtcNow) ? L["InActive"] : L[item.CustomerPackageStatus.ToString()])));
 
             tableData.Rows.Add(rowDef);
         }

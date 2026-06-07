@@ -74,8 +74,15 @@ partial class ViewGarageTransaction
             cameraCode = Dispenser.DeviceId;
 
         }
-        var activePackage = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(GarageTransaction);
-        _hasActivePackage = activePackage != null;
+        if (GarageTransaction.IsMapped)
+        {
+            _hasActivePackage = true;
+        }
+        else
+        {
+            var activePackage = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(GarageTransaction);
+            _hasActivePackage = activePackage != null;
+        }
         
         CustomerCategory = GarageTransaction.CustomerCategory.ToString();
     }
