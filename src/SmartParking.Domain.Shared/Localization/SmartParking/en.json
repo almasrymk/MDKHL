@@ -966,7 +966,8 @@
     "Other": "Other",
     "OwnerVehicles": "Owner Vehicles",
     "CustomerUnitPackageDetails": "Customer Unit Package Details",
-    "InvoicePaidError": "Invoice Is Already Paid"
+    "InvoicePaidError": "Invoice Is Already Paid",
+    "Permission:CancelTransaction": "Cancel Transaction"
 
   }
 }
