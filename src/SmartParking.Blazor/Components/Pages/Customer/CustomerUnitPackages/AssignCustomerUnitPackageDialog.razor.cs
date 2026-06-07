@@ -148,7 +148,7 @@ public partial class AssignCustomerUnitPackageDialog
         {
             if (!IsCustom)
             {
-                var package = Packages.FirstOrDefault();
+                var package = CustomerPackage;
 
                 CustomerPackage.NumberOfSlots = package.NumberOfSlots;
                 CustomerPackage.NumberOfVehicles = package.NumberOfVehicles;
