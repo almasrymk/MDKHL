@@ -71,7 +71,11 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
 
         var currentOrganization = await organizationsAppService.GetOrganizationForCurrentTenatAsync();
         if(currentOrganization.OrganizationSettings.UseShifts==false)
-           return Result<ICollection<ShiftWatcherActionDto>>.Success(ObjectMapper.Map<List<Watcher>, List<ShiftWatcherActionDto>>(await _watcherRepository.GetListAsync()));
+        {
+            var allWatcherQuery = await _watcherRepository.GetQueryableAsync();
+            var allWatchers = await AsyncExecuter.ToListAsync(allWatcherQuery.Where(w => w.Status == Status.Active));
+            return Result<ICollection<ShiftWatcherActionDto>>.Success(ObjectMapper.Map<List<Watcher>, List<ShiftWatcherActionDto>>(allWatchers));
+        }
         var today = DateOnly.FromDateTime(DateTime.Now);
         var timeOfDay = TimeOnly.FromDateTime(DateTime.Now);
 
@@ -127,7 +131,7 @@ public class ShiftZoneActionAppService : SmartParkingAppService, IShiftZoneActio
 
         var watcherQuery = await _watcherRepository.GetQueryableAsync();
         var watchers = await AsyncExecuter.ToListAsync(
-            watcherQuery.Where(w => deviceIds.Contains(w.DeviceId)));
+            watcherQuery.Where(w => deviceIds.Contains(w.DeviceId) && w.Status == Status.Active));
 
 
         return Result<ICollection<ShiftWatcherActionDto>>.Success(ObjectMapper.Map<List<Watcher>, List<ShiftWatcherActionDto>>(watchers));
