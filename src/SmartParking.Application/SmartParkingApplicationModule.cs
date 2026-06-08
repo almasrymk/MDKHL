@@ -13,6 +13,7 @@ using SmartParking.Invoices;
 using SmartParking.Invoices.Factory;
 using SmartParking.KeeperShifts;
 using SmartParking.PDF;
+using SmartParking.PDF.Contracts;
 using SmartParking.Utilities;
 using SmartParking.Watchers;
 using SmartParking.WebSockets;

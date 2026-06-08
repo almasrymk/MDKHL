@@ -30,7 +30,7 @@ using SmartParking.MultiTenancy;
 using SmartParking.OpenGate;
 using SmartParking.OpeningGate;
 using SmartParking.Payments.PaymentIntegrations;
-using SmartParking.PDF;
+using SmartParking.PDF.Dtos;
 using SmartParking.Results;
 using SmartParking.Subscriptions;
 using SmartParking.Watchers;

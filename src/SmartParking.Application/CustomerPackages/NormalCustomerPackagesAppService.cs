@@ -10,7 +10,7 @@ using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.Packages;
-using SmartParking.PDF;
+using SmartParking.PDF.Contracts;
 using SmartParking.Results;
 using SmartParking.Subscriptions;
 using System;

@@ -1,13 +1,14 @@
 ﻿@page "/data-grid"
+@using System.Globalization
 @using Customs
 @using Microsoft.Extensions.Localization
+@using MudBlazor
 @using SmartParking.Blazor.Components.DataGrid
 @using SmartParking.Localization
 @using SmartParking.Organizations
-@using System.Globalization
 @using SmartParking.PDF
+@using SmartParking.PDF.Contracts
 @using Volo.Abp.Application.Dtos
-@using MudBlazor
 @using Volo.Abp.EventBus.Distributed
 @inject IOrganizationsAppService OrganizationsAppService
 @inject NavigationManager Navigation

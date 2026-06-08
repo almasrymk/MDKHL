@@ -7,6 +7,8 @@ using Microsoft.Extensions.Options;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Payments;
 using SmartParking.Payments.PaymentRelations;
+using SmartParking.PDF.Contracts;
+using SmartParking.PDF.Dtos;
 using SmartParking.QRCode;
 using SmartParking.Utilities;
 using System;

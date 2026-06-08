@@ -5,6 +5,8 @@ using iText.Layout.Element;
 using iText.Layout.Properties;
 using Microsoft.Extensions.Options;
 using SmartParking.Payments;
+using SmartParking.PDF.Contracts;
+using SmartParking.PDF.Dtos;
 using SmartParking.QRCode;
 using SmartParking.Utilities;
 using System.Globalization;

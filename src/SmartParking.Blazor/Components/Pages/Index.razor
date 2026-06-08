@@ -1,7 +1,10 @@
 ﻿
 @page "/"
 @page "/dashboard"
+@using System.Globalization
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Localization
+@using MudBlazor
 @using SmartParking.Analysis
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Currency
@@ -11,12 +14,10 @@
 @using SmartParking.Helpers
 @using SmartParking.Localization
 @using SmartParking.Organizations
-@using System.Globalization
 @using SmartParking.PDF
+@using SmartParking.PDF.Contracts
 @using SmartParking.Utilities
-@using MudBlazor
 @using Volo.Abp.MultiTenancy
-@using Microsoft.AspNetCore.Authorization
 @inherits SmartParkingComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IStringLocalizer<SmartParkingResource> L

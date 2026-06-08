@@ -1,4 +1,6 @@
 ﻿using SmartParking.Localization;
+using SmartParking.PDF.Contracts;
+using SmartParking.PDF.Dtos;
 using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;

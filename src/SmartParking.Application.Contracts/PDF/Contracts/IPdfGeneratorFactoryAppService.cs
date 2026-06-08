@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
-namespace SmartParking.PDF;
+namespace SmartParking.PDF.Contracts;
 
 public interface IPdfGeneratorFactoryAppService : IApplicationService
 {

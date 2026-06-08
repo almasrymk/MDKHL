@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.PDF;
+namespace SmartParking.PDF.Dtos;
 
 public class InvoicePdfData : PdfData<InvoiceDto>
 {

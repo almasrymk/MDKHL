@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.PDF;
+namespace SmartParking.PDF.Dtos;
 
 public abstract class BaseLocalizationCreateDto
 {

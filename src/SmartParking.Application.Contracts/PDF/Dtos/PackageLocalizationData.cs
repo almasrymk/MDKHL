@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartParking.PDF;
+namespace SmartParking.PDF.Dtos;
 
-public record InvoiceLocalizationData(
+public record PackageLocalizationData(
     string CurrentPath,
     string QRCodePath,
-    string InvoiceNumber,
+    string PackageNumber,
     string TicketId,
     string SimplifiedTaxInvoice,
     string HeaderVatReceiptPayment,
@@ -19,17 +19,17 @@ public record InvoiceLocalizationData(
     string OrganizationName,
     string OrganizationAddress,
     string PlateNumber,
-    string EntranceTime,
-    string ExitTime,
+    string SubscriptionDate,
+    string ExpirationDate,
     string Subscription,
-    string Hour,
     string Duration,
-    string Hours,
+    string Days,
     string TotalPreVAT,
     string TotalIncludeVAT,
     string Discount,
     string After,
-    string InvoiceNumberView,
+    string PackageNumberView,
     decimal Price,
-    decimal PaymentPrice
+    decimal PaymentPrice ,
+    string PaymentNumber
 );

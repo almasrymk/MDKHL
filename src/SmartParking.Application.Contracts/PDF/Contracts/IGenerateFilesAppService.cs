@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
 
-namespace SmartParking.PDF;
+namespace SmartParking.PDF.Contracts;
 
 public interface IGenerateFilesAppService :ITransientDependency
 {

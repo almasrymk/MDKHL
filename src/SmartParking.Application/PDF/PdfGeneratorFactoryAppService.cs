@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NuGet.Protocol.Plugins;
 using SmartParking.Payments;
+using SmartParking.PDF.Contracts;
 using System;
 using System.Collections.Generic;
 using System.IO;

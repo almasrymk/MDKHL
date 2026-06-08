@@ -1,6 +1,7 @@
 ﻿using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Localization;
+using SmartParking.PDF.Dtos;
 using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
-namespace SmartParking.PDF;
+namespace SmartParking.PDF.Contracts;
 
 public interface ILocalizationFactoryAppService : IApplicationService
 {
