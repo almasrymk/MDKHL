@@ -46,6 +46,7 @@ public class Program
                 .UseAutofac()
                 .UseSerilog();
             builder.Configuration.AddJsonFile("config.json", optional: false, reloadOnChange: true);
+            builder.Configuration.AddJsonFile("paymentconfig.json", optional: false, reloadOnChange: true);
             var configuration = builder.Configuration;
             var httpLoggingEnabled = configuration.GetValue<bool>("HttpLogging:Enabled");
             if (httpLoggingEnabled)

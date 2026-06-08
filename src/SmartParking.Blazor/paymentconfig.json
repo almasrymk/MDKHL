@@ -1,0 +1,48 @@
+{
+  "Payment": {
+    "ActiveProvider": "Geidea"
+  },
+  "Providers": {
+    "Oppwa": {
+      "Mode": "Test",
+      "Test": {
+        "BaseUrl": "https://eu-test.oppwa.com",
+        "Currency": "SAR",
+        "PaymentType": "DB",
+        "Auth": {
+          "TokenType": "Bearer",
+          "Token": "OGFjN2E0Yzc5Mzk0YmRjODAxOTM5NzM2ZjFhNzA2NDF8enlac1lYckc4QXk6bjYzI1NHNng="
+        },
+        "EntityId": "8ac7a4c79394bdc801939736f17e063d"
+      },
+      "Live": {
+        "BaseUrl": "https://eu-prod.oppwa.com",
+        "Currency": "SAR",
+        "PaymentType": "DB",
+        "Auth": {
+          "TokenType": "Bearer",
+          "Token": "LIVE_TOKEN"
+        },
+        "EntityId": "Live_Entity_Id"
+      }
+    },
+    "Geidea": {
+      "Mode": "Test",
+      "Test": {
+        "BaseUrl": "https://api.ksamerchant.geidea.net",
+        "MerchantPublicKey": "YOUR_TEST_MERCHANT_PUBLIC_KEY",
+        "ApiPassword": "YOUR_TEST_API_PASSWORD",
+        "Currency": "SAR",
+        "CallbackUrl": "/api/PaymentResult/geidea/callback"
+      },
+      "Live": {
+        "BaseUrl": "https://api.ksamerchant.geidea.net",
+        "MerchantPublicKey": "YOUR_LIVE_MERCHANT_PUBLIC_KEY",
+        "ApiPassword": "YOUR_LIVE_API_PASSWORD",
+        "Currency": "SAR",
+        "CallbackUrl": "/api/PaymentResult/geidea/callback"
+      }
+    }
+    
+  }
+}

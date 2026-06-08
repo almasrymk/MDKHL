@@ -141,7 +141,11 @@ public class SmartParkingBlazorModule : AbpModule
 
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         context.Services.Configure<OppwaRootOptions>(
-        context.Services.GetConfiguration().GetSection("Oppwa"));
+            context.Services.GetConfiguration().GetSection("Providers:Oppwa"));
+        context.Services.Configure<GeideaOptions>(
+            context.Services.GetConfiguration().GetSection(GeideaOptions.SectionName));
+        context.Services.Configure<PaymobOptions>(
+            context.Services.GetConfiguration().GetSection(PaymobOptions.SectionName));
         var configuration = context.Services.GetConfiguration();
         var tenantDomains = configuration.GetSection("TenantDomains").Get<string[]>();
         Configure<MyIntegrationOptions>(configuration);

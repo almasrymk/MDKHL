@@ -1,5 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SmartParking.Payments.PaymentIntegrations;
 using SmartParking.BarrierAppService;
 using SmartParking.DispenserEndPoint;
 using SmartParking.Events;
@@ -46,6 +47,25 @@ public class SmartParkingApplicationModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+  
+        // Register default implementation of IPaymentGatewayIntegrationService based on configuration
+        var configuration = context.Services.GetConfiguration();
+        var activeProviderStr = configuration["Payment:ActiveProvider"] ?? "Oppwa";
+        if (Enum.TryParse<GatewayKey>(activeProviderStr, true, out var activeProvider))
+        {
+            context.Services.AddTransient<IPaymentGatewayIntegrationService>(sp => activeProvider switch
+            {
+                GatewayKey.Oppwa   => sp.GetRequiredService<OppwaGatewayIntegrationService>(),
+                GatewayKey.Geidea  => sp.GetRequiredService<GeideaGatewayIntegrationService>(),
+                _                  => throw new NotSupportedException($"No IPaymentGateway registered for GatewayKey.{activeProvider}")
+            });
+        }
+        else
+        {
+            context.Services.AddTransient<IPaymentGatewayIntegrationService, GeideaGatewayIntegrationService>();
+        }
+        // ─────────────────────────────────────────────────────────────────────────────
+
         context.Services.AddTransient<IInvoiceUtilityAppService, InvoiceUtilityAppService>();
         context.Services.AddTransient<IBarrierAppService, BarrierAppService.BarrierAppService>();
         context.Services.AddTransient<IDispenserEndPointsAppService, DispenserEndPointsAppService>();

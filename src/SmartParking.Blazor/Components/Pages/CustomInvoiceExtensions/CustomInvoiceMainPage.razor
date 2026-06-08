@@ -1,4 +1,4 @@
-﻿@page "/checkout-extension/"
+@page "/checkout-extension/"
 @using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.InvoiceExtensionComponents
 @using SmartParking.Blazor.Components.Shared
@@ -18,8 +18,9 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IInvoiceActionsFactoryAppService InvoiceActionsFactory
 @inject IInvoiceUiAppService invoiceUiAppService
-@inject IOppwaIntegrationAppService OppwaIntegrationAppService
-@inject IJSRuntime JS 
+@* Inject the configured active IPaymentGateway directly — no hardcoded provider logic on the page *@
+@inject IPaymentGatewayIntegrationService gateway
+@inject IJSRuntime JS
 
 
 @attribute [AllowAnonymous]
@@ -67,28 +68,29 @@
                                 SelectedPaymentMethodChanged="OnPaymentMethodChanged"
                                 ProceedToPayment="ProceedToPayment" />
 
-            <div id="hyperpay-container"></div>
+            @* ── Unified payment container ───────────────────────────── *@
+            <div id="payment-container" class="mt-3"></div>
 
         </MudItem>
     </MudGrid>
 </MudContainer>
+
+@* ── HyperPay widget script (fully configuration-driven) ───────────────────────── *@
 <script>
     window.hyperPay = {
-        loadWidget: function (checkoutId, shopperResultUrl, brands) {
+        loadWidget: function (checkoutId, shopperResultUrl, brands, scriptUrl) {
 
             if (!checkoutId) {
                 console.error("HyperPay: checkoutId is missing");
                 return;
             }
 
-            // Remove previous widget if exists
             document.getElementById("hyperpay-script")?.remove();
             document.getElementById("hyperpay-form")?.remove();
 
-            // Create HyperPay script
             const script = document.createElement("script");
             script.id = "hyperpay-script";
-            script.src = `https://eu-test.oppwa.com/v1/paymentWidgets.js?checkoutId=${checkoutId}`;
+            script.src = scriptUrl || `https://eu-test.oppwa.com/v1/paymentWidgets.js?checkoutId=${checkoutId}`;
             script.crossOrigin = "anonymous";
 
             script.onload = function () {
@@ -98,13 +100,54 @@
                 form.className = "paymentWidgets";
                 form.setAttribute("data-brands", brands);
 
-                const container = document.getElementById("hyperpay-container");
+                const container = document.getElementById("payment-container");
                 if (!container) {
-                    console.error("HyperPay: container not found");
+                    console.error("HyperPay: payment-container not found");
                     return;
                 }
-
                 container.appendChild(form);
+            };
+
+            document.body.appendChild(script);
+        }
+    };
+</script>
+
+@* ── Geidea.js — hosted card form (tokenises PAN/CVV in the browser; nothing touches your server) *@
+<script>
+    window.geidea = {
+        loadCheckout: function (sessionId, merchantPublicKey, callbackUrl, jsUrl) {
+            if (!sessionId) {
+                console.error("Geidea: sessionId is missing");
+                return;
+            }
+
+            document.getElementById("geidea-script")?.remove();
+
+            const script = document.createElement("script");
+            script.id = "geidea-script";
+            script.src = jsUrl || "https://www.ksamerchant.geidea.net/hpp/geideaCheckout.min.js";
+
+            script.onload = function () {
+                // GeideaCheckout is the global exposed by gd.js/geideaCheckout.min.js
+                const checkout = new GeideaCheckout(
+                    function onSuccess(order) {
+                        console.log("Geidea success", order);
+                        // Geidea.js auto-redirects to callbackUrl; this is a safety fallback
+                    },
+                    function onError(error) {
+                        console.error("Geidea error", error);
+                    },
+                    function onCancel() {
+                        console.warn("Geidea cancelled");
+                    }
+                );
+
+                checkout.startPayment({
+                    sessionId: sessionId,
+                    merchantPublicKey: merchantPublicKey,
+                    returnUrl: callbackUrl
+                });
             };
 
             document.body.appendChild(script);
