@@ -205,7 +205,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
         SetBasicAuthHeader();
 
         var response = await _http.PostAsync(
-            $"{Current.BaseUrl}/payment-intent/api/v2/direct/session", content);
+            Current.BaseUrl.TrimEnd('/') + Current.Endpoints.CreateSession, content);
 
         var responseBody = await response.Content.ReadAsStringAsync();
 

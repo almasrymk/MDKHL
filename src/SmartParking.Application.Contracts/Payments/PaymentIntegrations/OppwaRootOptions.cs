@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SmartParking.Payments.PaymentIntegrations;
 
@@ -17,6 +17,8 @@ public class OppwaEnvironmentOptions
     public AuthOptions Auth { get; set; } = new();
     public string EntityId { get; set; }
     public bool Skip3DSecure { get; set; }
+    /// <summary>Relative path to the HyperPay result endpoint, e.g. /api/PaymentResult/hyperpay/result</summary>
+    public string CallbackUrl { get; set; } = "/api/PaymentResult/hyperpay/result";
 }
 
 public class AuthOptions

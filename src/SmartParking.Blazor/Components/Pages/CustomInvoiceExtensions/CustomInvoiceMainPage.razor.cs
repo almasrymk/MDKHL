@@ -14,6 +14,15 @@ namespace SmartParking.Blazor.Components.Pages.CustomInvoiceExtensions;
 
 public partial class CustomInvoiceMainPage
 {
+    // ── Injected config ───────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Provides access to the active gateway's CallbackUrl from paymentconfig.json.
+    /// The active provider (Geidea / Oppwa) is determined by Payment:ActiveProvider.
+    /// </summary>
+    [Inject] private IOptionsMonitor<GeideaOptions>     GeideaOptions  { get; set; } = default!;
+    [Inject] private IOptionsMonitor<OppwaRootOptions>  OppwaOptions   { get; set; } = default!;
+
     // ── Page parameters / state ───────────────────────────────────────────────
 
     [Parameter] public string WatcherCode { get; set; }
@@ -36,6 +45,12 @@ public partial class CustomInvoiceMainPage
     private CreateUpdateInvoiceUiDto? invoiceDto { get; set; } = new();
     private bool ShowInvoiceDetails = false;
     private PaymentMethod paymentMethodValue { get; set; } = PaymentMethod.MADA;
+
+    /// <summary>
+    /// True while the gateway session is being created.
+    /// Disables the payment button and shows a spinner to prevent double-clicks.
+    /// </summary>
+    private bool _isProcessingPayment = false;
 
     private InvoiceSearchDto InvoiceSearchDto = new InvoiceSearchDto();
 
@@ -77,30 +92,91 @@ public partial class CustomInvoiceMainPage
 
     private async Task ProceedToPayment()
     {
+        if (_isProcessingPayment) return;
+
         try
         {
+            _isProcessingPayment = true;
+            StateHasChanged();
+
             var invoice = await invoiceUiAppService.GetInvoiceAfterCheckout(InvoiceSearchDto);
+
+            // ── Build callback URL from paymentconfig.json ────────────────────
+            // We construct the absolute URL using the app's base URI + the
+            // relative path stored in config (e.g. /api/PaymentResult/geidea/callback).
+            // This means: change the path in paymentconfig.json and no C# code changes
+            // are needed — Geidea will redirect back to the correct endpoint automatically.
+            var callbackUrl = ResolveCallbackUrl();
 
             var dto = new PaymentCheckoutRequestDto
             {
-                InvoiceId      = invoice.InvoiceId,
-                OrganizationId = invoice.OrganizationId,
-                Amount         = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount),
+                InvoiceId       = invoice.InvoiceId,
+                OrganizationId  = invoice.OrganizationId,
+                Amount          = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount),
                 PaymentCategory = PaymentCategory.PaymentParking,
-                PaymentMethod  = paymentMethodValue,
-                TenantId       = invoice.TenantId!.Value,
-                EnPlateNumber  = invoice.PlateNumber,
-                CallbackUrl    = $"{navigationManager.BaseUri.TrimEnd('/')}/api/PaymentResult/{gateway.Gateway.ToString().ToLower()}/callback"
+                PaymentMethod   = paymentMethodValue,
+                TenantId        = invoice.TenantId!.Value,
+                EnPlateNumber   = invoice.PlateNumber,
+                CallbackUrl     = callbackUrl
             };
 
             var result = await gateway.InitiateAsync(dto);
 
-            // ── Load the appropriate JS widget dynamically without hardcoded logic ──
+            // ── Dispatch the correct JS widget (Geidea or Oppwa) ─────────────
+            // gateway.InitiateAsync() returns JsMethodName + JsArguments that
+            // map directly to the JS functions defined in the razor file:
+            //   • "geidea.loadCheckout"   for Geidea Hosted Page
+            //   • "hyperPay.loadWidget"   for HyperPay/Oppwa widget
             await JS.InvokeVoidAsync(result.JsMethodName, result.JsArguments);
         }
         catch (Exception ex)
         {
             snackbar.Add(L["PaymentFailed"] + " " + ex.Message, Severity.Error);
+        }
+        finally
+        {
+            _isProcessingPayment = false;
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>
+    /// Builds the absolute callback URL by combining the app's own BaseUri with
+    /// the relative path from paymentconfig.json.
+    ///
+    /// For Geidea:  BaseUri + Providers:Geidea:{Mode}:CallbackUrl
+    ///              → e.g. https://parking.example.com/api/PaymentResult/geidea/callback
+    ///
+    /// For Oppwa:   Uses NavigationManager because Oppwa's CallbackUrl is typically
+    ///              configured as a full path at the gateway level.
+    ///
+    /// Change the path in paymentconfig.json — no code changes required.
+    /// </summary>
+    private string ResolveCallbackUrl()
+    {
+        var baseUri = navigationManager.BaseUri.TrimEnd('/');
+
+        switch (gateway.Gateway)
+        {
+            case GatewayKey.Geidea:
+            {
+                var opts    = GeideaOptions.CurrentValue;
+                var env     = opts.Mode == "Live" ? opts.Live : opts.Test;
+                var relPath = env.CallbackUrl.TrimStart('/');
+                return $"{baseUri}/{relPath}";
+            }
+
+            case GatewayKey.Oppwa:
+            {
+                var opts    = OppwaOptions.CurrentValue;
+                var env     = opts.Mode == "Live" ? opts.Live : opts.Test;
+                var relPath = env.CallbackUrl.TrimStart('/');
+                return $"{baseUri}/{relPath}";
+            }
+
+            default:
+                // Fallback: derive from gateway key name so new gateways work without code changes.
+                return $"{baseUri}/api/PaymentResult/{gateway.Gateway.ToString().ToLower()}/callback";
         }
     }
 

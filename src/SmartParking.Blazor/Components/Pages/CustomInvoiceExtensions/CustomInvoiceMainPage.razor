@@ -1,5 +1,6 @@
 @page "/checkout-extension/"
 @using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Options
 @using SmartParking.Blazor.Components.InvoiceExtensionComponents
 @using SmartParking.Blazor.Components.Shared
 @using SmartParking.Blazor.Contracts
@@ -66,7 +67,8 @@
                                 TotalAmount="@InvoiceAmount"
                                 SelectedPaymentMethod="@paymentMethod"
                                 SelectedPaymentMethodChanged="OnPaymentMethodChanged"
-                                ProceedToPayment="ProceedToPayment" />
+                                ProceedToPayment="ProceedToPayment"
+                                IsLoading="@_isProcessingPayment" />
 
             @* ── Unified payment container ───────────────────────────── *@
             <div id="payment-container" class="mt-3"></div>

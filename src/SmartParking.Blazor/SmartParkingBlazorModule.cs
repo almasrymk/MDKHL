@@ -146,6 +146,36 @@ public class SmartParkingBlazorModule : AbpModule
             context.Services.GetConfiguration().GetSection(GeideaOptions.SectionName));
         context.Services.Configure<PaymobOptions>(
             context.Services.GetConfiguration().GetSection(PaymobOptions.SectionName));
+
+        // ── Named HttpClients for payment gateway services ────────────────────
+        // AddHttpClient lives in Microsoft.Extensions.Http (AspNetCore shared framework)
+        // which is available here in the Blazor host project but not in the Application
+        // class library — this is why the registration is done here.
+        context.Services.AddHttpClient("Geidea");
+        context.Services.AddHttpClient("Oppwa");
+
+        // ── Func<GatewayKey, IPaymentGatewayIntegrationService> factory ───────
+        // PaymentResultController injects this delegate to resolve any gateway by
+        // its enum key at callback time (Geidea callback, HyperPay result, etc.).
+        // ActivatorUtilities.CreateInstance injects all other constructor deps from DI;
+        // IHttpClientFactory is resolved here to supply the correct named HttpClient.
+        context.Services.AddTransient<Func<GatewayKey, IPaymentGatewayIntegrationService>>(sp =>
+            key =>
+            {
+                var factory = sp.GetRequiredService<System.Net.Http.IHttpClientFactory>();
+                return key switch
+                {
+                    GatewayKey.Oppwa  => (IPaymentGatewayIntegrationService)Microsoft.Extensions.DependencyInjection
+                        .ActivatorUtilities.CreateInstance<OppwaGatewayIntegrationService>(
+                            sp, factory.CreateClient("Oppwa")),
+                    GatewayKey.Geidea => Microsoft.Extensions.DependencyInjection
+                        .ActivatorUtilities.CreateInstance<GeideaGatewayIntegrationService>(
+                            sp, factory.CreateClient("Geidea")),
+                    _ => throw new NotSupportedException(
+                        $"No IPaymentGatewayIntegrationService registered for GatewayKey.{key}")
+                };
+            });
+
         var configuration = context.Services.GetConfiguration();
         var tenantDomains = configuration.GetSection("TenantDomains").Get<string[]>();
         Configure<MyIntegrationOptions>(configuration);
