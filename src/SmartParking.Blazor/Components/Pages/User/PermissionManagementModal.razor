@@ -44,7 +44,7 @@
                         <Items>
                             @foreach (var group in _groups)
                             {
-                                @if (group.Permissions.Count(x => x.IsGranted) == 0 && CurrentTenant.Id is not null)
+                                @if (group.Permissions.Count(x => x.IsGranted) == 0)
                                 {
                                     continue;
                                 }

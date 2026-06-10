@@ -1016,6 +1016,7 @@
     "Permission:UnitVehiclePackage": "اداره باقات سيارات الوحدة",
     "Invoice is already paid": "الفاتوره مدفوعه مسبقا",
     "Expired": "منتهيه",
-    "Permission:CancelTransaction": "الغاء التحويل"
+    "Permission:CancelTransaction": "الغاء التحويل",
+    "Permission:OpenGateIcon": "فتح البوابة الحر"
   }
 }

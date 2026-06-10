@@ -46,7 +46,7 @@
                             {
 
                                 <Tab Name="@GetNormalizedGroupName(group.Name)">
-                                    @if (group.Permissions.Any(x => x.IsGranted))
+                                    @if (group.Permissions.Count(x => x.IsGranted) == 0)
                                     {
                                         <span>
                                             <b>@group.DisplayName ( @(group.Permissions.Count(x => x.IsGranted)) )</b>
