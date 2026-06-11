@@ -145,11 +145,13 @@
                     }
                 );
 
-                checkout.startPayment({
-                    sessionId: sessionId,
-                    merchantPublicKey: merchantPublicKey,
-                    returnUrl: callbackUrl
-                });
+                checkout.startPayment(sessionId, null, "payment-container")
+
+                // checkout.startPayment({
+                //     sessionId: sessionId,
+                //     merchantPublicKey: merchantPublicKey,
+                //     returnUrl: callbackUrl
+                // });
             };
 
             document.body.appendChild(script);
