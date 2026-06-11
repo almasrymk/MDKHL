@@ -5,6 +5,7 @@ using SmartParking.Enums;
 using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
@@ -87,7 +88,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
     {
         var paymentRecord = await _paymentAppService.SavePaymentRequest(
             request,
-            PaymentStatus.Pending,
+            PaymentStatus.Pending, 
             request.CustomerId,
             entityId: Current.MerchantPublicKey);
 
@@ -181,7 +182,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
     public async Task<string> CreateSessionAsync(PaymentCheckoutRequestDto request)
     {
         var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-        var amountStr = request.Amount.ToString("F2");
+        var amountStr = request.Amount.ToString("F2", CultureInfo.InvariantCulture);
 
         var callbackUrl = !string.IsNullOrEmpty(request.CallbackUrl)
             ? request.CallbackUrl
@@ -195,7 +196,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
             CallbackUrl      = callbackUrl,
             Language         = "en",
             Timestamp        = timestamp,
-            Signature        = GenerateSignature(timestamp, amountStr),
+            Signature        = GenerateSignature(timestamp, amountStr, request.PaymentNumber),
             MerchantPublicKey = Current.MerchantPublicKey
         };
 
@@ -234,9 +235,10 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
     ///   key     = ApiPassword
     ///   result  = Base64(HMAC-SHA256(message, key))
     /// </summary>
-    private string GenerateSignature(string timestamp, string amount)
+    private string GenerateSignature(string timestamp, string amount, string paymentNumber)
     {
-        var message = Current.MerchantPublicKey + timestamp + amount + Current.Currency;
+        //var message = Current.MerchantPublicKey + timestamp + amount + Current.Currency;
+        var message = $"{Current.MerchantPublicKey}{amount}{Current.Currency}{paymentNumber}{timestamp}";
         using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(Current.ApiPassword));
         var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(message));
         return Convert.ToBase64String(hash);
