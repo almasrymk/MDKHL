@@ -186,12 +186,12 @@ public partial class CustomInvoiceMainPage
     {
         try
         {
-            InvoiceSearchDto.TicketId = VehicleValidation.HandleKeyUp(SearchText).Item1;
-            if (SearchText.Length != 11)
-            {
-                snackbar.Add(L["InvalidTicket"], Severity.Warning);
-                return;
-            }
+            //InvoiceSearchDto.TicketId = VehicleValidation.HandleKeyUp(SearchText).Item1;
+            //if (SearchText.Length != 11)
+            //{
+            //    snackbar.Add(L["InvalidTicket"], Severity.Warning);
+            //    return;
+            //}
             InvoiceSearchDto.PlateNumber = PlateSearchText;
 
             invoiceDto = await invoiceUiAppService.GetInvoiceAfterPreCheckout(InvoiceSearchDto);
