@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace SmartParking.PDF.Dtos;
 
-namespace SmartParking.PDF;
-
-public record PackageLocalizationData(
+public record UnitPackageLocalizationData(
     string CurrentPath,
     string QRCodePath,
-    string PackageNumber,
-    string TicketId,
+    string UnitPackageNumber,
     string SimplifiedTaxInvoice,
     string HeaderVatReceiptPayment,
     string Vats,
@@ -18,7 +11,7 @@ public record PackageLocalizationData(
     string CashierNo,
     string OrganizationName,
     string OrganizationAddress,
-    string PlateNumber,
+    string UnitCode,
     string SubscriptionDate,
     string ExpirationDate,
     string Subscription,
@@ -28,8 +21,8 @@ public record PackageLocalizationData(
     string TotalIncludeVAT,
     string Discount,
     string After,
-    string PackageNumberView,
+    string UnitPackageNumberView,
     decimal Price,
-    decimal PaymentPrice ,
+    decimal PaymentPrice,
     string PaymentNumber
 );

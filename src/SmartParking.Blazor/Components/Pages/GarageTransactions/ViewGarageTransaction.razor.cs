@@ -43,12 +43,15 @@ partial class ViewGarageTransaction
         TransformOrigin = "center center";
         Scale = "scale(1)"; // Reset zoom when mouse leaves
     }
+    //protected override async Task OnParametersSetAsync()
+    //{
+    //    var activePackage = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(GarageTransaction);
+    //    _hasActivePackage = activePackage != null;
+    //}
 
     protected override async Task OnInitializedAsync()
     {
         _organizationDto = await OrganizationsAppService.GetAsync(GarageTransaction.OrganizationID);
-        var activePackage = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(GarageTransaction);
-        _hasActivePackage = activePackage != null;
         var Garage = await GaragesAppService.GetAsync(GarageTransaction.GarageId);
         if(CultureInfo.CurrentCulture.Name == "en")
 
@@ -71,6 +74,16 @@ partial class ViewGarageTransaction
             cameraCode = Dispenser.DeviceId;
 
         }
+        if (GarageTransaction.IsMapped)
+        {
+            _hasActivePackage = true;
+        }
+        else
+        {
+            var activePackage = await _customerPackagesHandlerAppService.GetOneActiveCustomerPackage(GarageTransaction);
+            _hasActivePackage = activePackage != null;
+        }
+        
         CustomerCategory = GarageTransaction.CustomerCategory.ToString();
     }
 

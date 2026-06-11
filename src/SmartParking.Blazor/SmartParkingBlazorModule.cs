@@ -30,7 +30,7 @@ using SmartParking.MultiTenancy;
 using SmartParking.OpenGate;
 using SmartParking.OpeningGate;
 using SmartParking.Payments.PaymentIntegrations;
-using SmartParking.PDF;
+using SmartParking.PDF.Dtos;
 using SmartParking.Results;
 using SmartParking.Subscriptions;
 using SmartParking.Watchers;
@@ -212,6 +212,9 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.AddScoped<ICustomerPackagesCreationValidationsAppService, CustomerPackageCreationValidationsAppService>();
         context.Services.AddScoped<ISubscriptionActionsAppService, SubsctiptionActionsAppService>();
         context.Services.AddScoped<IWatcherAppService, WatcherAppService>();
+        context.Services.AddScoped<ICustomerPackageHandlerAppService, CustomerPackageHandlerAppService>();
+        context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, CameraTransactionActionsAppService>();
+        context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, DispenserTransactionActionsAppService>();
 
 
         // Define the supported cultures

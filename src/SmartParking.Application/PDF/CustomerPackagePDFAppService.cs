@@ -7,6 +7,7 @@ using iText.Layout.Element;
 using iText.Layout.Font;
 using iText.Layout.Properties;
 using SmartParking.CustomerPackages.QRGenerator;
+using SmartParking.PDF.Contracts;
 using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;

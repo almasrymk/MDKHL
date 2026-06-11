@@ -8,6 +8,8 @@ using Microsoft.Reporting.NETCore;
 using Polly.Caching;
 using SmartParking.Entities.Discounts;
 using SmartParking.Payments;
+using SmartParking.PDF.Contracts;
+using SmartParking.PDF.Dtos;
 using SmartParking.QRCode;
 using SmartParking.Utilities;
 using SmartParking.ZATCATaxInvoice;

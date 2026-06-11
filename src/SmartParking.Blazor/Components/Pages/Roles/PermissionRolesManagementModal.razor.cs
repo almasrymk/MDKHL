@@ -109,7 +109,7 @@ public partial class PermissionRolesManagementModal
             GetPermissionListResultDto result;
             using (DataFilter.Disable<IMultiTenant>())
             {
-                result = await CustomPermissionAppService.GetAsync(providerName, providerKey);
+                result = await PermissionAppService.GetAsync(providerName, providerKey);
             }
 
 
@@ -181,17 +181,10 @@ public partial class PermissionRolesManagementModal
                 .ToArray()
             };
 
-            if (!updateDto.Permissions.Any(x => x.IsGranted))
-            {
-                //if (!await Message.Confirm(L["SaveWithoutAnyPermissionsWarningMessage"].Value))
-                //{
-                //    return;
-                //}
-            }
-            using (CurrentTenant.Change(_tenantId))
-            {
-                await CustomPermissionAppService.UpdateAsync(_providerName, _providerKey, updateDto);
-            }
+          
+
+            await PermissionAppService.UpdateAsync(_providerName, _providerKey, updateDto);
+            
             await CurrentApplicationConfigurationCacheResetService.ResetAsync();
 
             await InvokeAsync(_modal.Hide);

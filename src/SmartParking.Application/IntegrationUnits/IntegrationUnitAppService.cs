@@ -1,26 +1,22 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using SmartParking.Cameras;
 using SmartParking.CustomerPackages;
 using SmartParking.CustomerPackages.AssignantionsContarcts;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerPackages.Inputs;
-using SmartParking.CustomerPackages.QRGenerator;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
-using SmartParking.Entities.Cameras.Watchers;
-using SmartParking.Entities.Customers;
-using SmartParking.Entities.CustomerUnitPackages;
-using SmartParking.Entities.Organizations;
-using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
 using SmartParking.IntegrationUnit;
 using SmartParking.IntegrationUnit.Dtos;
 using SmartParking.IntegrationUnit.Options;
 using SmartParking.Lookups.VehicleLookups;
+using SmartParking.Mappers;
 using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.Results;
+using SmartParking.UnitPackageIntegrations;
+using SmartParking.UnitPackageIntegrations.Dtos;
 using SmartParking.UnitPackages;
 using SmartParking.Units;
 using SmartParking.UnitVehiclePackages;
@@ -28,9 +24,7 @@ using SmartParking.Utilities.StaticValues;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
-using System.IO.Packaging;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -51,6 +45,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     private readonly IUnitVehiclePackageAppService _unitVehiclePackageAppService;
     private readonly IVehicleLookupResolver _vehicleLookupResolver;
     private readonly ICustomerPackagesAppService _customerPackagesAppService;
+    private readonly IUnitPackageIntegrationOrchestratorAppService _unitPackageIntegrationOrchestratorAppService;
     private readonly IUnitOfWorkManager _unitOfWorkManager;
     private readonly IConfiguration _configuration;
     private readonly MyIntegrationOptions _options;
@@ -66,7 +61,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         IOptions<MyIntegrationOptions> options,
         ICustomerPackagesAppService customerPackagesAppService,
         IConfiguration configuration,
-        IUnitAppService unitAppService)
+        IUnitAppService unitAppService,
+        IUnitPackageIntegrationOrchestratorAppService unitPackageIntegrationOrchestratorAppService)
     {
         _customerAppService = customerAppService;
         _vehicleAppService = vehicleAppService;
@@ -80,6 +76,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         _customerPackagesAppService = customerPackagesAppService;
         _configuration = configuration;
         _unitAppService = unitAppService;
+        _unitPackageIntegrationOrchestratorAppService = unitPackageIntegrationOrchestratorAppService;
     }
     [RemoteService(false)]
     public async Task<Result<BookingDto>> CreateBookingAsync(CreateUpdateBookingDto dto)
@@ -90,6 +87,11 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             if (!unit.IsSuccess)
             {
                 return Result.Error(@L["UnitNotFound"]);
+            }
+            var existingBookings = await _unitPackageIntegrationOrchestratorAppService.BookingIdExist(dto.Booking.BookingId);
+            if (existingBookings)
+            {
+                return Result.Error(@L["BookingIdAlreadyExist"]);
             }
             var getCustomer = await _customerAppService.GetCustomerByPhoneNumberAsync(dto.Customer.Mobile);
             var customer = (getCustomer is null) ? await CreateCustomer(dto.Customer) : getCustomer;
@@ -109,6 +111,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage, customerPackages);
             var PackageResult = await HandlePackageResponseDto(customerPackages);
             var QrResult = await HandleQrResponseDto(customerPackages, customerUnitPackage);
+            await CreateUnitPackageIntegrationsAsync(unitVehiclePackages, dto.Booking.BookingId, organization.Id, organization.TenantId);
             BookingDto result = new BookingDto
             {
                 Status = Status.Active,
@@ -129,7 +132,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             };
             return Result.Success(result);
         }
-        catch (Volo.Abp.BusinessException ex)
+        catch (BusinessException ex)
         {
             if (_unitOfWorkManager.Current != null)
             {
@@ -161,56 +164,42 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         try
         {
             var unit = await _unitAppService.GetActiveUnitByCodeAsync(dto.UnitId);
-            var customerDto = await _customerAppService.GetCustomerByPhoneNumberAsync(dto.phoneNumber);
-            var customer = await UpdateCustomer(customerDto.Id, dto.Customer.MapToCustomerDto(dto.Customer));
-
-            
-
-            var searchCustomerPackageDto = new SearchByPlateAndCustomerIdDto
+            if (!unit.IsSuccess)
             {
-                CustomerId = customer.Id
-            };
-
-
-
-
-
-            CustomerPackageDto customerPackages = new CustomerPackageDto();
-            UnitVehiclePackageDto unitVehiclePackage = new UnitVehiclePackageDto();
-            CustomerUnitPackageDto customerUnitPackage = new CustomerUnitPackageDto();
-
-            var Cars = await _vehicleAppService.GetVehiclesByCustomerIdAsync(customer.Id);
-
-
-            for (int i = 0; i < Cars.Count(); i++)
-            {
-
-                searchCustomerPackageDto.EnPlateNumber = Cars[i].EnPlateNumber;
-                customerPackages = await _customerPackagesAppService.GetLatestByCustomerIdAndEnPlateNumber(searchCustomerPackageDto);
-                unitVehiclePackage = await _unitVehiclePackageAppService.GetByCustmoerIdAndPlateNumber(searchCustomerPackageDto);
-                customerUnitPackage = await _customerUnitPackageAppService.GetAsync(unitVehiclePackage.CustomerUnitPackageId);
-
-                await _unitVehiclePackageAppService.DeleteByCustomerUnitPackage(customerUnitPackage.Id);
-                await _customerUnitPackageAppService.DeleteAsync(customerUnitPackage.Id);
-                await _customerPackagesAppService.DeleteAsync(customerPackages.Id);
-                await _vehicleAppService.DeleteAsync(Cars[i].Id);
-
+                return Result.Error(@L["UnitNotFound"]);
             }
-
-            await _unitOfWorkManager.Current!.SaveChangesAsync();
-
-            var vehicles = await CreateVehicle(dto.Customer.Cars, customer.Id);
+            var customerDto = await _customerAppService.GetCustomerByPhoneNumberAsync(dto.CustomerId);
+            var customer = await UpdateCustomer(customerDto.Id, dto.Customer.MapToCustomerDto(dto.Customer));
             var resultValidate = await ValidateCustomerUnitPackage(customer.Id, dto, false);
             if (!resultValidate.IsSuccess)
             {
                 throw new Exception(resultValidate.Errors.FirstOrDefault()!);
             }
-            var createdcustomerUnitPackage = await CreateCustomerUnitPackage(customer, dto, customer.Id, unit);
-            var createdcustomerPackages = await CreateCustomerPackage(customerUnitPackage, vehicles, customer.MobileNumber);
-            var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage, createdcustomerPackages);
-            var PackageResult = await HandlePackageResponseDto(createdcustomerPackages);
-            var QrResult = await HandleQrResponseDto(createdcustomerPackages, createdcustomerUnitPackage);
+            var bookings = await _unitPackageIntegrationOrchestratorAppService.GetAllByBookingIdAsync(dto.Booking.BookingId);
+            if (bookings.Count() == 0)
+            {
+                throw new Exception($"there is no bookings with such id {dto.Booking.BookingId}");
+            }
+            var firstUVP = await _unitVehiclePackageAppService.GetAsync(bookings.FirstOrDefault()!.UnitVehiclePackageId);
+            var customerUnitPackage = await UpdateCustomerUnitPackage(firstUVP.CustomerUnitPackageId, dto);
+            foreach (var booking in bookings) 
+            { 
+                var unitVehiclePackage = await _unitVehiclePackageAppService.GetAsync(booking.UnitVehiclePackageId);
+                await _customerPackagesAppService.DeleteAsync(unitVehiclePackage.CustomerPackgeId);
+            }
+            await _unitVehiclePackageAppService.DeleteByCustomerUnitPackage(customerUnitPackage.Id);
 
+            var vehicles = await CreateVehicle(dto.Customer.Cars, customer.Id);
+
+            var customerPackages = await CreateCustomerPackage(customerUnitPackage, vehicles, customer.MobileNumber);
+            var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage, customerPackages);
+            var PackageResult = await HandlePackageResponseDto(customerPackages);
+            var QrResult = await HandleQrResponseDto(customerPackages, customerUnitPackage);
+
+            await _unitOfWorkManager.Current!.SaveChangesAsync();
+
+
+            
             BookingDto result = new BookingDto
             {
                 Status = Status.Active,
@@ -218,8 +207,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
                 Package = PackageResult,
                 Validity = new ValidityDto
                 {
-                    StartDate = createdcustomerUnitPackage.ActivationDate,
-                    EndDate = createdcustomerUnitPackage.DectivationDate
+                    StartDate = customerUnitPackage.ActivationDate,
+                    EndDate = customerUnitPackage.DectivationDate
                 },
                 Qr = QrResult,
                 Links = new LinksDto
@@ -390,7 +379,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             {
                 PlateNumber = vehicle.EnPlateNumber,
                 PackageCode = res.Value.PackageCode.ToString(),
-                QrCodePath = res.Value.QRCodePath
+                QrCodePath = res.Value.QRCodePath,
+                CustomerPackageId = res.Value.Id
             });
         }
 
@@ -413,7 +403,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
                 DectivationDate = customerUnitPackage.DectivationDate,
                 PublishFrom = customerUnitPackage.PublishFrom,
                 PublishTo = customerUnitPackage.PublishTo,
-                PackageCode = unitQrDtos.Where(x => x.PlateNumber == vehicle.EnPlateNumber).FirstOrDefault()!.PackageCode
+                PackageCode = unitQrDtos.Where(x => x.PlateNumber == vehicle.EnPlateNumber).FirstOrDefault()!.PackageCode,
+                CustomerPackgeId = unitQrDtos.Where(x => x.PlateNumber == vehicle.EnPlateNumber).FirstOrDefault()!.CustomerPackageId
             };
             
             var result = await _unitVehiclePackageAppService.CreateAsync(dto);
@@ -481,6 +472,38 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
                 ExpiresAt = customerUnitPackage.DectivationDate
             });
         }
+        return result;
+    }
+
+    private async Task<List<UnitPackageIntegrationDto>> CreateUnitPackageIntegrationsAsync(List<UnitVehiclePackageDto> unitVehiclePackages, string bookingId, int organizationId, Guid? tenantId)
+    {
+        List<UnitPackageIntegrationDto> unitPackageIntegrations = new List<UnitPackageIntegrationDto>();
+        foreach (var item in unitVehiclePackages)
+        {
+            CreateUpdateUnitPackageIntegrationDto dto = new CreateUpdateUnitPackageIntegrationDto
+            {
+                BookingId = bookingId,
+                CustomerId = item.CustomerId,
+                UnitCode = item.UnitCode,
+                UnitVehiclePackageId = item.Id,
+                OrganizationId = organizationId,
+                TenantId = tenantId
+            };
+            var result = await _unitPackageIntegrationOrchestratorAppService.CreateAsync(dto);
+            unitPackageIntegrations.Add(result);
+        }
+        return unitPackageIntegrations;
+    }
+
+    private async Task<CustomerUnitPackageDto> UpdateCustomerUnitPackage(int id, CreateUpdateBookingDto bookingDto)
+    {
+        var customerUnitPackage = await _customerUnitPackageAppService.GetAsync(id);
+        var dto = customerUnitPackage.ToCreateUpdateDto();
+        dto.ActivationDate = bookingDto.Booking.StartDate;
+        dto.DectivationDate = bookingDto.Booking.EndDate;
+        dto.UnitCode = bookingDto.UnitId;
+        dto.DurationOfPackage = bookingDto.Booking.NoOfDays;
+        var result = await _customerUnitPackageAppService.UpdateAsync(id, dto);
         return result;
     }
 }

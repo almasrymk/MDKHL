@@ -117,6 +117,10 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
 
         DateTime packageEnd = GetPackageDateTime(entranceTime, packageDto.PublishToOfPackage);
 
+        //DateTime packageStart = (DateTime)packageDto.ActivationDateOfPackage;
+
+        //DateTime packageEnd = (DateTime)packageDto.DectivationDateOfPackage;
+
         if (packageEnd < packageStart)
         {
             packageEnd = packageEnd.AddDays(1);

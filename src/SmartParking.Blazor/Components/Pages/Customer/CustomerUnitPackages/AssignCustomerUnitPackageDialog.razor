@@ -173,17 +173,26 @@
                     }
                         else if (IsCustom && SelectedPackageType.Value != CustomerUnitPackageType.Owner)
                     {
-                        <MudItem sm="10">
-                            @if (CultureInfo.CurrentCulture.Name == "en")
-                            {
 
-                                <MudTextField T="string" Label="@L["CustomPackage"]" Placeholder="@L["CustomPackage"]" ReadOnly @bind-Value="_customerPackageDto.ArabicName"> @L["CustomPackage"] </MudTextField>
-                            }
-                            else
-                            {
-                                <MudTextField T="string" Label="@L["CustomPackage"]" Placeholder="@L["CustomPackage"]" ReadOnly @bind-Value="_customerPackageDto.EnglishName"> @L["CustomPackage"] </MudTextField>
-                            }
+                        <MudItem sm="6">
+                            <MudTextField T="string"
+                                Label="@L["PackageName"]" 
+                                Placeholder="@L["CustomPackage"]" 
+                                Required
+                                @bind-Value="_customerPackageDto.EnglishName"> @L["CustomPackage"] </MudTextField>
                         </MudItem>
+
+                        <MudItem sm="6">
+                                <MudTextField T="string" 
+                                    Label="@L["ArabicName"]" 
+                                    Placeholder="@L["CustomPackage"]" 
+                                    Required
+                                    @bind-Value="_customerPackageDto.ArabicName"> 
+                                    @L["CustomPackage"] </MudTextField>
+                        </MudItem>
+
+                        
+
 
                             <MudItem sm="12" md="12">
                                 <CustomUnitPackage UnitPackageDto="_createUpdateUnitPackageDto" />

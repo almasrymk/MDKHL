@@ -11,6 +11,7 @@ using iText.Layout.Element;
 using iText.Layout.Properties;
 using Microsoft.Extensions.Options;
 using Microsoft.Reporting.NETCore;
+using SmartParking.PDF.Dtos;
 using SmartParking.Utilities;
 using System;
 using System.Globalization;

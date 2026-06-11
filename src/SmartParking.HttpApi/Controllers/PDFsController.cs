@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SmartParking.PDF;
+using SmartParking.PDF.Contracts;
 using System;
 using System.Collections.Generic;
 using System.IO;

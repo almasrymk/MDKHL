@@ -1,7 +1,7 @@
 ﻿using Microsoft.JSInterop;
 using MudBlazor;
 using SmartParking.Localization;
-using SmartParking.PDF;
+using SmartParking.PDF.Contracts;
 using SmartParking.Utilities;
 
 namespace SmartParking.Blazor.Components.Shared;

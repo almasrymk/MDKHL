@@ -1,24 +1,19 @@
 ﻿using Abp.Application.Services;
-using Microsoft.EntityFrameworkCore;
-using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.Entities.Organizations;
-using SmartParking.Enums;
 using SmartParking.GarageTransactions;
-using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.CustomerPackages.CustomerPackageTransaction;
 [RemoteService(false)]
 
-public class DispenserTransactionActionsAppService : CustomerPackageTransactionBaseAppService 
+public class DispenserTransactionActionsAppService : CustomerPackageTransactionBaseAppService
 {
 
 
-    public DispenserTransactionActionsAppService(IRepository<CustomerPackage, int> repository, IDataFilter dataFilter) : base(repository, dataFilter)
+    public DispenserTransactionActionsAppService(IRepository<CustomerPackage, int> repository, 
+        IDataFilter dataFilter) : base(repository, dataFilter)
     {
     }
 

@@ -1,7 +1,7 @@
 ﻿using SmartParking.CustomerUnitPackages;
 using SmartParking.Payments.PaymentRelations;
 
-namespace SmartParking.PDF;
+namespace SmartParking.PDF.Dtos;
 
 public class UnitPackagePdfData : PdfData<CustomerUnitPackageDto>
 {

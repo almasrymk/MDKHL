@@ -1,4 +1,4 @@
-namespace SmartParking.PDF;
+namespace SmartParking.PDF.Dtos;
 
 public class UnitPackageLocalizationCreateDto : BaseLocalizationCreateDto
 {

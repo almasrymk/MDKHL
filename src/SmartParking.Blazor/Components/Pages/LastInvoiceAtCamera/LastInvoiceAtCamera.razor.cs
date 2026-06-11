@@ -186,6 +186,10 @@ public partial class LastInvoiceAtCamera
         try
         {
             var ExitTransctionId = Invoice.GarageTransactionExitId;
+            if (Invoice.InvoiceType == InvoiceType.Paid.ToString())
+            {
+                Snackbar.Add("Invoice is already paid", MudBlazor.Severity.Success);
+            }
             await InvoiceAppService.DeleteAsync(Invoice.Id);
             await GarageTransactionAppService.DeleteAsync(ExitTransctionId);
             SnackBar.ShowSnackbar(Snackbar, @L["Done"] + " " + @L["Delete"] + " " + @L["Invoice"], MudBlazor.Severity.Success);

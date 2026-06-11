@@ -21,6 +21,7 @@ public partial class PreCheckoutForInvoice
     public decimal Discount { get; set; } = default;
     public decimal InvoicePrice { get; set; } = default;
     private PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;
+    private bool IsPaying { get; set; } = false;
     private Task HandleAddDiscount(decimal selected)
     {
         Invoice.Discount = selected;
@@ -40,6 +41,7 @@ public partial class PreCheckoutForInvoice
     {
         try
         {
+            IsPaying = true;
             var invoice = await keeperTransactionsAppService.Checkout(GarageTransactionDto, Invoice);
             Id = invoice.Value.Id;
             if (Discount != default)
@@ -57,6 +59,10 @@ public partial class PreCheckoutForInvoice
         catch (Exception ex)
         {
             SnackBar.ShowSnackbar(Snackbar, L["GracePeriodValidation"], MudBlazor.Severity.Error);
+        }
+        finally
+        {
+            IsPaying = false;
         }
 
     }

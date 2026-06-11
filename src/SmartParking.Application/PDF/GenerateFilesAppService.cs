@@ -20,6 +20,7 @@ using SmartParking.Enums;
 using SmartParking.Events;
 using SmartParking.Localization;
 using SmartParking.Organizations;
+using SmartParking.PDF.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Data;

@@ -1,21 +1,25 @@
-﻿using Abp.Application.Services;
-using SmartParking.Entities.Organizations;
+﻿using SmartParking.Entities.Organizations;
 using SmartParking.GarageTransactions;
 using System.Linq;
+using Volo.Abp;
 using Volo.Abp.Data;
+using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Uow;
 
 namespace SmartParking.CustomerPackages.CustomerPackageTransaction;
 [RemoteService(false)]
 
-public class CameraTransactionActionsAppService :   CustomerPackageTransactionBaseAppService
+public class CameraTransactionActionsAppService : CustomerPackageTransactionBaseAppService
 {
 
 
-    public CameraTransactionActionsAppService(IRepository<CustomerPackage, int> repository, IDataFilter dataFilter) : base(repository, dataFilter)
+    public CameraTransactionActionsAppService(IRepository<CustomerPackage, int> repository, 
+        IDataFilter dataFilter)
+        : base(repository, dataFilter)
     {
     }
-
+    
 
     /// <summary>
     /// Camera transactions use plate numbers only

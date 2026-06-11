@@ -965,7 +965,12 @@
     "Owner": "Owner",
     "Other": "Other",
     "OwnerVehicles": "Owner Vehicles",
-    "CustomerUnitPackageDetails": "Customer Unit Package Details"
-    
+    "CustomerUnitPackageDetails": "Customer Unit Package Details",
+    "InvoicePaidError": "Invoice Is Already Paid",
+    "Permission:CancelTransaction": "Cancel Transaction",
+    "Permission:OpenGateIcon": "Free Open Gate"
+
+
+
   }
 }

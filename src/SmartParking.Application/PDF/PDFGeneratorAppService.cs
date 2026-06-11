@@ -19,6 +19,8 @@ using SmartParking.Invoices;
 using SmartParking.Localization;
 using SmartParking.Organizations;
 using SmartParking.Payments;
+using SmartParking.PDF.Contracts;
+using SmartParking.PDF.Dtos;
 using SmartParking.Utilities;
 using System;
 using System.Globalization;

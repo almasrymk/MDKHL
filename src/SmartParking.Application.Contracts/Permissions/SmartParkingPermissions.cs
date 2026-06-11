@@ -27,6 +27,7 @@ public static class SmartParkingPermissions
     public const string ViewTotalSlotsCard = ".ViewTotalSlotsCard";
     public const string ConfirmPaying = ".ConfirmPaying";
     public const string OpenGate = ".OpenGate";
+    public const string OpenGateIcon = ".OpenGateIcon";
     public const string CancelTransaction = ".CancelTransaction";
     public const string Discount = ".Discount";
     public const string ExportPDF = ".ExportPDF";

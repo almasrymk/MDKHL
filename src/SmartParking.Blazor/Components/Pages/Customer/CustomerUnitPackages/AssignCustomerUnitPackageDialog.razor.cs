@@ -148,7 +148,7 @@ public partial class AssignCustomerUnitPackageDialog
         {
             if (!IsCustom)
             {
-                var package = Packages.FirstOrDefault();
+                var package = CustomerPackage;
 
                 CustomerPackage.NumberOfSlots = package.NumberOfSlots;
                 CustomerPackage.NumberOfVehicles = package.NumberOfVehicles;
@@ -176,8 +176,8 @@ public partial class AssignCustomerUnitPackageDialog
 
         if (IsCustom)
         {
-            _createUpdateUnitPackageDto.Package.EnglishName = "Custom Package";
-            _createUpdateUnitPackageDto.Package.ArabicName = "باقه خاصه";
+            _createUpdateUnitPackageDto.Package.EnglishName = _customerPackageDto.EnglishName;
+            _createUpdateUnitPackageDto.Package.ArabicName = _customerPackageDto.ArabicName;
             _createUpdateUnitPackageDto.Package.Description = "Description";
             _createUpdateUnitPackageDto.Package.TenantId = CurrentTenant.Id;
             var pkg = new UnitPackageDto

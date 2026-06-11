@@ -3,7 +3,7 @@ using SmartParking.CustomerPackages.QRGenerator;
 using SmartParking.Payments;
 using System.IO;
 using System.Threading.Tasks;
-namespace SmartParking.PDF;
+namespace SmartParking.PDF.Contracts;
 
 public interface IPDFGeneratorAppService : IApplicationService 
 {

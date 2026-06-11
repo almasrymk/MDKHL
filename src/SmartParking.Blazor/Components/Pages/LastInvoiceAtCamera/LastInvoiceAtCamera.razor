@@ -64,15 +64,19 @@
 					</MudSelectItem>
 				}
 			</MudSelect>
-			<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Inherit" OnClick="OpenGate">
-				<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="25.000000pt" height="22.000000pt" viewBox="0 0 244.000000 235.000000" preserveAspectRatio="xMidYMid meet">
-					<g transform="translate(0.000000,235.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
-						<path d="M586 2289 c-18 -14 -26 -30 -26 -52 0 -28 63 -95 635 -667 l635 -635 0 -378 0 -377 240 0 240 0 0 395 c0 388 0 395 -20 395 -15 0 -20 7 -20 25 l0 25 -163 0 -163 0 -630 631 c-346 347 -641 637 -656 645 -35 18 -40 18 -72 -7z m1664 -1439 l0 -60 -180 0 -180 0 0 60 0 60 180 0 180 0 0 -60z" />
-						<path d="M480 1119 c-57 -23 -91 -63 -171 -203 l-82 -144 -27 20 c-37 27 -94 16 -137 -28 -38 -37 -41 -56 -13 -84 16 -16 33 -20 82 -20 l63 0 -3 -276 c-4 -334 -12 -314 120 -314 122 0 128 4 128 90 l0 70 435 0 435 0 0 -70 c0 -86 6 -90 124 -90 135 0 129 -17 124 316 l-3 274 52 0 c78 0 103 13 103 53 0 74 -134 127 -176 70 -8 -12 -26 12 -84 114 -100 174 -106 182 -164 209 -51 24 -52 24 -416 23 -215 0 -375 -4 -390 -10z m765 -78 c31 -19 155 -222 155 -254 0 -16 -37 -17 -524 -17 -329 0 -527 4 -531 10 -10 17 126 241 160 261 28 17 57 19 370 19 314 0 342 -2 370 -19z m-783 -482 c45 -10 61 -21 111 -73 33 -33 54 -62 48 -64 -7 -2 -50 1 -96 8 -94 13 -196 57 -255 109 l-35 30 87 1 c48 0 111 -5 140 -11z m1018 -20 c-72 -63 -171 -101 -300 -115 l-64 -7 33 42 c72 90 117 109 271 110 l95 0 -35 -30z m-390 -214 l0 -45 -215 0 -215 0 0 45 0 45 215 0 215 0 0 -45z" />
-						<path d="M1740 100 l0 -30 330 0 330 0 0 30 0 30 -330 0 -330 0 0 -30z" />
-					</g>
-				</svg>
-			</MudButton>
+			@if (AuthorizationService.IsGrantedAnyAsync(CheckoutPermissions.OpenGateIcon).Result)
+			{
+				
+				<MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Inherit" OnClick="OpenGate">
+					<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="25.000000pt" height="22.000000pt" viewBox="0 0 244.000000 235.000000" preserveAspectRatio="xMidYMid meet">
+						<g transform="translate(0.000000,235.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+							<path d="M586 2289 c-18 -14 -26 -30 -26 -52 0 -28 63 -95 635 -667 l635 -635 0 -378 0 -377 240 0 240 0 0 395 c0 388 0 395 -20 395 -15 0 -20 7 -20 25 l0 25 -163 0 -163 0 -630 631 c-346 347 -641 637 -656 645 -35 18 -40 18 -72 -7z m1664 -1439 l0 -60 -180 0 -180 0 0 60 0 60 180 0 180 0 0 -60z" />
+							<path d="M480 1119 c-57 -23 -91 -63 -171 -203 l-82 -144 -27 20 c-37 27 -94 16 -137 -28 -38 -37 -41 -56 -13 -84 16 -16 33 -20 82 -20 l63 0 -3 -276 c-4 -334 -12 -314 120 -314 122 0 128 4 128 90 l0 70 435 0 435 0 0 -70 c0 -86 6 -90 124 -90 135 0 129 -17 124 316 l-3 274 52 0 c78 0 103 13 103 53 0 74 -134 127 -176 70 -8 -12 -26 12 -84 114 -100 174 -106 182 -164 209 -51 24 -52 24 -416 23 -215 0 -375 -4 -390 -10z m765 -78 c31 -19 155 -222 155 -254 0 -16 -37 -17 -524 -17 -329 0 -527 4 -531 10 -10 17 126 241 160 261 28 17 57 19 370 19 314 0 342 -2 370 -19z m-783 -482 c45 -10 61 -21 111 -73 33 -33 54 -62 48 -64 -7 -2 -50 1 -96 8 -94 13 -196 57 -255 109 l-35 30 87 1 c48 0 111 -5 140 -11z m1018 -20 c-72 -63 -171 -101 -300 -115 l-64 -7 33 42 c72 90 117 109 271 110 l95 0 -35 -30z m-390 -214 l0 -45 -215 0 -215 0 0 45 0 45 215 0 215 0 0 -45z" />
+							<path d="M1740 100 l0 -30 330 0 330 0 0 30 0 30 -330 0 -330 0 0 -30z" />
+						</g>
+					</svg>
+				</MudButton>
+			}
 		</MudItem>
 
 	</MudItem>
@@ -91,6 +95,7 @@
 			<div class="mx-3">
 				<LastInvoiceOnGateDetails Key="@L["InvoiceId"]" Value="@(Invoice?.InvoiceId.ToString())" />
 				<LastInvoiceOnGateDetails Key="@L["PlateNumber"]" Value="@(Invoice?.PlateNumber)" />
+				<LastInvoiceOnGateDetails Key="@L["TicketId"]" Value="@(Invoice?.TicketId)" />
 				<LastInvoiceOnGateDetails Key="@L["OrganizationName"]" Value="@(CultureInfo.CurrentCulture.Name == "en" ? Invoice?.OrganizationEnglishName : Invoice?.OrganizationArabicName)" />
 				<LastInvoiceOnGateDetails Key="@L["GarageName"]" Value="@(CultureInfo.CurrentCulture.Name == "en" ? Invoice?.GarageEnglishName : Invoice?.GarageArabicName)" />
 				<LastInvoiceOnGateDetails Key="@L["CustomerName"]" Value="@(CultureInfo.CurrentCulture.Name == "en" ? Invoice?.CustomerEnName : Invoice?.CustomerArName)" />

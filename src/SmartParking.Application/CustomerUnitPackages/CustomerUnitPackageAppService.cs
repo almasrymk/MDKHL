@@ -160,7 +160,7 @@ public class CustomerUnitPackageAppService :
         return await _repository.AnyAsync(x => x.UnitCode == UnitCode && x.EnglishName == "Owner Package" && x.Status != Status.Deleted);
     }
 
-    public async Task<PagedResultDto<CustomerUnitPackageDto>> GetAllByCustomerId(Guid customerId, PagedAndSortedResultRequestDto input, bool includeDeleted)
+    public async Task<PagedResultDto<CustomerUnitPackageDto>> GetAllByCustomerId(Guid customerId, PagedAndSortedResultRequestDto input, bool includeDeleted, bool onlyActive = false)
     {
         var query = await _repository.GetQueryableAsync();
         query = query.Where(x => x.CustomerId == customerId);
@@ -168,6 +168,8 @@ public class CustomerUnitPackageAppService :
         {
             query = query.Where(x => x.Status != Status.Deleted);
         }
+        if (onlyActive) 
+            query = query.Where(x => x.ActivationDate <= DateTime.UtcNow && x.DectivationDate >= DateTime.UtcNow && x.Status == Status.Active);
         var totalCount = await AsyncExecuter.CountAsync(query);
         query = query
             .Skip(input.SkipCount)

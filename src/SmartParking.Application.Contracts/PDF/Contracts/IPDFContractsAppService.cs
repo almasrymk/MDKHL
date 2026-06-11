@@ -7,7 +7,7 @@ using iText.Layout;
 using iText.Layout.Element;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace SmartParking.PDF;
+namespace SmartParking.PDF.Contracts;
 
 public interface IPDFContractsAppService<DTO>
 {
