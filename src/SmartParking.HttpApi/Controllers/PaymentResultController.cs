@@ -67,7 +67,7 @@ public class PaymentResultController : ControllerBase
     /// We parse all params into a plain dictionary here so the gateway class
     /// stays free of Microsoft.AspNetCore.Http dependencies.
     /// </summary>
-    //[HttpGet("geidea/callback")]
+    [HttpGet("geidea/callback")]
     [HttpPost("geidea/callback")]
     public async Task<IActionResult> GeideaCallback([FromBody] GeideaCallbackPayload payload)
     {
