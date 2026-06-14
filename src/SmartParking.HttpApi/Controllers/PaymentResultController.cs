@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using SmartParking.Payments.PaymentIntegrations;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SmartParking.Controllers;
@@ -66,10 +67,33 @@ public class PaymentResultController : ControllerBase
     /// We parse all params into a plain dictionary here so the gateway class
     /// stays free of Microsoft.AspNetCore.Http dependencies.
     /// </summary>
-    [HttpGet("geidea/callback")]
+    //[HttpGet("geidea/callback")]
     [HttpPost("geidea/callback")]
-    public async Task<IActionResult> GeideaCallback()
+    public async Task<IActionResult> GeideaCallback([FromBody] GeideaCallbackPayload payload)
     {
+
+
+        // 1. Guard check for bad parsing
+        if (payload?.Order == null)
+        {
+            Console.WriteLine("[Geidea Callback] Received empty body or incorrect format.");
+            return BadRequest("Invalid payload format.");
+        }
+
+        // Temporary debug log to confirm you got the data
+        Console.WriteLine($"[Geidea Callback] Received Order ID: {payload.Order.OrderId}");
+        Console.WriteLine($"[Geidea Callback] Status: {payload.Order.Status} | Detailed: {payload.Order.DetailedStatus}");
+
+        // Temporary debug log
+        var queryKeys = string.Join(", ", Request.Query.Keys);
+        var formKeys = Request.HasFormContentType
+                        ? string.Join(", ", Request.Form.Keys)
+                        : "no form";
+
+        Console.WriteLine($"[Geidea Callback] Query keys: {queryKeys}");
+        Console.WriteLine($"[Geidea Callback] Form keys: {formKeys}");
+
+        ///////////////////////////////////////////////////////////////////////////////////////
         IReadOnlyDictionary<string, string> callbackParams;
 
         try
@@ -83,6 +107,21 @@ public class PaymentResultController : ControllerBase
             if (Request.HasFormContentType)
                 foreach (var (key, value) in Request.Form)
                     dict.TryAdd(key, value.ToString());
+
+            // Merge payload data into the dictionary
+            if (payload?.Order != null)
+            {
+                dict.TryAdd("orderId", payload.Order.OrderId);
+                dict.TryAdd("merchantReferenceId", payload.Order.MerchantReferenceId);
+                dict.TryAdd("amount", payload.Order.Amount.ToString());
+                dict.TryAdd("currency", payload.Order.Currency);
+                dict.TryAdd("status", payload.Order.Status);
+                dict.TryAdd("detailedStatus", payload.Order.DetailedStatus);
+                dict.TryAdd("updatedDate", payload.Order.UpdatedDate);
+            }
+
+            if (!string.IsNullOrEmpty(payload?.Signature))
+                dict.TryAdd("signature", payload.Signature);
 
             callbackParams = dict;
         }
@@ -151,3 +190,6 @@ public class PaymentResultController : ControllerBase
         return Redirect($"/custom-invoice/details/{result.PaymentId}");
     }
 }
+
+/// ///////////////////////////////////////////////////////////////////////////////////////////////
+
