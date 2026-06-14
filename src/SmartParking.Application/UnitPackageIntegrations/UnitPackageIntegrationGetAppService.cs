@@ -27,6 +27,6 @@ public class UnitPackageIntegrationGetAppService : ApplicationService, IUnitPack
     }
     public async Task<bool> BookingIdExist(string bookingId) 
     { 
-        return await _repository.AllAsync(x => x.BookingId == bookingId);
+        return await _repository.AnyAsync(x => x.BookingId == bookingId);
     }
 }
