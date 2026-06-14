@@ -192,6 +192,7 @@ public partial class CustomInvoiceMainPage
             //    snackbar.Add(L["InvalidTicket"], Severity.Warning);
             //    return;
             //}
+            InvoiceSearchDto.TicketId = SearchText;
             InvoiceSearchDto.PlateNumber = PlateSearchText;
 
             invoiceDto = await invoiceUiAppService.GetInvoiceAfterPreCheckout(InvoiceSearchDto);
