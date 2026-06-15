@@ -366,19 +366,22 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
     public async Task<Guid> UpdatePaymentStausByPaymentNumberAsync(string paymentNumber, string checkoutid)
     {
-        var payment = await _repository.FirstOrDefaultAsync(p => p.PaymentNumber == paymentNumber);
-        if (payment == null)
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception("Payment not found.");
+            var payment = await _repository.FirstOrDefaultAsync(p => p.PaymentNumber == paymentNumber);
+            if (payment == null)
+            {
+                throw new Exception("Payment not found.");
+            }
+            var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
+            if (invoice == null)
+            {
+                throw new Exception("Invoice not found.");
+            }
+            invoice.InvoiceNumber = payment.PaymentNumber;
+            payment.CheckoutId = checkoutid;
+            return payment.Id;
         }
-        var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
-        if (invoice == null)
-        {
-            throw new Exception("Invoice not found.");
-        }
-        invoice.InvoiceNumber = payment.PaymentNumber;
-        payment.CheckoutId = checkoutid;
-        return payment.Id;
     }
 
     private async Task CallingZatcaIntegration(Payment payment)
