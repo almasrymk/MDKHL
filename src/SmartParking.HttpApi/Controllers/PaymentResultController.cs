@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SmartParking.Payments.PaymentIntegrations;
 using System;
 using System.Collections.Generic;
@@ -24,13 +25,16 @@ public class PaymentResultController : ControllerBase
 {
     private readonly IOppwaIntegrationAppService _oppwaLegacyService;
     private readonly Func<GatewayKey, IPaymentGatewayIntegrationService> _gatewayFactory;
+    private readonly ILogger<PaymentResultController> _logger;
 
     public PaymentResultController(
         IOppwaIntegrationAppService oppwaLegacyService,
-        Func<GatewayKey, IPaymentGatewayIntegrationService> gatewayFactory)
+        Func<GatewayKey, IPaymentGatewayIntegrationService> gatewayFactory,
+        ILogger<PaymentResultController> logger)
     {
         _oppwaLegacyService = oppwaLegacyService;
         _gatewayFactory = gatewayFactory;
+        _logger = logger;
     }
 
     // ── Oppwa / HyperPay ──────────────────────────────────────────────────────
@@ -71,27 +75,30 @@ public class PaymentResultController : ControllerBase
     [HttpPost("geidea/callback")]
     public async Task<IActionResult> GeideaCallback([FromBody] GeideaCallbackPayload payload)
     {
-
+        _logger.LogInformation("Geidea callback received - Processing payment result");
 
         // 1. Guard check for bad parsing
         if (payload?.Order == null)
         {
-            Console.WriteLine("[Geidea Callback] Received empty body or incorrect format.");
+            _logger.LogError("Geidea callback: Received empty body or incorrect format");
             return BadRequest("Invalid payload format.");
         }
 
-        // Temporary debug log to confirm you got the data
-        Console.WriteLine($"[Geidea Callback] Received Order ID: {payload.Order.OrderId}");
-        Console.WriteLine($"[Geidea Callback] Status: {payload.Order.Status} | Detailed: {payload.Order.DetailedStatus}");
+        // Log the core order information
+        _logger.LogInformation(
+            "Geidea callback: Order ID: {OrderId}, Status: {Status}, Detailed Status: {DetailedStatus}",
+            payload.Order.OrderId,
+            payload.Order.Status,
+            payload.Order.DetailedStatus);
 
-        // Temporary debug log
+        // Log request context (query string and form data)
         var queryKeys = string.Join(", ", Request.Query.Keys);
         var formKeys = Request.HasFormContentType
                         ? string.Join(", ", Request.Form.Keys)
                         : "no form";
 
-        Console.WriteLine($"[Geidea Callback] Query keys: {queryKeys}");
-        Console.WriteLine($"[Geidea Callback] Form keys: {formKeys}");
+        _logger.LogDebug("Geidea callback: Query parameters: {QueryParams}", queryKeys);
+        _logger.LogDebug("Geidea callback: Form parameters: {FormParams}", formKeys);
 
         ///////////////////////////////////////////////////////////////////////////////////////
         IReadOnlyDictionary<string, string> callbackParams;
@@ -123,10 +130,28 @@ public class PaymentResultController : ControllerBase
             if (!string.IsNullOrEmpty(payload?.Signature))
                 dict.TryAdd("signature", payload.Signature);
 
+            // Log all collected parameters
+            _logger.LogInformation("Geidea callback: Complete order details - OrderId: {OrderId}, MerchantRef: {MerchantRef}, Amount: {Amount} {Currency}, Status: {Status}, DetailedStatus: {DetailedStatus}, UpdatedDate: {UpdatedDate}",
+                payload?.Order?.OrderId,
+                payload?.Order?.MerchantReferenceId,
+                payload?.Order?.Amount,
+                payload?.Order?.Currency,
+                payload?.Order?.Status,
+                payload?.Order?.DetailedStatus,
+                payload?.Order?.UpdatedDate);
+
+            if (!string.IsNullOrEmpty(payload?.Signature))
+            {
+                _logger.LogDebug("Geidea callback: Signature received (length: {SignatureLength})", payload.Signature.Length);
+            }
+
+            _logger.LogDebug("Geidea callback: All callback parameters merged successfully. Total parameters: {ParameterCount}", dict.Count);
+
             callbackParams = dict;
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Geidea callback: Error while parsing callback parameters");
             return Redirect("/payment-failed?reason=parse_error");
         }
 
@@ -135,15 +160,21 @@ public class PaymentResultController : ControllerBase
         {
             var gateway = _gatewayFactory(GatewayKey.Geidea);
             result = await gateway.HandleCallbackAsync(callbackParams);
+            _logger.LogInformation("Geidea callback: Gateway processing completed. Success: {IsSuccess}, PaymentId: {PaymentId}", result.IsSuccess, result.PaymentId);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Geidea callback: Exception occurred while handling callback with gateway");
             return Redirect("/payment-failed?reason=geidea_exception");
         }
 
         if (!result.IsSuccess)
+        {
+            _logger.LogWarning("Geidea callback: Payment verification failed. Error: {ErrorMessage}", result.ErrorMessage);
             return Redirect($"/payment-failed?reason={Uri.EscapeDataString(result.ErrorMessage ?? "unknown")}");
+        }
 
+        _logger.LogInformation("Geidea callback: Payment verification successful. Redirecting to details page. PaymentId: {PaymentId}", result.PaymentId);
         return Redirect($"/custom-invoice/details/{result.PaymentId}");
     }
 
