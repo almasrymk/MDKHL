@@ -194,7 +194,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
 
         var body = new GeideaCreateSessionRequest
         {
-            Amount           = request.Amount.ToString(),
+            Amount           = amountStr,
             Currency         = Current.Currency,
             MerchantReferenceId = request.PaymentNumber,
             CallbackUrl      = callbackUrl,
