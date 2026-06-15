@@ -136,6 +136,7 @@
                     function onSuccess(order) {
                         console.log("Geidea success", order);
                         // Geidea.js auto-redirects to callbackUrl; this is a safety fallback
+                         window.location.href = "/checkout-extension";
                     },
                     function onError(error) {
                         console.error("Geidea error", error);

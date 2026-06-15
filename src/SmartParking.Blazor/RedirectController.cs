@@ -18,9 +18,9 @@ public class RedirectController : ControllerBase
         this.navigationManager = navigationManager;
     }
 
-    [HttpPost("checkout-redirect")]
-    public void CheckoutExtensionRedirect()
+    [HttpGet("checkout-redirect")]
+    public IActionResult CheckoutExtensionRedirect()
     {
-         navigationManager.NavigateTo("/checkout-extension", true);
+        return Redirect($"/checkout-extension");
     }
 }
