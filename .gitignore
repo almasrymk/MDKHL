@@ -263,3 +263,4 @@ src/SmartParking.Blazor.Server.Tiered/Logs/*
 
 
 /src/SmartParking.Blazor/Logs
+/src/SmartParking.Blazor/paymentconfig.json
