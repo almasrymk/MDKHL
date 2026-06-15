@@ -13,6 +13,18 @@ public class GeideaOptions
 
     public GeideaEnvironmentOptions Test { get; set; } = new();
     public GeideaEnvironmentOptions Live { get; set; } = new();
+
+    /// <summary>ZATCA (Saudi e-Invoice) configuration.</summary>
+    public ZatcaOptions Zatca { get; set; } = new();
+}
+
+/// <summary>
+/// ZATCA (Saudi e-Invoice) integration configuration.
+/// </summary>
+public class ZatcaOptions
+{
+    /// <summary>Enable or disable ZATCA integration.</summary>
+    public bool Enabled { get; set; } = false;
 }
 
 public class GeideaEnvironmentOptions
