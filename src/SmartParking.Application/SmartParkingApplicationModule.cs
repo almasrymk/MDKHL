@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SmartParking.Payments.PaymentIntegrations;
 using Org.BouncyCastle.Asn1.X509.Qualified;
+using SmartParking.Application.Utilities;
 using SmartParking.BarrierAppService;
 using SmartParking.CustomerPackages.CustomerPackageTransaction;
 using SmartParking.CustomerPackages.CustomerPackageTransactions;
@@ -78,7 +80,24 @@ public class SmartParkingApplicationModule : AbpModule
         // ─────────────────────────────────────────────────────────────────────
 
         context.Services.AddTransient<IInvoiceUtilityAppService, InvoiceUtilityAppService>();
-        context.Services.AddTransient<IBarrierAppService, BarrierAppService.BarrierAppService>();
+
+        // ── ZATCA service registration based on configuration ─────────────────
+        // Register IZatcaTaxInvoiceAppService using a factory that checks if ZATCA
+        // is enabled in GeideaOptions. If enabled, use the real implementation;
+        // otherwise use the NullZatcaTaxInvoiceAppService (Null Object pattern).
+        context.Services.AddTransient<IZatcaTaxInvoiceAppService>(sp =>
+        {
+            var optionsMonitor = sp.GetRequiredService<IOptionsMonitor<GeideaOptions>>();
+            var geideaOptions = optionsMonitor.CurrentValue;
+
+            return geideaOptions.Zatca.Enabled
+                ? sp.GetRequiredService<ZatcaTaxInvoiceAppService>()
+                : (IZatcaTaxInvoiceAppService)new NullZatcaTaxInvoiceAppService();
+        });
+
+        context.Services.AddTransient<ZatcaTaxInvoiceAppService>();
+
+        // ─────────────────────────────────────────────────────────────────────
         context.Services.AddTransient<IDispenserEndPointsAppService, DispenserEndPointsAppService>();
         context.Services.AddSingleton<KeeperShiftSingletonService>();
         context.Services.AddSingleton<IWebSocketConnectionManager, WebSocketConnectionManager>();
