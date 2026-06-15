@@ -75,7 +75,11 @@ public class PaymentResultController : ControllerBase
     [HttpPost("geidea/callback")]
     public async Task<IActionResult> GeideaCallback([FromBody] GeideaCallbackPayload payload)
     {
+        _logger.LogInformation(
+                            "Geidea callback received - Payload: {@Payload}",
+                            payload);
         _logger.LogInformation("Geidea callback received - Processing payment result");
+
 
         // 1. Guard check for bad parsing
         if (payload?.Order == null)
