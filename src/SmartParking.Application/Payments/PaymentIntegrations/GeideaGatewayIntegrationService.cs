@@ -287,6 +287,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
                 // Send to ZATCA (Null Object pattern handles enable/disable via DI)
                 var zatcaResult = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
                 payment.QrCodeInvoice = zatcaResult.invoiceQRCode;
+                payment.PaymentStatus= PaymentStatus.Success;
 
                 payment = await _repository.UpdateAsync(payment);
                 await _invoiceRepo.UpdateAsync(invoice);
