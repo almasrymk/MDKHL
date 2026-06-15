@@ -11,7 +11,7 @@ namespace SmartParking.Payments.PaymentIntegrations;
 public class GeideaCreateSessionRequest
 {
     [JsonPropertyName("amount")]
-    public decimal Amount { get; init; }
+    public string Amount { get; init; }
 
     [JsonPropertyName("currency")]
     public string Currency { get; init; } = default!;
