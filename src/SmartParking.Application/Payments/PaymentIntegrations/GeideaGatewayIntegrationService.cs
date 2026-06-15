@@ -194,7 +194,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
 
         var body = new GeideaCreateSessionRequest
         {
-            Amount           = request.Amount,
+            Amount           = request.Amount.ToString(),
             Currency         = Current.Currency,
             MerchantReferenceId = request.PaymentNumber,
             CallbackUrl      = callbackUrl,
@@ -207,10 +207,23 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
         var json = JsonSerializer.Serialize(body, _jsonOptions);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+        _logger.LogInformation("Geidea request is {@json}", json);
+
         SetBasicAuthHeader();
 
-        var response = await _http.PostAsync(
-            Current.BaseUrl.TrimEnd('/') + Current.Endpoints.CreateSession, content);
+        //var response = await _http.PostAsync(
+        //    Current.BaseUrl.TrimEnd('/') + Current.Endpoints.CreateSession, content);
+
+        var url = $"{Current.BaseUrl.TrimEnd('/')}{Current.Endpoints.CreateSession}";
+
+        // Create the request message explicitly
+        var req = new HttpRequestMessage(HttpMethod.Post, url)
+        {
+            Content = content
+        };
+
+        // SendAsync now receives the correct object type
+        var response = await _http.SendAsync(req);
 
         var responseBody = await response.Content.ReadAsStringAsync();
 
