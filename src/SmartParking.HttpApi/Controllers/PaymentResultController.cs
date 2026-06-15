@@ -119,6 +119,8 @@ public class PaymentResultController : ControllerBase
                 foreach (var (key, value) in Request.Form)
                     dict.TryAdd(key, value.ToString());
 
+
+
             // Merge payload data into the dictionary
             if (payload?.Order != null)
             {
@@ -160,6 +162,13 @@ public class PaymentResultController : ControllerBase
         }
 
         PaymentVerificationResult result;
+        foreach (var param in callbackParams)
+        {
+            _logger.LogInformation(
+                "Callback Param - Key: {Key}, Value: {Value}",
+                param.Key,
+                param.Value);
+        }
         try
         {
             var gateway = _gatewayFactory(GatewayKey.Geidea);
