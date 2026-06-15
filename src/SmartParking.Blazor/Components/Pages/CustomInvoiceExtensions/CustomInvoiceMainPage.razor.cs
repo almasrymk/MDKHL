@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using MudBlazor;
 using SmartParking.Blazor.Dtos;
 using SmartParking.Enums;
 using SmartParking.Invoices;
 using SmartParking.Payments;
+using SmartParking.Payments.PaymentIntegrations;
 using SmartParking.Utilities;
 using SmartParking.Validations;
 
@@ -12,6 +14,17 @@ namespace SmartParking.Blazor.Components.Pages.CustomInvoiceExtensions;
 
 public partial class CustomInvoiceMainPage
 {
+    // ── Injected config ───────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Provides access to the active gateway's CallbackUrl from paymentconfig.json.
+    /// The active provider (Geidea / Oppwa) is determined by Payment:ActiveProvider.
+    /// </summary>
+    [Inject] private IOptionsMonitor<GeideaOptions>     GeideaOptions  { get; set; } = default!;
+    [Inject] private IOptionsMonitor<OppwaRootOptions>  OppwaOptions   { get; set; } = default!;
+
+    // ── Page parameters / state ───────────────────────────────────────────────
+
     [Parameter] public string WatcherCode { get; set; }
     private string SearchText { get; set; }
     private string PlateSearchText { get; set; } = string.Empty;
@@ -29,20 +42,26 @@ public partial class CustomInvoiceMainPage
     public int VatRate { get; set; }
     private string paymentMethod { get; set; } = "MADA";
     private InvoiceDto? LatestInvoice { get; set; }
-
     private CreateUpdateInvoiceUiDto? invoiceDto { get; set; } = new();
-
     private bool ShowInvoiceDetails = false;
     private PaymentMethod paymentMethodValue { get; set; } = PaymentMethod.MADA;
 
+    /// <summary>
+    /// True while the gateway session is being created.
+    /// Disables the payment button and shows a spinner to prevent double-clicks.
+    /// </summary>
+    private bool _isProcessingPayment = false;
+
     private InvoiceSearchDto InvoiceSearchDto = new InvoiceSearchDto();
-    private static readonly Dictionary<string,PaymentMethod> PaymentMap =
-    new()
+
+    private static readonly Dictionary<string, PaymentMethod> PaymentMap = new()
     {
-        { "MADA" ,PaymentMethod.MADA },
-        { "APPLEPAY" , PaymentMethod.ApplePay }
+        { "MADA",     PaymentMethod.MADA },
+        { "APPLEPAY", PaymentMethod.ApplePay },
+        { "VISA",     PaymentMethod.VISA },
     };
 
+    // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     protected override async Task OnInitializedAsync()
     {
@@ -53,66 +72,143 @@ public partial class CustomInvoiceMainPage
             Vat = 0;
             InvoiceAmount = 0;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             navigationManager.NavigateTo("/", true);
         }
-
     }
+
+    // ── Event handlers ────────────────────────────────────────────────────────
 
     private void OnPaymentMethodChanged(string method)
     {
         paymentMethod = method;
-        if (!PaymentMap.TryGetValue(method, out var brand))
-            return;
-        paymentMethodValue = brand;
-
+        if (PaymentMap.TryGetValue(method, out var brand))
+            paymentMethodValue = brand;
     }
+
+
+    // ── Payment flow ──────────────────────────────────────────────────────────
+
     private async Task ProceedToPayment()
     {
+        if (_isProcessingPayment) return;
+
         try
         {
-            // 🔹 Normally this comes from backend (Create Checkout API)
+            _isProcessingPayment = true;
+            StateHasChanged();
+
             var invoice = await invoiceUiAppService.GetInvoiceAfterCheckout(InvoiceSearchDto);
+
+            // ── Build callback URL from paymentconfig.json ────────────────────
+            // We construct the absolute URL using the app's base URI + the
+            // relative path stored in config (e.g. /api/PaymentResult/geidea/callback).
+            // This means: change the path in paymentconfig.json and no C# code changes
+            // are needed — Geidea will redirect back to the correct endpoint automatically.
+            var callbackUrl = ResolveCallbackUrl();
+
             var dto = new PaymentCheckoutRequestDto
             {
-                InvoiceId = invoice.InvoiceId,
-                OrganizationId = invoice.OrganizationId,
-                Amount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount),
+                InvoiceId       = invoice.InvoiceId,
+                OrganizationId  = invoice.OrganizationId,
+                Amount          = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount),
                 PaymentCategory = PaymentCategory.PaymentParking,
-                PaymentMethod = paymentMethodValue,
-                TenantId = invoice.TenantId.Value,
-                EnPlateNumber = invoice.PlateNumber,
+                PaymentMethod   = paymentMethodValue,
+                TenantId        = invoice.TenantId!.Value,
+                EnPlateNumber   = invoice.PlateNumber,
+                CallbackUrl     = callbackUrl
             };
-            var paymentNumber= await OppwaIntegrationAppService.InitiatePaymentAsync(dto);
-            dto.PaymentNumber = paymentNumber;
-            var checkoutId = await OppwaIntegrationAppService.PrepareCheckoutAsync((decimal)InvoiceAmount, paymentMethodValue, dto);
-            var id = await paymentAppService.UpdatePaymentStausByPaymentNumberAsync(paymentNumber, checkoutId);
 
-            await JS.InvokeVoidAsync(
-                "hyperPay.loadWidget",
-                checkoutId,
-                $"{navigationManager.BaseUri}api/PaymentResult/hyperpay/result",
-                paymentMethodValue.ToString()
-            );
+            var result = await gateway.InitiateAsync(dto);
+
+            // ── Dispatch the correct JS widget (Geidea or Oppwa) ─────────────
+            // gateway.InitiateAsync() returns JsMethodName + JsArguments that
+            // map directly to the JS functions defined in the razor file:
+            //   • "geidea.loadCheckout"   for Geidea Hosted Page
+            //   • "hyperPay.loadWidget"   for HyperPay/Oppwa widget
+            await JS.InvokeVoidAsync(result.JsMethodName, result.JsArguments);
+
+            // ── Auto-refresh page after payment flow completes ───────────────
+            // After ~3-5 seconds, check if payment has been processed
+            // If Geidea/Oppwa redirected back to us, the page will refresh automatically
+            // via the payment gateway callback endpoint
+            await Task.Delay(5000);
+
+            // Fallback: refresh page in case user canceled
+            // Check if we're still on this page (no redirect occurred)
+            if (navigationManager.Uri.Contains("/checkout-extension/"))
+            {
+                // User might have canceled the payment flow
+                snackbar.Add(L["PaymentNotCompleted"], Severity.Warning);
+                _isProcessingPayment = false;
+                StateHasChanged();
+            }
         }
         catch (Exception ex)
         {
-            snackbar.Add(L["PaymentFailed"], Severity.Error);
+            snackbar.Add(L["PaymentFailed"] + " " + ex.Message, Severity.Error);
+        }
+        finally
+        {
+            _isProcessingPayment = false;
+            StateHasChanged();
         }
     }
 
+    /// <summary>
+    /// Builds the absolute callback URL by combining the app's own BaseUri with
+    /// the relative path from paymentconfig.json.
+    ///
+    /// For Geidea:  BaseUri + Providers:Geidea:{Mode}:CallbackUrl
+    ///              → e.g. https://parking.example.com/api/PaymentResult/geidea/callback
+    ///
+    /// For Oppwa:   Uses NavigationManager because Oppwa's CallbackUrl is typically
+    ///              configured as a full path at the gateway level.
+    ///
+    /// Change the path in paymentconfig.json — no code changes required.
+    /// </summary>
+    private string ResolveCallbackUrl()
+    {
+        var baseUri = navigationManager.BaseUri.TrimEnd('/');
+
+        switch (gateway.Gateway)
+        {
+            case GatewayKey.Geidea:
+            {
+                var opts    = GeideaOptions.CurrentValue;
+                var env     = opts.Mode == "Live" ? opts.Live : opts.Test;
+                var relPath = env.CallbackUrl.TrimStart('/');
+                return $"{baseUri}/{relPath}";
+            }
+
+            case GatewayKey.Oppwa:
+            {
+                var opts    = OppwaOptions.CurrentValue;
+                var env     = opts.Mode == "Live" ? opts.Live : opts.Test;
+                var relPath = env.CallbackUrl.TrimStart('/');
+                return $"{baseUri}/{relPath}";
+            }
+
+            default:
+                // Fallback: derive from gateway key name so new gateways work without code changes.
+                return $"{baseUri}/api/PaymentResult/{gateway.Gateway.ToString().ToLower()}/callback";
+        }
+    }
+
+    // ── Invoice search ────────────────────────────────────────────────────────
+
     private async Task OnSearch()
     {
-
         try
         {
-            InvoiceSearchDto.TicketId = VehicleValidation.HandleKeyUp(SearchText).Item1;
-            if (SearchText.Length != 11)
-            {
-                snackbar.Add(L["InvalidTicket"],Severity.Warning);
-                return;
-            }
+            //InvoiceSearchDto.TicketId = VehicleValidation.HandleKeyUp(SearchText).Item1;
+            //if (SearchText.Length != 11)
+            //{
+            //    snackbar.Add(L["InvalidTicket"], Severity.Warning);
+            //    return;
+            //}
+            InvoiceSearchDto.TicketId = SearchText;
             InvoiceSearchDto.PlateNumber = PlateSearchText;
 
             invoiceDto = await invoiceUiAppService.GetInvoiceAfterPreCheckout(InvoiceSearchDto);
@@ -120,18 +216,18 @@ public partial class CustomInvoiceMainPage
             {
                 ShowInvoiceDetails = true;
                 InvoiceNumber = invoiceDto.InvoiceNumber;
-                InvoiceDate = invoiceDto.InvoiceTime!.Value;
-                InvoicePrice = Math.Round(invoiceDto.InvoicePrice,2);
-                Vat = Math.Round(invoiceDto.Vat,2);
-                var duration = invoiceDto.InvoiceTime.Value - invoiceDto.EntranceTime.Value;
-                Duration = $"{(int)duration.TotalHours} hours {duration.Minutes} minutes";
-                CheckIn = invoiceDto.EntranceTime.Value;
-                Checkout = invoiceDto.InvoiceTime.Value;
-                EntryPicture = invoiceDto.EntryTransactionImage;
-                ExitPicture = invoiceDto.ExitTransactionImage;
-                PlateNumber = invoiceDto.PlateNumber;
-                InvoiceAmount = Math.Round(InvoicePrice + Vat,2);
-                VatRate = 15;
+                InvoiceDate   = invoiceDto.InvoiceTime!.Value;
+                InvoicePrice  = Math.Round(invoiceDto.InvoicePrice, 2);
+                Vat           = Math.Round(invoiceDto.Vat, 2);
+                var duration  = invoiceDto.InvoiceTime.Value - invoiceDto.EntranceTime!.Value;
+                Duration      = $"{(int)duration.TotalHours} hours {duration.Minutes} minutes";
+                CheckIn       = invoiceDto.EntranceTime.Value;
+                Checkout      = invoiceDto.InvoiceTime.Value;
+                EntryPicture  = invoiceDto.EntryTransactionImage;
+                ExitPicture   = invoiceDto.ExitTransactionImage;
+                PlateNumber   = invoiceDto.PlateNumber;
+                InvoiceAmount = Math.Round(InvoicePrice + Vat, 2);
+                VatRate       = 15;
             }
             else
             {
@@ -139,7 +235,8 @@ public partial class CustomInvoiceMainPage
                 await Task.Delay(1000);
             }
         }
-        catch (Exception ex) {
+        catch (Exception)
+        {
             snackbar.Add(L["InvoiceNotFound"], Severity.Error);
             await Task.Delay(1000);
         }
@@ -151,5 +248,4 @@ public partial class CustomInvoiceMainPage
         SearchText = searchValue;
         StateHasChanged();
     }
-
 }

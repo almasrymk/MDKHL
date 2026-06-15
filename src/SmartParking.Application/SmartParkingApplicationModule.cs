@@ -1,5 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SmartParking.Payments.PaymentIntegrations;
 using Org.BouncyCastle.Asn1.X509.Qualified;
 using SmartParking.BarrierAppService;
 using SmartParking.CustomerPackages.CustomerPackageTransaction;
@@ -18,6 +19,7 @@ using SmartParking.Utilities;
 using SmartParking.Watchers;
 using SmartParking.WebSockets;
 using System;
+using System.Net.Http;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.AspNetCore.ExceptionHandling;
@@ -42,13 +44,39 @@ namespace SmartParking;
     typeof(AbpTenantManagementApplicationModule),
     typeof(AbpFeatureManagementApplicationModule),
     typeof(AbpSettingManagementApplicationModule),
-    typeof(AbpFluentValidationModule) //Add the FluentValidation module
-
-	)]
+    typeof(AbpFluentValidationModule)
+    )]
 public class SmartParkingApplicationModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        var configuration = context.Services.GetConfiguration();
+
+        // ── Active-provider IPaymentGatewayIntegrationService ─────────────────
+        // Resolves the configured active gateway so Blazor pages can inject
+        // IPaymentGatewayIntegrationService directly for session initiation.
+        // Named HttpClients (AddHttpClient) and the Func<GatewayKey,…> factory
+        // are registered in SmartParkingBlazorModule where Microsoft.Extensions.Http
+        // is available via the AspNetCore shared framework.
+        var activeProviderStr = configuration["Payment:ActiveProvider"] ?? "Geidea";
+        if (Enum.TryParse<GatewayKey>(activeProviderStr, true, out var activeProvider))
+        {
+            context.Services.AddTransient<IPaymentGatewayIntegrationService>(sp => activeProvider switch
+            {
+                GatewayKey.Oppwa  => CreateGateway<OppwaGatewayIntegrationService>(sp),
+                GatewayKey.Geidea => CreateGateway<GeideaGatewayIntegrationService>(sp),
+                _                 => throw new NotSupportedException(
+                    $"No IPaymentGatewayIntegrationService registered for GatewayKey.{activeProvider}")
+            });
+        }
+        else
+        {
+            context.Services.AddTransient<IPaymentGatewayIntegrationService>(
+                sp => CreateGateway<GeideaGatewayIntegrationService>(sp));
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+
         context.Services.AddTransient<IInvoiceUtilityAppService, InvoiceUtilityAppService>();
         context.Services.AddTransient<IBarrierAppService, BarrierAppService.BarrierAppService>();
         context.Services.AddTransient<IDispenserEndPointsAppService, DispenserEndPointsAppService>();
@@ -83,19 +111,38 @@ public class SmartParkingApplicationModule : AbpModule
             options.SendExceptionsDetailsToClients = true;
             options.SendStackTraceToClients = false;
         });
-        
     }
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
-
         var backgroundWorkerManager = context.ServiceProvider.GetRequiredService<IBackgroundWorkerManager>();
-
         var worker = context.ServiceProvider.GetRequiredService<WebSocketHeartbeatWorker>();
         backgroundWorkerManager.AddAsync(worker);
-
         base.OnApplicationInitialization(context);
     }
 
+    // ── Private helper ────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// Constructs a gateway service using <see cref="ActivatorUtilities"/> so that
+    /// ABP-registered dependencies (IOptionsMonitor, repositories, etc.) are resolved
+    /// from DI while a fresh <see cref="HttpClient"/> is injected directly.
+    ///
+    /// Named HttpClient registration (AddHttpClient) lives in SmartParkingBlazorModule
+    /// which has Microsoft.Extensions.Http available. For contexts where the Blazor
+    /// module runs (i.e. the web host), IHttpClientFactory is available and will be
+    /// used automatically by ActivatorUtilities if the service has a matching ctor.
+    /// </summary>
+    private static TService CreateGateway<TService>(IServiceProvider sp)
+        where TService : class
+    {
+        // Try to resolve via the full DI graph first (covers the case where Blazor module
+        // has already registered IHttpClientFactory and named clients).
+        var existing = sp.GetService<TService>();
+        if (existing is not null)
+            return existing;
+
+        // Fallback: create with a plain HttpClient (test / non-ASP.NET host scenarios).
+        return ActivatorUtilities.CreateInstance<TService>(sp, new HttpClient());
+    }
 }

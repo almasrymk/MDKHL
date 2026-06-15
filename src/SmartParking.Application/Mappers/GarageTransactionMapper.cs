@@ -24,8 +24,7 @@ namespace SmartParking.Mappers
                 : (DateTime?)null;
 
             var isPending = graceDeadline.HasValue && graceDeadline.Value > now;
-            var canCheckout = cameraType == WatcherType.Entry
-                              && isIn
+            var canCheckout =  isIn
                               && !isMapped
                               && (!checkoutMobile.HasValue || graceDeadline!.Value <= now);
 

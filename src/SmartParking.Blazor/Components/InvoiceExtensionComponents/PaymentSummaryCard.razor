@@ -1,4 +1,4 @@
-﻿@using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Localization
 @using SmartParking.Localization
 @inject IStringLocalizer<SmartParkingResource> L
 
@@ -63,8 +63,17 @@
                    Size="MudBlazor.Size.Large"
                    Variant="Variant.Filled"
                    Class="mt-4"
+                   Disabled="@(IsLoading || Disabled)"
                    OnClick="ProceedToPayment">
-            Checkout
+            @if (IsLoading)
+            {
+                <MudProgressCircular Class="ms-n1" Size="MudBlazor.Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">Processing…</MudText>
+            }
+            else
+            {
+                <MudText>Checkout</MudText>
+            }
         </MudButton>
     </MudCardContent>
 </MudCard>
@@ -77,6 +86,10 @@
     [Parameter] public string SelectedPaymentMethod { get; set; }
     [Parameter] public EventCallback<string> SelectedPaymentMethodChanged { get; set; }
     [Parameter] public EventCallback ProceedToPayment { get; set; }
+    /// <summary>When true the button shows a spinner and is disabled.</summary>
+    [Parameter] public bool IsLoading { get; set; }
+    /// <summary>Allows the parent to disable the button independently of loading state.</summary>
+    [Parameter] public bool Disabled { get; set; }
 
     private async Task OnPaymentChanged(string value)
     {

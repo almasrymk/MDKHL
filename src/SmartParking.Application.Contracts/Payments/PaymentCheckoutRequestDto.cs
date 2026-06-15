@@ -1,4 +1,4 @@
-﻿using SmartParking.Enums;
+using SmartParking.Enums;
 using System;
 
 namespace SmartParking.Payments;
@@ -18,6 +18,5 @@ public class PaymentCheckoutRequestDto
     public string PaymentNumber { get; set; }
     public string? EnPlateNumber { get; set; }
     public string? ArPlateNumber { get; set; }
-
-
+    public string? CallbackUrl { get; set; }
 }

@@ -1,0 +1,71 @@
+{
+  "Payment": {
+    "ActiveProvider": "Geidea"
+  },
+  "Providers": {
+    "Oppwa": {
+      "Mode": "Test",
+      "Test": {
+        "BaseUrl": "https://eu-test.oppwa.com",
+        "Currency": "SAR",
+        "PaymentType": "DB",
+        "CallbackUrl": "/api/PaymentResult/hyperpay/result",
+        "Auth": {
+          "TokenType": "Bearer",
+          "Token": "OGFjN2E0Yzc5Mzk0YmRjODAxOTM5NzM2ZjFhNzA2NDF8enlac1lYckc4QXk6bjYzI1NHNng="
+        },
+        "EntityId": "8ac7a4c79394bdc801939736f17e063d"
+      },
+      "Live": {
+        "BaseUrl": "https://eu-prod.oppwa.com",
+        "Currency": "SAR",
+        "PaymentType": "DB",
+        "CallbackUrl": "/api/PaymentResult/hyperpay/result",
+        "Auth": {
+          "TokenType": "Bearer",
+          "Token": "LIVE_TOKEN"
+        },
+        "EntityId": "Live_Entity_Id"
+      }
+    },
+    "Geidea": {
+      "Mode": "Test",
+      "Test": {
+        "BaseUrl": "https://api.ksamerchant.geidea.net",
+        "MerchantPublicKey": "b4f28e9e-bb2d-41a2-bec9-d9391d047f57",
+        "ApiPassword": "7ad68a56-0c01-43cd-ae94-173c47640bea",
+        "Currency": "SAR",
+        "CallbackUrl": "/api/PaymentResult/geidea/callback",
+        "Endpoints": {
+          "CreateSession":       "/payment-intent/api/v2/direct/session",
+          "CreateInvoice":       "/payment-intent/api/v1/direct/eInvoice",
+          "UpdateInvoice":       "/payment-intent/api/v1/direct/eInvoice",
+          "SendInvoiceByEmail":  "/payment-intent/api/v1/direct/eInvoice/{paymentIntentId}/sendByEmail",
+          "SendInvoiceBySms":    "/payment-intent/api/v1/direct/eInvoice/{paymentIntentId}/sendBySms",
+          "GetInvoice":          "/payment-intent/api/v1/direct/eInvoice/{paymentIntentId}",
+          "DeleteInvoice":       "/payment-intent/api/v1/direct/eInvoice/{paymentIntentId}",
+          "Refund":              "/payment-intent/api/v1/direct/refund",
+          "GetOrder":            "/payment-intent/api/v1/direct/orders/{orderId}"
+        }
+      },
+      "Live": {
+        "BaseUrl": "https://api.ksamerchant.geidea.net",
+        "MerchantPublicKey": "YOUR_LIVE_MERCHANT_PUBLIC_KEY",
+        "ApiPassword": "YOUR_LIVE_API_PASSWORD",
+        "Currency": "SAR",
+        "CallbackUrl": "/api/PaymentResult/geidea/callback",
+        "Endpoints": {
+          "CreateSession":       "/payment-intent/api/v2/direct/session",
+          "CreateInvoice":       "/payment-intent/api/v1/direct/eInvoice",
+          "UpdateInvoice":       "/payment-intent/api/v1/direct/eInvoice",
+          "SendInvoiceByEmail":  "/payment-intent/api/v1/direct/eInvoice/{paymentIntentId}/sendByEmail",
+          "SendInvoiceBySms":    "/payment-intent/api/v1/direct/eInvoice/{paymentIntentId}/sendBySms",
+          "GetInvoice":          "/payment-intent/api/v1/direct/eInvoice/{paymentIntentId}",
+          "DeleteInvoice":       "/payment-intent/api/v1/direct/eInvoice/{paymentIntentId}",
+          "Refund":              "/payment-intent/api/v1/direct/refund",
+          "GetOrder":            "/payment-intent/api/v1/direct/orders/{orderId}"
+        }
+      }
+    }
+  }
+}
