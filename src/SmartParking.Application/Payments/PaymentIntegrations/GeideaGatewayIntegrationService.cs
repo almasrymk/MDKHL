@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Payments;
@@ -41,6 +42,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
     private readonly IPaymentAppService _paymentAppService;
     private readonly IDataFilter _dataFilter;
     private readonly IZatcaTaxInvoiceAppService _zatcaTaxInvoiceAppService;
+    private readonly ILogger<GeideaGatewayIntegrationService> _logger;
 
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
@@ -55,7 +57,8 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
         IPaymentAppService paymentAppService,
         IDataFilter dataFilter,
         IRepository<Invoice, int> invoiceRepo,
-        IZatcaTaxInvoiceAppService zatcaTaxInvoiceAppService)
+        IZatcaTaxInvoiceAppService zatcaTaxInvoiceAppService,
+        ILogger<GeideaGatewayIntegrationService> logger)
     {
         _http = http;
         _options = options;
@@ -64,6 +67,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
         _dataFilter = dataFilter;
         _invoiceRepo = invoiceRepo;
         _zatcaTaxInvoiceAppService = zatcaTaxInvoiceAppService;
+        _logger = logger;
     }
 
     private GeideaEnvironmentOptions Current =>
@@ -210,6 +214,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
 
         var responseBody = await response.Content.ReadAsStringAsync();
 
+        _logger.LogInformation("Geidea response is {@responseBody}", responseBody);
         //if (!response.IsSuccessStatusCode)
         //    throw new InvalidOperationException(
         //        $"Geidea session API returned {(int)response.StatusCode}: {responseBody}");

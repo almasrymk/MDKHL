@@ -128,6 +128,22 @@ public partial class CustomInvoiceMainPage
             //   • "geidea.loadCheckout"   for Geidea Hosted Page
             //   • "hyperPay.loadWidget"   for HyperPay/Oppwa widget
             await JS.InvokeVoidAsync(result.JsMethodName, result.JsArguments);
+
+            // ── Auto-refresh page after payment flow completes ───────────────
+            // After ~3-5 seconds, check if payment has been processed
+            // If Geidea/Oppwa redirected back to us, the page will refresh automatically
+            // via the payment gateway callback endpoint
+            await Task.Delay(5000);
+
+            // Fallback: refresh page in case user canceled
+            // Check if we're still on this page (no redirect occurred)
+            if (navigationManager.Uri.Contains("/checkout-extension/"))
+            {
+                // User might have canceled the payment flow
+                snackbar.Add(L["PaymentNotCompleted"], Severity.Warning);
+                _isProcessingPayment = false;
+                StateHasChanged();
+            }
         }
         catch (Exception ex)
         {

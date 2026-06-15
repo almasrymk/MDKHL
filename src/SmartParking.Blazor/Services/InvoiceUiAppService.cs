@@ -2,6 +2,7 @@
 using SmartParking.Blazor.Dtos;
 using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
+using SmartParking.GarageTransactions.Factory;
 using SmartParking.Invoices;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -15,20 +16,22 @@ public class InvoiceUiAppService : ApplicationService, IInvoiceUiAppService
 {
     private readonly IGarageTransactionActionsAppService _garageTransactionActionsAppService;
     private readonly IKeeperTransactionsAppService _keeperTransactionsAppService;
+    private readonly IGarageTransactionsActionsFactoryAppService _garageTransactionsActionsFactoryAppService;
     public InvoiceUiAppService(IGarageTransactionActionsAppService garageTransactionActionsAppService
       ,
-        IKeeperTransactionsAppService keeperTransactionsAppService)
+        IKeeperTransactionsAppService keeperTransactionsAppService,
+        IGarageTransactionsActionsFactoryAppService garageTransactionsActionsFactoryAppService)
     {
         _garageTransactionActionsAppService = garageTransactionActionsAppService;
         _keeperTransactionsAppService = keeperTransactionsAppService;
+        _garageTransactionsActionsFactoryAppService = garageTransactionsActionsFactoryAppService;
     }
     [RemoteService(false)]
     public async Task<GarageTransactionUiDto> GetGarageTransaction(InvoiceSearchDto invoiceSearchDto)
     {
-        
-            var dto = await _garageTransactionActionsAppService.GetGarageTransaction(invoiceSearchDto);
-            var mapped = ObjectMapper.Map<GarageTransactionDto, GarageTransactionUiDto>(dto);
-            return mapped;
+        var dto = await _garageTransactionsActionsFactoryAppService.GetGarageTransaction(invoiceSearchDto);
+        var mapped = ObjectMapper.Map<GarageTransactionDto, GarageTransactionUiDto>(dto);
+        return mapped;
         
 
     }
