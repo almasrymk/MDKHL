@@ -12,8 +12,9 @@ using SmartParking.Validations;
 
 namespace SmartParking.Blazor.Components.Pages.CustomInvoiceExtensions;
 
-public partial class CustomInvoiceMainPage
+public partial class CustomInvoiceMainPage : IDisposable
 {
+    private DotNetObjectReference<CustomInvoiceMainPage>? _objRef;
     // ── Injected config ───────────────────────────────────────────────────────
 
     /// <summary>
@@ -65,6 +66,7 @@ public partial class CustomInvoiceMainPage
 
     protected override async Task OnInitializedAsync()
     {
+        _objRef = DotNetObjectReference.Create(this);
         try
         {
             InvoicePrice = 0;
@@ -127,6 +129,7 @@ public partial class CustomInvoiceMainPage
             // map directly to the JS functions defined in the razor file:
             //   • "geidea.loadCheckout"   for Geidea Hosted Page
             //   • "hyperPay.loadWidget"   for HyperPay/Oppwa widget
+            await JS.InvokeVoidAsync("setDotNetHelper", _objRef);
             await JS.InvokeVoidAsync(result.JsMethodName, result.JsArguments);
 
         }
@@ -232,5 +235,19 @@ public partial class CustomInvoiceMainPage
     {
         SearchText = searchValue;
         StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task HandlePaymentSuccess()
+    {
+        snackbar.Add("Payment successful!", Severity.Success);
+        StateHasChanged();
+        await Task.Delay(5000);
+        navigationManager.NavigateTo("/checkout-extension", true);
+    }
+
+    public void Dispose()
+    {
+        _objRef?.Dispose();
     }
 }
