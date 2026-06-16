@@ -129,16 +129,6 @@ public partial class CustomInvoiceMainPage
             //   • "hyperPay.loadWidget"   for HyperPay/Oppwa widget
             await JS.InvokeVoidAsync(result.JsMethodName, result.JsArguments);
 
-
-            // Fallback: refresh page in case user canceled
-            // Check if we're still on this page (no redirect occurred)
-            if (navigationManager.Uri.Contains("/checkout-extension/"))
-            {
-                // User might have canceled the payment flow
-                snackbar.Add(L["PaymentNotCompleted"], Severity.Warning);
-                _isProcessingPayment = false;
-                StateHasChanged();
-            }
         }
         catch (Exception ex)
         {
