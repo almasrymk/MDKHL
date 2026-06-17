@@ -77,6 +77,14 @@
     </MudGrid>
 </MudContainer>
 
+@* ── Helper to pass DotNet reference to JS ───────────────────────── *@
+<script>
+    window.dotNetHelper = null;
+    window.setDotNetHelper = function(helper) {
+        window.dotNetHelper = helper;
+    };
+</script>
+
 @* ── HyperPay widget script (fully configuration-driven) ───────────────────────── *@
 <script>
     window.hyperPay = {
@@ -135,8 +143,9 @@
                 const checkout = new GeideaCheckout(
                     function onSuccess(order) {
                         console.log("Geidea success", order);
-                        // Geidea.js auto-redirects to callbackUrl; this is a safety fallback
-                         window.location.href = "/checkout-extension";
+                        if (window.dotNetHelper) {
+                            window.dotNetHelper.invokeMethodAsync('HandlePaymentSuccess');
+                        }
                     },
                     function onError(error) {
                         console.error("Geidea error", error);
