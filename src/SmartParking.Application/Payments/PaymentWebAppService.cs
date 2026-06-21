@@ -198,7 +198,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             if (payment.CreatorId != null)
                 paymentMap.CashierName = await GetCashierName(payment.CreatorId);
             else
-                paymentMap.CashierName = payment.Customers.ArabicName;
+                paymentMap.CashierName = payment?.Customers?.ArabicName ?? "Unknown";
             paymentMap.StatusZatca = paymentMap.Organization?.StatusZatca ?? Status.Inactive;
             return paymentMap;
         }
