@@ -364,7 +364,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         return payment.Id;
     }
 
-    public async Task<Guid> UpdatePaymentStausByPaymentNumberAsync(string paymentNumber, string checkoutid)
+    public async Task<Guid> UpdatePaymentStausByPaymentNumberAsync(string paymentNumber, string checkoutid, PaymentMethod paymentMethod)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -380,6 +380,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             }
             invoice.InvoiceNumber = payment.PaymentNumber;
             payment.CheckoutId = checkoutid;
+            payment.PaymentMethod = paymentMethod;
             return payment.Id;
         }
     }

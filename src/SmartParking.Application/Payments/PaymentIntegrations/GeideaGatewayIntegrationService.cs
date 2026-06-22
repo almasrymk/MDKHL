@@ -101,7 +101,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
         var sessionId = await CreateSessionAsync(request);
 
         await _paymentAppService.UpdatePaymentStausByPaymentNumberAsync(
-            paymentRecord.PaymentNumber, sessionId);
+            paymentRecord.PaymentNumber, sessionId, request.PaymentMethod);
 
         var callbackUrl = !string.IsNullOrEmpty(request.CallbackUrl)
             ? request.CallbackUrl

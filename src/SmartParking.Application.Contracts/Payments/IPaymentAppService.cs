@@ -34,6 +34,6 @@ public interface IPaymentAppService : ICrudAppService<PaymentDto, Guid, PagedAnd
         string checkoutid = null,
         string entityId = null);
     Task<Guid> UpdatePaymentStausByCheckOutIdAsync(string checkoutid);
-    Task<Guid> UpdatePaymentStausByPaymentNumberAsync(string paymentNumber, string checkoutid);
+    Task<Guid> UpdatePaymentStausByPaymentNumberAsync(string paymentNumber, string checkoutid, PaymentMethod paymentMethod);
 
 }
