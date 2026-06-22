@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using SmartParking.CustomerPackages;
 using SmartParking.CustomerPackages.AssignantionsContarcts;
@@ -186,6 +186,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             { 
                 var unitVehiclePackage = await _unitVehiclePackageAppService.GetAsync(booking.UnitVehiclePackageId);
                 await _customerPackagesAppService.DeleteAsync(unitVehiclePackage.CustomerPackgeId);
+                await _unitPackageIntegrationOrchestratorAppService.DeleteAsync(booking.Id);
             }
             await _unitVehiclePackageAppService.DeleteByCustomerUnitPackage(customerUnitPackage.Id);
 
@@ -195,6 +196,9 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage, customerPackages);
             var PackageResult = await HandlePackageResponseDto(customerPackages);
             var QrResult = await HandleQrResponseDto(customerPackages, customerUnitPackage);
+
+            var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
+            await CreateUnitPackageIntegrationsAsync(unitVehiclePackages, dto.Booking.BookingId, organization.Id, organization.TenantId);
 
             await _unitOfWorkManager.Current!.SaveChangesAsync();
 
