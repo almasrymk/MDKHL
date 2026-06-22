@@ -1,4 +1,4 @@
-﻿using SmartParking.Blazor.Contracts;
+using SmartParking.Blazor.Contracts;
 using SmartParking.Blazor.Dtos;
 using SmartParking.GarageTransactionEndPoints;
 using SmartParking.GarageTransactions;
@@ -9,6 +9,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
+using SmartParking.Localization;
 
 namespace SmartParking.Blazor.Services;
 
@@ -25,6 +26,7 @@ public class InvoiceUiAppService : ApplicationService, IInvoiceUiAppService
         _garageTransactionActionsAppService = garageTransactionActionsAppService;
         _keeperTransactionsAppService = keeperTransactionsAppService;
         _garageTransactionsActionsFactoryAppService = garageTransactionsActionsFactoryAppService;
+        LocalizationResource = typeof(SmartParkingResource);
     }
     [RemoteService(false)]
     public async Task<GarageTransactionUiDto> GetGarageTransaction(InvoiceSearchDto invoiceSearchDto)
@@ -52,8 +54,10 @@ public class InvoiceUiAppService : ApplicationService, IInvoiceUiAppService
     public async Task<CreateUpdateInvoiceUiDto> GetInvoiceAfterPreCheckout(InvoiceSearchDto invoiceSearchDto)
     {
         
-            var transaction = await GetGarageTransaction(invoiceSearchDto);
-            return await PreCheckout(transaction);
+        var transaction = await GetGarageTransaction(invoiceSearchDto);
+        if (transaction.CheckoutMobile is not null)
+            throw new UserFriendlyException(L["CarAlreadyExit"]);
+        return await PreCheckout(transaction);
         
     }
 

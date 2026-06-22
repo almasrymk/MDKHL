@@ -1017,6 +1017,13 @@
     "Invoice is already paid": "الفاتوره مدفوعه مسبقا",
     "Expired": "منتهيه",
     "Permission:CancelTransaction": "الغاء التحويل",
-    "Permission:OpenGateIcon": "فتح البوابة الحر"
+    "Permission:OpenGateIcon": "فتح البوابة الحر",
+    "CheckoutExtension:Title": "تم الدفع بنجاح",
+    "CheckoutExtension:WarningTitle": "تنبيه",
+    "CheckoutExtension:WarningText": "سيتم احتساب فاتورة جديدة بعد تجاوز فترة السماح للخروج",
+    "Currancy": "س,ر",
+    "CarAlreadyExit": "السيارة خرجت بالفعل"
+
+
   }
 }
