@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Enums;
@@ -63,7 +63,8 @@ public partial class PriceSummaryComponent
         }
         else
         {
-            Discount = default;
+            Discount = discountValue;
+            CanPayInvoice = false;
             Vat = Math.Round(InvoicePriceBeforeDiscount * 0.15m, 2);
             InvoicePriceWithVat = Math.Round(InvoicePriceBeforeDiscount + Vat, 2);
         }

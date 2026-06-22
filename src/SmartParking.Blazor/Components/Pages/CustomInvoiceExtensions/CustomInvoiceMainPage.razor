@@ -22,6 +22,8 @@
 @* Inject the configured active IPaymentGateway directly — no hardcoded provider logic on the page *@
 @inject IPaymentGatewayIntegrationService gateway
 @inject IJSRuntime JS
+@inject IDialogService DialogService
+
 
 
 @attribute [AllowAnonymous]
@@ -144,7 +146,7 @@
                     function onSuccess(order) {
                         console.log("Geidea success", order);
                         if (window.dotNetHelper) {
-                            window.dotNetHelper.invokeMethodAsync('HandlePaymentSuccess');
+                            window.dotNetHelper.invokeMethodAsync('HandlePaymentSuccess', order);
                         }
                     },
                     function onError(error) {

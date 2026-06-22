@@ -83,7 +83,7 @@ public class OppwaGatewayIntegrationService : IPaymentGatewayIntegrationService,
         var checkoutId = await CreateHyperPayCheckoutAsync(request);
 
         await _paymentAppService.UpdatePaymentStausByPaymentNumberAsync(
-            paymentRecord.PaymentNumber, checkoutId);
+            paymentRecord.PaymentNumber, checkoutId, request.PaymentMethod);
 
         var shopperResultUrl = !string.IsNullOrEmpty(request.CallbackUrl)
             ? request.CallbackUrl

@@ -968,7 +968,12 @@
     "CustomerUnitPackageDetails": "Customer Unit Package Details",
     "InvoicePaidError": "Invoice Is Already Paid",
     "Permission:CancelTransaction": "Cancel Transaction",
-    "Permission:OpenGateIcon": "Free Open Gate"
+    "Permission:OpenGateIcon": "Free Open Gate",
+    "CheckoutExtension:Title": "Payment succeeded",
+    "CheckoutExtension:WarningTitle": "Warning",
+    "CheckoutExtension:WarningText": "A new bill will be issued after the grace period for exiting has expired.",
+    "Currancy": "SAR",
+    "CarAlreadyExit": "The car has already exited the garage"
 
 
 
