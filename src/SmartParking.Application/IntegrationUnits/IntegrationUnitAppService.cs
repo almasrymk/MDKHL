@@ -170,7 +170,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             }
             var customerDto = await _customerAppService.GetCustomerByPhoneNumberAsync(dto.CustomerId);
             var customer = await UpdateCustomer(customerDto.Id, dto.Customer.MapToCustomerDto(dto.Customer));
-            var resultValidate = await ValidateCustomerUnitPackage(customer.Id, dto, false);
+            var resultValidate = await ValidateCustomerUnitPackage(customer.Id, dto, true);
             if (!resultValidate.IsSuccess)
             {
                 throw new Exception(resultValidate.Errors.FirstOrDefault()!);
