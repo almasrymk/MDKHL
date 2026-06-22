@@ -1,0 +1,109 @@
+﻿@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using SmartParking.Localization
+@inject IStringLocalizer<SmartParkingResource> L
+
+<MudDialog Style="border-radius:18px;">
+    <DialogContent>
+        <MudStack Spacing="2" Justify="Justify.Center" Class=" p-4" AlignItems="AlignItems.Center" Row="false" dir="rtl">
+
+            <div class="success-checkmark">
+                <MudIcon Icon="@Icons.Material.Filled.Check" Color="MudBlazor.Color.Success" Size="MudBlazor.Size.Large" />
+            </div>
+
+            <MudText Typo="Typo.h5" Class="status-title fw-bold d-flex justify-content-center">
+                @L["CheckoutExtension:Title"]
+            </MudText>
+
+            <MudStack Spacing="1" AlignItems="AlignItems.Center" Class="mb-4">
+                <MudText Typo="Typo.h6" Color="MudBlazor.Color.Error" Class="font-weight-bold">
+                    ⚠️ @L["CheckoutExtension:WarningTitle"]
+                </MudText>
+                <MudText Typo="Typo.body1" Color="MudBlazor.Color.Error" Class="font-weight-bold warning-text">
+                    @L["CheckoutExtension:WarningText"]
+                </MudText>
+            </MudStack>
+
+            <MudGrid Spacing="2" Class=" w-100 pt-4 " Style="border-top: 1px solid var(--mud-palette-table-lines);">
+
+                <MudStack Spacing="1" Style="text-align: right; flex-grow: 1;">
+                    <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
+                        <span>@L["Amount"]:</span> <strong>@Price.ToString("F1") @L["Currancy"] </strong>
+                    </MudText>
+                    <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
+                        <span>@L["VAT"]:</span> <strong>@TaxAmount.ToString("F2") @L["Currancy"]  (@(TaxPercentage)%)</strong>
+                    </MudText>
+
+                    <div class="total-divider w-75"></div>
+
+                    <MudText Typo="Typo.body1" Class="font-weight-bold">
+                        <span>@L["Total"]:</span> <strong>@TotalAmount.ToString("F2") @L["Currancy"] </strong>
+                    </MudText>
+                </MudStack>
+
+                <div class="qr-code-box justify-items-center">
+                    <MudImage Src="@QrCodeUrl" Alt="QR Code" Width="100" Height="100" ObjectFit="MudBlazor.ObjectFit.Contain" />
+                </div>
+
+            </MudGrid>
+        </MudStack>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+
+    // --- Pricing Data Parameters ---
+    [Parameter] public double Price { get; set; } = 3.0;
+    [Parameter] public double TaxPercentage { get; set; } = 15;
+
+    // Auto-calculated or overridable properties
+    [Parameter] public double TaxAmount { get; set; } = 0.45;
+    [Parameter] public double TotalAmount { get; set; } = 3.45;
+
+    // --- QR Code Content Parameter ---
+    [Parameter] public string QrData { get; set; } = "InvoiceDataHere";
+
+    // Computed QR Endpoint
+    private string QrCodeUrl => $"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={Uri.EscapeDataString(QrData)}";
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private void Cancel() => MudDialog.Cancel();
+}
+
+<style>
+    .success-checkmark {
+        width: 60px;
+        height: 60px;
+        background-color: var(--mud-palette-success-hover);
+        border: 3px solid var(--mud-palette-success);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .status-title {
+        color: #1d9140 !important;
+        text-align: center;
+        /* Preserving the dark blue branding brand style */
+    }
+
+    .warning-text {
+        line-height: 1.6;
+        max-width: 360px;
+        text-align: center;
+    }
+
+    .qr-code-box {
+        border: 1px solid var(--mud-palette-lines-inputs);
+        border-radius: 12px;
+        padding: 6px;
+        background: #ffffff;
+    }
+
+    .total-divider {
+        border-top: 1px solid var(--mud-palette-table-lines);
+        width: 100%;
+    }
+</style>

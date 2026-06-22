@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using MudBlazor;
+using SmartParking.Blazor.Components.Pages.Customer.Vehicles;
 using SmartParking.Blazor.Dtos;
 using SmartParking.Enums;
 using SmartParking.Invoices;
@@ -55,7 +56,7 @@ public partial class CustomInvoiceMainPage : IDisposable
 
     private InvoiceSearchDto InvoiceSearchDto = new InvoiceSearchDto();
 
-    private static readonly Dictionary<string, PaymentMethod> PaymentMap = new()
+    private static readonly Dictionary<string, PaymentMethod> PaymentMap = new(StringComparer.OrdinalIgnoreCase)
     {
         { "MADA",     PaymentMethod.MADA },
         { "APPLEPAY", PaymentMethod.ApplePay },
@@ -223,9 +224,9 @@ public partial class CustomInvoiceMainPage : IDisposable
                 await Task.Delay(1000);
             }
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            snackbar.Add(L["InvoiceNotFound"], Severity.Error);
+            snackbar.Add(e.Message, Severity.Error);
             await Task.Delay(1000);
         }
         StateHasChanged();
@@ -238,11 +239,49 @@ public partial class CustomInvoiceMainPage : IDisposable
     }
 
     [JSInvokable]
-    public async Task HandlePaymentSuccess()
+    public async Task HandlePaymentSuccess(System.Text.Json.JsonElement? geideaOrder = null)
     {
         snackbar.Add("Payment successful!", Severity.Success);
+
+        string qrData = InvoiceNumber ?? "N/A";
+        if (geideaOrder.HasValue)
+        {
+            try
+            {
+                if (geideaOrder.Value.TryGetProperty("qrCode", out var qrCodeProp) && qrCodeProp.ValueKind == System.Text.Json.JsonValueKind.String)
+                {
+                    qrData = qrCodeProp.GetString()!;
+                }
+                else if (geideaOrder.Value.TryGetProperty("qrMessage", out var qrMsgProp) && qrMsgProp.ValueKind == System.Text.Json.JsonValueKind.String)
+                {
+                    qrData = qrMsgProp.GetString()!;
+                }
+                else if (geideaOrder.Value.TryGetProperty("order", out var orderProp) && orderProp.ValueKind == System.Text.Json.JsonValueKind.Object && orderProp.TryGetProperty("qrCode", out var nestedQrProp))
+                {
+                    qrData = nestedQrProp.GetString()!;
+                }
+                else if (geideaOrder.Value.TryGetProperty("orderId", out var orderIdProp) && orderIdProp.ValueKind == System.Text.Json.JsonValueKind.String)
+                {
+                    qrData = orderIdProp.GetString()!;
+                }
+            }
+            catch { }
+        }
+
+        var parameters = new DialogParameters
+        {
+            { "Price", (double)InvoicePrice },
+            { "TaxPercentage", (double)VatRate },
+            { "TaxAmount", (double)Vat },
+            { "TotalAmount", (double)InvoiceAmount },
+            { "QrData", qrData }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<PaymentSuccessDialog>(" ", parameters, options);
+        await dialog.Result;
+
         StateHasChanged();
-        await Task.Delay(5000);
         navigationManager.NavigateTo("/checkout-extension", true);
     }
 
@@ -250,4 +289,13 @@ public partial class CustomInvoiceMainPage : IDisposable
     {
         _objRef?.Dispose();
     }
+
+    //private async Task<IDialogReference> ViewVehicle()
+    //{
+    //    var parameters = new DialogParameters
+    //    {
+    //        ["CustomerId"] = customerId,
+    //    };
+    //    return await DialogService.ShowAsync<ViewCustomerVehicleDialog>("view customer vehicle", parameters);
+    //}
 }
