@@ -47,7 +47,8 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
 
     public GeideaGatewayIntegrationService(
@@ -61,6 +62,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
         ILogger<GeideaGatewayIntegrationService> logger)
     {
         _http = http;
+        _http.DefaultRequestHeaders.Add("User-Agent", "SmartParking/1.0 Backend-Service");
         _options = options;
         _repository = repository;
         _paymentAppService = paymentAppService;
