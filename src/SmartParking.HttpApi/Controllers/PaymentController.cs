@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Entities.Organizations;
 using SmartParking.Invoices;
@@ -41,6 +41,13 @@ public class PaymentController : ControllerBase
     public async Task<Result<PaymentPackageDto>> GetPackagePaymentDetails(Guid PaymentId)
     {
         return await _paymentAppService.GetPackagePaymentDetailsAsync(PaymentId);
+    }
+
+    [HttpPost("invoice/{invoiceId}/session")]
+    [Authorize]
+    public async Task<Result<MobilePaymentSessionDto>> InitializePaymentSession(int invoiceId, [FromQuery] SmartParking.Enums.PaymentMethod paymentMethod)
+    {
+        return await _paymentAppService.InitializeMobilePaymentSessionAsync(invoiceId, paymentMethod);
     }
 
 }

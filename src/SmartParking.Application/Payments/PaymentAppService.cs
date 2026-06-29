@@ -1,4 +1,4 @@
-﻿using Abp.Authorization;
+using Abp.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -249,6 +249,59 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
         }
     }
+    
+    [AbpAllowAnonymous]
+    [RemoteService(IsEnabled = false)]
+    public async Task<Result<MobilePaymentSessionDto>> InitializeMobilePaymentSessionAsync(int invoiceId, PaymentMethod paymentMethod)
+    {
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var invoiceResult = await GetInvoiceByIdAsync(invoiceId);
+            if (!invoiceResult.IsSuccess)
+            {
+                _logger.LogWarning("InitializeMobilePaymentSessionAsync: {Error}", invoiceResult.Errors.FirstOrDefault());
+                throw new Exception(invoiceResult.Errors.FirstOrDefault());
+            }
+
+            var invoice = invoiceResult.Value;
+            var amount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount);
+
+            var gatewayService = LazyServiceProvider.LazyGetRequiredService<IPaymentGatewayIntegrationService>();
+
+            var request = new PaymentCheckoutRequestDto
+            {
+                InvoiceId = invoiceId,
+                OrganizationId = invoice.OrganizationId,
+                Amount = amount,
+                PaymentCategory = PaymentCategory.PaymentParking,
+                PaymentMethod = paymentMethod,
+                TenantId = invoice.TenantId.Value,
+                CallbackUrl = ResolveCallbackUrl(gatewayService.Gateway)
+            };
+
+            var initiateResult = await gatewayService.InitiateAsync(request);
+
+            var sessionDto = new MobilePaymentSessionDto
+            {
+                PaymentId = initiateResult.Gateway == GatewayKey.Geidea ? default : default, // Will get from DB
+                SessionId = initiateResult.GeideaSessionId ?? initiateResult.OppwaCheckoutId,
+                SessionUrl = initiateResult.JsArguments.Length > 3 ? initiateResult.JsArguments[3]?.ToString() : null,
+                MerchantReferenceId = initiateResult.PaymentNumber,
+                ExpiresAt = null, // If not provided directly by gateway integration
+                GatewayResponse = initiateResult.GatewayResponseData
+            };
+
+            var payment = await _repository.FirstOrDefaultAsync(p => p.PaymentNumber == sessionDto.MerchantReferenceId);
+            if (payment != null)
+            {
+                sessionDto.PaymentId = payment.Id;
+            }
+
+            _logger.LogInformation("InitializeMobilePaymentSessionAsync: Session initialized for InvoiceId {InvoiceId}, PaymentNumber {PaymentNumber}", invoiceId, sessionDto.MerchantReferenceId);
+            return Result<MobilePaymentSessionDto>.Success(sessionDto, "Payment session initialized successfully");
+        }
+    }
+
     [RemoteService(IsEnabled = false)]
     public async Task<Result<List<PaymentPackageDto>>> GetAllCustomerPackgePaymentsAsync(int organizationId)
     {
@@ -590,6 +643,45 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
 
             return result;
+        }
+    }
+
+    private string ResolveCallbackUrl(GatewayKey gatewayKey)
+    {
+        var httpContextAccessor = LazyServiceProvider.LazyGetService<Microsoft.AspNetCore.Http.IHttpContextAccessor>();
+        var request = httpContextAccessor?.HttpContext?.Request;
+
+        string baseUri;
+        if (request != null)
+        {
+            baseUri = $"{request.Scheme}://{request.Host}{request.PathBase}".TrimEnd('/');
+        }
+        else
+        {
+            var configuration = LazyServiceProvider.LazyGetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+            baseUri = configuration["App:SelfUrl"]?.TrimEnd('/') ?? string.Empty;
+        }
+
+        switch (gatewayKey)
+        {
+            case GatewayKey.Geidea:
+            {
+                var opts = LazyServiceProvider.LazyGetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<SmartParking.Payments.PaymentIntegrations.GeideaOptions>>().CurrentValue;
+                var env = opts.Mode == "Live" ? opts.Live : opts.Test;
+                var relPath = env.CallbackUrl.TrimStart('/');
+                return $"{baseUri}/{relPath}";
+            }
+
+            case GatewayKey.Oppwa:
+            {
+                var opts = LazyServiceProvider.LazyGetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<SmartParking.Payments.PaymentIntegrations.OppwaRootOptions>>().CurrentValue;
+                var env = opts.Mode == "Live" ? opts.Live : opts.Test;
+                var relPath = env.CallbackUrl.TrimStart('/');
+                return $"{baseUri}/{relPath}";
+            }
+
+            default:
+                throw new InvalidOperationException($"No callback resolution configured for {gatewayKey}");
         }
     }
 

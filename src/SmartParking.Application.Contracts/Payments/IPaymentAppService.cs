@@ -1,4 +1,4 @@
-﻿using Abp.Authorization;
+using Abp.Authorization;
 using SmartParking.Enums;
 using SmartParking.Invoices;
 using SmartParking.Packages;
@@ -23,6 +23,8 @@ public interface IPaymentAppService : ICrudAppService<PaymentDto, Guid, PagedAnd
     Task<Result<InvoiceDto>> GetInvoicePaymentDetailsAsync(int OrganizationId, Guid CustomerId, Guid PayemntId);
     [AbpAllowAnonymous]
     Task<Result<PaymentCheckoutDto>> PayCustomerInvoiceAsync(PayCustomerInvoiceDto payCustomerInvoiceDto);
+
+    Task<Result<MobilePaymentSessionDto>> InitializeMobilePaymentSessionAsync(int invoiceId, PaymentMethod paymentMethod);
 
     Task<bool> ResendZatca(Guid Id);
     Task<string> GeneratePaymentNumberAsync(int organizationId);
