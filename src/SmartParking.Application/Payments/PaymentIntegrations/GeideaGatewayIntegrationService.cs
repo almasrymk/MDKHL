@@ -100,7 +100,8 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
 
         request.PaymentNumber = paymentRecord.PaymentNumber;
 
-        var sessionId = await CreateSessionAsync(request);
+        var sessionResponse = await CreateSessionAsync(request);
+        var sessionId = sessionResponse.Session!.Id;
 
         await _paymentAppService.UpdatePaymentStausByPaymentNumberAsync(
             paymentRecord.PaymentNumber, sessionId, request.PaymentMethod);
@@ -116,7 +117,8 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
             paymentRecord.PaymentNumber,
             Current.MerchantPublicKey,
             callbackUrl,
-            jsUrl);
+            jsUrl,
+            gatewayResponseData: sessionResponse);
     }
 
     /// <summary>
@@ -185,7 +187,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
     /// POST /payment-intent/api/v2/direct/session
     /// Returns the Geidea sessionId on success.
     /// </summary>
-    public async Task<string> CreateSessionAsync(PaymentCheckoutRequestDto request)
+    public async Task<GeideaCreateSessionResponse> CreateSessionAsync(PaymentCheckoutRequestDto request)
     {
         var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
         var amountStr = request.Amount.ToString("F2", CultureInfo.InvariantCulture);
@@ -242,9 +244,12 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
         //        $"Geidea session error [{sessionResponse?.ResponseCode}]: " +
         //        $"{sessionResponse?.ResponseMessage} — {sessionResponse?.DetailedResponseMessage}");
 
-        return sessionResponse.Session?.Id
-            ?? throw new InvalidOperationException(
-                "Geidea returned success code but session.id was null");
+        if (sessionResponse?.Session?.Id == null)
+        {
+            throw new InvalidOperationException("Geidea returned success code but session.id was null");
+        }
+
+        return sessionResponse;
     }
 
     // ── Signature ─────────────────────────────────────────────────────────────

@@ -24,23 +24,28 @@ public sealed class GatewayInitiateResult
     /// <summary>Array of arguments to pass to the JS method.</summary>
     public object[] JsArguments { get; set; } = default!;
 
-    public static GatewayInitiateResult ForOppwa(string checkoutId, string paymentNumber, string shopperResultUrl, string brands, string scriptUrl) =>
+    /// <summary>Raw data response from the gateway</summary>
+    public object? GatewayResponseData { get; init; }
+
+    public static GatewayInitiateResult ForOppwa(string checkoutId, string paymentNumber, string shopperResultUrl, string brands, string scriptUrl, object? gatewayResponseData = null) =>
         new()
         {
             Gateway = GatewayKey.Oppwa,
             OppwaCheckoutId = checkoutId,
             PaymentNumber = paymentNumber,
             JsMethodName = "hyperPay.loadWidget",
-            JsArguments = new object[] { checkoutId, shopperResultUrl, brands, scriptUrl }
+            JsArguments = new object[] { checkoutId, shopperResultUrl, brands, scriptUrl },
+            GatewayResponseData = gatewayResponseData
         };
 
-    public static GatewayInitiateResult ForGeidea(string sessionId, string paymentNumber, string merchantPublicKey, string callbackUrl, string jsUrl) =>
+    public static GatewayInitiateResult ForGeidea(string sessionId, string paymentNumber, string merchantPublicKey, string callbackUrl, string jsUrl, object? gatewayResponseData = null) =>
         new()
         {
             Gateway = GatewayKey.Geidea,
             GeideaSessionId = sessionId,
             PaymentNumber = paymentNumber,
             JsMethodName = "geidea.loadCheckout",
-            JsArguments = new object[] { sessionId, merchantPublicKey, callbackUrl, jsUrl }
+            JsArguments = new object[] { sessionId, merchantPublicKey, callbackUrl, jsUrl },
+            GatewayResponseData = gatewayResponseData
         };
 }
