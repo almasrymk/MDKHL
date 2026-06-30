@@ -250,6 +250,7 @@ public partial class CustomInvoiceMainPage : IDisposable
         var parameters = new DialogParameters
         {
             { "Price", (double)InvoicePrice },
+            { "TicketId", InvoiceSearchDto.TicketId },
             { "TaxPercentage", (double)VatRate },
             { "TaxAmount", (double)Vat },
             { "TotalAmount", (double)InvoiceAmount },

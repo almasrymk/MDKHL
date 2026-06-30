@@ -1,4 +1,4 @@
-﻿@using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Localization
 @using MudBlazor
 @using SmartParking.Localization
 @inject IStringLocalizer<SmartParkingResource> L
@@ -28,6 +28,9 @@
 
                 <MudStack Spacing="1" Style="text-align: right; flex-grow: 1;">
                     <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
+                        <span>@L["TicketId"]:</span> <strong>@TicketId</strong>
+                    </MudText>
+                    <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
                         <span>@L["Amount"]:</span> <strong>@Price.ToString("F1") @L["Currancy"] </strong>
                     </MudText>
                     <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
@@ -52,6 +55,8 @@
 
 @code {
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public string TicketId { get; set; }
 
     // --- Pricing Data Parameters ---
     [Parameter] public double Price { get; set; } = 3.0;
