@@ -254,7 +254,9 @@ public partial class CustomInvoiceMainPage : IDisposable
             { "TaxPercentage", (double)VatRate },
             { "TaxAmount", (double)Vat },
             { "TotalAmount", (double)InvoiceAmount },
-            { "QrData", qrData }
+            { "QrData", qrData },
+            { "EntranceTime", CheckIn },
+            { "ExitTime", Checkout }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };

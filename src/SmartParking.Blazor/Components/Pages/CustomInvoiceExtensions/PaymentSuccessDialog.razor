@@ -2,6 +2,7 @@
 @using MudBlazor
 @using SmartParking.Localization
 @inject IStringLocalizer<SmartParkingResource> L
+@inject IJSRuntime JSRuntime
 
 <MudDialog Style="border-radius:18px;">
     <DialogContent>
@@ -30,6 +31,18 @@
                     <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
                         <span>@L["TicketId"]:</span> <strong>@TicketId</strong>
                     </MudText>
+                    @if (EntranceTime.HasValue)
+                    {
+                        <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
+                            <span>@L["EntranceTime"]:</span> <strong>@EntranceTime.Value.ToString("yyyy-MM-dd HH:mm:ss")</strong>
+                        </MudText>
+                    }
+                    @if (ExitTime.HasValue)
+                    {
+                        <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
+                            <span>@L["ExitTime"]:</span> <strong>@ExitTime.Value.ToString("yyyy-MM-dd HH:mm:ss")</strong>
+                        </MudText>
+                    }
                     <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
                         <span>@L["Amount"]:</span> <strong>@Price.ToString("F1") @L["Currancy"] </strong>
                     </MudText>
@@ -51,6 +64,14 @@
             </MudGrid>
         </MudStack>
     </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.PictureAsPdf" OnClick="PrintInvoice" Class="hide-on-print">
+            PDF
+        </MudButton>
+        <MudButton Variant="Variant.Text" Color="MudBlazor.Color.Default" OnClick="Submit" Class="hide-on-print">
+            @L["Close"]
+        </MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {
@@ -69,14 +90,43 @@
     // --- QR Code Content Parameter ---
     [Parameter] public string QrData { get; set; } = "InvoiceDataHere";
 
+    [Parameter] public DateTime? EntranceTime { get; set; }
+    [Parameter] public DateTime? ExitTime { get; set; }
+
     // Computed QR Endpoint
     private string QrCodeUrl => $"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={Uri.EscapeDataString(QrData)}";
 
     private void Submit() => MudDialog.Close(DialogResult.Ok(true));
     private void Cancel() => MudDialog.Cancel();
+
+    private async Task PrintInvoice()
+    {
+        await JSRuntime.InvokeVoidAsync("window.print");
+    }
 }
 
 <style>
+    @@media print {
+        body * {
+            visibility: hidden;
+        }
+        .mud-dialog, .mud-dialog * {
+            visibility: visible;
+        }
+        .mud-dialog {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+        .hide-on-print {
+            display: none !important;
+        }
+    }
+
     .success-checkmark {
         width: 60px;
         height: 60px;
