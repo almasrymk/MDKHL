@@ -48,4 +48,15 @@ public sealed class GatewayInitiateResult
             JsArguments = new object[] { sessionId, merchantPublicKey, callbackUrl, jsUrl },
             GatewayResponseData = gatewayResponseData
         };
+
+    public static GatewayInitiateResult ForGeideaApplePay(string sessionId, string paymentNumber, string merchantPublicKey, string callbackUrl, string jsUrl, object? gatewayResponseData = null) =>
+        new()
+        {
+            Gateway = GatewayKey.Geidea,
+            GeideaSessionId = sessionId,
+            PaymentNumber = paymentNumber,
+            JsMethodName = "geidea.loadExpressCheckout",
+            JsArguments = new object[] { sessionId, merchantPublicKey, callbackUrl, jsUrl },
+            GatewayResponseData = gatewayResponseData
+        };
 }
