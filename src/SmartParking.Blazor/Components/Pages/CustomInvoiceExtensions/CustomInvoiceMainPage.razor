@@ -129,44 +129,55 @@
 <script>
     window.geidea = {
         loadCheckout: function (sessionId, merchantPublicKey, callbackUrl, jsUrl) {
-            if (!sessionId) {
-                console.error("Geidea: sessionId is missing");
+            if (!sessionId || !merchantPublicKey || !callbackUrl) {
+                console.error("Geidea: Missing required parameters");
                 return;
             }
 
-            document.getElementById("geidea-script")?.remove();
-
-            const script = document.createElement("script");
-            script.id = "geidea-script";
-            script.src = jsUrl || "https://www.ksamerchant.geidea.net/hpp/geideaCheckout.min.js";
-
-            script.onload = function () {
-                // GeideaCheckout is the global exposed by gd.js/geideaCheckout.min.js
-                const checkout = new GeideaCheckout(
-                    function onSuccess(order) {
-                        console.log("Geidea success", order);
-                        if (window.dotNetHelper) {
-                            window.dotNetHelper.invokeMethodAsync('HandlePaymentSuccess', order);
-                        }
-                    },
-                    function onError(error) {
-                        console.error("Geidea error", error);
-                    },
-                    function onCancel() {
-                        console.warn("Geidea cancelled");
+            const checkout = new GeideaCheckout(
+                function onSuccess(data) {
+                    console.log("Geidea success", data);
+                    if (window.dotNetHelper) {
+                        window.dotNetHelper.invokeMethodAsync('HandlePaymentSuccess', data);
                     }
-                );
+                },
+                function onError(error) {
+                    console.error("Geidea error", error);
+                },
+                function onCancel() {
+                    console.warn("Geidea cancelled");
+                }
+            );
 
-                checkout.startPayment(sessionId, null, "payment-container")
+            checkout.startPayment(sessionId, null, "payment-container")
+        },
+        loadExpressCheckout: async function (sessionId, merchantPublicKey, callbackUrl, jsUrl) {
+            if (!sessionId) {
+                console.error("Geidea Express Checkout: sessionId is missing");
+                return;
+            }
 
-                // checkout.startPayment({
-                //     sessionId: sessionId,
-                //     merchantPublicKey: merchantPublicKey,
-                //     returnUrl: callbackUrl
-                // });
+            const config = {
+                sessionId: sessionId,
+                merchantPublicKey: merchantPublicKey,
+                returnUrl: callbackUrl,
+                onSuccess: function (data) {
+                    console.log("Geidea Express Checkout success", data);
+                    if (window.dotNetHelper) {
+                        window.dotNetHelper.invokeMethodAsync('HandlePaymentSuccess', data);
+                    }
+                },
+                onError: function (error) {
+                    console.error("Geidea Express Checkout error", error);
+                },
+                onCancel: function () {
+                    console.warn("Geidea Express Checkout cancelled");
+                }
             };
 
-            document.body.appendChild(script);
+            const api = new GeideaExpressCheckout();
+            const expressCheckout = await api.create(config);
+            expressCheckout.mount('#payment-container');
         }
     };
 </script>
