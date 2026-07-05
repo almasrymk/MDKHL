@@ -1,4 +1,4 @@
-﻿using Castle.Core.Resource;
+using Castle.Core.Resource;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.CustomerPackages.Dtos;
@@ -472,8 +472,9 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     }
     private async Task<string> GetCashierName(Guid? creatorId)
     {
-        var user = await _myUserRepository.GetAsync((Guid)creatorId!);
-        return user.Name;
+        if (creatorId == null) return string.Empty;
+        var user = await _myUserRepository.FindAsync(creatorId.Value);
+        return user?.Name ?? string.Empty;
     }
     #endregion
 }

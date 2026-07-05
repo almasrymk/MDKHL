@@ -1,4 +1,4 @@
-﻿using AraibcPdfUnicodeGlyphsResharper;
+using AraibcPdfUnicodeGlyphsResharper;
 using iText.IO.Font;
 using iText.IO.Image;
 using iText.Kernel.Colors;

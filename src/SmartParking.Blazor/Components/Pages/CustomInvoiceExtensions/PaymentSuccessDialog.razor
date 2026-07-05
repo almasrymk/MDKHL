@@ -2,7 +2,6 @@
 @using MudBlazor
 @using SmartParking.Localization
 @inject IStringLocalizer<SmartParkingResource> L
-@inject IJSRuntime JSRuntime
 
 <MudDialog Style="border-radius:18px;">
     <DialogContent>
@@ -65,8 +64,8 @@
         </MudStack>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.PictureAsPdf" OnClick="PrintInvoice" Class="hide-on-print">
-            PDF
+        <MudButton Href="@($"/api/mobile/PDFs/geta4pdfbyinvoice/{InvoiceId}")" Target="_blank" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.PictureAsPdf" Class="hide-on-print">
+            @L["GetPdf"]
         </MudButton>
         <MudButton Variant="Variant.Text" Color="MudBlazor.Color.Default" OnClick="Submit" Class="hide-on-print">
             @L["Close"]
@@ -92,17 +91,13 @@
 
     [Parameter] public DateTime? EntranceTime { get; set; }
     [Parameter] public DateTime? ExitTime { get; set; }
+    [Parameter] public int InvoiceId { get; set; }
 
     // Computed QR Endpoint
     private string QrCodeUrl => $"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={Uri.EscapeDataString(QrData)}";
 
     private void Submit() => MudDialog.Close(DialogResult.Ok(true));
     private void Cancel() => MudDialog.Cancel();
-
-    private async Task PrintInvoice()
-    {
-        await JSRuntime.InvokeVoidAsync("window.print");
-    }
 }
 
 <style>

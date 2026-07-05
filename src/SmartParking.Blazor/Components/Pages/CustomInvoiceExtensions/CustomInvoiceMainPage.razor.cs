@@ -24,6 +24,7 @@ public partial class CustomInvoiceMainPage : IDisposable
     /// </summary>
     [Inject] private IOptionsMonitor<GeideaOptions>     GeideaOptions  { get; set; } = default!;
     [Inject] private IOptionsMonitor<OppwaRootOptions>  OppwaOptions   { get; set; } = default!;
+    [Inject] private IPaymentWebAppService              PaymentWebAppService { get; set; } = default!;
 
     // ── Page parameters / state ───────────────────────────────────────────────
 
@@ -62,6 +63,8 @@ public partial class CustomInvoiceMainPage : IDisposable
         { "APPLEPAY", PaymentMethod.ApplePay },
         { "VISA",     PaymentMethod.VISA },
     };
+
+    private int _currentInvoiceId;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -103,6 +106,7 @@ public partial class CustomInvoiceMainPage : IDisposable
             StateHasChanged();
 
             var invoice = await invoiceUiAppService.GetInvoiceAfterCheckout(InvoiceSearchDto);
+            _currentInvoiceId = invoice.InvoiceId;
 
             // ── Build callback URL from paymentconfig.json ────────────────────
             // We construct the absolute URL using the app's base URI + the
@@ -256,7 +260,8 @@ public partial class CustomInvoiceMainPage : IDisposable
             { "TotalAmount", (double)InvoiceAmount },
             { "QrData", qrData },
             { "EntranceTime", CheckIn },
-            { "ExitTime", Checkout }
+            { "ExitTime", Checkout },
+            { "InvoiceId", _currentInvoiceId }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
