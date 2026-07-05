@@ -19,4 +19,5 @@ public class PaymentCheckoutRequestDto
     public string? EnPlateNumber { get; set; }
     public string? ArPlateNumber { get; set; }
     public string? CallbackUrl { get; set; }
+    public string? ReturnUrl { get; set; }
 }

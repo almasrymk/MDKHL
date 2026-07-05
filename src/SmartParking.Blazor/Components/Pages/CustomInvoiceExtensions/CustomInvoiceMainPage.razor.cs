@@ -124,7 +124,8 @@ public partial class CustomInvoiceMainPage : IDisposable
                 PaymentMethod   = paymentMethodValue,
                 TenantId        = invoice.TenantId!.Value,
                 EnPlateNumber   = invoice.PlateNumber,
-                CallbackUrl     = callbackUrl
+                CallbackUrl     = callbackUrl,
+                ReturnUrl       = navigationManager.Uri
             };
 
             var result = await gateway.InitiateAsync(dto);

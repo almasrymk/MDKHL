@@ -449,7 +449,12 @@ public class SmartParkingBlazorModule : AbpModule
 
        // app.UseHttpsRedirection();
         app.UseCorrelationId();
-        app.UseStaticFiles();
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            ServeUnknownFileTypes = true,
+            DefaultContentType = "text/plain",
+            RequestPath = ""
+        });
         app.MapAbpStaticAssets();
         var supportedCultures = new[]
             {

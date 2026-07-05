@@ -213,6 +213,8 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
             Currency         = Current.Currency,
             MerchantReferenceId = request.PaymentNumber,
             CallbackUrl      = callbackUrl,
+            ReturnUrl        = !string.IsNullOrEmpty(request.ReturnUrl) ? request.ReturnUrl : callbackUrl,
+            PaymentOperation = "Pay",
             Language         = "en",
             Timestamp        = timestamp,
             Signature        = GenerateSignature(timestamp, amountStr, request.PaymentNumber),
