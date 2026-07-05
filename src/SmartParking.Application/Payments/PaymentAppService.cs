@@ -267,29 +267,15 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             var amount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount);
 
             var gatewayService = LazyServiceProvider.LazyGetRequiredService<IPaymentGatewayIntegrationService>();
-
-            var request = new PaymentCheckoutRequestDto
-            {
-                InvoiceId = invoiceId,
-                OrganizationId = invoice.OrganizationId,
-                Amount = amount,
-                PaymentCategory = PaymentCategory.PaymentParking,
-                PaymentMethod = paymentMethod,
-                TenantId = invoice.TenantId.Value,
-                CallbackUrl = ResolveCallbackUrl(gatewayService.Gateway)
-            };
+            
+            var request = invoice.ToPaymentCheckoutRequestDto(
+                amount, 
+                paymentMethod, 
+                PaymentCallbackHelper.ResolveCallbackUrl(ServiceProvider, GetBaseUri(), gatewayService.Gateway));
 
             var initiateResult = await gatewayService.InitiateAsync(request);
 
-            var sessionDto = new MobilePaymentSessionDto
-            {
-                PaymentId = initiateResult.Gateway == GatewayKey.Geidea ? default : default, // Will get from DB
-                SessionId = initiateResult.GeideaSessionId ?? initiateResult.OppwaCheckoutId,
-                SessionUrl = initiateResult.JsArguments.Length > 3 ? initiateResult.JsArguments[3]?.ToString() : null,
-                MerchantReferenceId = initiateResult.PaymentNumber,
-                ExpiresAt = null, // If not provided directly by gateway integration
-                GatewayResponse = initiateResult.GatewayResponseData
-            };
+            var sessionDto = initiateResult.ToMobilePaymentSessionDto();
 
             var payment = await _repository.FirstOrDefaultAsync(p => p.PaymentNumber == sessionDto.MerchantReferenceId);
             if (payment != null)
@@ -646,43 +632,18 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         }
     }
 
-    private string ResolveCallbackUrl(GatewayKey gatewayKey)
+    private string GetBaseUri()
     {
         var httpContextAccessor = LazyServiceProvider.LazyGetService<Microsoft.AspNetCore.Http.IHttpContextAccessor>();
         var request = httpContextAccessor?.HttpContext?.Request;
 
-        string baseUri;
         if (request != null)
         {
-            baseUri = $"{request.Scheme}://{request.Host}{request.PathBase}".TrimEnd('/');
+            return $"{request.Scheme}://{request.Host}{request.PathBase}".TrimEnd('/');
         }
-        else
-        {
-            var configuration = LazyServiceProvider.LazyGetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
-            baseUri = configuration["App:SelfUrl"]?.TrimEnd('/') ?? string.Empty;
-        }
-
-        switch (gatewayKey)
-        {
-            case GatewayKey.Geidea:
-            {
-                var opts = LazyServiceProvider.LazyGetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<SmartParking.Payments.PaymentIntegrations.GeideaOptions>>().CurrentValue;
-                var env = opts.Mode == "Live" ? opts.Live : opts.Test;
-                var relPath = env.CallbackUrl.TrimStart('/');
-                return $"{baseUri}/{relPath}";
-            }
-
-            case GatewayKey.Oppwa:
-            {
-                var opts = LazyServiceProvider.LazyGetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<SmartParking.Payments.PaymentIntegrations.OppwaRootOptions>>().CurrentValue;
-                var env = opts.Mode == "Live" ? opts.Live : opts.Test;
-                var relPath = env.CallbackUrl.TrimStart('/');
-                return $"{baseUri}/{relPath}";
-            }
-
-            default:
-                throw new InvalidOperationException($"No callback resolution configured for {gatewayKey}");
-        }
+        
+        var configuration = LazyServiceProvider.LazyGetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+        return configuration["App:SelfUrl"]?.TrimEnd('/') ?? string.Empty;
     }
 
     #endregion

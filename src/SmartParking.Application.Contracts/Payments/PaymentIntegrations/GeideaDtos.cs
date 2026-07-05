@@ -33,6 +33,18 @@ public class GeideaCreateSessionRequest
 
     [JsonPropertyName("merchantPublicKey")]
     public string MerchantPublicKey { get; init; } = default!;
+
+    [JsonPropertyName("expressCheckouts")]
+    public System.Collections.Generic.List<GeideaExpressCheckoutEntry>? ExpressCheckouts { get; set; }
+}
+
+public class GeideaExpressCheckoutEntry
+{
+    [JsonPropertyName("wallet")]
+    public string Wallet { get; init; } = default!;
+
+    [JsonPropertyName("label")]
+    public string? Label { get; init; }
 }
 
 /// <summary>

@@ -1,4 +1,4 @@
-﻿@using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Localization
 @using MudBlazor
 @using SmartParking.Localization
 @inject IStringLocalizer<SmartParkingResource> L
@@ -28,6 +28,21 @@
 
                 <MudStack Spacing="1" Style="text-align: right; flex-grow: 1;">
                     <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
+                        <span>@L["TicketId"]:</span> <strong>@TicketId</strong>
+                    </MudText>
+                    @if (EntranceTime.HasValue)
+                    {
+                        <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
+                            <span>@L["EntranceTime"]:</span> <strong>@EntranceTime.Value.ToString("yyyy-MM-dd HH:mm:ss")</strong>
+                        </MudText>
+                    }
+                    @if (ExitTime.HasValue)
+                    {
+                        <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
+                            <span>@L["ExitTime"]:</span> <strong>@ExitTime.Value.ToString("yyyy-MM-dd HH:mm:ss")</strong>
+                        </MudText>
+                    }
+                    <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
                         <span>@L["Amount"]:</span> <strong>@Price.ToString("F1") @L["Currancy"] </strong>
                     </MudText>
                     <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
@@ -48,10 +63,20 @@
             </MudGrid>
         </MudStack>
     </DialogContent>
+    <DialogActions>
+        <MudButton Href="@($"/api/mobile/PDFs/geta4pdfbyinvoice/{InvoiceId}")" Target="_blank" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.PictureAsPdf" Class="hide-on-print">
+            @L["GetPdf"]
+        </MudButton>
+        <MudButton Variant="Variant.Text" Color="MudBlazor.Color.Default" OnClick="Submit" Class="hide-on-print">
+            @L["Close"]
+        </MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public string TicketId { get; set; }
 
     // --- Pricing Data Parameters ---
     [Parameter] public double Price { get; set; } = 3.0;
@@ -64,6 +89,10 @@
     // --- QR Code Content Parameter ---
     [Parameter] public string QrData { get; set; } = "InvoiceDataHere";
 
+    [Parameter] public DateTime? EntranceTime { get; set; }
+    [Parameter] public DateTime? ExitTime { get; set; }
+    [Parameter] public int InvoiceId { get; set; }
+
     // Computed QR Endpoint
     private string QrCodeUrl => $"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={Uri.EscapeDataString(QrData)}";
 
@@ -72,6 +101,27 @@
 }
 
 <style>
+    @@media print {
+        body * {
+            visibility: hidden;
+        }
+        .mud-dialog, .mud-dialog * {
+            visibility: visible;
+        }
+        .mud-dialog {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+        .hide-on-print {
+            display: none !important;
+        }
+    }
+
     .success-checkmark {
         width: 60px;
         height: 60px;

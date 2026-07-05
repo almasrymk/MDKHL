@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using SmartParking.PDF.Contracts;
 using System;
 using System.Collections.Generic;
@@ -33,6 +33,15 @@ public class PDFsController : AbpController
         var stream = await _pdfFactoryAppservice.ResolveGeneratorAsync(PaymentId, A4);
         return new FileContentResult(stream.GetAllBytes(), "application/pdf");
     }
+    [HttpGet("geta4pdfbyinvoice/{invoiceId}")]
+    public async Task<IActionResult> GetPaymentA4PDFByInvoice(int invoiceId)
+    {
+        var paymentWebAppService = LazyServiceProvider.LazyGetRequiredService<SmartParking.Payments.IPaymentWebAppService>();
+        var payment = await paymentWebAppService.GetPaymentForInvoice(invoiceId);
+        if (payment == null) 
+            return NotFound("Payment not found for the given invoice id.");
 
-
+        var stream = await _pdfFactoryAppservice.ResolveGeneratorAsync(payment.Id, A4);
+        return new FileContentResult(stream.GetAllBytes(), "application/pdf");
+    }
 }

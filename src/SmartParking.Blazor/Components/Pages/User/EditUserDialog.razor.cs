@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Authentication;
 using System.Threading.Tasks;
@@ -26,7 +26,8 @@ partial class EditUserDialog
 
     protected override async Task OnInitializedAsync()
     {
-        Roles = await RoleAppService.GetListByTenant(updateUserDto.TenantId);
+        var tenantId = currrentTenant.Id ?? updateUserDto.TenantId;
+        Roles = await RoleAppService.GetListByTenant(tenantId);
         UserRole = await GetRoleNameAsync(updateUserDto.RoleId);
         await base.OnInitializedAsync();
 

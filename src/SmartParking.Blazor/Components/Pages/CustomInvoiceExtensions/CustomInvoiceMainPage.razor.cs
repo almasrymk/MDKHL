@@ -24,6 +24,7 @@ public partial class CustomInvoiceMainPage : IDisposable
     /// </summary>
     [Inject] private IOptionsMonitor<GeideaOptions>     GeideaOptions  { get; set; } = default!;
     [Inject] private IOptionsMonitor<OppwaRootOptions>  OppwaOptions   { get; set; } = default!;
+    [Inject] private IPaymentWebAppService              PaymentWebAppService { get; set; } = default!;
 
     // ── Page parameters / state ───────────────────────────────────────────────
 
@@ -62,6 +63,8 @@ public partial class CustomInvoiceMainPage : IDisposable
         { "APPLEPAY", PaymentMethod.ApplePay },
         { "VISA",     PaymentMethod.VISA },
     };
+
+    private int _currentInvoiceId;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -103,6 +106,7 @@ public partial class CustomInvoiceMainPage : IDisposable
             StateHasChanged();
 
             var invoice = await invoiceUiAppService.GetInvoiceAfterCheckout(InvoiceSearchDto);
+            _currentInvoiceId = invoice.InvoiceId;
 
             // ── Build callback URL from paymentconfig.json ────────────────────
             // We construct the absolute URL using the app's base URI + the
@@ -157,32 +161,11 @@ public partial class CustomInvoiceMainPage : IDisposable
     ///
     /// Change the path in paymentconfig.json — no code changes required.
     /// </summary>
+    [Inject] private IServiceProvider ServiceProvider { get; set; } = default!;
+
     private string ResolveCallbackUrl()
     {
-        var baseUri = navigationManager.BaseUri.TrimEnd('/');
-
-        switch (gateway.Gateway)
-        {
-            case GatewayKey.Geidea:
-            {
-                var opts    = GeideaOptions.CurrentValue;
-                var env     = opts.Mode == "Live" ? opts.Live : opts.Test;
-                var relPath = env.CallbackUrl.TrimStart('/');
-                return $"{baseUri}/{relPath}";
-            }
-
-            case GatewayKey.Oppwa:
-            {
-                var opts    = OppwaOptions.CurrentValue;
-                var env     = opts.Mode == "Live" ? opts.Live : opts.Test;
-                var relPath = env.CallbackUrl.TrimStart('/');
-                return $"{baseUri}/{relPath}";
-            }
-
-            default:
-                // Fallback: derive from gateway key name so new gateways work without code changes.
-                return $"{baseUri}/api/PaymentResult/{gateway.Gateway.ToString().ToLower()}/callback";
-        }
+        return PaymentCallbackHelper.ResolveCallbackUrl(ServiceProvider, navigationManager.BaseUri, gateway.Gateway);
     }
 
     // ── Invoice search ────────────────────────────────────────────────────────
@@ -271,10 +254,14 @@ public partial class CustomInvoiceMainPage : IDisposable
         var parameters = new DialogParameters
         {
             { "Price", (double)InvoicePrice },
+            { "TicketId", InvoiceSearchDto.TicketId },
             { "TaxPercentage", (double)VatRate },
             { "TaxAmount", (double)Vat },
             { "TotalAmount", (double)InvoiceAmount },
-            { "QrData", qrData }
+            { "QrData", qrData },
+            { "EntranceTime", CheckIn },
+            { "ExitTime", Checkout },
+            { "InvoiceId", _currentInvoiceId }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };

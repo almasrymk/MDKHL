@@ -82,7 +82,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
     public GatewayKey Gateway => GatewayKey.Geidea;
 
     public bool SupportsMethod(PaymentMethod method) =>
-        method is PaymentMethod.MADA or PaymentMethod.VISA or PaymentMethod.MASTERCARD;
+        method is PaymentMethod.MADA or PaymentMethod.VISA or PaymentMethod.MASTERCARD or PaymentMethod.ApplePay;
 
     /// <summary>
     /// 1. Saves a pending Payment record (generates PaymentNumber).
@@ -111,6 +111,17 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
             : Current.CallbackUrl;
 
         var jsUrl = Current.BaseUrl.Replace("https://api.", "https://www.", StringComparison.OrdinalIgnoreCase).TrimEnd('/') + "/hpp/geideaCheckout.min.js";
+
+        if (request.PaymentMethod == PaymentMethod.ApplePay)
+        {
+            return GatewayInitiateResult.ForGeideaApplePay(
+                sessionId,
+                paymentRecord.PaymentNumber,
+                Current.MerchantPublicKey,
+                callbackUrl,
+                jsUrl,
+                gatewayResponseData: sessionResponse);
+        }
 
         return GatewayInitiateResult.ForGeidea(
             sessionId,
@@ -207,6 +218,14 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
             Signature        = GenerateSignature(timestamp, amountStr, request.PaymentNumber),
             MerchantPublicKey = Current.MerchantPublicKey
         };
+
+        if (request.PaymentMethod == PaymentMethod.ApplePay)
+        {
+            body.ExpressCheckouts = new List<GeideaExpressCheckoutEntry>
+            {
+                new GeideaExpressCheckoutEntry { Wallet = "apple-pay", Label = "Apple Pay" }
+            };
+        }
 
         var json = JsonSerializer.Serialize(body, _jsonOptions);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
