@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SmartParking.Entities.Invoices;
@@ -99,6 +100,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
             entityId: Current.MerchantPublicKey);
 
         request.PaymentNumber = paymentRecord.PaymentNumber;
+        request.ReturnUrl= $"{request.BaseURI}/checkout-extension?paymentId={paymentRecord.PaymentId}";
 
         var sessionResponse = await CreateSessionAsync(request);
         var sessionId = sessionResponse.Session!.Id;

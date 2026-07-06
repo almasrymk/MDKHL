@@ -20,4 +20,7 @@ public class PaymentCheckoutRequestDto
     public string? ArPlateNumber { get; set; }
     public string? CallbackUrl { get; set; }
     public string? ReturnUrl { get; set; }
+    public string BaseURI { get; set; }
+
+
 }

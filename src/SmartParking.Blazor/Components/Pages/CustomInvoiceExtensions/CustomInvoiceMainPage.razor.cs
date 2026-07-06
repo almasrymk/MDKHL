@@ -102,15 +102,15 @@ public partial class CustomInvoiceMainPage : IDisposable
 
             var dto = new PaymentCheckoutRequestDto
             {
-                InvoiceId       = invoice.InvoiceId,
-                OrganizationId  = invoice.OrganizationId,
-                Amount          = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount),
+                InvoiceId = invoice.InvoiceId,
+                OrganizationId = invoice.OrganizationId,
+                Amount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount),
                 PaymentCategory = PaymentCategory.PaymentParking,
-                PaymentMethod   = PaymentMethod.MADA, // Defaulted for Geidea, dynamically handled on hosted page
-                TenantId        = invoice.TenantId!.Value,
-                EnPlateNumber   = invoice.PlateNumber,
-                CallbackUrl     = callbackUrl,
-                ReturnUrl       = callbackUrl
+                PaymentMethod = PaymentMethod.MADA, // Defaulted for Geidea, dynamically handled on hosted page
+                TenantId = invoice.TenantId!.Value,
+                EnPlateNumber = invoice.PlateNumber,
+                CallbackUrl = callbackUrl,
+                BaseURI = navigationManager.BaseUri.TrimEnd('/')
             };
 
             var result = await gateway.InitiateAsync(dto);
