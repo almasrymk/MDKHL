@@ -188,7 +188,7 @@ public class PaymentResultController : ControllerBase
         }
 
         _logger.LogInformation("Geidea callback: Payment verification successful. Redirecting to details page. PaymentId: {PaymentId}", result.PaymentId);
-        return Redirect("/checkout-extension");
+        return Redirect($"/checkout-extension?paymentId={result.PaymentId}");
     }
 
     // ── Paymob ────────────────────────────────────────────────────────────────

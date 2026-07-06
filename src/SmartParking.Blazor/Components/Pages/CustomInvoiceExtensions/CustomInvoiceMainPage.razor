@@ -26,6 +26,7 @@
 
 
 
+
 @attribute [AllowAnonymous]
 
 <MudContainer MaxWidth="MaxWidth.False" Class="pa-2">
@@ -45,7 +46,6 @@
                                     InvoiceDate="@InvoiceDate"
                                     AmountPaid="@InvoicePrice"
                                     VATAmount="@Vat"
-                                    PaymentMethod="@paymentMethod"
                                     Duration="@Duration"
                                     CheckInTime="@CheckIn"
                                     CheckOutTime="@Checkout" />
@@ -67,8 +67,6 @@
                                 VATRate="@VatRate"
                                 VATAmount="@Vat"
                                 TotalAmount="@InvoiceAmount"
-                                SelectedPaymentMethod="@paymentMethod"
-                                SelectedPaymentMethodChanged="OnPaymentMethodChanged"
                                 ProceedToPayment="ProceedToPayment"
                                 IsLoading="@_isProcessingPayment" />
 
@@ -159,8 +157,6 @@
 
             const config = {
                 sessionId: sessionId,
-                merchantPublicKey: merchantPublicKey,
-                returnUrl: callbackUrl,
                 onSuccess: function (data) {
                     console.log("Geidea Express Checkout success", data);
                     if (window.dotNetHelper) {

@@ -29,6 +29,7 @@ public partial class CustomInvoiceMainPage : IDisposable
     // ── Page parameters / state ───────────────────────────────────────────────
 
     [Parameter] public string WatcherCode { get; set; }
+
     private string SearchText { get; set; }
     private string PlateSearchText { get; set; } = string.Empty;
     public string InvoiceNumber { get; set; }
@@ -43,11 +44,9 @@ public partial class CustomInvoiceMainPage : IDisposable
     public string PlateNumber { get; set; }
     public decimal InvoiceAmount { get; set; }
     public int VatRate { get; set; }
-    private string paymentMethod { get; set; } = "MADA";
     private InvoiceDto? LatestInvoice { get; set; }
     private CreateUpdateInvoiceUiDto? invoiceDto { get; set; } = new();
     private bool ShowInvoiceDetails = false;
-    private PaymentMethod paymentMethodValue { get; set; } = PaymentMethod.MADA;
 
     /// <summary>
     /// True while the gateway session is being created.
@@ -56,13 +55,6 @@ public partial class CustomInvoiceMainPage : IDisposable
     private bool _isProcessingPayment = false;
 
     private InvoiceSearchDto InvoiceSearchDto = new InvoiceSearchDto();
-
-    private static readonly Dictionary<string, PaymentMethod> PaymentMap = new(StringComparer.OrdinalIgnoreCase)
-    {
-        { "MADA",     PaymentMethod.MADA },
-        { "APPLEPAY", PaymentMethod.ApplePay },
-        { "VISA",     PaymentMethod.VISA },
-    };
 
     private int _currentInvoiceId;
 
@@ -85,13 +77,6 @@ public partial class CustomInvoiceMainPage : IDisposable
     }
 
     // ── Event handlers ────────────────────────────────────────────────────────
-
-    private void OnPaymentMethodChanged(string method)
-    {
-        paymentMethod = method;
-        if (PaymentMap.TryGetValue(method, out var brand))
-            paymentMethodValue = brand;
-    }
 
 
     // ── Payment flow ──────────────────────────────────────────────────────────
@@ -121,10 +106,11 @@ public partial class CustomInvoiceMainPage : IDisposable
                 OrganizationId  = invoice.OrganizationId,
                 Amount          = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount),
                 PaymentCategory = PaymentCategory.PaymentParking,
-                PaymentMethod   = paymentMethodValue,
+                PaymentMethod   = PaymentMethod.MADA, // Defaulted for Geidea, dynamically handled on hosted page
                 TenantId        = invoice.TenantId!.Value,
                 EnPlateNumber   = invoice.PlateNumber,
-                CallbackUrl     = callbackUrl
+                CallbackUrl     = callbackUrl,
+                ReturnUrl       = callbackUrl
             };
 
             var result = await gateway.InitiateAsync(dto);
@@ -227,10 +213,47 @@ public partial class CustomInvoiceMainPage : IDisposable
         snackbar.Add("Payment successful!", Severity.Success);
 
         string qrData = InvoiceNumber ?? "N/A";
+        PaymentMethod finalPaymentMethod = PaymentMethod.MADA; // Default
+
         if (geideaOrder.HasValue)
         {
             try
             {
+                // Attempt to map Geidea's payment type back to local PaymentMethod Enum
+                if (geideaOrder.Value.TryGetProperty("paymentMethod", out var pmProp) && pmProp.ValueKind == System.Text.Json.JsonValueKind.Object)
+                {
+                    if (pmProp.TryGetProperty("brand", out var brandProp) && brandProp.ValueKind == System.Text.Json.JsonValueKind.String)
+                    {
+                        var brand = brandProp.GetString()?.ToLowerInvariant();
+                        if (brand == "applepay" || brand == "apple pay" || brand == "apple-pay")
+                            finalPaymentMethod = PaymentMethod.ApplePay;
+                        else if (brand == "mada")
+                            finalPaymentMethod = PaymentMethod.MADA;
+                        else if (brand == "visa")
+                            finalPaymentMethod = PaymentMethod.VISA;
+                        else if (brand == "mastercard")
+                            finalPaymentMethod = PaymentMethod.MASTERCARD;
+                    }
+                }
+                else if (geideaOrder.Value.TryGetProperty("order", out var orderProp) && orderProp.ValueKind == System.Text.Json.JsonValueKind.Object)
+                {
+                    if (orderProp.TryGetProperty("paymentMethod", out var nestedPmProp) && nestedPmProp.ValueKind == System.Text.Json.JsonValueKind.Object)
+                    {
+                        if (nestedPmProp.TryGetProperty("brand", out var nestedBrandProp) && nestedBrandProp.ValueKind == System.Text.Json.JsonValueKind.String)
+                        {
+                            var brand = nestedBrandProp.GetString()?.ToLowerInvariant();
+                            if (brand == "applepay" || brand == "apple pay" || brand == "apple-pay")
+                                finalPaymentMethod = PaymentMethod.ApplePay;
+                            else if (brand == "mada")
+                                finalPaymentMethod = PaymentMethod.MADA;
+                            else if (brand == "visa")
+                                finalPaymentMethod = PaymentMethod.VISA;
+                            else if (brand == "mastercard")
+                                finalPaymentMethod = PaymentMethod.MASTERCARD;
+                        }
+                    }
+                }
+
                 if (geideaOrder.Value.TryGetProperty("qrCode", out var qrCodeProp) && qrCodeProp.ValueKind == System.Text.Json.JsonValueKind.String)
                 {
                     qrData = qrCodeProp.GetString()!;
@@ -239,7 +262,7 @@ public partial class CustomInvoiceMainPage : IDisposable
                 {
                     qrData = qrMsgProp.GetString()!;
                 }
-                else if (geideaOrder.Value.TryGetProperty("order", out var orderProp) && orderProp.ValueKind == System.Text.Json.JsonValueKind.Object && orderProp.TryGetProperty("qrCode", out var nestedQrProp))
+                else if (geideaOrder.Value.TryGetProperty("order", out var orderObjProp) && orderObjProp.ValueKind == System.Text.Json.JsonValueKind.Object && orderObjProp.TryGetProperty("qrCode", out var nestedQrProp))
                 {
                     qrData = nestedQrProp.GetString()!;
                 }

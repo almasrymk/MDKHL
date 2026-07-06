@@ -22,6 +22,12 @@ public class GeideaCreateSessionRequest
     [JsonPropertyName("callbackUrl")]
     public string CallbackUrl { get; init; } = default!;
 
+    [JsonPropertyName("returnUrl")]
+    public string? ReturnUrl { get; init; }
+
+    [JsonPropertyName("paymentOperation")]
+    public string? PaymentOperation { get; init; }
+
     [JsonPropertyName("language")]
     public string Language { get; init; } = "en";
 
