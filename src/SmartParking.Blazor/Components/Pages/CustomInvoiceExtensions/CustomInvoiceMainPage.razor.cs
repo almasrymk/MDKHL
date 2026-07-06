@@ -30,6 +30,9 @@ public partial class CustomInvoiceMainPage : IDisposable
 
     [Parameter] public string WatcherCode { get; set; }
 
+    [SupplyParameterFromQuery]
+    public Guid? PaymentId { get; set; }
+
     private string SearchText { get; set; }
     private string PlateSearchText { get; set; } = string.Empty;
     public string InvoiceNumber { get; set; }
@@ -77,6 +80,65 @@ public partial class CustomInvoiceMainPage : IDisposable
     }
 
     // ── Event handlers ────────────────────────────────────────────────────────
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && PaymentId.HasValue)
+        {
+            try
+            {
+                var payment = await PaymentWebAppService.GetMdkhlAsync(PaymentId.Value);
+
+                if (payment != null && payment.PaymentStatus == PaymentStatus.Success.ToString())
+                {
+                    InvoicePrice = payment.Invoice?.InvoicePrice ?? payment.Amount;
+                    InvoiceSearchDto.TicketId = payment.Invoice?.TicketId ?? "";
+                    VatRate = 15;
+                    Vat = payment.Invoice?.Vat ?? 0;
+                    InvoiceAmount = InvoicePrice + Vat;
+                    CheckIn = payment.Invoice?.EntranceTime ?? DateTime.Now;
+                    Checkout = payment.Invoice?.InvoiceTime ?? DateTime.Now;
+                    _currentInvoiceId = payment.Invoice?.Id ?? 0;
+                    
+                    string qrData = payment.QrCodeInvoice;
+                    if (string.IsNullOrEmpty(qrData))
+                    {
+                        qrData = payment.Invoice?.InvoiceNumber ?? payment.PaymentNumber;
+                    }
+
+                    var parameters = new DialogParameters
+                    {
+                        { "Price", (double)InvoicePrice },
+                        { "TicketId", InvoiceSearchDto.TicketId },
+                        { "TaxPercentage", (double)VatRate },
+                        { "TaxAmount", (double)Vat },
+                        { "TotalAmount", (double)InvoiceAmount },
+                        { "QrData", qrData },
+                        { "EntranceTime", CheckIn },
+                        { "ExitTime", Checkout },
+                        { "InvoiceId", _currentInvoiceId }
+                    };
+
+                    var options = new DialogOptions
+                    {
+                        CloseButton = false,
+                        CloseOnEscapeKey = false,
+                        BackdropClick = false,
+                        MaxWidth = MaxWidth.Small,
+                        FullWidth = true
+                    };
+
+                    var dialog = await DialogService.ShowAsync<PaymentSuccessDialog>(" ", parameters, options);
+                    await dialog.Result;
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                snackbar.Add(L["PaymentFailed"] + " " + ex.Message, Severity.Error);
+            }
+        }
+    }
 
 
     // ── Payment flow ──────────────────────────────────────────────────────────
