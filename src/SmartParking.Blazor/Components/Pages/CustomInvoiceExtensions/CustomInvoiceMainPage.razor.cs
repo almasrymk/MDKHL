@@ -287,12 +287,17 @@ public partial class CustomInvoiceMainPage : IDisposable
             { "InvoiceId", _currentInvoiceId }
         };
 
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = await DialogService.ShowAsync<PaymentSuccessDialog>(" ", parameters, options);
+        var options = new DialogOptions
+        {
+            CloseButton = false,
+            CloseOnEscapeKey = false,
+            BackdropClick = false,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        }; var dialog = await DialogService.ShowAsync<PaymentSuccessDialog>(" ", parameters, options);
         await dialog.Result;
 
         StateHasChanged();
-        navigationManager.NavigateTo("/checkout-extension", true);
     }
 
     public void Dispose()

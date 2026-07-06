@@ -93,6 +93,13 @@
     [Parameter] public DateTime? ExitTime { get; set; }
     [Parameter] public int InvoiceId { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(TimeSpan.FromMinutes(1));
+
+        MudDialog.Close();
+    }
+
     // Computed QR Endpoint
     private string QrCodeUrl => $"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={Uri.EscapeDataString(QrData)}";
 
