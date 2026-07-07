@@ -971,7 +971,7 @@
     "Permission:OpenGateIcon": "Free Open Gate",
     "CheckoutExtension:Title": "Payment succeeded",
     "CheckoutExtension:WarningTitle": "Warning",
-    "CheckoutExtension:WarningText": "A new bill will be issued after the grace period for exiting has expired.",
+    "CheckoutExtension:WarningText": "WARNING: EXIT BEFORE {0} WITHOUT PAYING A FURTHER AMOUNT",
     "Currancy": "SAR",
     "CarAlreadyExit": "The car has already exited the garage"
 
