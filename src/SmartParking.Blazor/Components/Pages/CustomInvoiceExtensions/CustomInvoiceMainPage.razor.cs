@@ -170,9 +170,9 @@ public partial class CustomInvoiceMainPage : IDisposable
 
             var dto = new PaymentCheckoutRequestDto
             {
-                InvoiceId       = invoice.InvoiceId,
-                OrganizationId  = invoice.OrganizationId,
-                Amount          = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount),
+                InvoiceId = invoice.InvoiceId,
+                OrganizationId = invoice.OrganizationId,
+                Amount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount),
                 PaymentCategory = PaymentCategory.PaymentParking,
                 PaymentMethod   = PaymentMethod.MADA, // Defaulted for Geidea, dynamically handled on hosted page
                 TenantId        = invoice.TenantId!.Value,
@@ -374,12 +374,17 @@ public partial class CustomInvoiceMainPage : IDisposable
             { "GracePeriod", gracePeriod }
         };
 
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = await DialogService.ShowAsync<PaymentSuccessDialog>(" ", parameters, options);
+        var options = new DialogOptions
+        {
+            CloseButton = false,
+            CloseOnEscapeKey = false,
+            BackdropClick = false,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        }; var dialog = await DialogService.ShowAsync<PaymentSuccessDialog>(" ", parameters, options);
         await dialog.Result;
 
         StateHasChanged();
-        navigationManager.NavigateTo("/checkout-extension", true);
     }
 
     private async Task Cancel()

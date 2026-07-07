@@ -75,10 +75,16 @@ public class PaymentResultController : ControllerBase
     [HttpPost("geidea/callback")]
     public async Task<IActionResult> GeideaCallback([FromBody] GeideaCallbackPayload payload)
     {
+        _logger.LogInformation("Method: {Method}", Request.Method);
+        _logger.LogInformation("Content-Type: {ContentType}", Request.ContentType);
+        _logger.LogInformation("HasFormContentType: {HasForm}", Request.HasFormContentType);
+        _logger.LogInformation("ContentLength: {Length}", Request.ContentLength);
+        _logger.LogInformation("Geidea callback received - Processing payment result");
+
         _logger.LogInformation(
                             "Geidea callback received - Payload: {@Payload}",
                             payload);
-        _logger.LogInformation("Geidea callback received - Processing payment result");
+
 
 
         // 1. Guard check for bad parsing
@@ -188,7 +194,8 @@ public class PaymentResultController : ControllerBase
         }
 
         _logger.LogInformation("Geidea callback: Payment verification successful. Redirecting to details page. PaymentId: {PaymentId}", result.PaymentId);
-        return Redirect($"/checkout-extension?paymentId={result.PaymentId}");
+        //    return Redirect($"/checkout-extension?paymentId={result.PaymentId}");
+        return Ok();
     }
 
     // ── Paymob ────────────────────────────────────────────────────────────────
