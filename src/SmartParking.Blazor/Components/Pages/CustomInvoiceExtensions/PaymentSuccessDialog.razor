@@ -5,7 +5,7 @@
 
 <MudDialog Style="border-radius:18px;">
     <DialogContent>
-        <MudStack Spacing="2" Justify="Justify.Center" Class=" p-4" AlignItems="AlignItems.Center" Row="false" dir="rtl">
+        <MudStack Spacing="2" Justify="Justify.Center" Class=" p-4" AlignItems="AlignItems.Center" Row="false" dir="@(IsArabic ? "rtl" : "ltr")">
 
             <div class="success-checkmark">
                 <MudIcon Icon="@Icons.Material.Filled.Check" Color="MudBlazor.Color.Success" Size="MudBlazor.Size.Large" />
@@ -20,13 +20,13 @@
                     ⚠️ @L["CheckoutExtension:WarningTitle"]
                 </MudText>
                 <MudText Typo="Typo.body1" Color="MudBlazor.Color.Error" Class="font-weight-bold warning-text">
-                    @L["CheckoutExtension:WarningText"]
+                    @string.Format(L["CheckoutExtension:WarningText"], ExitTime?.AddMinutes(GracePeriod).ToString("yyyy-MM-dd HH:mm"))
                 </MudText>
             </MudStack>
 
             <MudGrid Spacing="2" Class=" w-100 pt-4 " Style="border-top: 1px solid var(--mud-palette-table-lines);">
 
-                <MudStack Spacing="1" Style="text-align: right; flex-grow: 1;">
+                <MudStack Spacing="1" Style="text-align: start; flex-grow: 1;">
                     <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">
                         <span>@L["TicketId"]:</span> <strong>@TicketId</strong>
                     </MudText>
@@ -56,16 +56,19 @@
                     </MudText>
                 </MudStack>
 
-                <div class="qr-code-box justify-items-center">
-                    <MudImage Src="@QrCodeUrl" Alt="QR Code" Width="100" Height="100" ObjectFit="MudBlazor.ObjectFit.Contain" />
-                </div>
+                @if (!string.IsNullOrEmpty(QrData))
+                {
+                    <div class="qr-code-box justify-items-center">
+                        <MudImage Src="@QrCodeUrl" Alt="QR Code" Width="100" Height="100" ObjectFit="MudBlazor.ObjectFit.Contain" />
+                    </div>
+                }
 
             </MudGrid>
         </MudStack>
     </DialogContent>
     <DialogActions>
-        <MudButton Href="@($"/api/mobile/PDFs/geta4pdfbyinvoice/{InvoiceId}")" Target="_blank" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.PictureAsPdf" Class="hide-on-print">
-            @L["GetPdf"]
+        <MudButton Href="@($"/api/mobile/PDFs/geta4pdfbyinvoice/{InvoiceId}")" Target="_blank" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.PictureAsPdf" Class="hide-on-print mx-2">
+            @L["DownloadInvoice"]
         </MudButton>
         <MudButton Variant="Variant.Text" Color="MudBlazor.Color.Default" OnClick="Submit" Class="hide-on-print">
             @L["Close"]
@@ -92,9 +95,26 @@
     [Parameter] public DateTime? EntranceTime { get; set; }
     [Parameter] public DateTime? ExitTime { get; set; }
     [Parameter] public int InvoiceId { get; set; }
+    [Parameter] public int GracePeriod { get; set; }
+
+    private bool IsArabic => System.Threading.Thread.CurrentThread.CurrentUICulture.Name.StartsWith("ar", StringComparison.OrdinalIgnoreCase);
 
     // Computed QR Endpoint
-    private string QrCodeUrl => $"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={Uri.EscapeDataString(QrData)}";
+    private string QrCodeUrl 
+    {
+        get 
+        {
+            if (string.IsNullOrEmpty(QrData)) return "";
+            if (QrData.StartsWith("http")) return QrData;
+            // If it's a long base64 image string without data:image prefix.
+            if (QrData.Length > 200 && !QrData.Contains(" ")) 
+            {
+                if (QrData.StartsWith("data:image")) return QrData;
+                return $"data:image/png;base64,{QrData}";
+            }
+            return $"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={Uri.EscapeDataString(QrData)}";
+        }
+    }
 
     private void Submit() => MudDialog.Close(DialogResult.Ok(true));
     private void Cancel() => MudDialog.Cancel();

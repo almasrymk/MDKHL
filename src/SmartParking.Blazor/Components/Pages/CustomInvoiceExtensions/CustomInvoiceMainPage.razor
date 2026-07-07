@@ -11,8 +11,11 @@
 @using SmartParking.Payments
 @using SmartParking.Payments.PaymentIntegrations
 @using SmartParking.Watchers
+@using SmartParking.GarageTransactions
 @using Volo.Abp.Domain
 @layout CustomLayout
+@inject IInvoiceAppService InvoiceAppService
+@inject IGarageTransactionsAppService GarageTransactionAppService
 @inject IPaymentAppService paymentAppService
 @inject NavigationManager navigationManager
 @inject ISnackbar snackbar
@@ -68,6 +71,7 @@
                                 VATAmount="@Vat"
                                 TotalAmount="@InvoiceAmount"
                                 ProceedToPayment="ProceedToPayment"
+                                Cancel="Cancel"
                                 IsLoading="@_isProcessingPayment"
                                 Disabled="@_checkoutClicked" />
 
