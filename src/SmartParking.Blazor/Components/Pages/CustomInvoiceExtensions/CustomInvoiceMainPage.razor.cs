@@ -88,6 +88,10 @@ public partial class CustomInvoiceMainPage : IDisposable
         {
             try
             {
+                // Remove the paymentId from the browser's address bar immediately 
+                // so that refreshing the page does not re-open the dialog.
+                await JS.InvokeVoidAsync("history.replaceState", null, "", "/checkout-extension");
+
                 var payment = await PaymentWebAppService.GetMdkhlAsync(PaymentId.Value);
 
                 if (payment != null && payment.PaymentStatus == PaymentStatus.Success.ToString())
@@ -172,8 +176,7 @@ public partial class CustomInvoiceMainPage : IDisposable
                 PaymentMethod   = PaymentMethod.MADA, // Defaulted for Geidea, dynamically handled on hosted page
                 TenantId        = invoice.TenantId!.Value,
                 EnPlateNumber   = invoice.PlateNumber,
-                CallbackUrl     = callbackUrl,
-                ReturnUrl       = callbackUrl
+                CallbackUrl     = callbackUrl
             };
 
             var result = await gateway.InitiateAsync(dto);
