@@ -60,6 +60,7 @@ public partial class CustomInvoiceMainPage : IDisposable
     private InvoiceSearchDto InvoiceSearchDto = new InvoiceSearchDto();
 
     private int _currentInvoiceId;
+    private bool _checkoutClicked = false;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -145,7 +146,7 @@ public partial class CustomInvoiceMainPage : IDisposable
 
     private async Task ProceedToPayment()
     {
-        if (_isProcessingPayment) return;
+        if (_isProcessingPayment || _checkoutClicked) return;
 
         try
         {
@@ -185,10 +186,12 @@ public partial class CustomInvoiceMainPage : IDisposable
             await JS.InvokeVoidAsync("setDotNetHelper", _objRef);
             await JS.InvokeVoidAsync(result.JsMethodName, result.JsArguments);
 
+            _checkoutClicked = true;
         }
         catch (Exception ex)
         {
             snackbar.Add(L["PaymentFailed"] + " " + ex.Message, Severity.Error);
+            _checkoutClicked = false;
         }
         finally
         {
@@ -235,6 +238,7 @@ public partial class CustomInvoiceMainPage : IDisposable
             if (invoiceDto is not null)
             {
                 ShowInvoiceDetails = true;
+                _checkoutClicked = false;
                 InvoiceNumber = invoiceDto.InvoiceNumber;
                 InvoiceDate   = invoiceDto.InvoiceTime!.Value;
                 InvoicePrice  = Math.Round(invoiceDto.InvoicePrice, 2);
