@@ -47,6 +47,16 @@
                 <MudText>Checkout</MudText>
             }
         </MudButton>
+
+        <MudButton FullWidth
+                   Color="MudBlazor.Color.Error"
+                   Size="MudBlazor.Size.Large"
+                   Variant="Variant.Filled"
+                   Class="mt-2"
+                   Disabled="@(!Disabled)"
+                   OnClick="Cancel">
+            <MudText>@L["Cancel"]</MudText>
+        </MudButton>
     </MudCardContent>
 </MudCard>
 
@@ -56,6 +66,7 @@
     [Parameter] public decimal VATAmount { get; set; }
     [Parameter] public decimal TotalAmount { get; set; }
     [Parameter] public EventCallback ProceedToPayment { get; set; }
+    [Parameter] public EventCallback Cancel { get; set; }
     /// <summary>When true the button shows a spinner and is disabled.</summary>
     [Parameter] public bool IsLoading { get; set; }
     /// <summary>Allows the parent to disable the button independently of loading state.</summary>

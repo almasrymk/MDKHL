@@ -217,17 +217,22 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
 
     public override async Task DeleteAsync(int id)
     {
-        var invoice = await _invoiceRepository.FindAsync(id);
-        if (invoice is null)
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("Invoice") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+
+
+            var invoice = await _invoiceRepository.FindAsync(id);
+            if (invoice is null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("Invoice") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
+            }
+            if (invoice.InvoiceType == InvoiceType.Paid || !string.IsNullOrEmpty(invoice.InvoiceNumber))
+            {
+                throw new Exception("This Invoice Is already paid");
+            }
+            await base.DeleteAsync(id);
+            await CurrentUnitOfWork.SaveChangesAsync();
         }
-        if (invoice.InvoiceType == InvoiceType.Paid || !string.IsNullOrEmpty(invoice.InvoiceNumber))
-        {
-            throw new Exception("This Invoice Is already paid");
-        }
-        await base.DeleteAsync(id);
-        await CurrentUnitOfWork.SaveChangesAsync();
     }
     /// <inheritdoc/>
     public async Task<Result<string>> GetInvoiceQRCodeForOrganization(int invoiceId)

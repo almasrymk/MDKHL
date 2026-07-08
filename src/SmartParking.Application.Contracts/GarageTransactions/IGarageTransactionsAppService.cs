@@ -1,8 +1,9 @@
-﻿using SmartParking.Cameras;
+using SmartParking.Cameras;
 using SmartParking.Garages;
 using SmartParking.Lookups.PlateColor;
 using SmartParking.Results;
 using SmartParking.Vehicles;
+using SmartParking.Invoices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,7 +56,7 @@ namespace SmartParking.GarageTransactions;
 	Task<Result<List<GarageTransactionDto>>> GetCustomerCarsInOrganization(int organizationId);
 	string SaveBase64Image(CreateUpdateGarageTransactionDto input);
 
-	
+	Task<Result<CreateUpdateInvoiceDto>> VehiclePreCheckoutAsync(string input);
 
 
     }

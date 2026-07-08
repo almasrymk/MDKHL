@@ -21,7 +21,7 @@ public static class PaymentDtoExtensions
             PaymentCategory = PaymentCategory.PaymentParking,
             PaymentMethod = paymentMethod,
             TenantId = invoice.TenantId.Value,
-            CallbackUrl = callbackUrl
+            CallbackUrl = callbackUrl,
         };
     }
 

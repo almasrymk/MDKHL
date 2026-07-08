@@ -100,7 +100,15 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
             entityId: Current.MerchantPublicKey);
 
         request.PaymentNumber = paymentRecord.PaymentNumber;
-        request.ReturnUrl= $"{request.BaseURI}/checkout-extension?paymentId={paymentRecord.PaymentId}";
+        
+        string baseUri = string.Empty;
+        if (!string.IsNullOrEmpty(request.CallbackUrl))
+        {
+            var uri = new Uri(request.CallbackUrl);
+            baseUri = uri.GetLeftPart(UriPartial.Authority);
+        }
+        
+        request.ReturnUrl = $"{baseUri}/checkout-extension?paymentId={paymentRecord.PaymentId}";
 
         var sessionResponse = await CreateSessionAsync(request);
         var sessionId = sessionResponse.Session!.Id;
