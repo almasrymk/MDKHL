@@ -1020,7 +1020,7 @@
     "Permission:OpenGateIcon": "فتح البوابة الحر",
     "CheckoutExtension:Title": "تم الدفع بنجاح",
     "CheckoutExtension:WarningTitle": "تنبيه",
-    "CheckoutExtension:WarningText": "سيتم احتساب فاتورة جديدة بعد تجاوز فترة السماح للخروج",
+    "CheckoutExtension:WarningText": "تحذير: الخروج قبل {0} دون دفع مبلغ إضافي",
     "Currancy": "س,ر",
     "CarAlreadyExit": "السيارة خرجت بالفعل"
 

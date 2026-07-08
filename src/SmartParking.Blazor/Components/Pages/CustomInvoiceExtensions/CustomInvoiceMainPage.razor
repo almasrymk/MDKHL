@@ -11,8 +11,11 @@
 @using SmartParking.Payments
 @using SmartParking.Payments.PaymentIntegrations
 @using SmartParking.Watchers
+@using SmartParking.GarageTransactions
 @using Volo.Abp.Domain
 @layout CustomLayout
+@inject IInvoiceAppService InvoiceAppService
+@inject IGarageTransactionsAppService GarageTransactionAppService
 @inject IPaymentAppService paymentAppService
 @inject NavigationManager navigationManager
 @inject ISnackbar snackbar
@@ -68,7 +71,9 @@
                                 VATAmount="@Vat"
                                 TotalAmount="@InvoiceAmount"
                                 ProceedToPayment="ProceedToPayment"
-                                IsLoading="@_isProcessingPayment" />
+                                Cancel="Cancel"
+                                IsLoading="@_isProcessingPayment"
+                                Disabled="@_checkoutClicked" />
 
             @* ── Unified payment container ───────────────────────────── *@
             <div id="payment-container" class="mt-3"></div>

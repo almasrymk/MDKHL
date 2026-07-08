@@ -10,6 +10,8 @@ using SmartParking.Payments;
 using SmartParking.Payments.PaymentIntegrations;
 using SmartParking.Utilities;
 using SmartParking.Validations;
+using SmartParking.GarageTransactions;
+using SmartParking.Organizations;
 
 namespace SmartParking.Blazor.Components.Pages.CustomInvoiceExtensions;
 
@@ -25,6 +27,7 @@ public partial class CustomInvoiceMainPage : IDisposable
     [Inject] private IOptionsMonitor<GeideaOptions>     GeideaOptions  { get; set; } = default!;
     [Inject] private IOptionsMonitor<OppwaRootOptions>  OppwaOptions   { get; set; } = default!;
     [Inject] private IPaymentWebAppService              PaymentWebAppService { get; set; } = default!;
+    [Inject] private IOrganizationsAppService           OrganizationsAppService { get; set; } = default!;
 
     // ── Page parameters / state ───────────────────────────────────────────────
 
@@ -60,6 +63,7 @@ public partial class CustomInvoiceMainPage : IDisposable
     private InvoiceSearchDto InvoiceSearchDto = new InvoiceSearchDto();
 
     private int _currentInvoiceId;
+    private bool _checkoutClicked = false;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -87,6 +91,10 @@ public partial class CustomInvoiceMainPage : IDisposable
         {
             try
             {
+                // Remove the paymentId from the browser's address bar immediately 
+                // so that refreshing the page does not re-open the dialog.
+                await JS.InvokeVoidAsync("history.replaceState", null, "", "/checkout-extension");
+
                 var payment = await PaymentWebAppService.GetMdkhlAsync(PaymentId.Value);
 
                 if (payment != null && payment.PaymentStatus == PaymentStatus.Success.ToString())
@@ -101,10 +109,7 @@ public partial class CustomInvoiceMainPage : IDisposable
                     _currentInvoiceId = payment.Invoice?.Id ?? 0;
                     
                     string qrData = payment.QrCodeInvoice;
-                    if (string.IsNullOrEmpty(qrData))
-                    {
-                        qrData = payment.Invoice?.InvoiceNumber ?? payment.PaymentNumber;
-                    }
+                    int gracePeriod = payment.Organization?.Graceperiod ?? 0;
 
                     var parameters = new DialogParameters
                     {
@@ -116,7 +121,8 @@ public partial class CustomInvoiceMainPage : IDisposable
                         { "QrData", qrData },
                         { "EntranceTime", CheckIn },
                         { "ExitTime", Checkout },
-                        { "InvoiceId", _currentInvoiceId }
+                        { "InvoiceId", _currentInvoiceId },
+                        { "GracePeriod", gracePeriod }
                     };
 
                     var options = new DialogOptions
@@ -145,7 +151,7 @@ public partial class CustomInvoiceMainPage : IDisposable
 
     private async Task ProceedToPayment()
     {
-        if (_isProcessingPayment) return;
+        if (_isProcessingPayment || _checkoutClicked) return;
 
         try
         {
@@ -168,11 +174,10 @@ public partial class CustomInvoiceMainPage : IDisposable
                 OrganizationId = invoice.OrganizationId,
                 Amount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount),
                 PaymentCategory = PaymentCategory.PaymentParking,
-                PaymentMethod = PaymentMethod.MADA, // Defaulted for Geidea, dynamically handled on hosted page
-                TenantId = invoice.TenantId!.Value,
-                EnPlateNumber = invoice.PlateNumber,
-                CallbackUrl = callbackUrl,
-                BaseURI = navigationManager.BaseUri.TrimEnd('/')
+                PaymentMethod   = PaymentMethod.MADA, // Defaulted for Geidea, dynamically handled on hosted page
+                TenantId        = invoice.TenantId!.Value,
+                EnPlateNumber   = invoice.PlateNumber,
+                CallbackUrl     = callbackUrl
             };
 
             var result = await gateway.InitiateAsync(dto);
@@ -185,10 +190,12 @@ public partial class CustomInvoiceMainPage : IDisposable
             await JS.InvokeVoidAsync("setDotNetHelper", _objRef);
             await JS.InvokeVoidAsync(result.JsMethodName, result.JsArguments);
 
+            _checkoutClicked = true;
         }
         catch (Exception ex)
         {
             snackbar.Add(L["PaymentFailed"] + " " + ex.Message, Severity.Error);
+            _checkoutClicked = false;
         }
         finally
         {
@@ -228,13 +235,23 @@ public partial class CustomInvoiceMainPage : IDisposable
             //    snackbar.Add(L["InvalidTicket"], Severity.Warning);
             //    return;
             //}
-            InvoiceSearchDto.TicketId = SearchText;
-            InvoiceSearchDto.PlateNumber = PlateSearchText;
+
+            if (!string.IsNullOrEmpty(SearchText) && SearchText.Any(char.IsLetter))
+            {
+                InvoiceSearchDto.TicketId = string.Empty;
+                InvoiceSearchDto.PlateNumber = SearchText;
+            }
+            else
+            {
+                InvoiceSearchDto.TicketId = SearchText ?? string.Empty;
+                InvoiceSearchDto.PlateNumber = string.Empty;
+            }
 
             invoiceDto = await invoiceUiAppService.GetInvoiceAfterPreCheckout(InvoiceSearchDto);
             if (invoiceDto is not null)
             {
                 ShowInvoiceDetails = true;
+                _checkoutClicked = false;
                 InvoiceNumber = invoiceDto.InvoiceNumber;
                 InvoiceDate   = invoiceDto.InvoiceTime!.Value;
                 InvoicePrice  = Math.Round(invoiceDto.InvoicePrice, 2);
@@ -274,7 +291,7 @@ public partial class CustomInvoiceMainPage : IDisposable
     {
         snackbar.Add("Payment successful!", Severity.Success);
 
-        string qrData = InvoiceNumber ?? "N/A";
+        string qrData = null;
         PaymentMethod finalPaymentMethod = PaymentMethod.MADA; // Default
 
         if (geideaOrder.HasValue)
@@ -336,6 +353,13 @@ public partial class CustomInvoiceMainPage : IDisposable
             catch { }
         }
 
+        int gracePeriod = 0;
+        if (invoiceDto != null && invoiceDto.OrganizationId > 0)
+        {
+            var org = await OrganizationsAppService.GetAsync(invoiceDto.OrganizationId);
+            gracePeriod = org?.Graceperiod ?? 0;
+        }
+
         var parameters = new DialogParameters
         {
             { "Price", (double)InvoicePrice },
@@ -346,7 +370,8 @@ public partial class CustomInvoiceMainPage : IDisposable
             { "QrData", qrData },
             { "EntranceTime", CheckIn },
             { "ExitTime", Checkout },
-            { "InvoiceId", _currentInvoiceId }
+            { "InvoiceId", _currentInvoiceId },
+            { "GracePeriod", gracePeriod }
         };
 
         var options = new DialogOptions
@@ -360,6 +385,136 @@ public partial class CustomInvoiceMainPage : IDisposable
         await dialog.Result;
 
         StateHasChanged();
+    }
+
+    private async Task Cancel()
+    {
+        try
+        {
+            if (invoiceDto != null)
+            {
+                var ExitTransctionId = invoiceDto.GarageTransactionExitId;
+                if (invoiceDto.InvoiceType == InvoiceType.Paid)
+                {
+                    snackbar.Add("Invoice is already paid", MudBlazor.Severity.Success);
+                }
+                
+                var actualExitTransactionId = ExitTransctionId;
+                if (_currentInvoiceId > 0)
+                {
+                    // Fetch actual invoice to get the real ExitTransactionId
+                    var actualInvoice = await InvoiceAppService.GetAsync(_currentInvoiceId);
+                    if (actualInvoice != null && actualInvoice.GarageTransactionExitId > 0)
+                    {
+                        actualExitTransactionId = actualInvoice.GarageTransactionExitId;
+                    }
+
+                    // 1. Delete Payment
+                    var payment = await PaymentWebAppService.GetPaymentForInvoice(_currentInvoiceId);
+                    if (payment != null)
+                    {
+                        await paymentAppService.DeleteAsync(payment.Id);
+                    }
+
+                    // 2. Nullify InvoiceNumber
+                    var updateDto = new CreateUpdateInvoiceDto 
+                    {
+                        InvoiceNumber = null,
+                        TotalHours = invoiceDto.TotalHours,
+                        InvoicePrice = invoiceDto.InvoicePrice,
+                        InvoiceType = invoiceDto.InvoiceType,
+                        OrganizationId = invoiceDto.OrganizationId,
+                        GarageId = invoiceDto.GarageId,
+                        PlateNumber = invoiceDto.PlateNumber,
+                        EntranceTime = invoiceDto.EntranceTime,
+                        InvoiceTime = invoiceDto.InvoiceTime,
+                        CustomerArName = invoiceDto.CustomerArName,
+                        CustomerEnName = invoiceDto.CustomerEnName,
+                        TenantId = invoiceDto.TenantId,
+                        CustomerId = invoiceDto.CustomerId,
+                        IsPackage = invoiceDto.IsPackage,
+                        EntryTransactionImage = invoiceDto.EntryTransactionImage,
+                        ExitTransactionImage = invoiceDto.ExitTransactionImage,
+                        GarageTransactionExitId = invoiceDto.GarageTransactionExitId,
+                        Discount = invoiceDto.Discount,
+                        Vat = invoiceDto.Vat,
+                        TicketId = invoiceDto.TicketId
+                    };
+                    await InvoiceAppService.UpdateAsync(_currentInvoiceId, updateDto);
+
+                    // 3. Delete Invoice
+                    await InvoiceAppService.DeleteAsync(_currentInvoiceId);
+                    
+                    // 4. Delete Exit Transaction BEFORE fetching Entry Transaction
+                    if (actualExitTransactionId > 0)
+                    {
+                        await GarageTransactionAppService.DeleteAsync(actualExitTransactionId);
+                        actualExitTransactionId = 0; // mark as deleted so we don't delete again
+                    }
+
+                    // 5. Revert Entry Transaction State
+                    try
+                    {
+                        var entryTransaction = await invoiceUiAppService.GetGarageTransaction(InvoiceSearchDto);
+                        if (entryTransaction != null && entryTransaction.Id > 0)
+                        {
+                            var entryDto = await GarageTransactionAppService.GetAsync(entryTransaction.Id);
+                            if (entryDto != null)
+                            {
+                                var updateEntryDto = new CreateUpdateGarageTransactionDto
+                                {
+                                    CameraId = entryDto.CameraId,
+                                    PlateNumber = entryDto.PlateNumber,
+                                    SnapTime = entryDto.SnapTime,
+                                    AccurateTime = entryDto.AccurateTime,
+                                    CheckoutMobile = null, // CLEAR THIS FLAG
+                                    OrganizationID = entryDto.OrganizationID,
+                                    GarageId = entryDto.GarageId,
+                                    VehiclePicture = entryDto.VehiclePicture,
+                                    CameraType = entryDto.CameraType,
+                                    TenantId = entryDto.TenantId,
+                                    IsIn = true, // Make sure it stays true
+                                    IsMapped = entryDto.IsMapped,
+                                    RemainingTime = entryDto.RemainingTime,
+                                    IsPending = null, // Reset pending
+                                    CanCheckout = true, // Revert CanCheckout to allow searching again
+                                    CustomerCategory = entryDto.CustomerCategory,
+                                    DispenserId = entryDto.DispenserId,
+                                    LaneNO = entryDto.LaneNO,
+                                    TicketId = entryDto.TicketId
+                                };
+                                await GarageTransactionAppService.UpdateAsync(entryDto.Id, updateEntryDto);
+                            }
+                        }
+                    }
+                    catch { /* ignore if not found or error fetching */ }
+                }
+                
+                if (actualExitTransactionId > 0)
+                {
+                    await GarageTransactionAppService.DeleteAsync(actualExitTransactionId);
+                }
+                
+                snackbar.Add(L["Done"] + " " + L["Delete"] + " " + L["Invoice"], MudBlazor.Severity.Success);
+                await Task.Delay(1000);
+                
+                // Reset states
+                _checkoutClicked = false;
+                ShowInvoiceDetails = false;
+                invoiceDto = null;
+                SearchText = string.Empty;
+                PlateSearchText = string.Empty;
+                InvoiceSearchDto = new InvoiceSearchDto();
+                _currentInvoiceId = 0;
+                StateHasChanged();
+                
+                navigationManager.NavigateTo(navigationManager.Uri, forceLoad: true);
+            }
+        }
+        catch(Exception ex)
+        {
+            snackbar.Add(L[ex.Message], MudBlazor.Severity.Error);
+        }
     }
 
     public void Dispose()
