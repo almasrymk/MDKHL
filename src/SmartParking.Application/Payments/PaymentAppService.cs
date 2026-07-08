@@ -274,7 +274,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                 PaymentCallbackHelper.ResolveCallbackUrl(ServiceProvider, GetBaseUri(), gatewayService.Gateway));
 
             var initiateResult = await gatewayService.InitiateAsync(request);
-
+            request.BaseURI= GetBaseUri();
             var sessionDto = initiateResult.ToMobilePaymentSessionDto();
 
             var payment = await _repository.FirstOrDefaultAsync(p => p.PaymentNumber == sessionDto.MerchantReferenceId);
