@@ -31,9 +31,13 @@ public class InvoiceUiAppService : ApplicationService, IInvoiceUiAppService
     [RemoteService(false)]
     public async Task<GarageTransactionUiDto> GetGarageTransaction(InvoiceSearchDto invoiceSearchDto)
     {
-        var dto = await _garageTransactionsActionsFactoryAppService.GetGarageTransaction(invoiceSearchDto);
-        var mapped = ObjectMapper.Map<GarageTransactionDto, GarageTransactionUiDto>(dto);
-        return mapped;
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            var dto = await _garageTransactionsActionsFactoryAppService.GetGarageTransaction(invoiceSearchDto);
+            var mapped = ObjectMapper.Map<GarageTransactionDto, GarageTransactionUiDto>(dto);
+            return mapped;
+        }
         
 
     }
@@ -53,12 +57,13 @@ public class InvoiceUiAppService : ApplicationService, IInvoiceUiAppService
     [RemoteService(false)]
     public async Task<CreateUpdateInvoiceUiDto> GetInvoiceAfterPreCheckout(InvoiceSearchDto invoiceSearchDto)
     {
-        
-        var transaction = await GetGarageTransaction(invoiceSearchDto);
-        if (transaction.CheckoutMobile is not null)
-            throw new UserFriendlyException(L["CarAlreadyExit"]);
-        return await PreCheckout(transaction);
-        
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var transaction = await GetGarageTransaction(invoiceSearchDto);
+            if (transaction?.CheckoutMobile is not null)
+                throw new UserFriendlyException(L["CarAlreadyExit"]);
+            return await PreCheckout(transaction);
+        }
     }
 
     [RemoteService(false)]

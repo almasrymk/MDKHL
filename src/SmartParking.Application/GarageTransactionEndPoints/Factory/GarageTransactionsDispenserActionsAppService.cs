@@ -86,8 +86,7 @@ public class GarageTransactionsDispenserActionsAppService :  IGarageTransactionA
     [RemoteService(false)]
     public async Task<GarageTransactionDto> GetGarageTransaction(InvoiceSearchDto invoiceSearchDto)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
+      
             var query = await _repository.GetQueryableAsync();
             var latestTransaction = await query
                     .Where(gt => gt.TicketId == invoiceSearchDto.TicketId && gt.IsIn == true)
@@ -117,7 +116,7 @@ public class GarageTransactionsDispenserActionsAppService :  IGarageTransactionA
                     })
                     .FirstOrDefaultAsync();
             return latestTransaction;
-        }
+        
     }
 
     [RemoteService(false)]
