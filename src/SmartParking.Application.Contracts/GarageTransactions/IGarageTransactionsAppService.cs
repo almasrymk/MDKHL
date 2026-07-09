@@ -56,7 +56,6 @@ namespace SmartParking.GarageTransactions;
 	Task<Result<List<GarageTransactionDto>>> GetCustomerCarsInOrganization(int organizationId);
 	string SaveBase64Image(CreateUpdateGarageTransactionDto input);
 
-	Task<Result<CreateUpdateInvoiceDto>> VehiclePreCheckoutAsync(string input);
 
 
     }

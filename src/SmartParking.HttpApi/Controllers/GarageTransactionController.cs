@@ -21,13 +21,15 @@ public class GarageTransactionController : ControllerBase
 {
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
     private readonly ICustomerMobileTransactionsAppService _customerGarageTransactionsAppService;
+    private readonly ICustomerGarageTransactionActionsAppService _customerGarageTransactionsActionsAppService;
 
 
 
-    public GarageTransactionController(IGarageTransactionsAppService garageTransactionsAppService, ICustomerMobileTransactionsAppService customerGarageTransactionsAppService)
+    public GarageTransactionController(IGarageTransactionsAppService garageTransactionsAppService, ICustomerMobileTransactionsAppService customerGarageTransactionsAppService, ICustomerGarageTransactionActionsAppService customerGarageTransactionsActionsAppService)
     {
         _garageTransactionsAppService = garageTransactionsAppService;
         _customerGarageTransactionsAppService = customerGarageTransactionsAppService;
+        _customerGarageTransactionsActionsAppService = customerGarageTransactionsActionsAppService;
     }
 
     [HttpGet("carsingarage")]
@@ -58,7 +60,15 @@ public class GarageTransactionController : ControllerBase
     [Authorize]
     public async Task<Result<CreateUpdateInvoiceDto>> VehiclePreCheckout(string input)
     {
-        return await _garageTransactionsAppService.VehiclePreCheckoutAsync(input);
+        return await _customerGarageTransactionsActionsAppService.VehiclePreCheckoutAsync(input);
+    }
+
+
+    [HttpGet("VehicleCheckout")]
+    [Authorize]
+    public async Task<Result<CreateUpdateInvoiceDto>> VehicleCheckout(string input)
+    {
+        return await _customerGarageTransactionsActionsAppService.VehiclePreCheckoutAsync(input);
     }
 
 

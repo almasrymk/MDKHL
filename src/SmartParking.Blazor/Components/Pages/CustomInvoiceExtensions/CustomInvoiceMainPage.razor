@@ -22,7 +22,7 @@
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IInvoiceActionsFactoryAppService InvoiceActionsFactory
 @inject IInvoiceUiAppService invoiceUiAppService
-@* Inject the configured active IPaymentGateway directly — no hardcoded provider logic on the page *@
+@inject IPublicInvoiceAppService InvoiceUiAppService
 @inject IPaymentGatewayIntegrationService gateway
 @inject IJSRuntime JS
 @inject IDialogService DialogService

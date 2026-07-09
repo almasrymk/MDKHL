@@ -162,7 +162,7 @@ public class CalculationsEndPointsAppService : ITransientDependency, ICalculatio
     ///<inheritdoc/>
     public decimal CalculationForRegisteredCustomer(DateTime? exitTime, DateTime? entranceTime, TransactionOrganizationDto organization, CustomerPackageTransactionDto? packageDto, int totalHours)
     {
-        if (!string.IsNullOrEmpty(packageDto!.EnPlateNumber))
+        if (!string.IsNullOrEmpty(packageDto?.EnPlateNumber))
             return CalculateInvoiceForCustomerPackageType(entranceTime!.Value, organization, packageDto, exitTime.Value);
         return CalculateInvoiceCases(entranceTime!.Value, totalHours, exitTime!.Value, organization);
         

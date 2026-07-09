@@ -442,31 +442,7 @@ public class GarageTransactionsAppService :
         }
     }
 
-    [RemoteService(IsEnabled = false)]
-    public async Task<Result<CreateUpdateInvoiceDto>> VehiclePreCheckoutAsync(string input)
-    {
-        var invoiceSearchDto = new InvoiceSearchDto();
-        
-        if (!string.IsNullOrEmpty(input) && char.IsLetter(input.LastOrDefault()))
-        {
-            invoiceSearchDto.TicketId = string.Empty;
-            invoiceSearchDto.PlateNumber = input;
-        }
-        else
-        {
-            invoiceSearchDto.TicketId = input ?? string.Empty;
-            invoiceSearchDto.PlateNumber = string.Empty;
-        }
-
-        var transaction = await _actionsFactoryService.GetGarageTransaction(invoiceSearchDto);
-        if (transaction.CheckoutMobile is not null)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("CarAlreadyExit"));
-        }
-
-        var customerMobileAppService = LazyServiceProvider.LazyGetRequiredService<ICustomerMobileTransactionsAppService>();
-        return await customerMobileAppService.PreCheckout(transaction.Id);
-    }
+ 
     #endregion
     #region Private Methods
     private static IQueryable<GarageTransactionDto> ApplyFilterTenant(Guid? tenantId, IQueryable<GarageTransactionDto> queryable)
