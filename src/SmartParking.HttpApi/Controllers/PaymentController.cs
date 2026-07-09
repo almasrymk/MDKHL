@@ -7,6 +7,7 @@ using SmartParking.Payments;
 using SmartParking.Results;
 using System;
 using System.Threading.Tasks;
+using Volo.Abp.AspNetCore.Mvc.AntiForgery;
 
 namespace SmartParking.Controllers;
 
@@ -16,9 +17,11 @@ namespace SmartParking.Controllers;
 public class PaymentController : ControllerBase
 {
     private readonly IPaymentAppService _paymentAppService;
-    public PaymentController(IPaymentAppService paymentAppService)
+    private readonly IPaymentMobileHelper _paymentMobileHelper;
+    public PaymentController(IPaymentAppService paymentAppService, IPaymentMobileHelper paymentMobileHelper)
     {
         _paymentAppService = paymentAppService;
+        _paymentMobileHelper = paymentMobileHelper;
     }
     [HttpPost("CreateCheckoutPayment")]
     [Authorize]
@@ -48,6 +51,15 @@ public class PaymentController : ControllerBase
     public async Task<Result<MobilePaymentSessionDto>> InitializePaymentSession(int invoiceId, [FromQuery] SmartParking.Enums.PaymentMethod paymentMethod)
     {
         return await _paymentAppService.InitializeMobilePaymentSessionAsync(invoiceId, paymentMethod);
+    }
+
+    [HttpPost("cancel-invoice/{invoiceId}")]
+    [Authorize]
+    //[IgnoreAntiforgeryToken]
+    public async Task<Result> CancelInvoicePayment(int invoiceId, string searchInput)
+    {
+        //return Result.Success();
+        return await _paymentMobileHelper.HandleCancel(invoiceId, searchInput);
     }
 
 }
