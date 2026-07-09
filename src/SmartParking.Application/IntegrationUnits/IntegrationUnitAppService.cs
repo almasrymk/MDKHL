@@ -81,7 +81,10 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     [RemoteService(false)]
     public async Task<Result<BookingDto>> CreateBookingAsync(CreateUpdateBookingDto dto)
     {
-        try
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            try
+
         {
             var unit = await _unitAppService.GetActiveUnitByCodeAsync(dto.UnitId);
             if (!unit.IsSuccess)
@@ -112,7 +115,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             var PackageResult = await HandlePackageResponseDto(customerPackages);
             var QrResult = await HandleQrResponseDto(customerPackages, customerUnitPackage);
             await CreateUnitPackageIntegrationsAsync(unitVehiclePackages, dto.Booking.BookingId, organization.Id, organization.TenantId);
-            BookingDto result = new BookingDto
+            return Result.Success(new BookingDto
             {
                 Status = Status.Active,
                 PhoneNumber = customer.MobileNumber,
@@ -129,8 +132,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
                     bookingId = dto.Booking.BookingId,
                     UnitId = dto.UnitId
                 }
-            };
-            return Result.Success(result);
+            });
         }
         catch (BusinessException ex)
         {
@@ -156,6 +158,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
                 await _unitOfWorkManager.Current.RollbackAsync();
             }
             return Result.Error(ex.Message);
+        }
         }
     }
     [RemoteService(false)]
