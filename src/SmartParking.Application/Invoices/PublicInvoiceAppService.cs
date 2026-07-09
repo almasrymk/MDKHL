@@ -23,7 +23,7 @@ namespace SmartParking.Invoices;
 
 [RemoteService(IsEnabled = true)]
 [AllowAnonymous]
-public class PublicInvoiceAppService : ApplicationService, IPublicInvoiceAppService
+public class PublicInvoiceAppService : SmartParkingAppService, IPublicInvoiceAppService
 {
     private readonly IRepository<Invoice, int> _invoiceRepository;
     private readonly IRepository<GarageTransaction, int> _garageTransactionRepository;
@@ -49,35 +49,37 @@ public class PublicInvoiceAppService : ApplicationService, IPublicInvoiceAppServ
 
     public async Task CancelInvoiceAsync(int invoiceId, InvoiceSearchDto searchDto)
     {
-        var invoice = await _invoiceRepository.FirstOrDefaultAsync(inv => inv.Id == invoiceId);
+        using (DataFilter.Disable<IMultiTenant>()) { 
+            var invoice = await _invoiceRepository.FirstOrDefaultAsync(inv => inv.Id == invoiceId);
 
-        if (invoice == null)
-            throw new UserFriendlyException("Invoice not found.");
+            if (invoice == null)
+                throw new UserFriendlyException("Invoice not found.");
 
-        if (invoice.InvoiceType == InvoiceType.Paid)
-            throw new UserFriendlyException("Invoice is already paid.");
+            if (invoice.InvoiceType == InvoiceType.Paid)
+                throw new UserFriendlyException("Invoice is already paid.");
 
-        var exitTransactionId = invoice.GarageTransactionExitId;
+            var exitTransactionId = invoice.GarageTransactionExitId;
 
-        // Delete payment
-        var payment = await _paymentWebAppService.GetPaymentForInvoice(invoiceId);
-        if (payment != null)
-        {
-            await _paymentRepository.DeleteAsync(payment.Id);
+            // Delete payment
+            var payment = await _paymentWebAppService.GetPaymentForInvoice(invoiceId);
+            if (payment != null)
+            {
+                await _paymentRepository.DeleteAsync(payment.Id);
+            }
+
+            await _invoiceRepository.DeleteAsync(invoice.Id);
+            // Delete exit transaction
+            if (exitTransactionId > 0)
+            {
+                await _garageTransactionRepository.DeleteAsync(exitTransactionId);
+            }
+
+            // Restore entry transaction
+            var entryTransaction =
+                await _garageTransactionsActionsFactoryAppService.GetGarageTransaction(searchDto);
+            await _garageTransactionsActionsFactoryAppService.UnMappingEntryTransactionForDeletedExit(entryTransaction);
+
         }
-
-        await _invoiceRepository.DeleteAsync(invoice.Id);
-        // Delete exit transaction
-        if (exitTransactionId > 0)
-        {
-            await _garageTransactionRepository.DeleteAsync(exitTransactionId);
-        }
-
-        // Restore entry transaction
-        var entryTransaction =
-            await _garageTransactionsActionsFactoryAppService.GetGarageTransaction(searchDto);
-        await _garageTransactionsActionsFactoryAppService.UnMappingEntryTransactionForDeletedExit(entryTransaction);
-
        
     }
 

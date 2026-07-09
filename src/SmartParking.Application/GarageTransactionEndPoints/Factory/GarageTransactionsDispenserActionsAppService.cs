@@ -15,13 +15,15 @@ using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.GarageTransactionEndPoints.Factory;
 
-public class GarageTransactionsDispenserActionsAppService : ApplicationService ,IGarageTransactionActionsAppService
+public class GarageTransactionsDispenserActionsAppService :  IGarageTransactionActionsAppService
 {
     private readonly IRepository<GarageTransaction, int> _repository;
+    private readonly IDataFilter _dataFilter;
 
-    public GarageTransactionsDispenserActionsAppService(IRepository<GarageTransaction, int> repository)
+    public GarageTransactionsDispenserActionsAppService(IRepository<GarageTransaction, int> repository, IDataFilter dataFilter)
     {
         _repository = repository;
+        _dataFilter = dataFilter;
     }
 
     [RemoteService(false)]
@@ -84,7 +86,7 @@ public class GarageTransactionsDispenserActionsAppService : ApplicationService ,
     [RemoteService(false)]
     public async Task<GarageTransactionDto> GetGarageTransaction(InvoiceSearchDto invoiceSearchDto)
     {
-        using (DataFilter.Disable<IMultiTenant>())
+        using (_dataFilter.Disable<IMultiTenant>())
         {
             var query = await _repository.GetQueryableAsync();
             var latestTransaction = await query
