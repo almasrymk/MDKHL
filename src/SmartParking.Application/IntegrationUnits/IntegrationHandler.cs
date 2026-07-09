@@ -1,6 +1,7 @@
 ﻿using SmartParking.IntegrationUnit;
 using SmartParking.IntegrationUnit.Dtos;
 using SmartParking.Results;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
 
@@ -22,7 +23,7 @@ public class IntegrationHandler : IScopedDependency, IIntegrationHandler
             var updateResult = await _integrationUnitAppService.UpdateBookingAsync(input);
             if (!updateResult.IsSuccess)
             {
-                return Result.Error();
+                return Result.Error(updateResult?.Errors!.FirstOrDefault());
             }
             return Result.Success<BookingDto>(updateResult);
         }
@@ -30,7 +31,7 @@ public class IntegrationHandler : IScopedDependency, IIntegrationHandler
         var result = await _integrationUnitAppService.CreateBookingAsync(input);
         if (!result.IsSuccess)
         {
-            return Result.Error();
+            return Result.Error(result.Errors!.FirstOrDefault());
         }
         return Result.Success<BookingDto>(result);
     }
