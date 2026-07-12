@@ -34,6 +34,8 @@ using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
+using SmartParking.CustomerPackages.AssignantionsContarcts;
+using SmartParking.CustomerPackages;
 
 namespace SmartParking;
 
@@ -117,6 +119,7 @@ public class SmartParkingApplicationModule : AbpModule
         context.Services.AddScoped<ICustomerPackageHandlerAppService, CustomerPackageHandlerAppService>();
         context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, CameraTransactionActionsAppService>();
         context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, DispenserTransactionActionsAppService>();
+        context.Services.AddScoped<IAssignCustomerPackagesAppService, OrganizationAwareCustomerPackagesAppService>();
 
 
 

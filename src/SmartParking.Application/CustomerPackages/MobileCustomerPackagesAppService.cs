@@ -15,24 +15,31 @@ using SmartParking.Subscriptions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 using Volo.Abp.Users;
 
 namespace SmartParking.CustomerPackages;
+[RemoteService(false)]
 
 public class MobileCustomerPackagesAppService : BaseCustomerPackagesAssigingAppService, IAssignCustomerPackagesMobileAppService , ICustomerPackageValidatorAppService
 {
     private readonly IDataFilter _dataFilter;
     private readonly IRepository<CustomerPackage, int> _repository;
     private readonly ICurrentUser _currentUser;
+    private readonly IObjectMapper _objectMapper;
+    private readonly ICurrentTenant _currentTenant;
 
-    public MobileCustomerPackagesAppService(IRepository<CustomerPackage, int> repository, IDataFilter dataFilter,  IRepository<Customer, Guid> customerRepository, IRepository<Package, int> packageRepository, IOrganizationsAppService organizationsApp, ICustomerPackageQRGenerator customerPackageQRGenerator, ICustomerPackagePDFAppService pDFGeneratorAppService, ICurrentUser currentUser, ICustomerPackagesCreationValidationsAppService customerPackagesCreationValidations) : base(repository, dataFilter, customerRepository, packageRepository, organizationsApp, customerPackageQRGenerator, pDFGeneratorAppService, customerPackagesCreationValidations)
+    public MobileCustomerPackagesAppService(IRepository<CustomerPackage, int> repository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IRepository<Package, int> packageRepository, IOrganizationsAppService organizationsApp, ICustomerPackageQRGenerator customerPackageQRGenerator, ICustomerPackagePDFAppService pDFGeneratorAppService, ICurrentUser currentUser, ICustomerPackagesCreationValidationsAppService customerPackagesCreationValidations, IObjectMapper objectMapper, ICurrentTenant currentTenant) : base(repository, dataFilter, customerRepository, packageRepository, organizationsApp, customerPackageQRGenerator, pDFGeneratorAppService, customerPackagesCreationValidations, objectMapper , currentTenant)
     {
         _dataFilter = dataFilter;
         _repository = repository;
         _currentUser = currentUser;
+        _objectMapper = objectMapper;
+        _currentTenant = currentTenant;
     }
 
     public async Task<Result<CustomerPackageDto>> AssignPackageToCustomerAsync(int packageId, string ArabicPlateNumber, string EnglishPlateNumber)

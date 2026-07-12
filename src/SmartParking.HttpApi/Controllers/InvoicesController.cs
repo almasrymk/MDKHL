@@ -48,12 +48,7 @@ public class InvoicesController : AbpController
         return await _invoicesAppService.GetAsync(invoiceId);
     }
 
-    [HttpPost("customerpayinvoice")]
-    [Authorize]
-    public async Task<Result<PaymentCheckoutDto>> PayCustomerInvoice(PayCustomerInvoiceDto payCustomerInvoice)
-    {
-      return await _paymentAppService.PayCustomerInvoiceAsync(payCustomerInvoice);
-    }
+
 }
     
     

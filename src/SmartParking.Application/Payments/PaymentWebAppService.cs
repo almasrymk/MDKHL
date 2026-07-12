@@ -102,7 +102,8 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                     (customer != null && customer.IdentityUser != null ? customer.IdentityUser.Name : "System"),
                     StatusZatca = organization.StatusZatca,
                     PackageId = package.Id,
-                    CustomerPackage = package
+                    CustomerPackage = package,
+                    IsSentZatca = payment.IsSentZatca
                 };
 
             result = result.OrderByDescending(x => x.CreationTime);
@@ -169,7 +170,9 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                     (customer != null && customer.IdentityUser != null ? customer.IdentityUser.Name : "System"),
                     StatusZatca = organization.StatusZatca,
                     PackageId = package.Id,
-                    CustomerPackage = package
+                    CustomerPackage = package,
+                    IsSentZatca=payment.IsSentZatca
+
                 };
             result = result.OrderByDescending(x => x.CreationTime);
             result = ApplySearch(input, result);

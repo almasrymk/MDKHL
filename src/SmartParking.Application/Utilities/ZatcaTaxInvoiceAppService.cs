@@ -15,6 +15,7 @@ using SmartParking.Results;
 using SmartParking.ZATCATaxInvoice;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -166,17 +167,9 @@ namespace SmartParking.Utilities
                 return response;
             }
 
-            var PaymentForInvoiceId = await _repository.FirstOrDefaultAsync(p => p.InvoiceId == payment.InvoiceId && p.IsSentZatca == true);
-            if (PaymentForInvoiceId != null)
+            if (payment.IsSentZatca)
             {
                 response.generalError += LocalizationHelper.GetLocalizedString("This Invoice Is already sent to zatca");
-                return response;
-            }
-
-            var PaymentNumberExist = await _repository.FirstOrDefaultAsync(p => p.PaymentNumber == payment.PaymentNumber && p.IsSentZatca == true);
-            if (PaymentNumberExist != null)
-            {
-                response.generalError += LocalizationHelper.GetLocalizedString("This Payment Number Is already sent to zatca");
                 return response;
             }
 
@@ -243,23 +236,16 @@ namespace SmartParking.Utilities
                 HttpResponseMessage responseQR = await _httpClient.PostAsync(baseUri, _content);
                 var resultResponseQR = await responseQR.Content.ReadAsStringAsync();
 
+                _logger.LogInformation(
+                    "Zatca QR response | Status: {StatusCode} | Headers: {Headers} | Body: {Body}",
+                    (int)responseQR.StatusCode,
+                    string.Join("; ", responseQR.Headers
+                        .Concat(responseQR.Content.Headers)
+                        .Select(h => $"{h.Key}={string.Join(",", h.Value)}")),
+                    resultResponseQR);
                 responseQR.EnsureSuccessStatusCode();
                 response = JsonConvert.DeserializeObject<ResponseInvoice>(resultResponseQR)!;
 
-
-
-                //if (responseQR.IsSuccessStatusCode)
-                //    response = JsonConvert.DeserializeObject<ResponseInvoice>(resultResponseQR)!;
-                //else
-                //{
-                //    response = JsonConvert.DeserializeObject<ResponseInvoice>(resultResponseQR)!;
-                //    response.status = false;
-                //    var errorResult = JsonConvert.DeserializeObject<ValidationErrorResponseDto>(resultResponseQR);
-
-                //    response.validationResults = new ValidationErrorResponseDto { Errors = new Dictionary<string, List<string>>() };
-                //    foreach (var error in errorResult?.Errors!)
-                //        response.validationResults.Errors.Add(error.Key, error.Value);
-                //}
                 return response!;
             }
             catch (Exception ex)

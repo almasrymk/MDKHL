@@ -17,16 +17,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Data;
+using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.CustomerPackages;
 
-public class NormalCustomerPackagesAppService : BaseCustomerPackagesAssigingAppService, IAssignCustomerPackagesAppService , ICustomerPackageValidatorAppService
+[RemoteService(false)]
+public class NormalCustomerPackagesAppService : BaseCustomerPackagesAssigingAppService, IAssignCustomerPackagesAppService , ICustomerPackageValidatorAppService 
 {
     private readonly IDataFilter _dataFilter;
     private readonly IRepository<CustomerPackage, int> _repository;
+    private readonly IObjectMapper _objectMapper;
+    private readonly ICurrentTenant _currentTenant;
 
 
 
@@ -39,10 +45,14 @@ public class NormalCustomerPackagesAppService : BaseCustomerPackagesAssigingAppS
      ICustomerPackageQRGenerator qrGenerator,
      ICustomerPackagePDFAppService pdfAppService,
      ICustomerPackagesCreationValidationsAppService customerPackagesCreationValidations
-    ) : base(repository,dataFilter,customerRepository,packageRepository,organizationsAppService,qrGenerator,pdfAppService, customerPackagesCreationValidations)
+,
+     IObjectMapper objectMapper,
+     ICurrentTenant currentTenant) : base(repository, dataFilter, customerRepository, packageRepository, organizationsAppService, qrGenerator, pdfAppService, customerPackagesCreationValidations, objectMapper ,currentTenant)
     {
         _dataFilter = dataFilter;
-        _repository=repository;
+        _repository = repository;
+        _objectMapper = objectMapper;
+        _currentTenant = currentTenant;
     }
 
     public async Task<Result<CustomerPackageDto>> AssignPackageToCustomerAsync(CreateUpdateCustomerPackageDto createUpdateCustomerPackageDto)
@@ -72,44 +82,6 @@ public class NormalCustomerPackagesAppService : BaseCustomerPackagesAssigingAppS
         }
     }
 
-    public async Task<Result<UnitQrDto>> AssignUnitPackageToCustomerAsync(CreateUpdateCustomerPackageForUnitDto dto)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var customer = await GetCustomerByCustomerIdAsync(dto.CustomerId);
-            await CheckSubscriptionCustomersLimitsAsync(dto.OrganizationId);
-            var unitQrDto = await HandleUnitQRCode(dto);
-
-            for (int i = 0; i < dto.Vehicles.Count; i++)
-            {
-                CustomerPackage customerPackage;
-                if (dto.PackageId != 0)
-                {
-                    var package = await GetPackageAsync(dto!.PackageId);
-                    if (package == null)
-                        throw new Exception(LocalizationHelper.GetLocalizedString("Package") + " " + LocalizationHelper.GetLocalizedString("NotFoundValidation"));
-                    var createUpdateCustomerPackageDto = ObjectMapper.Map<CreateUpdateCustomerPackageForUnitDto, CreateUpdateCustomerPackageDto>(dto);
-                    customerPackage = CreateCustomerPackage(createUpdateCustomerPackageDto, package);
-                    customerPackage.ArPlateNumber = dto.Vehicles[i].ArPlateNumber;
-                    customerPackage.EnPlateNumber = dto.Vehicles[i].EnPlateNumber;
-                }
-                else
-                {
-
-                    customerPackage = ObjectMapper.Map<CreateUpdateCustomerPackageForUnitDto, CustomerPackage>(dto);
-                    customerPackage.ArPlateNumber = dto.Vehicles[i].ArPlateNumber;
-                    customerPackage.EnPlateNumber = dto.Vehicles[i].EnPlateNumber;
-                    customerPackage.PackageId = null;
-                    customerPackage.Package = null;
-                }
-                customerPackage.QRCodePath = unitQrDto.QrCodePath;
-                customerPackage.PackageCode = unitQrDto.PackageCode;
-                var insertPackage = await InsertCustomerPackageAsync(customerPackage);
-            }
-            
-            return unitQrDto;
-        }
-    }
 
     public async Task<bool> HandleExistingPackagesForVehicleAsync(CreateUpdateCustomerPackageDto customerPackageDto)
     {

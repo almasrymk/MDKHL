@@ -29,6 +29,7 @@ using SmartParking.Localization;
 using SmartParking.MultiTenancy;
 using SmartParking.OpenGate;
 using SmartParking.OpeningGate;
+using SmartParking.Organizations;
 using SmartParking.Payments.PaymentIntegrations;
 using SmartParking.PDF.Dtos;
 using SmartParking.Results;
@@ -207,8 +208,6 @@ public class SmartParkingBlazorModule : AbpModule
         context.Services.AddScoped<IGarageTransactionsActionsFactoryAppService, GarageTransactionsActionsFactoryAppService>();
         context.Services.AddScoped<IWatcherAppService, WatcherAppService>();
         context.Services.AddScoped<IAssignCustomerPackagesMobileAppService, MobileCustomerPackagesAppService>();
-        context.Services.AddScoped<IAssignCustomerPackagesAppService, NormalCustomerPackagesAppService>();
-        context.Services.AddScoped<IAssignUnitCustomerPackageAppService, UnitCustomerPackageAppService>();
         context.Services.AddScoped<ICustomerPackagesCreationValidationsAppService, CustomerPackageCreationValidationsAppService>();
         context.Services.AddScoped<ISubscriptionActionsAppService, SubsctiptionActionsAppService>();
         context.Services.AddScoped<IWatcherAppService, WatcherAppService>();

@@ -23,12 +23,6 @@ public class PaymentController : ControllerBase
         _paymentAppService = paymentAppService;
         _paymentMobileHelper = paymentMobileHelper;
     }
-    [HttpPost("CreateCheckoutPayment")]
-    [Authorize]
-    public async Task<Result<PaymentCheckoutDto>> CreateCheckoutPayment(PaymentCheckoutRequestDto input)
-    {
-        return await _paymentAppService.CreateCheckoutPaymentAsync(input);
-    }
 
 
 

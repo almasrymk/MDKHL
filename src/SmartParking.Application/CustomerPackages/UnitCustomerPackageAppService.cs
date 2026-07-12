@@ -17,24 +17,34 @@ using SmartParking.UnitPackages;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Data;
+using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.CustomerPackages;
 
-public class UnitCustomerPackageAppService : BaseCustomerPackagesAssigingAppService, IAssignUnitCustomerPackageAppService, ICustomerPackageValidatorAppService
+[RemoteService(false)]
+
+
+public class UnitCustomerPackageAppService : BaseCustomerPackagesAssigingAppService, IAssignCustomerPackagesAppService, ICustomerPackageValidatorAppService 
 {
     private readonly IDataFilter _dataFilter;
     private readonly IRepository<CustomerPackage, int> _repository;
     private readonly IRepository<UnitPackage, int> _unitPackageRepsoitory;
+    private readonly IObjectMapper _objectMapper;
+    private readonly ICurrentTenant _currentTenant;
 
 
-    public UnitCustomerPackageAppService(IRepository<CustomerPackage, int> repository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IRepository<Package, int> packageRepository, IOrganizationsAppService organizationsApp, ICustomerPackageQRGenerator customerPackageQRGenerator, ICustomerPackagePDFAppService pDFGeneratorAppService, ICustomerPackagesCreationValidationsAppService customerPackageCreationValidation, IRepository<UnitPackage, int> unitPackageRepsoitory) : base(repository, dataFilter, customerRepository, packageRepository, organizationsApp, customerPackageQRGenerator, pDFGeneratorAppService, customerPackageCreationValidation)
+    public UnitCustomerPackageAppService(IRepository<CustomerPackage, int> repository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IRepository<Package, int> packageRepository, IOrganizationsAppService organizationsApp, ICustomerPackageQRGenerator customerPackageQRGenerator, ICustomerPackagePDFAppService pDFGeneratorAppService, ICustomerPackagesCreationValidationsAppService customerPackageCreationValidation, IRepository<UnitPackage, int> unitPackageRepsoitory, IObjectMapper objectMapper, ICurrentTenant currentTenant) : base(repository, dataFilter, customerRepository, packageRepository, organizationsApp, customerPackageQRGenerator, pDFGeneratorAppService, customerPackageCreationValidation,objectMapper,currentTenant)
     {
         _dataFilter = dataFilter;
         _repository = repository;
         _unitPackageRepsoitory = unitPackageRepsoitory;
+        _objectMapper = objectMapper;
+        _currentTenant = currentTenant;
     }
 
     public async Task<Result<CustomerPackageDto>> AssignPackageToCustomerAsync(CreateUpdateCustomerPackageDto createUpdateCustomerPackageDto)
@@ -66,7 +76,7 @@ public class UnitCustomerPackageAppService : BaseCustomerPackagesAssigingAppServ
     public async Task<UnitPackageDto> GetUnitPackageAsync(int packageId)
     {
         var result= await _unitPackageRepsoitory.GetAsync(packageId);
-        return ObjectMapper.Map<UnitPackage, UnitPackageDto>(result);
+        return _objectMapper.Map<UnitPackage, UnitPackageDto>(result);
 
     }
 

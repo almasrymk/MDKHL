@@ -15,6 +15,7 @@ using SmartParking.Packages;
 using SmartParking.Payments.PaymentIntegrations;
 using SmartParking.Results;
 using SmartParking.Utilities;
+using SmartParking.ZATCATaxInvoice;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 
+using InvoiceDto = SmartParking.Invoices.InvoiceDto;
 namespace SmartParking.Payments;
 
 //[Authorize]
@@ -95,37 +97,6 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
 
     #region public methods 
-    [AbpAllowAnonymous]
-    [RemoteService(IsEnabled = false)]
-    public async Task<PaymentCheckoutDto> CreateCheckoutPaymentAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
-    {
-
-        using (dataFilter.Disable<IMultiTenant>())
-        {
-          
-                // handle cash transaction
-            if (paymentCheckoutRequest.PaymentMethod == PaymentMethod.Cash)
-            {
-
-                var result = await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
-                await UpdatePaymentStausByCheckOutIdAsync(result.CheckoutId);
-                var entity = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == result.CheckoutId);
-                result.QrCodeInvoice = entity!.QrCodeInvoice;
-                return result;
-            }
-            else
-            {
-
-                var entityId = GetEntityIdByPaymentMethod(paymentCheckoutRequest.PaymentMethod);
-                var checkoutId = await HyperPayPayment(paymentCheckoutRequest, entityId);
-                return await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Pending, paymentCheckoutRequest.CustomerId,
-                    checkoutid: checkoutId, entityId: entityId);
-            }
-           
-
-        }
-    }
-  
     [RemoteService(IsEnabled = false)]
     public async Task<bool> ResendZatca(Guid Id)
     {
@@ -137,7 +108,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
             payment.QrCodeInvoice = res.invoiceQRCode;
             payment.IsSentZatca = res.status;
-            payment.ErrorMessagesZatca = null;
+            payment.ErrorMessagesZatca = res.generalError.ToString();
             if (res.validationResults != null && res.validationResults.errorMessages != null && res.validationResults.errorMessages.Count > 0)
             {
                 var listErrors = res.validationResults.errorMessages.Select(e => e.Message).ToList();
@@ -212,6 +183,9 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     public async Task<PaymentCheckoutDto?> CreateCheckoutInvoicePaymentWebAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
     {
         var paymentCheckoutDto = await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
+        var res = await _zatcaTaxInvoiceAppService.SendToZACTA(paymentCheckoutDto.PaymentId);
+        _logger.LogInformation("ZATCA Integration Result for PaymentId {PaymentId}: Status: {Status}, InvoiceQRCode: {InvoiceQRCode}", paymentCheckoutDto.PaymentId, res.status, res.invoiceQRCode);
+        await UpdatePaymentForZatca(paymentCheckoutDto.PaymentId, res);
         await UpdateInvoiceStatusAsync(paymentCheckoutRequest.InvoiceId,paymentCheckoutDto.PaymentNumber);
         return paymentCheckoutDto;
     }
@@ -219,37 +193,12 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     public async Task<PaymentCheckoutDto?> CreateCheckoutPackagePaymentWebAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
     {
         var paymentCheckoutDto = await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
+        var res = await _zatcaTaxInvoiceAppService.SendToZACTA(paymentCheckoutDto.PaymentId);
+        _logger.LogInformation("ZATCA Integration Result for PaymentId {PaymentId}: Status: {Status}, InvoiceQRCode: {InvoiceQRCode}", paymentCheckoutDto.PaymentId, res.status, res.invoiceQRCode);
+        await UpdatePaymentForZatca(paymentCheckoutDto.PaymentId, res);
         return paymentCheckoutDto;
     }
-    [AbpAllowAnonymous]
-    [RemoteService(IsEnabled = false)]
-    public async Task<Result<PaymentCheckoutDto>> PayCustomerInvoiceAsync(PayCustomerInvoiceDto payCustomerInvoiceDto)
-    {
-        using (dataFilter.Disable<IMultiTenant>())
-        {
-            var result= await GetInvoiceByIdAsync(payCustomerInvoiceDto.InvoiceId);
-            if (!result.IsSuccess)
-            {
-                _logger.LogWarning("PayCustomerInvoiceAsync: {Error}", result.Errors.FirstOrDefault());
-                throw new Exception (result.Errors.FirstOrDefault());
-            }
-            var paymentResult = await CreateCheckoutPaymentAsync(new PaymentCheckoutRequestDto
-            {
-                InvoiceId = payCustomerInvoiceDto.InvoiceId,
-                OrganizationId = result.Value.OrganizationId,
-                Amount= PaymentUtilityCalculationts.GetPriceForPayment(result.Value.InvoicePrice, result.Value.Discount),
-                PaymentCategory=PaymentCategory.PaymentParking,
-                PaymentMethod= payCustomerInvoiceDto.Method,
-                TenantId=result.Value.TenantId.Value,
-                
-            });
-            await UpdateInvoiceStatusAsync(payCustomerInvoiceDto.InvoiceId, paymentResult.PaymentNumber);
-            _logger.LogInformation("PayCustomerInvoiceAsync: Payment processed successfully for InvoiceId {InvoiceId}", payCustomerInvoiceDto.InvoiceId);
-            return paymentResult;
 
-        }
-    }
-    
     [AbpAllowAnonymous]
     [RemoteService(IsEnabled = false)]
     public async Task<Result<MobilePaymentSessionDto>> InitializeMobilePaymentSessionAsync(int invoiceId, PaymentMethod paymentMethod)
@@ -334,7 +283,6 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         // add QrCode
         // var token = await _invoiceUtility.GetTokenAsync();
         paymentCheckoutRequest.PaymentNumber = await GeneratePaymentNumberAsync(paymentCheckoutRequest.OrganizationId);
-        var qrCode = await _invoiceUtility.GetQrCodeAsync(paymentCheckoutRequest.Amount, paymentCheckoutRequest.OrganizationId);
         Payment payment = new Payment
         {
             Amount = paymentCheckoutRequest.Amount,
@@ -349,11 +297,11 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             EntityId = entityId,
             CustomerId = customerId,
             PaymentStatus = paymentStatus,
-            QrCodeInvoice = qrCode.QRCode,
             PaymentNumber = paymentCheckoutRequest.PaymentNumber,
             ArPlateNumber = paymentCheckoutRequest.ArPlateNumber,
             EnPlateNumber = paymentCheckoutRequest.EnPlateNumber,
             TenantId = CurrentTenant.Id.HasValue ? CurrentTenant.Id.Value : paymentCheckoutRequest.TenantId,
+            IsSentZatca=false
 
         };
 
@@ -365,7 +313,6 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             _logger.LogError("This Payment Number Is already Exist with payment id : {PaymentId}", payment.Id);
             throw new Exception("This Payment Number Is already Exist");
         }
-
         payment = await _repository.InsertAsync(payment);
         _logger.LogInformation("Payment created with ID: {PaymentId}", payment.Id);
         await CurrentUnitOfWork!.SaveChangesAsync();
@@ -456,45 +403,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     #region private methods
 
 
-    [RemoteService(IsEnabled = false)]
-    private async Task<string> HyperPayPayment(PaymentCheckoutRequestDto paymentCheckoutRequest, string entityId)
-    {
-        var content = new StringContent(
-          $"entityId={entityId}&amount={paymentCheckoutRequest.Amount}&currency={Currency}&testMode=EXTERNAL&paymentType={PaymentType}",
-          Encoding.ASCII,
-          "application/x-www-form-urlencoded"
-      );
-
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(tokenType, token);
-
-
-        var response = await _httpClient.PostAsync(PaymentUrl, content);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new Exception($"Payment request failed with status: {response.StatusCode}");
-        }
-         
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var responseObject = JObject.Parse(responseContent);
-        var checkoutId = responseObject["id"]?.ToString();
-        if (string.IsNullOrEmpty(checkoutId))
-        {
-            throw new Exception("Unable to Get CheckOut ID");
-        }
-        return checkoutId;         
-    }
-    [RemoteService(IsEnabled = false)]
-    private string GetEntityIdByPaymentMethod(PaymentMethod paymentMethod)
-    {
-        return paymentMethod switch
-        {
-            PaymentMethod.VISA => PaymentEntityID["VISA"],
-            PaymentMethod.MASTERCARD => PaymentEntityID["VISA"],
-            PaymentMethod.MADA => PaymentEntityID["MADA"],
-            _ => throw new Exception("Payment method is not supported.")
-        };
-    }
+ 
     [AbpAllowAnonymous]
     [RemoteService(IsEnabled = false)]
     private async Task<Result<bool>> UpdateInvoiceStatusAsync(int? InvoiceId,string PaymnetNumber)
@@ -644,6 +553,32 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         
         var configuration = LazyServiceProvider.LazyGetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
         return configuration["App:SelfUrl"]?.TrimEnd('/') ?? string.Empty;
+    }
+
+    private async Task UpdatePaymentForZatca(Guid paymentId , ResponseInvoice responseInvoice)
+    {
+        using(dataFilter.Disable<IMultiTenant>())
+        {
+            var payment = await _repository.FirstOrDefaultAsync(p => p.Id == paymentId);
+            if (payment == null)
+            {
+                throw new Exception("Payment not found.");
+            }
+            payment.QrCodeInvoice = responseInvoice.invoiceQRCode;
+            payment.IsSentZatca = responseInvoice.status;
+            payment.ErrorMessagesZatca = null;
+            if (responseInvoice.validationResults != null && responseInvoice.validationResults.errorMessages != null && responseInvoice.validationResults.errorMessages.Count > 0)
+            {
+                var listErrors = responseInvoice.validationResults.errorMessages.Select(e => e.Message).ToList();
+                payment.ErrorMessagesZatca = string.Join(",", listErrors);
+            }
+            else if (responseInvoice.validationResults != null && responseInvoice.validationResults.warningMessages != null && responseInvoice.validationResults.warningMessages.Count > 0)
+            {
+                var listErrors = responseInvoice.validationResults.warningMessages.Select(e => e.Message).ToList();
+                payment.ErrorMessagesZatca = string.Join(",", listErrors);
+            }
+            await _repository.UpdateAsync(payment);
+        }
     }
 
     #endregion

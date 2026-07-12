@@ -24,11 +24,12 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 
 namespace SmartParking.CustomerPackages;
 [RemoteService(false)]
 
-public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppService, ICustomerPackagesAssigningAppService, IApplicationService
+public abstract class BaseCustomerPackagesAssigingAppService :SmartParkingAppService, ICustomerPackagesAssigningAppService
 {
     private readonly IRepository<CustomerPackage, int> _repository;
     private readonly IDataFilter _dataFilter;
@@ -38,8 +39,10 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
     private readonly ICustomerPackageQRGenerator _customerPackageQRGenerator;
     private readonly ICustomerPackagePDFAppService _pdfGeneratorAppService;
     private readonly ICustomerPackagesCreationValidationsAppService _customerPackageCreationValidation;
+    private readonly IObjectMapper _objectMapper;
+    private readonly ICurrentTenant _currentTenant;
 
-    public BaseCustomerPackagesAssigingAppService(IRepository<CustomerPackage, int> repository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IRepository<Package, int> packageRepository, IOrganizationsAppService organizationsApp, ICustomerPackageQRGenerator customerPackageQRGenerator, ICustomerPackagePDFAppService pDFGeneratorAppService, ICustomerPackagesCreationValidationsAppService customerPackageCreationValidation)
+    public BaseCustomerPackagesAssigingAppService(IRepository<CustomerPackage, int> repository, IDataFilter dataFilter, IRepository<Customer, Guid> customerRepository, IRepository<Package, int> packageRepository, IOrganizationsAppService organizationsApp, ICustomerPackageQRGenerator customerPackageQRGenerator, ICustomerPackagePDFAppService pDFGeneratorAppService, ICustomerPackagesCreationValidationsAppService customerPackageCreationValidation, IObjectMapper objectMapper, ICurrentTenant currentTenant)
     {
         _repository = repository;
         _dataFilter = dataFilter;
@@ -49,6 +52,8 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
         _customerPackageQRGenerator = customerPackageQRGenerator;
         _pdfGeneratorAppService = pDFGeneratorAppService;
         _customerPackageCreationValidation = customerPackageCreationValidation;
+        _objectMapper = objectMapper;
+        _currentTenant = currentTenant;
     }
 
 
@@ -156,7 +161,7 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
     /// </returns>
     protected async Task<Result<CustomerPackage>> InsertCustomerPackageAsync(CustomerPackage customerPackage)
     {
-        customerPackage.TenantId = customerPackage.TenantId != null? customerPackage.TenantId  :CurrentTenant.Id;
+        customerPackage.TenantId = customerPackage.TenantId != null? customerPackage.TenantId  :_currentTenant.Id;
         var assignedPackage = await _repository.InsertAsync(customerPackage, true);
         return assignedPackage != null ? assignedPackage : Result.Error("Can't assign package to customer");
     }
@@ -329,13 +334,13 @@ public abstract class BaseCustomerPackagesAssigingAppService : SmartParkingAppSe
                 LocalizationHelper.GetLocalizedString("CustomerPackage") + " " +
                 LocalizationHelper.GetLocalizedString("NotFoundValidation"));
         }
-        ObjectMapper.Map(input, entity);
+        _objectMapper.Map(input, entity);
         if (entity.PackageId == 0)
             entity.PackageId = null;
 
         await _repository.UpdateAsync(entity, autoSave: true);
 
-        return ObjectMapper.Map<CustomerPackage, CustomerPackageDto>(entity);
+        return _objectMapper.Map<CustomerPackage, CustomerPackageDto>(entity);
     }
 
     public async Task<Result<CustomerPackageDto>> UpdateDefaultCustomerPackage(CreateUpdateCustomerPackageDto input)

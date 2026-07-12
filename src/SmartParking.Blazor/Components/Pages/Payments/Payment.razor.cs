@@ -213,9 +213,9 @@ public partial class Payment
         tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PaymentStatus"], Name = "PaymentStatus", IsFilterable = true, PropertyName = "PaymentStatus", IsSortable = true, TypeFilter = TypeFilter.Enum });
         if (CurrentTenant.Id == null || (organization != null && organization.StatusZatca == Status.Active))
         {
-            tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ZatcaStatus"], Name = _localizer["ZatcaStatus"], IsFilterable = true, PropertyName = "IsSentZatca", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["ZatcaStatus"], Name = _localizer["ZatcaStatus"], IsFilterable = true, PropertyName = "IsSentZatca", IsSortable = true, TypeFilter = TypeFilter.Text });
         }
-
+        
         foreach (var item in organizations.Items)
         {
 
@@ -303,14 +303,14 @@ public partial class Payment
             {
                 if (item.StatusZatca == Status.Active)
                 {
-                    if (item.IsSentZatca)
-                    {
-                        rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ZatcaStatus"], "<span class='text-success'>" + _localizer["Sent"] + "</span>"));
-                    }
-                    else
-                    {
-                        rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ZatcaStatus"], "<span class='text-danger'>" + _localizer["NotSent"] + "</span>"));
-                    }
+            if (item.IsSentZatca)
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ZatcaStatus"], "<span class='text-success'>" + _localizer["Sent"] + "</span>"));
+            }
+            else
+            {
+                rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["ZatcaStatus"], "<span class='text-danger'>" + _localizer["NotSent"] + "</span>"));
+            }
                 }
                 else
                 {

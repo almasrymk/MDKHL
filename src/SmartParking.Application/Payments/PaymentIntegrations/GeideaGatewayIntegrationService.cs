@@ -8,6 +8,7 @@ using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
@@ -326,7 +327,17 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
                 var zatcaResult = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
                 payment.QrCodeInvoice = zatcaResult.invoiceQRCode;
                 payment.PaymentStatus= PaymentStatus.Success;
-
+                payment.IsSentZatca = zatcaResult.status;
+                if (zatcaResult.validationResults != null && zatcaResult.validationResults.errorMessages != null && zatcaResult.validationResults.errorMessages.Count > 0)
+                {
+                    var listErrors = zatcaResult.validationResults.errorMessages.Select(e => e.Message).ToList();
+                    payment.ErrorMessagesZatca = string.Join(",", listErrors);
+                }
+                else if (zatcaResult.validationResults != null && zatcaResult.validationResults.warningMessages != null && zatcaResult.validationResults.warningMessages.Count > 0)
+                {
+                    var listErrors = zatcaResult.validationResults.warningMessages.Select(e => e.Message).ToList();
+                    payment.ErrorMessagesZatca = string.Join(",", listErrors);
+                }
                 payment = await _repository.UpdateAsync(payment);
                 await _invoiceRepo.UpdateAsync(invoice);
             }
