@@ -113,8 +113,18 @@ public partial class CustomerUnitPackageDialog
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["NumberOfVehicles"], item.NumberOfVehicles.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["NumberOfSlots"], item.NumberOfSlots.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Published"], item.PublishTo==item.PublishFrom ? 24 + L["Hour"] : $" {item.PublishFrom} " + " - " + $" {item.PublishTo}"));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], (item.Status == Status.Deleted) ? L[item.Status.ToString()] : (item.DectivationDate < DateTime.UtcNow) ? L["Expired"] : ((item.ActivationDate > DateTime.UtcNow) ? L["InActive"] : L[item.CustomerPackageStatus.ToString()])));
+            var nowLocal = DateTime.Now;
+            var activation = item.ActivationDate;   // already local, no conversion needed
+            var deactivation = item.DectivationDate;
 
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+                L["Status"],
+                item.Status == Status.Deleted
+                    ? L["Deleted"]
+                    : (activation.Date <= nowLocal.Date && deactivation.Date >= nowLocal.Date)
+                        ? L[item.CustomerPackageStatus.ToString()]
+                        : L["Expired"]
+            ));
             tableData.Rows.Add(rowDef);
         }
         itemData = tableData;

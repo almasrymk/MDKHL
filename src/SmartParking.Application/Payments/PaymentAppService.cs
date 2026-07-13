@@ -185,9 +185,12 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     {
         var paymentCheckoutDto = await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
         var res = await _zatcaTaxInvoiceAppService.SendToZACTA(paymentCheckoutDto.PaymentId);
-        _logger.LogInformation("ZATCA Integration Result for PaymentId {PaymentId}: Status: {Status}, InvoiceQRCode: {InvoiceQRCode}", paymentCheckoutDto.PaymentId, res.status, res.invoiceQRCode);
-        await UpdatePaymentForZatca(paymentCheckoutDto.PaymentId, res);
-        await UpdateInvoiceStatusAsync(paymentCheckoutRequest.InvoiceId,paymentCheckoutDto.PaymentNumber);
+        if (res != null)
+        {
+            _logger.LogInformation("ZATCA Integration Result for PaymentId {PaymentId}: Status: {Status}, InvoiceQRCode: {InvoiceQRCode}", paymentCheckoutDto.PaymentId, res.status, res.invoiceQRCode);
+            await UpdatePaymentForZatca(paymentCheckoutDto.PaymentId, res);
+            await UpdateInvoiceStatusAsync(paymentCheckoutRequest.InvoiceId,paymentCheckoutDto.PaymentNumber);
+        }
         return paymentCheckoutDto;
     }
     [RemoteService(IsEnabled = false)]
@@ -195,8 +198,11 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     {
         var paymentCheckoutDto = await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
         var res = await _zatcaTaxInvoiceAppService.SendToZACTA(paymentCheckoutDto.PaymentId);
-        _logger.LogInformation("ZATCA Integration Result for PaymentId {PaymentId}: Status: {Status}, InvoiceQRCode: {InvoiceQRCode}", paymentCheckoutDto.PaymentId, res.status, res.invoiceQRCode);
-        await UpdatePaymentForZatca(paymentCheckoutDto.PaymentId, res);
+        if (res != null)
+        {
+            _logger.LogInformation("ZATCA Integration Result for PaymentId {PaymentId}: Status: {Status}, InvoiceQRCode: {InvoiceQRCode}", paymentCheckoutDto.PaymentId, res.status, res.invoiceQRCode);
+            await UpdatePaymentForZatca(paymentCheckoutDto.PaymentId, res);
+        }
         return paymentCheckoutDto;
     }
 

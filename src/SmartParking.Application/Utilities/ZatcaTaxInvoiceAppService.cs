@@ -160,6 +160,8 @@ namespace SmartParking.Utilities
                 response.generalError += LocalizationHelper.GetLocalizedString("TheOragnizationNotFound");
                 return response;
             }
+            if (oragnization.StatusZatca != Status.Active)
+                return null;
 
             if ("" + oragnization.UserNameZatca == "" || "" + oragnization.PasswordZatca == "")
             {
