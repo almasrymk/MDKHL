@@ -70,8 +70,11 @@ namespace SmartParking.Mappers
             if (dto == null || entity == null) return;
 
             entity.CustomerId = dto.CustomerId;
-            entity.PackageId = dto.PackageId;
-            entity.OrganizationId = dto.OrganizationId;
+            entity.PackageId =
+                dto.PackageId.HasValue && dto.PackageId.Value > 0
+                    ? dto.PackageId
+                    : null; entity.OrganizationId = dto.OrganizationId;
+
             entity.CustomerPackageStatus = dto.CustomerPackageStatus;
             entity.TenantId = dto.TenantId;
             entity.EnPlateNumber = dto.EnPlateNumber;
