@@ -410,7 +410,8 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                     (transaction.Camera.DeviceId == watcherCode || transaction.LaneNO == watcherCode)
                     && keeper.OrganizationId == organizationId
                     && keeper.InvoicePrice > 0
-                    && keeper.InvoiceType == InvoiceType.UnPaid
+                    && keeper.InvoiceType == InvoiceType.UnPaid 
+                    && transaction.CameraType == WatcherType.Exit
                 orderby keeper.CreationTime descending
                 select keeper;
 

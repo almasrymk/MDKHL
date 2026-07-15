@@ -66,9 +66,9 @@ public class GarageTransactionController : ControllerBase
 
     [HttpGet("VehicleCheckout")]
     [Authorize]
-    public async Task<Result<CreateUpdateInvoiceDto>> VehicleCheckout(string input)
+    public async Task<Result<InvoiceDto>> VehicleCheckout(string input)
     {
-        return await _customerGarageTransactionsActionsAppService.VehiclePreCheckoutAsync(input);
+        return await _customerGarageTransactionsActionsAppService.VehicleCheckoutAsync(input);
     }
 
 

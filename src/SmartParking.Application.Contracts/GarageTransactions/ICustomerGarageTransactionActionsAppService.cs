@@ -12,5 +12,6 @@ namespace SmartParking.GarageTransactions;
 public interface ICustomerGarageTransactionActionsAppService : IApplicationService
 {
     Task<Result<CreateUpdateInvoiceDto>> VehiclePreCheckoutAsync(string input);
+    Task<Result<InvoiceDto>> VehicleCheckoutAsync(string input);
 
 }

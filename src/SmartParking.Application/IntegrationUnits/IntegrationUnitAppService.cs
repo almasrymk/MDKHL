@@ -102,12 +102,12 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
             if (vehicles.Count > organization.OrganizationSettings.RentalSlots)
             {
-                throw new Exception("Count of vehicles bigger than number of slots");
+                    return Result.Error("Count of vehicles bigger than number of slots");
             }
             var resultValidate = await ValidateCustomerUnitPackage(customer.Id, dto, false);
             if (!resultValidate.IsSuccess)
             {
-                throw new Exception(resultValidate.Errors.FirstOrDefault()!);
+                    return Result.Error(resultValidate.Errors.FirstOrDefault()!);
             }
             var customerUnitPackage = await CreateCustomerUnitPackage(customer,dto, customer.Id, unit);
             var customerPackages = await CreateCustomerPackage(customerUnitPackage, vehicles, customer.MobileNumber);
@@ -176,12 +176,12 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             var resultValidate = await ValidateCustomerUnitPackage(customer.Id, dto, true);
             if (!resultValidate.IsSuccess)
             {
-                throw new Exception(resultValidate.Errors.FirstOrDefault()!);
+                return Result.Error(resultValidate.Errors.FirstOrDefault()!);
             }
             var bookings = await _unitPackageIntegrationOrchestratorAppService.GetAllByBookingIdAsync(dto.Booking.BookingId);
             if (bookings.Count() == 0)
             {
-                throw new Exception($"there is no bookings with such id {dto.Booking.BookingId}");
+                return Result.Error($"there is no bookings with such id {dto.Booking.BookingId}");
             }
             var firstUVP = await _unitVehiclePackageAppService.GetAsync(bookings.FirstOrDefault()!.UnitVehiclePackageId);
             var customerUnitPackage = await UpdateCustomerUnitPackage(firstUVP.CustomerUnitPackageId, dto);
@@ -263,9 +263,9 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         var cars = await _vehicleAppService.GetVehiclesByCustomerIdAsync(customerId);
         foreach (var vehicle in dto)
         {
-            if (cars.Any(x => x.EnPlateNumber == vehicle.PlateNumber))
+            if (cars.Any(x => x.EnPlateNumber?.Trim().Equals(vehicle.PlateNumber?.Trim(), StringComparison.OrdinalIgnoreCase) == true))
             {
-                vehicles.Add(cars.Where(x => x.EnPlateNumber == vehicle.PlateNumber).FirstOrDefault());
+                vehicles.Add(cars.Where(x => x.EnPlateNumber?.Trim().Equals(vehicle.PlateNumber?.Trim(), StringComparison.OrdinalIgnoreCase) == true).FirstOrDefault());
                 continue;
             }
             CreateUpdateVehicleDto vehicleDto = await VehicleValidations(vehicle, customerId);
