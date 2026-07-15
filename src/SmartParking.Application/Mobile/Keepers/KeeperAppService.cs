@@ -411,7 +411,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
                     && keeper.OrganizationId == organizationId
                     && keeper.InvoicePrice > 0
                     && keeper.InvoiceType == InvoiceType.UnPaid 
-                    && transaction.CameraType == WatcherType.Exit
+                    && transaction.IsIn == false
                 orderby keeper.CreationTime descending
                 select keeper;
 

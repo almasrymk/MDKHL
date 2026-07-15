@@ -93,14 +93,13 @@ public partial class LastInvoiceAtCamera
 
         try
         {
+
             var result = await KeeperAppService
                 .GetLastInvoiceByOrganizationIdAndWatcherCodeAsync(_organization.Id, SelectedDeviceId);
 
             Invoice = result?.Value ?? new InvoiceDto();
             InvoicePrice = Invoice.InvoicePrice;
 
-            if (InvoicePrice == 0)
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.WARNING]} {L["NoAssign"]}", MudBlazor.Severity.Warning);
 
             NoInvoice = InvoicePrice == 0;
         }
