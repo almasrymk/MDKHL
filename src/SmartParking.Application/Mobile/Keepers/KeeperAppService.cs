@@ -399,21 +399,21 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            var invoice = await _invoiceRepository.GetQueryableAsync();
+            var _invoicerepository = await _invoiceRepository.GetQueryableAsync();
             var garageTransaction = await _garageTransactionRepository.GetQueryableAsync();
 
             var result =
-                from keeper in invoice
+                from invoice in _invoicerepository
                 join transaction in garageTransaction
-                    on keeper.GarageTransactionExitId equals transaction.Id
+                    on invoice.GarageTransactionExitId equals transaction.Id
                 where
                     (transaction.Camera.DeviceId == watcherCode || transaction.LaneNO == watcherCode)
-                    && keeper.OrganizationId == organizationId
-                    && keeper.InvoicePrice > 0
-                    && keeper.InvoiceType == InvoiceType.UnPaid 
-                    && transaction.IsIn == false
-                orderby keeper.CreationTime descending
-                select keeper;
+                    && invoice.OrganizationId == organizationId
+                    && invoice.InvoicePrice > 0
+                    && invoice.InvoiceType == InvoiceType.UnPaid 
+                    &&(transaction.CameraId!=null || transaction.DispenserId!=null)
+                orderby invoice.CreationTime descending
+                select invoice;
 
             var lastInvoice = await AsyncExecuter.FirstOrDefaultAsync(result);
 
