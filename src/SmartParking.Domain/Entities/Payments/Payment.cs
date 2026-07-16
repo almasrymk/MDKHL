@@ -1,4 +1,4 @@
-﻿using SmartParking.Entities.Customers;
+using SmartParking.Entities.Customers;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
@@ -39,4 +39,5 @@ public class Payment : FullAuditedEntity<Guid> , IMultiTenant
     public string ErrorMessagesZatca { get; set; }
     public int? CustomerPackageId { get; set; }
     public virtual CustomerPackage? CustomerPackage { get; set; }
+    public virtual PosTerminalTransactionDetail? PosTerminalDetail { get; set; }
 }
