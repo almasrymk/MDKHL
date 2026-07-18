@@ -9,6 +9,7 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
+using SmartParking.Enums.PosTerminal;
 using SmartParking.Invoices;
 using SmartParking.Organizations;
 using SmartParking.Packages;
@@ -405,6 +406,60 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             payment.QrCodeInvoice = qrCode.QRCode;
         }
         await CurrentUnitOfWork!.SaveChangesAsync();
+    }
+
+    [RemoteService(IsEnabled = false)]
+    public async Task<PaymentCheckoutDto> CreatePendingPosPaymentAsync(PaymentCheckoutRequestDto request, string? terminalId = null, System.Threading.CancellationToken cancellationToken = default)
+    {
+        request.PaymentMethod = PaymentMethod.POS;
+        return await SavePaymentRequest(request, PaymentStatus.Pending, request.CustomerId, checkoutid: null, entityId: terminalId);
+    }
+
+    [RemoteService(IsEnabled = false)]
+    public async Task<PaymentDto> CompletePosTerminalPaymentAsync(CompletePosTerminalPaymentDto input, System.Threading.CancellationToken cancellationToken = default)
+    {
+        var payment = await _repository.GetAsync(input.PaymentId, cancellationToken: cancellationToken);
+
+        if (payment.PaymentStatus == PaymentStatus.Success || payment.PaymentStatus == PaymentStatus.Cancelled)
+        {
+            _logger.LogInformation("Payment {PaymentId} already processed as {Status}. Short-circuiting.", payment.Id, payment.PaymentStatus);
+            return ObjectMapper.Map<Payment, PaymentDto>(payment);
+        }
+
+        var outcome = SamaResponseCodeMapping.Evaluate(input.SamaCode);
+        
+        var detail = PosTerminalTransactionDetail.Create(
+            payment.Id,
+            input.SamaCode,
+            outcome,
+            input.RawJsonResult,
+            input.TerminalId,
+            input.TransactionStan,
+            input.Rrn,
+            input.AuthCode,
+            input.MaskedPan,
+            input.CardScheme,
+            payment.TenantId
+        );
+
+        var detailRepo = LazyServiceProvider.LazyGetRequiredService<Volo.Abp.Domain.Repositories.IRepository<PosTerminalTransactionDetail, Guid>>();
+        await detailRepo.InsertAsync(detail, autoSave: false, cancellationToken: cancellationToken);
+
+        if (outcome == SamaResponseOutcome.Approved)
+        {
+            payment.PaymentStatus = PaymentStatus.Success;
+            await CallingZatcaIntegration(payment);
+            await UpdateInvoiceStatusAsync(payment.InvoiceId, payment.PaymentNumber);
+        }
+        else
+        {
+            payment.PaymentStatus = PaymentStatus.Cancelled;
+        }
+
+        await _repository.UpdateAsync(payment, autoSave: false, cancellationToken: cancellationToken);
+        await CurrentUnitOfWork!.SaveChangesAsync(cancellationToken);
+
+        return ObjectMapper.Map<Payment, PaymentDto>(payment);
     }
     #endregion
     #region private methods

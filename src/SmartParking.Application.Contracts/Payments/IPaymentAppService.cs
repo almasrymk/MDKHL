@@ -34,5 +34,6 @@ public interface IPaymentAppService : ICrudAppService<PaymentDto, Guid, PagedAnd
         string entityId = null);
     Task<Guid> UpdatePaymentStausByCheckOutIdAsync(string checkoutid);
     Task<Guid> UpdatePaymentStausByPaymentNumberAsync(string paymentNumber, string checkoutid, PaymentMethod paymentMethod);
-
+    Task<PaymentCheckoutDto> CreatePendingPosPaymentAsync(PaymentCheckoutRequestDto request, string? terminalId = null, System.Threading.CancellationToken cancellationToken = default);
+    Task<PaymentDto> CompletePosTerminalPaymentAsync(CompletePosTerminalPaymentDto input, System.Threading.CancellationToken cancellationToken = default);
 }

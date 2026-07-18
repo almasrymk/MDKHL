@@ -37,13 +37,6 @@ public class GeideaEventMapperTests
 
     [Theory]
     [InlineData("SWIPE_OR_INSERT", GeideaTerminalAction.SwipeOrInsert)]
-    {
-        // Act & Assert
-        // We'll test standard actions, Error Codes 1 and Error Codes 2
-    }
-*/
-    [Theory]
-    [InlineData("SWIPE_OR_INSERT", GeideaTerminalAction.SwipeOrInsert)]
     [InlineData("CARD_INSERTED", GeideaTerminalAction.CardInserted)]
     [InlineData("CARD_REMOVED", GeideaTerminalAction.CardRemoved)]
     [InlineData("PIN_ENTRY", GeideaTerminalAction.PinEntry)]
