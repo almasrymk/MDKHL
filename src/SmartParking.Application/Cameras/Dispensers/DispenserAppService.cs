@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartParking.Cameras.Watchers.Dispensers;
 using SmartParking.Entities.Cameras.Watchers;
+using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Organizations;
 using SmartParking.Services.Dispenser;
 using System;
@@ -54,6 +55,7 @@ public class DispenserAppService : CrudAppService<Dispenser, DispenserDto, int, 
         var garageRepo = await _garageRepository.GetQueryableAsync();
         var dispenserQuery = from dispenser in queryable
                              join _org in orgRepo on dispenser.OrganizationId equals _org.Id
+                             where tenantId == null || dispenser.TenantId == tenantId
                              join _garage in garageRepo on dispenser.GarageId equals _garage.Id
                              select new DispenserDto
                              {
@@ -69,7 +71,6 @@ public class DispenserAppService : CrudAppService<Dispenser, DispenserDto, int, 
                                  GarageNameEn = _garage.NameEn,
                              };
 
-        dispenserQuery = ApplyTenant(tenantId, dispenserQuery);
         dispenserQuery = ApplySearch(input, dispenserQuery);
         dispenserQuery = ApplySort(input, dispenserQuery);
         var totalCount = await AsyncExecuter.CountAsync(queryable);

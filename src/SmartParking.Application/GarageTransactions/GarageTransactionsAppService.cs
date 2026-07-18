@@ -81,7 +81,6 @@ public class GarageTransactionsAppService :
                                 IsMapped = garageTransaction.IsMapped
                             };
 
-            queryable = ApplyFilterTenant(tenantId, queryable);
             queryable = ApplySearch(input, queryable);
             queryable = ApplySort(input, queryable);
             var totalCount = await AsyncExecuter.CountAsync(queryable);
@@ -445,12 +444,6 @@ public class GarageTransactionsAppService :
  
     #endregion
     #region Private Methods
-    private static IQueryable<GarageTransactionDto> ApplyFilterTenant(Guid? tenantId, IQueryable<GarageTransactionDto> queryable)
-    {
-        if (tenantId.HasValue)
-            queryable = queryable.Where(t => t.TenantId == tenantId);
-        return queryable;
-    }
     private IQueryable<GarageTransactionRawDto> ApplySearch(
         PagedAndSortedAndSearchResultRequestDto input,
         IQueryable<GarageTransactionRawDto> queryable)

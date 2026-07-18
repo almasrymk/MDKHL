@@ -87,12 +87,15 @@ public partial class UnitVehiclePackage
 
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-        var input = new PagedAndSortedAndSearchResultRequestDto
+        var input = new PagedAndSortedAndFilteredResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = pageInfo.SearchTerm
+            SearchingTerm = pageInfo.SearchTerm,
+            filters = pageInfo.Filters
+            
+
         };
 
         var unitsDto = await UnitVehiclePackageAppService.GetListAsync(input);
@@ -109,41 +112,26 @@ public partial class UnitVehiclePackage
         };
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = L["FullName"], Name = "FullName", IsFilterable = true, PropertyName = "FullName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        if (CultureInfo.CurrentCulture.Name == "en")
-            tableData.Columns.Add(new ColumnDef() { DisplayName = L["EnglishName"], Name = "EnglishName", IsFilterable = true, PropertyName = "EnglishName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        else
-            tableData.Columns.Add(new ColumnDef() { DisplayName = L["ArabicName"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["CustomerName"], Name = "FullName", IsFilterable = true, PropertyName = CultureInfo.CurrentCulture.Name == "en" ? "Customer.IdentityUser.Name" : "Customer.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["PackageName"], Name = "ArabicName", IsFilterable = true, PropertyName = CultureInfo.CurrentCulture.Name == "en"? "CustomerUnitPackage.EnglishName" : "CustomerUnitPackage.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["UnitCode"], Name = "UnitCode", IsFilterable = true, PropertyName = "UnitCode", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
             tableData.Columns.Add(new ColumnDef() { DisplayName = L["EnPlateNumber"], Name = "EnPlateNumber", IsFilterable = true, PropertyName = "EnPlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
         else
             tableData.Columns.Add(new ColumnDef() { DisplayName = L["ArPlateNumber"], Name = "ArPlateNumber", IsFilterable = true, PropertyName = "ArPlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["ActivationDate"], Name = "ActivationDate", IsFilterable = true, PropertyName = "ActivationDate", IsSortable = true, TypeFilter = TypeFilter.Date });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = L["DeactivationDate"], Name = "DeactivationDate", IsFilterable = true, PropertyName = "DeactivationDate", IsSortable = true, TypeFilter = TypeFilter.Date });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["DeactivationDate"], Name = "DeactivationDate", IsFilterable = true, PropertyName = "DectivationDate", IsSortable = true, TypeFilter = TypeFilter.Date });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["CustomerUnitPackageType"], Name = "CustomerUnitPackageType", IsFilterable = true, PropertyName = "CustomerUnitPackageType", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 
         foreach (var item in packages.Items)
         {
-            var customerUnitPackage = await CustomerUnitPackageAppService.GetAsync(item.CustomerUnitPackageId);
-            var englishName = customerUnitPackage.EnglishName;
-            var arabicName = customerUnitPackage.ArabicName;
-            var customer = await CustomerAppService.GetAsync(item.CustomerId);
-            var customerName = customer.FullName;
+
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["UnitCode"], item.UnitCode ?? ""));
-            if (CultureInfo.CurrentCulture.Name == "en")
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["FullName"], customerName ?? ""));
-            else
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["FullName"], customer.ArabicName ?? ""));
-
-            if (CultureInfo.CurrentCulture.Name == "en")
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["EnglishName"], englishName ?? ""));
-            else
-                rowDef.Cells.Add(new KeyValuePair<string, string>(L["ArabicName"], arabicName ?? ""));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["CustomerName"], CultureInfo.CurrentCulture.Name == "en"? item.CustomerFullName: item.CustomerArabicName ?? ""));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["PackageName"], CultureInfo.CurrentCulture.Name == "en"? item.PackageEnglishName: item.PackageArabicName ?? ""));
             if (CultureInfo.CurrentCulture.Name == "en")
                 rowDef.Cells.Add(new KeyValuePair<string, string>(L["EnPlateNumber"], item.EnPlateNumber ?? ""));
             else

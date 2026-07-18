@@ -169,7 +169,7 @@ public class CustomerUnitPackageAppService :
             query = query.Where(x => x.Status != Status.Deleted);
         }
         if (onlyActive) 
-            query = query.Where(x => x.ActivationDate <= DateTime.UtcNow && x.DectivationDate >= DateTime.UtcNow && x.Status == Status.Active);
+            query = query.Where(x => x.ActivationDate <= DateTime.Now && x.DectivationDate >= DateTime.Now && x.Status == Status.Active);
         var totalCount = await AsyncExecuter.CountAsync(query);
         query = query
             .Skip(input.SkipCount)

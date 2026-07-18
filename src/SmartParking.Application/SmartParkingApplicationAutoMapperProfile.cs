@@ -581,7 +581,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<UnitPackage, UnitPackageDto>()
             .ForMember(d => d.Package, o => o.MapFrom(s => s.Package));
 
-        CreateMap<CustomerUnitPackage, CustomerUnitPackageDto>();
+        CreateMap<CustomerUnitPackage, CustomerUnitPackageDto>()
+                    .ForMember(d => d.CustomerArabicName, o => o.MapFrom(s => s.Customer.ArabicName))
+                    .ForMember(d => d.CustomerFullName, o => o.MapFrom(s => s.Customer.IdentityUser.Name))
+;
 
         CreateMap<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>();
             
@@ -598,7 +601,11 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<UnitDto, CreateUpdateUnitDto>();
 
         CreateMap<CreateUpdateUnitVehiclePackageDto, UnitVehiclePackge>();
-        CreateMap<UnitVehiclePackge, UnitVehiclePackageDto>();
+        CreateMap<UnitVehiclePackge, UnitVehiclePackageDto>()
+            .ForPath(d => d.CustomerFullName, o => o.MapFrom(s => s.Customer.IdentityUser.Name))
+            .ForPath(d => d.CustomerArabicName, o => o.MapFrom(s => s.Customer.ArabicName))
+            .ForPath(d => d.PackageArabicName, o => o.MapFrom(s => s.CustomerUnitPackage.ArabicName))
+            .ForPath(d => d.PackageEnglishName, o => o.MapFrom(s => s.CustomerUnitPackage.EnglishName));
 
         CreateMap<CreateUpdatePaymentDetailsDto, PaymentDetails>();
         CreateMap<PaymentDetails, PaymentDetailsDto>();

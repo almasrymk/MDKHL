@@ -8,6 +8,11 @@ public class UnitVehiclePackageDto : FullAuditedEntityDto<Guid>
 {
     public Guid CustomerId { get; set; }
     public string UnitCode { get; set; }
+    public string CustomerFullName { get; set; }
+    public string CustomerArabicName { get; set; }
+    public string PackageArabicName { get; set; }
+    public string PackageEnglishName { get; set; }
+
     public DateTime ActivationDate { get; set; }
     public DateTime DectivationDate { get; set; }
     public TimeOnly PublishFrom { get; set; }

@@ -34,10 +34,11 @@ public static class CustomerUnitPackageMapper
             CustomerCategory = entity.CustomerCategory,
             UnitCode = entity.UnitCode,
             UnitPackageType = entity.UnitPackageType,
+            CustomerArabicName=entity.Customer?.ArabicName??"",
+            CustomerFullName=entity.Customer?.IdentityUser?.Name??"",
 
-            // Note: If your DTO requires CustomerPackageStatus or TenantId, 
-            // they must be set from the context layer (e.g., current session or parent relations)
-            // since they don't explicitly live on the CustomerUnitPackage entity schema provided.
+
+
         };
     }
 

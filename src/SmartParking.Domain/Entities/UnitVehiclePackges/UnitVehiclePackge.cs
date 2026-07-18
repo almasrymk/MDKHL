@@ -1,4 +1,6 @@
-﻿using SmartParking.Enums;
+﻿using SmartParking.Entities.Customers;
+using SmartParking.Entities.CustomerUnitPackages;
+using SmartParking.Enums;
 using System;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
@@ -8,6 +10,7 @@ namespace SmartParking.Entities.UnitVehiclePackges;
 public class UnitVehiclePackge : FullAuditedEntity<Guid>, IMultiTenant
 {
     public Guid CustomerId { get; set; }
+    public virtual Customer Customer { get; set; }
     public string UnitCode { get; set; }
     public DateTime ActivationDate { get; set; }
     public DateTime DectivationDate { get; set; }
@@ -16,6 +19,7 @@ public class UnitVehiclePackge : FullAuditedEntity<Guid>, IMultiTenant
     public string EnPlateNumber { get; set; }
     public string ArPlateNumber { get; set; }
     public int CustomerUnitPackageId { get; set; }
+    public virtual CustomerUnitPackage CustomerUnitPackage { get; set; }
     public CustomerUnitPackageType CustomerUnitPackageType { get; set; }
     public string PackageCode { get; set; }
     public int CustomerPackgeId { get; set; }

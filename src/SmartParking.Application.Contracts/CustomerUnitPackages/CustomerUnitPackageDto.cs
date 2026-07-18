@@ -19,6 +19,8 @@ public class CustomerUnitPackageDto
     public DateTime ActivationDate { get; set; }
     public DateTime DectivationDate { get; set; }
     public string ArabicName { get; set; }
+    public string CustomerFullName { get; set; }
+    public string CustomerArabicName { get; set; }
     public string EnglishName { get; set; }
     public int DurationOfPackage { get; set; }
     public int OrganizationId { get; set; }
