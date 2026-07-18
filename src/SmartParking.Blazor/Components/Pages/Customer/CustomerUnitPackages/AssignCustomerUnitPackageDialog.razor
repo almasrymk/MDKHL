@@ -148,6 +148,7 @@
                                        Label="@L["EnglishName"]"
                                        Placeholder=@L["Choose"]
                                        HelperText=@L["Helper Text"]
+                                       Required
                                        Clearable="_clearable">
                                 <MudSelectItem Value="0" Disabled="true">@L["Choose"]</MudSelectItem>
 
@@ -179,6 +180,7 @@
                                 Label="@L["PackageName"]" 
                                 Placeholder="@L["CustomPackage"]" 
                                 Required
+                                RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                                 @bind-Value="_customerPackageDto.EnglishName"> @L["CustomPackage"] </MudTextField>
                         </MudItem>
 
@@ -187,6 +189,7 @@
                                     Label="@L["ArabicName"]" 
                                     Placeholder="@L["CustomPackage"]" 
                                     Required
+                                    RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"
                                     @bind-Value="_customerPackageDto.ArabicName"> 
                                     @L["CustomPackage"] </MudTextField>
                         </MudItem>

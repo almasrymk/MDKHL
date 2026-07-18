@@ -3,12 +3,16 @@ using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.Shared.Utilities;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Blazor.Dtos;
 using SmartParking.Currency;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Enums;
 using SmartParking.Localization;
+using SmartParking.Validations;
 using System;
 using System.Globalization;
 using System.Security.Authentication;
@@ -16,9 +20,6 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using static Microsoft.AspNetCore.Razor.Language.TagHelperMetadata;
 using static QRCoder.PayloadGenerator;
-
-using SmartParking.Blazor.Components.Pages.Customer.CustomerUnitPackages;
-using SmartParking.CustomerPackages.Dtos;
 
 namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
 {
@@ -178,7 +179,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], publishedText));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], $"{RLM}{item.ArPlateNumber} , {LRM}{item.EnPlateNumber}"));
-                CustomerPackageStatus displayStatus = BlazorPackageValidations.GetDisplayStatus(item);
+                CustomerPackageStatus displayStatus = BlazorPackageValidations.GetDisplayStatus(new PackageDisplayStatusDto { ActivationDate = item.ActivationDateOfPackage, ExpiryDate = item.DectivationDateOfPackage, CustomerPackageStatus = item.CustomerPackageStatus, IsPublished = PackageValidations.CheckPackageTimeValiditity(item.PublishFromOfPackage, item.PublishToOfPackage), PublishFrom = item.PublishFromOfPackage, PublishTo = item.PublishToOfPackage });
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{displayStatus.ToString()}"]));
 

@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
+using SmartParking.Blazor.Components.Shared.Utilities;
 using SmartParking.Blazor.Components.SPComponents;
+using SmartParking.Blazor.Dtos;
 using SmartParking.Currency;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerUnitPackages;
@@ -9,6 +11,7 @@ using SmartParking.Cutomers;
 using SmartParking.Enums;
 using SmartParking.Organizations;
 using SmartParking.UnitPackages;
+using SmartParking.Validations;
 using System.Globalization;
 using Volo.Abp.Application.Dtos;
 
@@ -108,24 +111,24 @@ public partial class CustomerUnitPackageDialog
                 L["Price"],
                 $"{item.Price} {IconHtml}"));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["PackageDuration"], item.DurationOfPackage.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["ActivationDate"], item.ActivationDate.ToString()));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["ExpiryDate"], item.DectivationDate.ToString()));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+                L["ActivationDate"],
+                item.ActivationDate.ToString("yyyy-MM-dd")));
+
+            rowDef.Cells.Add(new KeyValuePair<string, string>(
+                L["ExpiryDate"],
+                item.DectivationDate.ToString("yyyy-MM-dd")));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["NumberOfVehicles"], item.NumberOfVehicles.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["NumberOfSlots"], item.NumberOfSlots.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Published"], item.PublishTo==item.PublishFrom ? 24 + L["Hour"] : $" {item.PublishFrom} " + " - " + $" {item.PublishTo}"));
-            var nowLocal = DateTime.Now;
-            var activation = item.ActivationDate;   // already local, no conversion needed
-            var deactivation = item.DectivationDate;
+            CustomerPackageStatus displayStatus = BlazorPackageValidations.GetDisplayStatus(new PackageDisplayStatusDto { ActivationDate= item.ActivationDate,ExpiryDate=item.DectivationDate,CustomerPackageStatus=item.CustomerPackageStatus,IsPublished= PackageValidations.CheckPackageTimeValiditity(item.PublishFrom,item.PublishTo),PublishFrom=item.PublishFrom,PublishTo=item.PublishTo });
 
-            rowDef.Cells.Add(new KeyValuePair<string, string>(
-                L["Status"],
-                item.Status == Status.Deleted
-                    ? L["Deleted"]
-                    : (activation.Date <= nowLocal.Date && deactivation.Date >= nowLocal.Date)
-                        ? L[item.CustomerPackageStatus.ToString()]
-                        : L["Expired"]
-            ));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], L[$"{displayStatus.ToString()}"]));
+
+            if (displayStatus == CustomerPackageStatus.Deleted || displayStatus == CustomerPackageStatus.Expired)
+                continue;
             tableData.Rows.Add(rowDef);
+            
         }
         itemData = tableData;
         await Task.Yield();

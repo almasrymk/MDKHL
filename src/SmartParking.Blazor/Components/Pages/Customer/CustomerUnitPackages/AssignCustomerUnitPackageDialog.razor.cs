@@ -147,17 +147,17 @@ public partial class AssignCustomerUnitPackageDialog
         if (SelectedPackageType == CustomerUnitPackageType.Renter)
         {
             if (!IsCustom)
-            {
-                var package = CustomerPackage;
+             {
+             var package = CustomerPackage;
 
-                CustomerPackage.NumberOfSlots = package.NumberOfSlots;
-                CustomerPackage.NumberOfVehicles = package.NumberOfVehicles;
-                CustomerPackage.Package = package.Package;
+             CustomerPackage.NumberOfSlots = package.NumberOfSlots;
+             CustomerPackage.NumberOfVehicles = package.NumberOfVehicles;
+             CustomerPackage.Package = package.Package;
 
-                CustomerPackage.Package.TenantId = CurrentTenant.Id;
-                var result = await HandleRenterPackage(CustomerPackage, unitCode);
-                if (result)
-                    return;
+             CustomerPackage.Package.TenantId = CurrentTenant.Id;
+             var result = await HandleRenterPackage(CustomerPackage, unitCode);
+             if (result)
+                 return;
             }
             
         }
@@ -180,31 +180,8 @@ public partial class AssignCustomerUnitPackageDialog
             _createUpdateUnitPackageDto.Package.ArabicName = _customerPackageDto.ArabicName;
             _createUpdateUnitPackageDto.Package.Description = "Description";
             _createUpdateUnitPackageDto.Package.TenantId = CurrentTenant.Id;
-            var pkg = new UnitPackageDto
-            {
-                NumberOfSlots = _createUpdateUnitPackageDto.NumberOfSlots,
-                NumberOfVehicles = _createUpdateUnitPackageDto.NumberOfVehicles,
-                Package = new PackageDto
-                {
-                    TenantId = _createUpdateUnitPackageDto.Package.TenantId,
-                    DurationOfPackage = _createUpdateUnitPackageDto.Package.DurationOfPackage,
-                    EnglishName = _createUpdateUnitPackageDto.Package.EnglishName,
-                    ActivationDate = _createUpdateUnitPackageDto.Package.ActivationDate,
-                    ArabicName = _createUpdateUnitPackageDto.Package.ArabicName,
-                    DectivationDate = _createUpdateUnitPackageDto.Package.DeactivationDate,
-                    Description = _createUpdateUnitPackageDto.Package.Description,
-                    CustomerCategory = CustomerCategoryStatus.Customer.ToString(),
-                    OrganizationArabicName = OrganizationDto.ArabicName,
-                    OrganizationEnglishName = OrganizationDto.EnglishName,
-                    OrganizationId = OrganizationDto.Id,
-                    PackageCategoryType = PackageCategoryTypes.CustomPackage,
-                    PackageStatus = _createUpdateUnitPackageDto.Package.PackageStatus,
-                    Price = _createUpdateUnitPackageDto.Package.Price,
-                    Published = _createUpdateUnitPackageDto.Package.Published,
+            UnitPackageDto pkg = CreateUnitPackageDto();
 
-                }
-            };
-            
             if (SelectedPackageType == CustomerUnitPackageType.Renter)
             {
                 var result = await HandleRenterPackage(pkg, unitCode);
@@ -225,6 +202,34 @@ public partial class AssignCustomerUnitPackageDialog
         preAssignState.CustomerUnitPackageType = SelectedPackageType.Value;
         Navigation.NavigateTo("/prepaymentpackageunit");
 
+    }
+
+    private UnitPackageDto CreateUnitPackageDto()
+    {
+        return new UnitPackageDto
+        {
+            NumberOfSlots = _createUpdateUnitPackageDto.NumberOfSlots,
+            NumberOfVehicles = _createUpdateUnitPackageDto.NumberOfVehicles,
+            Package = new PackageDto
+            {
+                TenantId = _createUpdateUnitPackageDto.Package.TenantId,
+                DurationOfPackage = _createUpdateUnitPackageDto.Package.DurationOfPackage,
+                EnglishName = _createUpdateUnitPackageDto.Package.EnglishName,
+                ActivationDate = _createUpdateUnitPackageDto.Package.ActivationDate,
+                ArabicName = _createUpdateUnitPackageDto.Package.ArabicName,
+                DectivationDate = _createUpdateUnitPackageDto.Package.DeactivationDate,
+                Description = _createUpdateUnitPackageDto.Package.Description,
+                CustomerCategory = CustomerCategoryStatus.Customer.ToString(),
+                OrganizationArabicName = OrganizationDto.ArabicName,
+                OrganizationEnglishName = OrganizationDto.EnglishName,
+                OrganizationId = OrganizationDto.Id,
+                PackageCategoryType = PackageCategoryTypes.CustomPackage,
+                PackageStatus = _createUpdateUnitPackageDto.Package.PackageStatus,
+                Price = _createUpdateUnitPackageDto.Package.Price,
+                Published = _createUpdateUnitPackageDto.Package.Published,
+
+            }
+        };
     }
 
     /// <summary>
@@ -270,6 +275,11 @@ public partial class AssignCustomerUnitPackageDialog
     }
     private async Task<bool> HandleRenterPackage(UnitPackageDto dto, string unitCode)
     {
+        if(selectedUnit.RenterSlots < dto.NumberOfSlots)
+        {
+            SnackBar.ShowSnackbar(Snackbar, L["RenterSlotsOverUnitValidation"], Severity.Error);
+            return true;
+        }
         if (CustomerPackage is null)
         {
             Snackbar.Add(@L["PackageSelectValidation"], Severity.Error);
