@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.UnitVehiclePackages;
 
@@ -99,11 +100,15 @@ public class UnitVehiclePackageAppService : CrudAppService<
 
     public async Task DeleteByCustomerUnitPackage(int id)
     {
-        var result = await _repository.GetListAsync(x => x.CustomerUnitPackageId == id);
-        if (result is null)
-            return;
-        foreach (var item in result)
-            await base.DeleteAsync(item.Id);
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
+            var result = await _repository.GetListAsync(x => x.CustomerUnitPackageId == id);
+            if (result is null)
+                return;
+            foreach (var item in result)
+                await base.DeleteAsync(item.Id);
+        }
     }
     [HttpGet("api/app/unit-vehicle-package/{id}/single-by-customer")]
     public async Task<List<UnitVehiclePackageDto>> GetByCustomerUnitPackageId(int id)

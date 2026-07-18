@@ -112,8 +112,8 @@ public partial class UnitVehiclePackage
         };
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = L["CustomerName"], Name = "FullName", IsFilterable = true, PropertyName = CultureInfo.CurrentCulture.Name == "en" ? "Customer.IdentityUser.Name" : "Customer.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = L["PackageName"], Name = "ArabicName", IsFilterable = true, PropertyName = CultureInfo.CurrentCulture.Name == "en"? "CustomerUnitPackage.EnglishName" : "CustomerUnitPackage.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["CustomerName"], Name = "FullName", IsFilterable = true, PropertyName = "Customer.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["PackageName"], Name = "ArabicName", IsFilterable = true, PropertyName = "CustomerUnitPackage.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["UnitCode"], Name = "UnitCode", IsFilterable = true, PropertyName = "UnitCode", IsSortable = true, TypeFilter = TypeFilter.Text });
         if (CultureInfo.CurrentCulture.Name == "en")
             tableData.Columns.Add(new ColumnDef() { DisplayName = L["EnPlateNumber"], Name = "EnPlateNumber", IsFilterable = true, PropertyName = "EnPlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
@@ -130,8 +130,8 @@ public partial class UnitVehiclePackage
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["UnitCode"], item.UnitCode ?? ""));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["CustomerName"], CultureInfo.CurrentCulture.Name == "en"? item.CustomerFullName: item.CustomerArabicName ?? ""));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["PackageName"], CultureInfo.CurrentCulture.Name == "en"? item.PackageEnglishName: item.PackageArabicName ?? ""));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["CustomerName"],  item.CustomerArabicName ));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["PackageName"],  item.PackageArabicName));
             if (CultureInfo.CurrentCulture.Name == "en")
                 rowDef.Cells.Add(new KeyValuePair<string, string>(L["EnPlateNumber"], item.EnPlateNumber ?? ""));
             else

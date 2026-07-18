@@ -583,7 +583,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<CustomerUnitPackage, CustomerUnitPackageDto>()
                     .ForMember(d => d.CustomerArabicName, o => o.MapFrom(s => s.Customer.ArabicName))
-                    .ForMember(d => d.CustomerFullName, o => o.MapFrom(s => s.Customer.IdentityUser.Name))
+                    .ForMember(d => d.CustomerFullName, o => o.MapFrom(s => s.Customer.IdentityUser.Name)).ReverseMap();
 ;
 
         CreateMap<CreateUpdateCustomerUnitPackageDto, CustomerUnitPackage>();
@@ -605,7 +605,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForPath(d => d.CustomerFullName, o => o.MapFrom(s => s.Customer.IdentityUser.Name))
             .ForPath(d => d.CustomerArabicName, o => o.MapFrom(s => s.Customer.ArabicName))
             .ForPath(d => d.PackageArabicName, o => o.MapFrom(s => s.CustomerUnitPackage.ArabicName))
-            .ForPath(d => d.PackageEnglishName, o => o.MapFrom(s => s.CustomerUnitPackage.EnglishName));
+            .ForPath(d => d.PackageEnglishName, o => o.MapFrom(s => s.CustomerUnitPackage.EnglishName)).ReverseMap();
+        
 
         CreateMap<CreateUpdatePaymentDetailsDto, PaymentDetails>();
         CreateMap<PaymentDetails, PaymentDetailsDto>();

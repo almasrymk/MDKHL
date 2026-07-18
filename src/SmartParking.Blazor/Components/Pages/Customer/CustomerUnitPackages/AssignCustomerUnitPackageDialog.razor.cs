@@ -143,6 +143,14 @@ public partial class AssignCustomerUnitPackageDialog
             Snackbar.Add(@L["CodeSelectValidation"], Severity.Error);
             return;
         }
+        await form.Validate();
+
+        if (!form.IsValid)
+        {
+            Snackbar.Add(L["PleaseFillRequiredFields"], Severity.Warning);
+            return;
+        }
+
 
         if (SelectedPackageType == CustomerUnitPackageType.Renter)
         {

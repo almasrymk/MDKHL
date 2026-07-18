@@ -72,13 +72,13 @@ public partial class CustomerUnitPackagePage
         };
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = L["CustomerName"], Name = "CustomerName", IsFilterable = true, PropertyName = CultureInfo.CurrentCulture.Name == "en" ? "Customer.IdentityUser.Name" : "Customer.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = L["PackageName"], Name = "PackageName", IsFilterable = true, PropertyName = CultureInfo.CurrentCulture.Name == "en" ? "EnglishName" : "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["CustomerName"], Name = "CustomerName", IsFilterable = true, PropertyName =  "Customer.ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["PackageName"], Name = "PackageName", IsFilterable = true, PropertyName =  "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
 
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["UnitCode"], Name = "UnitCode", IsFilterable = true, PropertyName = "UnitCode", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["ActivationDate"], Name = "ActivationDate", IsFilterable = true, PropertyName = "ActivationDate", IsSortable = true, TypeFilter = TypeFilter.Date });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["DeactivationDate"], Name = "DeactivationDate", IsFilterable = true, PropertyName = "DectivationDate", IsSortable = true, TypeFilter = TypeFilter.Date });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = L["CustomerUnitPackageType"], Name = "CustomerUnitPackageType", IsFilterable = true, PropertyName = "CustomerUnitPackageType", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["CustomerUnitPackageType"], Name = "CustomerUnitPackageType", IsFilterable = true, PropertyName = "UnitPackageType", IsSortable = true, TypeFilter = TypeFilter.Text });
 
 
         foreach (var item in packages.Items)
@@ -87,8 +87,8 @@ public partial class CustomerUnitPackagePage
             var rowDef = new RowDef();
             rowDef.Cells.Add(new KeyValuePair<string, string>(nameof(item.Id), item.Id.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["UnitCode"], item.UnitCode ?? ""));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["CustomerName"], CultureInfo.CurrentCulture.Name == "en" ? item.CustomerFullName : item.CustomerArabicName ?? ""));
-            rowDef.Cells.Add(new KeyValuePair<string, string>(L["PackageName"], CultureInfo.CurrentCulture.Name == "en" ? item.EnglishName : item.ArabicName ?? ""));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["CustomerName"],  item.CustomerArabicName));
+            rowDef.Cells.Add(new KeyValuePair<string, string>(L["PackageName"], item.ArabicName));
 
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["ActivationDate"], item.ActivationDate.ToString("yyyy-MM-dd")));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["DeactivationDate"], item.DectivationDate.ToString("yyyy-MM-dd")));
