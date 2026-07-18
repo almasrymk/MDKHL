@@ -10,30 +10,14 @@
     <MudCardContent>
         <MudGrid Spacing="2">
 
+         
             <MudItem xs="12" sm="6">
-                <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">@L["InvoiceNo"]</MudText>
-                <MudText Typo="Typo.body1" Class="font-weight-bold">@InvoiceNo</MudText>
+                <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">@L["TicketId"]</MudText>
+                <MudText Typo="Typo.body1">@TicketId</MudText>
             </MudItem>
             <MudItem xs="12" sm="6">
-                <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">@L["InvoiceDate"]</MudText>
-                <MudText Typo="Typo.body1">@InvoiceDate.ToString("MMMM dd, yyyy")</MudText>
-            </MudItem>
-            <MudItem xs="12" sm="6">
-                <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">@L["Amount"]</MudText>
-                <MudText Typo="Typo.body1" Class="font-weight-bold">@AmountPaid SAR</MudText>
-            </MudItem>
-            <MudItem xs="12" sm="6">
-                <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">@L["VAT"] (@VATRate%)</MudText>
-                <MudText Typo="Typo.body1">@VATAmount SAR</MudText>
-            </MudItem>
-
-            <MudItem xs="12" sm="6">
-                <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">@L["InvoicePaymentMethod"]</MudText>
-                <MudText Typo="Typo.body1">@PaymentMethod</MudText>
-            </MudItem>
-            <MudItem xs="12" sm="6">
-                <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">@L["Duration"]</MudText>
-                <MudText Typo="Typo.body1">@Duration</MudText>
+                <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">@L["PlateNumber"]</MudText>
+                <MudText Typo="Typo.body1">@PlateNumber</MudText>
             </MudItem>
             <MudItem xs="12" sm="6">
                 <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">@L["Check-in"]</MudText>
@@ -43,19 +27,20 @@
                 <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">@L["Check-out"]</MudText>
                 <MudText Typo="Typo.body1">@CheckOutTime.ToString("MMM dd, yyyy - hh:mm tt")</MudText>
             </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudText Typo="Typo.subtitle2" Color="MudBlazor.Color.Tertiary">@L["Duration"]</MudText>
+                <MudText Typo="Typo.body1">@Duration</MudText>
+            </MudItem>
 
         </MudGrid>
     </MudCardContent>
 </MudCard>
 
 @code {
-    [Parameter] public string InvoiceNo { get; set; } = "#N/A";
-    [Parameter] public DateTime InvoiceDate { get; set; } = DateTime.Now;
-    [Parameter] public decimal AmountPaid { get; set; }
-    [Parameter] public decimal VATAmount { get; set; }
-    [Parameter] public int VATRate { get; set; } = 15;
-    [Parameter] public string PaymentMethod { get; set; } = "Mada";
+
     [Parameter] public string Duration { get; set; } = "N/A";
+    [Parameter] public string TicketId { get; set; } = "N/A";
+    [Parameter] public string PlateNumber { get; set; } = "N/A";
     [Parameter] public DateTime CheckInTime { get; set; } = DateTime.Now;
     [Parameter] public DateTime CheckOutTime { get; set; } = DateTime.Now;
 }

@@ -45,10 +45,9 @@
                 <InvoiceScan  OnButtonTriggered="OnSearch" OnSearchTextChanged="OnSearchValueChanged"/>
                 @if (ShowInvoiceDetails)
                 {
-                    <InvoiceDetailsCard InvoiceNo="@InvoiceNumber"
-                                    InvoiceDate="@InvoiceDate"
-                                    AmountPaid="@InvoicePrice"
-                                    VATAmount="@Vat"
+                    <InvoiceDetailsCard 
+                                    PlateNumber="@PlateNumber"
+                                    TicketId="@TicketId"
                                     Duration="@Duration"
                                     CheckInTime="@CheckIn"
                                     CheckOutTime="@Checkout" />

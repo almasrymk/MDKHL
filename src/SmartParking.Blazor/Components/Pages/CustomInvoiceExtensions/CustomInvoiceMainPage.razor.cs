@@ -48,6 +48,7 @@ public partial class CustomInvoiceMainPage : IDisposable
     public string EntryPicture { get; set; }
     public string ExitPicture { get; set; }
     public string PlateNumber { get; set; }
+    public string TicketId { get; set; }
     public decimal InvoiceAmount { get; set; }
     public int VatRate { get; set; }
     private InvoiceDto? LatestInvoice { get; set; }
@@ -259,6 +260,7 @@ public partial class CustomInvoiceMainPage : IDisposable
                 PlateNumber   = invoiceDto.PlateNumber;
                 InvoiceAmount = Math.Round(InvoicePrice + Vat, 2);
                 VatRate       = 15;
+                TicketId      = invoiceDto.TicketId;
             }
             else
             {
