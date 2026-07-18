@@ -46,6 +46,12 @@ public class PaymentController : ControllerBase
     {
         return await _paymentAppService.InitializeMobilePaymentSessionAsync(invoiceId, paymentMethod);
     }
+    [HttpPost("package/{packageId}/session")]
+    [Authorize]
+    public async Task<Result<MobilePaymentSessionDto>> InitializePaymentSessionForPackage(int packageId, [FromQuery] SmartParking.Enums.PaymentMethod paymentMethod)
+    {
+        return await _paymentAppService.InitializePackagePaymentSessionAsync(packageId, paymentMethod);
+    }
 
     [HttpPost("cancel-invoice/{invoiceId}")]
     [Authorize]

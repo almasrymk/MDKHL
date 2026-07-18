@@ -22,7 +22,8 @@ public interface IPaymentAppService : ICrudAppService<PaymentDto, Guid, PagedAnd
     [AbpAllowAnonymous]
 
     Task<Result<MobilePaymentSessionDto>> InitializeMobilePaymentSessionAsync(int invoiceId, PaymentMethod paymentMethod);
-
+    [AbpAllowAnonymous]
+    Task<Result<MobilePaymentSessionDto>> InitializePackagePaymentSessionAsync(int packageId, PaymentMethod paymentMethod);
     Task<bool> ResendZatca(Guid Id);
     Task<string> GeneratePaymentNumberAsync(int organizationId);
 
@@ -32,7 +33,6 @@ public interface IPaymentAppService : ICrudAppService<PaymentDto, Guid, PagedAnd
         Guid? customerId,
         string checkoutid = null,
         string entityId = null);
-    Task<Guid> UpdatePaymentStausByCheckOutIdAsync(string checkoutid);
-    Task<Guid> UpdatePaymentStausByPaymentNumberAsync(string paymentNumber, string checkoutid, PaymentMethod paymentMethod);
 
+    Task<Guid> LinkCheckoutIdToPaymentAsync(string paymentNumber, string checkoutId, PaymentMethod paymentMethod);
 }

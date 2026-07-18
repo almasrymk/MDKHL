@@ -41,36 +41,22 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     private readonly IRepository<Payment, Guid> _repository;
     private readonly IRepository<Customer, Guid> _customerRepo;
     private readonly IDataFilter dataFilter;
-    private readonly ICustomerPackagesAppService customerPackagesAppService;
     private readonly IOrganizationsAppService organizationsAppService;
     private readonly IRepository<Invoice, int> _invoiceRepo;
     private readonly IRepository<Organization, int> _organizationRepository;
-    private readonly HttpClient _httpClient;
     private readonly IInvoiceUtilityAppService _invoiceUtility;
     private readonly IZatcaTaxInvoiceAppService _zatcaTaxInvoiceAppService;
     private readonly ILogger<PaymentAppService> _logger;
     private readonly IRepository<CustomerPackage, int> _customerPackageRepository;
     private readonly IRepository<Vehicle, int> _vehicleRepository;
     private const string Currency = "SAR";
-    private const string PaymentType = "DB";
-    private const string PaymentUrl = "https://eu-test.oppwa.com/v1/checkouts";
     private const string token = "OGFjN2E0Y2E5MjQ0ZjUzYzAxOTI0NzNkMjBlNDAzMTV8NXJDQjdzYUpQN2U3U1lrWiU6QjQ=";
-    private const string tokenType = "Bearer";
-
-
-    private readonly Dictionary<string, string> PaymentEntityID = new Dictionary<string, string>
-    {
-        { "VISA", "8ac7a4ca9244f53c01924741733e0327" },
-        { "MADA", "8ac7a4ca9244f53c019247402c950320" }
-    };
 
     public PaymentAppService(IRepository<Payment, Guid> repository,
         IRepository<Invoice, int> invoiceRepo, 
         IRepository<Customer, Guid> customerRepo, 
         IDataFilter dataFilter,
-        ICustomerPackagesAppService customerPackagesAppService,
         IOrganizationsAppService _organizationsAppService,
-        HttpClient httpClient,
         IInvoiceUtilityAppService invoiceUtility,
          IZatcaTaxInvoiceAppService zatcaTaxInvoiceAppService,
         ILogger<PaymentAppService> logger,
@@ -83,10 +69,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         _repository = repository;
         _customerRepo = customerRepo;
         this.dataFilter = dataFilter;
-        this.customerPackagesAppService = customerPackagesAppService;
         organizationsAppService = _organizationsAppService;
         _invoiceRepo = invoiceRepo;
-        _httpClient = httpClient;
         _invoiceUtility = invoiceUtility;
         _zatcaTaxInvoiceAppService = zatcaTaxInvoiceAppService;
         _logger = logger;
@@ -212,35 +196,29 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     {
         using (dataFilter.Disable<IMultiTenant>())
         {
-            var invoiceResult = await GetInvoiceByIdAsync(invoiceId);
-            if (!invoiceResult.IsSuccess)
+            var paymentInitializationService = LazyServiceProvider.LazyGetRequiredService<IPaymentInitializationService>();
+            var result = await paymentInitializationService.InitializeAsync(PaymentCategory.PaymentParking, invoiceId, paymentMethod);
+            if (!result.IsSuccess)
             {
-                _logger.LogWarning("InitializeMobilePaymentSessionAsync: {Error}", invoiceResult.Errors.FirstOrDefault());
-                throw new Exception(invoiceResult.Errors.FirstOrDefault());
+                throw new Exception(result.Errors.FirstOrDefault());
             }
+            return result;
+        }
+    }
 
-            var invoice = invoiceResult.Value;
-            var amount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount);
-
-            var gatewayService = LazyServiceProvider.LazyGetRequiredService<IPaymentGatewayIntegrationService>();
-            
-            var request = invoice.ToPaymentCheckoutRequestDto(
-                amount, 
-                paymentMethod, 
-                PaymentCallbackHelper.ResolveCallbackUrl(ServiceProvider, GetBaseUri(), gatewayService.Gateway));
-
-            var initiateResult = await gatewayService.InitiateAsync(request);
-            request.BaseURI= GetBaseUri();
-            var sessionDto = initiateResult.ToMobilePaymentSessionDto();
-
-            var payment = await _repository.FirstOrDefaultAsync(p => p.PaymentNumber == sessionDto.MerchantReferenceId);
-            if (payment != null)
+    [AbpAllowAnonymous]
+    [RemoteService(IsEnabled = false)]
+    public async Task<Result<MobilePaymentSessionDto>> InitializePackagePaymentSessionAsync(int packageId, PaymentMethod paymentMethod)
+    {
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var paymentInitializationService = LazyServiceProvider.LazyGetRequiredService<IPaymentInitializationService>();
+            var result = await paymentInitializationService.InitializeAsync(PaymentCategory.Package, packageId, paymentMethod);
+            if (!result.IsSuccess)
             {
-                sessionDto.PaymentId = payment.Id;
+                throw new Exception(result.Errors.FirstOrDefault());
             }
-
-            _logger.LogInformation("InitializeMobilePaymentSessionAsync: Session initialized for InvoiceId {InvoiceId}, PaymentNumber {PaymentNumber}", invoiceId, sessionDto.MerchantReferenceId);
-            return Result<MobilePaymentSessionDto>.Success(sessionDto, "Payment session initialized successfully");
+            return result;
         }
     }
 
@@ -263,21 +241,23 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             return Result<List<PaymentPackageDto>>.Success(data, "Payments Retrieved Successfully");
         }
     }
-    [AbpAllowAnonymous]
-    [RemoteService(IsEnabled = false)]
-    private async Task<Result<Invoice>> GetInvoiceByIdAsync(int invoiceId)
-    {
-        var invoice = await _invoiceRepo.FirstOrDefaultAsync(inv => inv.Id == invoiceId);
-        if (invoice == null)
-        {
-            return Result.Error("Invoice not found");
-        }
-        if (invoice.InvoiceType == InvoiceType.Paid || invoice.InvoicePrice ==0)
-        {
-            return Result.Error("Invoice already paid");
 
+
+    [RemoteService(IsEnabled = false)]
+    public async Task<Guid> LinkCheckoutIdToPaymentAsync(string paymentNumber, string checkoutId, PaymentMethod paymentMethod)
+    {
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            var payment = await _repository.FirstOrDefaultAsync(p => p.PaymentNumber == paymentNumber);
+            if (payment == null)
+            {
+                throw new Exception("Payment not found.");
+            }
+            payment.CheckoutId = checkoutId;
+            payment.PaymentMethod = paymentMethod;
+            await _repository.UpdateAsync(payment);
+            return payment.Id;
         }
-        return invoice;
     }
 
     [RemoteService(IsEnabled = false)]
@@ -337,75 +317,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         };
     }
 
-    [RemoteService(IsEnabled = false)]
-    public async Task<Guid> UpdatePaymentStausByCheckOutIdAsync(string checkoutid)
-    {
-        var payment = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == checkoutid);
-        if (payment == null)
-        {
-            throw new Exception("Payment not found.");
-        }
-        var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
-        if (invoice == null)
-        {
-            throw new Exception("Invoice not found.");
-        }
-        invoice.InvoiceType = InvoiceType.Paid;
-        invoice.InvoiceNumber = payment.PaymentNumber;
-        payment.PaymentStatus = PaymentStatus.Success;
-        await CallingZatcaIntegration(payment);
-        return payment.Id;
-    }
 
-    public async Task<Guid> UpdatePaymentStausByPaymentNumberAsync(string paymentNumber, string checkoutid, PaymentMethod paymentMethod)
-    {
-        using (DataFilter.Disable<IMultiTenant>())
-        {
-            var payment = await _repository.FirstOrDefaultAsync(p => p.PaymentNumber == paymentNumber);
-            if (payment == null)
-            {
-                throw new Exception("Payment not found.");
-            }
-            var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
-            if (invoice == null)
-            {
-                throw new Exception("Invoice not found.");
-            }
-            invoice.InvoiceNumber = payment.PaymentNumber;
-            payment.CheckoutId = checkoutid;
-            payment.PaymentMethod = paymentMethod;
-            return payment.Id;
-        }
-    }
-
-    private async Task CallingZatcaIntegration(Payment payment)
-    {
-        QRCodeDto qrCode = new QRCodeDto();
-        var organization = await organizationsAppService.GetAsync(payment.OrganizationId);
-        if (organization != null && organization.StatusZatca == Status.Active && payment.Amount > 0)
-        {
-            var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
-            payment.QrCodeInvoice = qrCode.QRCode = res.invoiceQRCode;
-            payment.IsSentZatca = res.status;
-            payment.ErrorMessagesZatca = null;
-            if (res.validationResults != null && res.validationResults.errorMessages != null && res.validationResults.errorMessages.Count > 0)
-            {
-                var listErrors = res.validationResults.errorMessages.Select(e => e.Message).ToList();
-                payment.ErrorMessagesZatca = string.Join(",", listErrors);
-            }
-            else if (res.validationResults != null && res.validationResults.warningMessages != null && res.validationResults.warningMessages.Count > 0)
-            {
-                var listErrors = res.validationResults.warningMessages.Select(e => e.Message).ToList();
-                payment.ErrorMessagesZatca = string.Join(",", listErrors);
-            }
-        }
-        else
-        {
-            qrCode = await _invoiceUtility.GetQrCodeAsync(payment.Amount, payment.OrganizationId);
-            payment.QrCodeInvoice = qrCode.QRCode;
-        }
-        await CurrentUnitOfWork!.SaveChangesAsync();
-    }
     #endregion
     #region private methods
 
@@ -548,19 +460,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         }
     }
 
-    private string GetBaseUri()
-    {
-        var httpContextAccessor = LazyServiceProvider.LazyGetService<Microsoft.AspNetCore.Http.IHttpContextAccessor>();
-        var request = httpContextAccessor?.HttpContext?.Request;
 
-        if (request != null)
-        {
-            return $"{request.Scheme}://{request.Host}{request.PathBase}".TrimEnd('/');
-        }
-        
-        var configuration = LazyServiceProvider.LazyGetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
-        return configuration["App:SelfUrl"]?.TrimEnd('/') ?? string.Empty;
-    }
 
     private async Task UpdatePaymentForZatca(Guid paymentId , ResponseInvoice responseInvoice)
     {

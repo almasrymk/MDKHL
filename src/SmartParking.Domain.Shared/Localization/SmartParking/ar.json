@@ -1022,7 +1022,10 @@
     "CheckoutExtension:WarningTitle": "تنبيه",
     "CheckoutExtension:WarningText": "تحذير: الخروج قبل {0} دون دفع مبلغ إضافي",
     "Currancy": "س,ر",
-    "CarAlreadyExit": "السيارة خرجت بالفعل"
+    "CarAlreadyExit": "السيارة خرجت بالفعل",
+    "EnterTicketOrPlateNumber": "ادخل رقم التذكرة أو رقم اللوحة",
+    "VehicleImages": "صور المركبة",
+    "VehicleInformation": "معلومات المركبة"
 
 
   }

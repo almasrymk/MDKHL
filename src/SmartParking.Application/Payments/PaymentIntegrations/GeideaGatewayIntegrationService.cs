@@ -40,10 +40,9 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
     private readonly HttpClient _http;
     private readonly IOptionsMonitor<GeideaOptions> _options;
     private readonly IRepository<Payment, Guid> _repository;
-    private readonly IRepository<Invoice, int> _invoiceRepo;
     private readonly IPaymentAppService _paymentAppService;
     private readonly IDataFilter _dataFilter;
-    private readonly IZatcaTaxInvoiceAppService _zatcaTaxInvoiceAppService;
+    private readonly IPaymentCompletionService _paymentCompletionService;
     private readonly ILogger<GeideaGatewayIntegrationService> _logger;
 
     private static readonly JsonSerializerOptions _jsonOptions = new()
@@ -59,8 +58,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
         IRepository<Payment, Guid> repository,
         IPaymentAppService paymentAppService,
         IDataFilter dataFilter,
-        IRepository<Invoice, int> invoiceRepo,
-        IZatcaTaxInvoiceAppService zatcaTaxInvoiceAppService,
+        IPaymentCompletionService paymentCompletionService,
         ILogger<GeideaGatewayIntegrationService> logger)
     {
         _http = http;
@@ -69,8 +67,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
         _repository = repository;
         _paymentAppService = paymentAppService;
         _dataFilter = dataFilter;
-        _invoiceRepo = invoiceRepo;
-        _zatcaTaxInvoiceAppService = zatcaTaxInvoiceAppService;
+        _paymentCompletionService = paymentCompletionService;
         _logger = logger;
     }
 
@@ -114,7 +111,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
         var sessionResponse = await CreateSessionAsync(request);
         var sessionId = sessionResponse.Session!.Id;
 
-        await _paymentAppService.UpdatePaymentStausByPaymentNumberAsync(
+        await _paymentAppService.LinkCheckoutIdToPaymentAsync(
             paymentRecord.PaymentNumber, sessionId, request.PaymentMethod);
 
         var callbackUrl = !string.IsNullOrEmpty(request.CallbackUrl)
@@ -155,7 +152,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
             if (payment is null)
                 return PaymentVerificationResult.Failed($"No payment found for Geidea orderId: {orderId}");
 
-            var paymentId = await FinalisePaymentAsync(payment);
+            var paymentId = await _paymentCompletionService.CompletePaymentByCheckoutIdAsync(payment.CheckoutId);
             return PaymentVerificationResult.Success(paymentId);
         }
     }
@@ -198,7 +195,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
 
             // Overwrite the temporary sessionId with the permanent orderId for audit trail
             payment.CheckoutId = orderId;
-            var paymentId = await FinalisePaymentAsync(payment);
+            var paymentId = await _paymentCompletionService.CompletePaymentByCheckoutIdAsync(payment.CheckoutId);
             return PaymentVerificationResult.Success(paymentId);
         }
     }
@@ -311,38 +308,5 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
             new AuthenticationHeaderValue("Basic", credentials);
     }
 
-    // ── DB finalisation ───────────────────────────────────────────────────────
 
-    private async Task<Guid> FinalisePaymentAsync(Payment payment)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
-            if (invoice is not null)
-            {
-                invoice.InvoiceType = InvoiceType.Paid;
-                invoice.InvoiceNumber = payment.PaymentNumber;
-
-                // Send to ZATCA (Null Object pattern handles enable/disable via DI)
-                var zatcaResult = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
-                payment.QrCodeInvoice = zatcaResult.invoiceQRCode;
-                payment.PaymentStatus= PaymentStatus.Success;
-                payment.IsSentZatca = zatcaResult.status;
-                if (zatcaResult.validationResults != null && zatcaResult.validationResults.errorMessages != null && zatcaResult.validationResults.errorMessages.Count > 0)
-                {
-                    var listErrors = zatcaResult.validationResults.errorMessages.Select(e => e.Message).ToList();
-                    payment.ErrorMessagesZatca = string.Join(",", listErrors);
-                }
-                else if (zatcaResult.validationResults != null && zatcaResult.validationResults.warningMessages != null && zatcaResult.validationResults.warningMessages.Count > 0)
-                {
-                    var listErrors = zatcaResult.validationResults.warningMessages.Select(e => e.Message).ToList();
-                    payment.ErrorMessagesZatca = string.Join(",", listErrors);
-                }
-                payment = await _repository.UpdateAsync(payment);
-                await _invoiceRepo.UpdateAsync(invoice);
-            }
-
-            return payment.Id;
-        }
-    }
 }

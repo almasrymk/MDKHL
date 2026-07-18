@@ -973,8 +973,10 @@
     "CheckoutExtension:WarningTitle": "Warning",
     "CheckoutExtension:WarningText": "WARNING: EXIT BEFORE {0} WITHOUT PAYING A FURTHER AMOUNT",
     "Currancy": "SAR",
-    "CarAlreadyExit": "The car has already exited the garage"
-
+    "CarAlreadyExit": "The car has already exited the garage",
+    "EnterTicketOrPlateNumber": "Enter Ticket Number or Plate Number",
+    "VehicleImages": "Vehicle Images",
+    "VehicleInformation": "Vehicle Information"
 
 
   }

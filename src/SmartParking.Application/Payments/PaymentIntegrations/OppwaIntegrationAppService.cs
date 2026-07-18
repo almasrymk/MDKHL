@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Payments;
@@ -26,10 +26,9 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
     private readonly HttpClient _http;
     private readonly IOptionsMonitor<OppwaRootOptions> _options;
     private readonly IRepository<Payment, Guid> _repository;
-    private readonly IRepository<Invoice, int> _invoiceRepo;
     private readonly IPaymentAppService _paymentAppService;
     private readonly IDataFilter _dataFilter;
-    private readonly IZatcaTaxInvoiceAppService _zatcaTaxInvoiceAppService;
+    private readonly IPaymentCompletionService _paymentCompletionService;
 
 
     private readonly Dictionary<string, string> PaymentEntityID = new Dictionary<string, string>
@@ -43,16 +42,14 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
         IRepository<Payment, Guid> repository,
         IPaymentAppService paymentAppService,
         IDataFilter dataFilter,
-        IRepository<Invoice, int> invoiceRepo,
-        IZatcaTaxInvoiceAppService zatcaTaxInvoiceAppService)
+        IPaymentCompletionService paymentCompletionService)
     {
         _http = http;
         _options = options;
         _repository = repository;
         _paymentAppService = paymentAppService;
         _dataFilter = dataFilter;
-        _invoiceRepo = invoiceRepo;
-        _zatcaTaxInvoiceAppService = zatcaTaxInvoiceAppService;
+        _paymentCompletionService = paymentCompletionService;
     }
 
     private OppwaEnvironmentOptions Current =>
@@ -161,7 +158,7 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
         //    return PaymentVerificationResult.Failed();
 
         var checkoutId = ExtractCheckoutId(resourcePath);
-        var paymentId =await UpdatePayment(checkoutId);
+        var paymentId = await _paymentCompletionService.CompletePaymentByCheckoutIdAsync(checkoutId);
 
         return PaymentVerificationResult.Success(paymentId);
     }
@@ -185,7 +182,7 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
             return Result.Error("Payment not found");
         }
         var payment = await _repository.FirstOrDefaultAsync(_ => _.Id == paymentId);
-        var id = await _paymentAppService.UpdatePaymentStausByCheckOutIdAsync(payment.CheckoutId);
+        var id = await _paymentCompletionService.CompletePaymentByCheckoutIdAsync(payment.CheckoutId);
         if (id != Guid.Empty)
         {
             return Result.Success(payment.Amount);
@@ -217,27 +214,6 @@ public class OppwaIntegrationAppService : IOppwaIntegrationAppService , ITransie
         // ["v1", "checkouts", "{checkoutId}", "payment"]
         return parts.Length >= 3 ? parts[2] : throw new Exception("Invalid resourcePath");
     }
-    private async Task<Guid> UpdatePayment(string checkout)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
 
-            var payment = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == checkout);
-            if (payment != null)
-            {
-                var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
-                if (invoice != null)
-                {
-                    invoice.InvoiceType = InvoiceType.Paid;
-                    invoice.InvoiceNumber=payment.PaymentNumber;
-                    var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
-                    payment.QrCodeInvoice = res.invoiceQRCode;
-                    payment = await _repository.UpdateAsync(payment);
-                    await _invoiceRepo.UpdateAsync(invoice);
-                }
-            }
-            return payment.Id;
-        }
-    }
 
 }

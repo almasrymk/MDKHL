@@ -37,4 +37,26 @@ public static class PaymentDtoExtensions
             GatewayResponse = initiateResult.GatewayResponseData
         };
     }
+
+    public static PaymentCheckoutRequestDto ToPaymentCheckoutRequestDto(
+        this SmartParking.Entities.Organizations.CustomerPackage customerPackage,
+        decimal amount,
+        PaymentMethod paymentMethod,
+        string? callbackUrl = null)
+    {
+        return new PaymentCheckoutRequestDto
+        {
+            OrganizationId = customerPackage.OrganizationId ?? 0,
+            PaymentCategory = PaymentCategory.Package,
+            CustomerPackageId = customerPackage.Id,
+            PackageId = customerPackage.PackageId,
+            PaymentMethod = paymentMethod,
+            Amount = amount,
+            CustomerId = customerPackage.CustomerId,
+            ArPlateNumber = customerPackage.ArPlateNumber,
+            EnPlateNumber = customerPackage.EnPlateNumber,
+            TenantId = customerPackage.TenantId ?? System.Guid.Empty,
+            CallbackUrl = callbackUrl
+        };
+    }
 }

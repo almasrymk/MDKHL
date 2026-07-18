@@ -1,4 +1,4 @@
-﻿using DeviceDetectorNET;
+using DeviceDetectorNET;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +6,7 @@ using SmartParking.CustomerPackages;
 using SmartParking.CustomerPackages.AssignantionsContarcts;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerPackages.Inputs;
+using SmartParking.CustomerPackages.Mappings;
 using SmartParking.Packages;
 using SmartParking.Payments;
 using SmartParking.Results;
@@ -47,7 +48,7 @@ public class PackagesController : ControllerBase
     }
     [HttpPost("assignpackage")]
     [Authorize]
-    public async Task<Result<PaymentCheckoutDto>> AssignPackageToCustomer([FromBody] AssignMobilePackageRequestDto request)
+    public async Task<Result<CustomerPackageMobileDto>> AssignPackageToCustomer([FromBody] AssignMobilePackageRequestDto request)
     {
         var customerPackageDto =
             await _customerPackagesActionsAppService.AssignPackageToCustomerAsync(request.PackageId,request.ArabicNumber,request.EnglishPlateNumber);
@@ -56,13 +57,7 @@ public class PackagesController : ControllerBase
 
         if (customerPackageDto.ValidationErrors.Any())
             return Result.Invalid(customerPackageDto.ValidationErrors.First());
-
-        var paymentReq = customerPackageDto.Value
-            .MapToPaymentCheckout(customerPackageDto, customerPackageDto.Value.TenantId!.Value);
-
-        var result = await _paymentAppService.CreateCheckoutPackagePaymentWebAsync(paymentReq);
-
-        return Result.Success(result!);
+        return Result.Success(customerPackageDto.Value.MapToMobileDto());
     }
 
     [HttpPut("removepackage")]

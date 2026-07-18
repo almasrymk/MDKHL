@@ -93,6 +93,7 @@ public class MobileCustomerPackagesAppService : BaseCustomerPackagesAssigingAppS
             ArPlateNumber = arPlateNumber,
             EnPlateNumber = enPlateNumber,
             Vat = Math.Round(0.15m * PackageDto.Price, 2),
+            CustomerPackageStatus = CustomerPackageStatus.InActive,
 
         };
     }

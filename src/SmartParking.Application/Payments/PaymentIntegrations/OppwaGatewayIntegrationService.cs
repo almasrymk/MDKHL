@@ -28,10 +28,9 @@ public class OppwaGatewayIntegrationService : IPaymentGatewayIntegrationService,
     private readonly HttpClient _http;
     private readonly IOptionsMonitor<OppwaRootOptions> _options;
     private readonly IRepository<Payment, Guid> _repository;
-    private readonly IRepository<Invoice, int> _invoiceRepo;
     private readonly IPaymentAppService _paymentAppService;
     private readonly IDataFilter _dataFilter;
-    private readonly IZatcaTaxInvoiceAppService _zatcaTaxInvoiceAppService;
+    private readonly IPaymentCompletionService _paymentCompletionService;
 
     private OppwaEnvironmentOptions Current =>
         _options.CurrentValue.Mode == "Live"
@@ -44,16 +43,14 @@ public class OppwaGatewayIntegrationService : IPaymentGatewayIntegrationService,
         IRepository<Payment, Guid> repository,
         IPaymentAppService paymentAppService,
         IDataFilter dataFilter,
-        IRepository<Invoice, int> invoiceRepo,
-        IZatcaTaxInvoiceAppService zatcaTaxInvoiceAppService)
+        IPaymentCompletionService paymentCompletionService)
     {
         _http = http;
         _options = options;
         _repository = repository;
         _paymentAppService = paymentAppService;
         _dataFilter = dataFilter;
-        _invoiceRepo = invoiceRepo;
-        _zatcaTaxInvoiceAppService = zatcaTaxInvoiceAppService;
+        _paymentCompletionService = paymentCompletionService;
     }
 
     // ── IPaymentGateway ───────────────────────────────────────────────────────
@@ -82,7 +79,7 @@ public class OppwaGatewayIntegrationService : IPaymentGatewayIntegrationService,
 
         var checkoutId = await CreateHyperPayCheckoutAsync(request);
 
-        await _paymentAppService.UpdatePaymentStausByPaymentNumberAsync(
+        await _paymentAppService.LinkCheckoutIdToPaymentAsync(
             paymentRecord.PaymentNumber, checkoutId, request.PaymentMethod);
 
         var shopperResultUrl = !string.IsNullOrEmpty(request.CallbackUrl)
@@ -115,7 +112,7 @@ public class OppwaGatewayIntegrationService : IPaymentGatewayIntegrationService,
         JsonConvert.DeserializeObject<HyperPayResultDto>(json); // parse for logging if needed
 
         var checkoutId = ExtractCheckoutId(resourcePath);
-        var paymentId = await FinalisePaymentAsync(checkoutId);
+        var paymentId = await _paymentCompletionService.CompletePaymentByCheckoutIdAsync(checkoutId);
         return PaymentVerificationResult.Success(paymentId);
     }
 
@@ -177,26 +174,4 @@ public class OppwaGatewayIntegrationService : IPaymentGatewayIntegrationService,
             : throw new InvalidOperationException($"Cannot parse checkoutId from resourcePath: {resourcePath}");
     }
 
-    private async Task<Guid> FinalisePaymentAsync(string checkoutId)
-    {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            var payment = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == checkoutId);
-            if (payment is null)
-                throw new InvalidOperationException($"No payment found for checkoutId {checkoutId}");
-
-            var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
-            if (invoice is not null)
-            {
-                invoice.InvoiceType = InvoiceType.Paid;
-                invoice.InvoiceNumber = payment.PaymentNumber;
-                var zatcaResult = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
-                payment.QrCodeInvoice = zatcaResult.invoiceQRCode;
-                payment = await _repository.UpdateAsync(payment);
-                await _invoiceRepo.UpdateAsync(invoice);
-            }
-
-            return payment.Id;
-        }
-    }
 }

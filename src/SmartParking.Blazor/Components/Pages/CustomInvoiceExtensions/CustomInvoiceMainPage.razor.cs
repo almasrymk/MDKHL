@@ -32,6 +32,7 @@ public partial class CustomInvoiceMainPage : IDisposable
     // ── Page parameters / state ───────────────────────────────────────────────
 
     [Parameter] public string WatcherCode { get; set; }
+    [Parameter] public string? RouteTicketId { get; set; }
 
     [SupplyParameterFromQuery]
     public Guid? PaymentId { get; set; }
@@ -81,6 +82,12 @@ public partial class CustomInvoiceMainPage : IDisposable
         catch (Exception)
         {
             navigationManager.NavigateTo("/", true);
+        }
+
+        if (!string.IsNullOrEmpty(RouteTicketId))
+        {
+            SearchText = RouteTicketId;
+            await OnSearch();
         }
     }
 
@@ -252,7 +259,7 @@ public partial class CustomInvoiceMainPage : IDisposable
                 InvoicePrice  = Math.Round(invoiceDto.InvoicePrice, 2);
                 Vat           = Math.Round(invoiceDto.Vat, 2);
                 var duration  = invoiceDto.InvoiceTime.Value - invoiceDto.EntranceTime!.Value;
-                Duration      = $"{(int)duration.TotalHours} hours {duration.Minutes} minutes";
+                Duration      = $"{(int)duration.TotalHours} ساعات {duration.Minutes} دقائق";
                 CheckIn       = invoiceDto.EntranceTime.Value;
                 Checkout      = invoiceDto.InvoiceTime.Value;
                 EntryPicture  = invoiceDto.EntryTransactionImage;

@@ -94,4 +94,60 @@ public static class CustomerPackageMapper
             QRCodePath = entity.QRCodePath
         };
     }
+
+    public static CustomerPackageMobileDto MapToMobileDto(this CustomerPackageDto source)
+    {
+        if (source == null)
+            return null;
+
+        return new CustomerPackageMobileDto
+        {
+            Id = source.Id,
+            CustomerPackageStatus = source.CustomerPackageStatus,
+
+            DurationOfPackage = source.DurationOfPackage,
+            PriceOfPackage = source.PriceOfPackage,
+            PriceOfPackagePerDay = source.PriceOfPackagePerDay,
+            CountOfDays = source.CountOfDays,
+
+            PublishedOfPackage = source.publishedOfPackage,
+
+            PackageArabicName = source.PackageArabicName,
+            PackageEnglishName = source.PackageEnglishName,
+
+            CustomerCategory = source.CustomerCategory,
+
+            CustomerArabicName = source.CustomerArabicName,
+            CustomerEnglishName = source.CustomerEnglishName,
+
+            OrganizationArabicName = source.Organization?.ArabicName,
+            OrganizationEnglishName = source.Organization?.EnglishName,
+
+            EnPlateNumber = source.EnPlateNumber,
+            ArPlateNumber = source.ArPlateNumber,
+
+            ExpiryDateOfPackage = source.ExpiryDateOfPackage,
+            ExpiryTimeOfPackage = source.ExpiryTimeOfPackage,
+
+            ActivationDate = source.ActivationDate,
+            ActivationTime = source.ActivationTime,
+
+            IsCustomPackage = source.IsCustomPackage,
+
+            PackageCode = source.PackageCode,
+            QRCodePath = source.QRCodePath,
+
+            Discount = source.Discount,
+            Vat = source.Vat,
+
+            LicenseTypeImage = source.LicenseTypeImage,
+            VehicleModelImage = source.VehicleModelImage
+        };
+    }
+
+    public static List<CustomerPackageMobileDto> MapToMobileDtos(this IEnumerable<CustomerPackageDto> source)
+    {
+        return source?.Select(x => x.MapToMobileDto()).ToList() ?? new List<CustomerPackageMobileDto>();
+    }
+
 }

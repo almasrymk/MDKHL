@@ -1,7 +1,8 @@
-﻿<MudPaper Elevation="0" Class="pa-2 custom-card">
+﻿@using SmartParking.Localization
+<MudPaper Elevation="0" Class="pa-2 custom-card">
     <MudGrid>
         <MudItem xs="12" sm="10">
-            <MudTextField T="string" Placeholder="Enter ticket number or Plate number"
+            <MudTextField T="string" Placeholder="@LocalizationHelper.GetLocalizedString("EnterTicketOrPlateNumber")"
                           Adornment="Adornment.Start"
                           AdornmentIcon="@Icons.Material.Filled.Search"
                           FullWidth="true"
@@ -12,7 +13,7 @@
 
         <MudItem xs="12" sm="2" Class="mt-1">
             <MudButton OnClick="OnButtonTriggered"  StartIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="MudBlazor.Color.Secondary" FullWidth="true">
-                Search
+				@LocalizationHelper.GetLocalizedString("Search")
             </MudButton>
         </MudItem>
     </MudGrid>
