@@ -277,7 +277,7 @@ public partial class AssignCustomerUnitPackageDialog
     {
         if(selectedUnit.RenterSlots < dto.NumberOfSlots)
         {
-            SnackBar.ShowSnackbar(Snackbar, L["RenterSlotsOverUnitValidation"], Severity.Error);
+            SnackBar.ShowSnackbar(Snackbar, @$"{L["RenterSlotsLimitationOverUnitValidation"]} : {selectedUnit.RenterSlots}", Severity.Error);
             return true;
         }
         if (CustomerPackage is null)

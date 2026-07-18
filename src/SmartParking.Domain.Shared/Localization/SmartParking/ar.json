@@ -983,7 +983,7 @@
     "SelectDevice": "اختر الجهاز",
     "NameDuplication": "غير مسموح بتكرار اسم الوردية",
     "Types": "النوع",
-    "RenterSlotsOverUnitValidation": "لقد تجاوزت العدد المسوح من أماكن الركن لتلك الوحدة",
+    "RenterSlotsOverUnitValidation": "الوحدة لديها بالفعل مستأجر خلال هذا الوقت",
     "RenterVehiclesOverUnitValidation": "لقد تجاوزت العدد المسوح من المركبات لتلك الوحدة",
     "VehicleOverPackageValidation": "هذه السيارة توجد بالفعل في هذه الباقة",
     "VehicleOverUnitValidation": "هذه السيارة توجد بالفعل في هذه الوحدة",
@@ -992,7 +992,7 @@
     "SelectStaffForAssigning": "يرجى اختيار موظف للتخصيص",
     "SelectDeviceForAssigning": "يرجى اختيار جهاز للتخصيص",
     "ShiftNameDuplication": "اسم الوردية مكرر، يرجى اختيار اسم آخر",
-    "MultipleRentalError": "لا يمكن تاجير نفس الوحده لاكثر من مستخدم في نفس الوقت",
+    "MultipleRentalError": "الوحدة لديها بالفعل مستأجر خلال هذا الوقت",
     "OwnerSlots": "أماكن المالك",
     "RentalSlots": "أماكن المستأجر",
     "IsSlotsEditable": "تعديل أماكن الركن",
@@ -1025,7 +1025,8 @@
     "CarAlreadyExit": "السيارة خرجت بالفعل",
     "EnterTicketOrPlateNumber": "ادخل رقم التذكرة أو رقم اللوحة",
     "VehicleImages": "صور المركبة",
-    "VehicleInformation": "معلومات المركبة"
+    "VehicleInformation": "معلومات المركبة",
+    "RenterSlotsLimitationOverUnitValidation": "عدد اماكن الركن المتاحة للوحدة"
 
 
   }
