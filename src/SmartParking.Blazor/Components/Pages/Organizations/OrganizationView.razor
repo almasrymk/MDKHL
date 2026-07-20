@@ -1,4 +1,4 @@
-﻿@page "/organizations/view/{Id}"
+@page "/organizations/view/{Id}"
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.Extensions.Localization
 @using SmartParking.Blazor.Components.LookUps
@@ -75,6 +75,11 @@
                             <MudSwitch Label=@L["Shift"] @bind-Value="organizationSettings.UseShifts" ReadOnly
                                        Color="MudBlazor.Color.Primary" />
                         </MudItem>
+
+                        <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
+
+                        <!-- POS Terminal Configuration (Read Only) -->
+                        <PosTerminalSettingsSection Settings="organizationSettings" ReadOnly="true" />
 
                         <MudDivider Style="border-top:1px solid #505254; margin:10px 0px;" />
 

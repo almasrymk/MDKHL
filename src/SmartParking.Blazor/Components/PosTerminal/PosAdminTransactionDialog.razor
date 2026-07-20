@@ -1,0 +1,72 @@
+@using SmartParking.Blazor.Components.PosTerminal
+@using SmartParking.Enums.PosTerminal
+@using SmartParking.Organizations
+@using SmartParking.Payments
+
+@namespace SmartParking.Blazor.Components.PosTerminal
+
+<MudDialog Class="pos-admin-dialog">
+    <DialogContent>
+        <MudPaper Class="pa-4" Elevation="0">
+            <MudStack AlignItems="AlignItems.Center" Spacing="3">
+                <MudText Typo="Typo.h6">@(_operation == "REFUND" ? "POS Terminal Refund" : "POS Terminal Reversal")</MudText>
+                
+                @if (!_isConfigured)
+                {
+                    <MudAlert Severity="Severity.Warning" Dense="true">
+                        POS Terminal is not configured for this organization.
+                    </MudAlert>
+                }
+                else if (_state.SessionState == PosSessionState.Connecting || _isBusy)
+                {
+                    <MudProgressCircular Indeterminate="true" Color="MudBlazor.Color.Primary" />
+                    <MudText Typo="Typo.body1">Connecting & processing with terminal...</MudText>
+                }
+                else if (_state.SessionState == PosSessionState.Completed)
+                {
+                    bool approved = _state.Outcome == SamaResponseOutcome.Approved;
+                    <MudAlert Severity="@(approved ? Severity.Success : Severity.Error)">
+                        <MudText Typo="Typo.h6">@(approved ? "Transaction Successful" : "Transaction Declined")</MudText>
+                        <MudText Typo="Typo.body2">@_state.SamaDescription</MudText>
+                    </MudAlert>
+                }
+                else if (_state.SessionState == PosSessionState.Error)
+                {
+                    <MudAlert Severity="Severity.Error">
+                        @(_state.LastErrorMessage ?? "Terminal transaction failed.")
+                    </MudAlert>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body1">Amount: @Amount.ToString("F2") SAR</MudText>
+                    @if (_operation == "REFUND" && !string.IsNullOrWhiteSpace(Rrn))
+                    {
+                        <MudText Typo="Typo.caption">RRN: @Rrn</MudText>
+                    }
+                    else if (_operation == "REVERSAL" && !string.IsNullOrWhiteSpace(Stan))
+                    {
+                        <MudText Typo="Typo.caption">STAN: @Stan</MudText>
+                    }
+
+                    <MudButton Variant="Variant.Filled"
+                               Color="MudBlazor.Color.Primary"
+                               Size="MudBlazor.Size.Large"
+                               FullWidth="true"
+                               OnClick="ExecuteAdminOperationAsync"
+                               Disabled="_isBusy">
+                        Execute @(_operation == "REFUND" ? "Refund" : "Reversal")
+                    </MudButton>
+                }
+
+                @if (_state.SessionState != PosSessionState.Connecting && !_isBusy)
+                {
+                    <MudButton Variant="Variant.Text"
+                               Color="MudBlazor.Color.Default"
+                               OnClick="CloseDialog">
+                        Close
+                    </MudButton>
+                }
+            </MudStack>
+        </MudPaper>
+    </DialogContent>
+</MudDialog>

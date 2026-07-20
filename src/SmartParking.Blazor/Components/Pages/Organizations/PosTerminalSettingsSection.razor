@@ -1,0 +1,97 @@
+@using SmartParking.Organizations
+
+<MudItem sm="12">
+    <MudText Typo="Typo.subtitle1" Class="font-weight-bold">POS Terminal Configuration</MudText>
+</MudItem>
+
+@if (Settings != null)
+{
+    @if (ReadOnly)
+    {
+        <MudItem sm="6">
+            <MudSwitch Label="Enable POS Terminal" Value="Settings.PosTerminalEnabled" ReadOnly="true" Color="MudBlazor.Color.Primary" />
+        </MudItem>
+
+        @if (Settings.PosTerminalEnabled == true)
+        {
+            <MudItem sm="6">
+                <MudTextField ReadOnly="true" T="string" Value="@(Settings.PosTerminalConnectionMode ?? "TCP")" Label="Connection Mode" />
+            </MudItem>
+
+            @if ((Settings.PosTerminalConnectionMode ?? "TCP").ToUpperInvariant() == "TCP")
+            {
+                <MudItem sm="6">
+                    <MudTextField ReadOnly="true" T="string" Value="@Settings.PosTerminalTcpIpAddress" Label="Terminal TCP IP Address" />
+                </MudItem>
+                <MudItem sm="6">
+                    <MudTextField ReadOnly="true" T="string" Value="@(Settings.PosTerminalTcpPort?.ToString())" Label="Terminal TCP Port" />
+                </MudItem>
+            }
+            else
+            {
+                <MudItem sm="3">
+                    <MudTextField ReadOnly="true" T="string" Value="@Settings.PosTerminalComName" Label="COM Port Name" />
+                </MudItem>
+                <MudItem sm="3">
+                    <MudTextField ReadOnly="true" T="string" Value="@Settings.PosTerminalComBaudRate" Label="Baud Rate" />
+                </MudItem>
+                <MudItem sm="3">
+                    <MudTextField ReadOnly="true" T="string" Value="@Settings.PosTerminalComDataBits" Label="Data Bits" />
+                </MudItem>
+                <MudItem sm="3">
+                    <MudTextField ReadOnly="true" T="string" Value="@Settings.PosTerminalComParity" Label="Parity" />
+                </MudItem>
+            }
+        }
+    }
+    else
+    {
+        <MudItem sm="6">
+            <MudSwitch Label="Enable POS Terminal" @bind-Value="Settings.PosTerminalEnabled" Color="MudBlazor.Color.Primary" />
+        </MudItem>
+
+        @if (Settings.PosTerminalEnabled == true)
+        {
+            <MudItem sm="6">
+                <MudText Typo="Typo.caption">Connection Mode</MudText>
+                <MudRadioGroup T="string" @bind-Value="Settings.PosTerminalConnectionMode">
+                    <MudRadio T="string" Value="@("TCP")" Color="MudBlazor.Color.Primary">TCP (Network)</MudRadio>
+                    <MudRadio T="string" Value="@("COM")" Color="MudBlazor.Color.Primary">COM (Serial Port)</MudRadio>
+                </MudRadioGroup>
+            </MudItem>
+
+            @if ((Settings.PosTerminalConnectionMode ?? "TCP").ToUpperInvariant() == "TCP")
+            {
+                <MudItem sm="6">
+                    <MudTextField T="string" @bind-Value="Settings.PosTerminalTcpIpAddress" Label="Terminal TCP IP Address" Placeholder="127.0.0.1" />
+                </MudItem>
+                <MudItem sm="6">
+                    <MudNumericField T="int?" @bind-Value="Settings.PosTerminalTcpPort" Label="Terminal TCP Port" Placeholder="5000" />
+                </MudItem>
+            }
+            else
+            {
+                <MudItem sm="3">
+                    <MudTextField T="string" @bind-Value="Settings.PosTerminalComName" Label="COM Port Name" Placeholder="COM1" />
+                </MudItem>
+                <MudItem sm="3">
+                    <MudTextField T="string" @bind-Value="Settings.PosTerminalComBaudRate" Label="Baud Rate" Placeholder="9600" />
+                </MudItem>
+                <MudItem sm="3">
+                    <MudTextField T="string" @bind-Value="Settings.PosTerminalComDataBits" Label="Data Bits" Placeholder="8" />
+                </MudItem>
+                <MudItem sm="3">
+                    <MudTextField T="string" @bind-Value="Settings.PosTerminalComParity" Label="Parity" Placeholder="NONE" />
+                </MudItem>
+            }
+        }
+    }
+}
+
+@code {
+    [Parameter]
+    public OrganizationSettingsDto? Settings { get; set; }
+
+    [Parameter]
+    public bool ReadOnly { get; set; }
+}

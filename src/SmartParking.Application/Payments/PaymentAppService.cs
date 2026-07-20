@@ -14,6 +14,7 @@ using SmartParking.Invoices;
 using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.Payments.PaymentIntegrations;
+using SmartParking.Payments.PosTerminal;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using SmartParking.ZATCATaxInvoice;
@@ -318,7 +319,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         var PaymentNumberExist = await _repository.FirstOrDefaultAsync(p=> p.PaymentNumber == payment.PaymentNumber);
         if(PaymentNumberExist != null)
         {
-            _logger.LogError("This Payment Number Is already Exist with payment id : {PaymentId}", payment.Id);
+            _logger.LogError("This Payment Number Is already Exist with payment id : {PaymentId}", PaymentNumberExist.Id);
             throw new Exception("This Payment Number Is already Exist");
         }
         payment = await _repository.InsertAsync(payment);
@@ -433,13 +434,14 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             input.SamaCode,
             outcome,
             input.RawJsonResult,
-            input.TerminalId,
-            input.TransactionStan,
-            input.Rrn,
-            input.AuthCode,
-            input.MaskedPan,
-            input.CardScheme,
-            payment.TenantId
+            transactionType: PosTransactionType.Purchase,
+            terminalId: input.TerminalId,
+            transactionStan: input.TransactionStan,
+            retrievalReferenceNumber: input.Rrn,
+            authCode: input.AuthCode,
+            maskedPan: input.MaskedPan,
+            cardScheme: input.CardScheme,
+            tenantId: payment.TenantId
         );
 
         var detailRepo = LazyServiceProvider.LazyGetRequiredService<Volo.Abp.Domain.Repositories.IRepository<PosTerminalTransactionDetail, Guid>>();
@@ -459,6 +461,94 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         await _repository.UpdateAsync(payment, autoSave: false, cancellationToken: cancellationToken);
         await CurrentUnitOfWork!.SaveChangesAsync(cancellationToken);
 
+        return ObjectMapper.Map<Payment, PaymentDto>(payment);
+    }
+
+    [RemoteService(IsEnabled = false)]
+    public async Task<PaymentDto> RefundPosPaymentAsync(CompletePosTerminalRefundDto input, System.Threading.CancellationToken cancellationToken = default)
+    {
+        var payment = await _repository.GetAsync(input.PaymentId, cancellationToken: cancellationToken);
+
+        // Idempotency Guard: If already Refunded or Reversed, short-circuit
+        if (payment.PaymentStatus == PaymentStatus.Refunded || payment.PaymentStatus == PaymentStatus.Reversed)
+        {
+            _logger.LogInformation("Payment {PaymentId} is already in state {Status}. Short-circuiting refund.", payment.Id, payment.PaymentStatus);
+            return ObjectMapper.Map<Payment, PaymentDto>(payment);
+        }
+
+        var outcome = SamaResponseCodeMapping.Evaluate(input.SamaCode);
+
+        // Audit recording (always created for both Approved and Declined)
+        var detail = PosTerminalTransactionDetail.Create(
+            payment.Id,
+            input.SamaCode,
+            outcome,
+            input.RawJsonResult,
+            transactionType: PosTransactionType.Refund,
+            terminalId: input.TerminalId,
+            transactionStan: input.TransactionStan,
+            retrievalReferenceNumber: input.Rrn,
+            authCode: input.AuthCode,
+            maskedPan: input.MaskedPan,
+            cardScheme: input.CardScheme,
+            tenantId: payment.TenantId
+        );
+
+        var detailRepo = LazyServiceProvider.LazyGetRequiredService<Volo.Abp.Domain.Repositories.IRepository<PosTerminalTransactionDetail, Guid>>();
+        await detailRepo.InsertAsync(detail, autoSave: false, cancellationToken: cancellationToken);
+
+        // State Transition: Only transition to Refunded on Approved outcome
+        if (outcome == SamaResponseOutcome.Approved)
+        {
+            payment.PaymentStatus = PaymentStatus.Refunded;
+            await _repository.UpdateAsync(payment, autoSave: false, cancellationToken: cancellationToken);
+        }
+
+        await CurrentUnitOfWork!.SaveChangesAsync(cancellationToken);
+        return ObjectMapper.Map<Payment, PaymentDto>(payment);
+    }
+
+    [RemoteService(IsEnabled = false)]
+    public async Task<PaymentDto> ReversePosPaymentAsync(CompletePosTerminalReversalDto input, System.Threading.CancellationToken cancellationToken = default)
+    {
+        var payment = await _repository.GetAsync(input.PaymentId, cancellationToken: cancellationToken);
+
+        // Idempotency Guard: If already Refunded or Reversed, short-circuit
+        if (payment.PaymentStatus == PaymentStatus.Refunded || payment.PaymentStatus == PaymentStatus.Reversed)
+        {
+            _logger.LogInformation("Payment {PaymentId} is already in state {Status}. Short-circuiting reversal.", payment.Id, payment.PaymentStatus);
+            return ObjectMapper.Map<Payment, PaymentDto>(payment);
+        }
+
+        var outcome = SamaResponseCodeMapping.Evaluate(input.SamaCode);
+
+        // Audit recording (always created for both Approved and Declined)
+        var detail = PosTerminalTransactionDetail.Create(
+            payment.Id,
+            input.SamaCode,
+            outcome,
+            input.RawJsonResult,
+            transactionType: PosTransactionType.Reversal,
+            terminalId: input.TerminalId,
+            transactionStan: input.TransactionStan,
+            retrievalReferenceNumber: input.Rrn,
+            authCode: input.AuthCode,
+            maskedPan: input.MaskedPan,
+            cardScheme: input.CardScheme,
+            tenantId: payment.TenantId
+        );
+
+        var detailRepo = LazyServiceProvider.LazyGetRequiredService<Volo.Abp.Domain.Repositories.IRepository<PosTerminalTransactionDetail, Guid>>();
+        await detailRepo.InsertAsync(detail, autoSave: false, cancellationToken: cancellationToken);
+
+        // State Transition: Only transition to Reversed on Approved outcome
+        if (outcome == SamaResponseOutcome.Approved)
+        {
+            payment.PaymentStatus = PaymentStatus.Reversed;
+            await _repository.UpdateAsync(payment, autoSave: false, cancellationToken: cancellationToken);
+        }
+
+        await CurrentUnitOfWork!.SaveChangesAsync(cancellationToken);
         return ObjectMapper.Map<Payment, PaymentDto>(payment);
     }
     #endregion

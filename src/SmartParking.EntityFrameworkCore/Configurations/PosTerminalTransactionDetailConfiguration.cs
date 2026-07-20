@@ -15,13 +15,14 @@ public class PosTerminalTransactionDetailConfiguration : IEntityTypeConfiguratio
         builder.HasKey(x => x.Id);
 
         builder.HasOne(x => x.Payment)
-            .WithOne(p => p.PosTerminalDetail)
-            .HasForeignKey<PosTerminalTransactionDetail>(x => x.PaymentId)
+            .WithMany(p => p.PosTerminalDetails)
+            .HasForeignKey(x => x.PaymentId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(x => x.PaymentId).IsUnique();
+        builder.HasIndex(x => x.PaymentId);
 
+        builder.Property(x => x.TransactionType).IsRequired();
         builder.Property(x => x.SamaResponseCode).HasMaxLength(3).IsRequired();
         builder.Property(x => x.Outcome).IsRequired();
         builder.Property(x => x.RawJsonResult).IsRequired();

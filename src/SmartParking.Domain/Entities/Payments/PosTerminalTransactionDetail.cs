@@ -40,6 +40,9 @@ public class PosTerminalTransactionDetail : FullAuditedEntity<Guid>, IMultiTenan
     /// <summary>Card scheme from response (e.g. "VISA CREDIT", "MADA").</summary>
     public string? CardScheme { get; private set; }
 
+    /// <summary>Type of transaction: Purchase, Refund, or Reversal.</summary>
+    public PosTransactionType TransactionType { get; private set; }
+
     /// <summary>
     /// Full raw JsonResult string from OnDataReceive TERMINAL_RESPONSE event.
     /// Stored as-is for audit/dispute purposes. Contains all EMV tags, merchant info, etc.
@@ -55,13 +58,14 @@ public class PosTerminalTransactionDetail : FullAuditedEntity<Guid>, IMultiTenan
     protected PosTerminalTransactionDetail() { }
 
     /// <summary>
-    /// Factory method. Called once when TERMINAL_RESPONSE arrives from the terminal.
+    /// Factory method. Called when TERMINAL_RESPONSE arrives from the terminal (Purchase, Refund, or Reversal).
     /// </summary>
     public static PosTerminalTransactionDetail Create(
         Guid paymentId,
         string samaResponseCode,
         SamaResponseOutcome outcome,
         string rawJsonResult,
+        PosTransactionType transactionType = PosTransactionType.Purchase,
         string? terminalId = null,
         string? transactionStan = null,
         string? retrievalReferenceNumber = null,
@@ -76,6 +80,7 @@ public class PosTerminalTransactionDetail : FullAuditedEntity<Guid>, IMultiTenan
             SamaResponseCode = samaResponseCode,
             Outcome = outcome,
             RawJsonResult = rawJsonResult,
+            TransactionType = transactionType,
             TerminalId = terminalId,
             TransactionStan = transactionStan,
             RetrievalReferenceNumber = retrievalReferenceNumber,

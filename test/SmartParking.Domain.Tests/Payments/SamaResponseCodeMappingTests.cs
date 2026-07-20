@@ -14,8 +14,6 @@ public class SamaResponseCodeMappingTests
     [InlineData("087")]
     [InlineData("089")]
     [InlineData("400")]
-    [InlineData("500")]
-    [InlineData("501")]
     public void Evaluate_ShouldReturnApproved_ForApprovedSamaCodes(string code)
     {
         // Act
@@ -23,6 +21,18 @@ public class SamaResponseCodeMappingTests
 
         // Assert
         result.ShouldBe(SamaResponseOutcome.Approved);
+    }
+
+    [Fact]
+    public void Evaluate_ShouldReturnReconciliationSuccessful_ForCode500()
+    {
+        SamaResponseCodeMapping.Evaluate("500").ShouldBe(SamaResponseOutcome.ReconciliationSuccessful);
+    }
+
+    [Fact]
+    public void Evaluate_ShouldReturnReconciliationFailed_ForCode501()
+    {
+        SamaResponseCodeMapping.Evaluate("501").ShouldBe(SamaResponseOutcome.ReconciliationFailed);
     }
 
     [Theory]
@@ -33,7 +43,7 @@ public class SamaResponseCodeMappingTests
     [InlineData("999")]
     [InlineData("")]
     [InlineData(null)]
-    public void Evaluate_ShouldReturnDeclined_ForOtherSamaCodes(string code)
+    public void Evaluate_ShouldReturnDeclined_ForOtherSamaCodes(string? code)
     {
         // Act
         var result = SamaResponseCodeMapping.Evaluate(code);

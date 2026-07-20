@@ -1,0 +1,16 @@
+@using SmartParking.Blazor.Components.PosTerminal
+@using SmartParking.Payments
+@using SmartParking.Organizations
+
+@namespace SmartParking.Blazor.Components.PosTerminal
+
+<MudDialog Class="pos-payment-dialog">
+    <DialogContent>
+        <PosTerminalPanel @ref="_panel"
+                          Request="Request"
+                          OrgSettings="OrgSettings"
+                          OnPaymentCreated="OnPaymentCreated"
+                          OnTransactionCompleted="HandleTransactionCompleted"
+                          OnCancel="HandleCancel" />
+    </DialogContent>
+</MudDialog>

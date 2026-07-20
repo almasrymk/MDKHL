@@ -43,13 +43,20 @@ public sealed class TransactionNoPayloadRequestDto
     [JsonPropertyName("PrintSettings")] public string? PrintSettings { get; init; }
 }
 
+public sealed class ReconciliationRequestDto
+{
+    [JsonPropertyName("Event")] public string Event { get; init; } = "TRANSACTION";
+    [JsonPropertyName("Operation")] public string Operation { get; init; } = "RECONCILIATION";
+    [JsonPropertyName("PrintSettings")] public string PrintSettings { get; init; } = "1";
+}
+
 public sealed class PurchaseRequestDto
 {
     [JsonPropertyName("Event")] public string Event { get; init; } = "TRANSACTION";
     [JsonPropertyName("Operation")] public string Operation { get; init; } = "PURCHASE";
     [JsonPropertyName("Amount")] public string Amount { get; init; }
     [JsonPropertyName("ECRNumber")] public string ECRNumber { get; init; }
-    [JsonPropertyName("PrintSettings")] public string PrintSettings { get; init; } = "1";
+    [JsonPropertyName("PrintSettings")] public string PrintSettings { get; init; } = "0";
     [JsonPropertyName("AppId")] public string AppId { get; init; } = "11";
 }
 
@@ -201,4 +208,39 @@ public sealed class WriteEventResponseDto
     [JsonPropertyName("EventName")] public string EventName { get; init; }
     [JsonPropertyName("JsonResult")] public string JsonResult { get; init; }
     [JsonPropertyName("Event")] public string Event { get; init; } = "OnWrite";
+}
+
+public sealed class GenericEventDataResponseDto
+{
+    [JsonPropertyName("EventName")] public string EventName { get; init; }
+    [JsonPropertyName("JsonResult")] public string? JsonResult { get; init; }
+    [JsonPropertyName("Event")] public string Event { get; init; } = "OnDataReceive";
+}
+
+public sealed class MerchantInfoResponseDto
+{
+    [JsonPropertyName("EventName")] public string EventName { get; init; } = "MERCHANT_INFO";
+    [JsonPropertyName("JsonResult")] public string JsonResult { get; init; }
+    [JsonPropertyName("Event")] public string Event { get; init; } = "OnDataReceive";
+}
+
+public sealed class TerminalIdResponseDto
+{
+    [JsonPropertyName("EventName")] public string EventName { get; init; } = "TERMINAL_ID";
+    [JsonPropertyName("JsonResult")] public string JsonResult { get; init; }
+    [JsonPropertyName("Event")] public string Event { get; init; } = "OnDataReceive";
+}
+
+public sealed class AvailablePortsResponseDto
+{
+    [JsonPropertyName("EventName")] public string EventName { get; init; } = "AVAILABLE_PORTS";
+    [JsonPropertyName("JsonResult")] public string JsonResult { get; init; }
+    [JsonPropertyName("Event")] public string Event { get; init; } = "OnDataReceive";
+}
+
+public sealed class CheckStatusResponseDto
+{
+    [JsonPropertyName("EventName")] public string EventName { get; init; } = "CHECK_STATUS";
+    [JsonPropertyName("JsonResult")] public string JsonResult { get; init; }
+    [JsonPropertyName("Event")] public string Event { get; init; } = "OnDataReceive";
 }

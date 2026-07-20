@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Blazorise;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
@@ -142,6 +142,14 @@ public partial class OrganizationEdit
             RentalSlots = _organizationSettingsDto.RentalSlots,
             IsSlotsEditable = _organizationSettingsDto.IsSlotsEditable,
             OwnerVehicles = _organizationSettingsDto.OwnerVehicles,
+            PosTerminalEnabled = _organizationSettingsDto.PosTerminalEnabled,
+            PosTerminalConnectionMode = _organizationSettingsDto.PosTerminalConnectionMode,
+            PosTerminalTcpIpAddress = _organizationSettingsDto.PosTerminalTcpIpAddress,
+            PosTerminalTcpPort = _organizationSettingsDto.PosTerminalTcpPort,
+            PosTerminalComName = _organizationSettingsDto.PosTerminalComName,
+            PosTerminalComBaudRate = _organizationSettingsDto.PosTerminalComBaudRate,
+            PosTerminalComDataBits = _organizationSettingsDto.PosTerminalComDataBits,
+            PosTerminalComParity = _organizationSettingsDto.PosTerminalComParity,
         };
         
         //_createUpdateOrganiztionDto.OrganizationSettingsDto.VehcileAccess = _organizationSettingsDto.VehcileAccess;
@@ -231,13 +239,27 @@ public partial class OrganizationEdit
         NumberOfCustomers = SelectedSubscription.NumberOfCustomers;
         SubscriptionSlotNumber = SelectedSubscription.ParkingSlot;
         Parkingslot = SelectedSubscription.ParkingSlot;
-        _organizationSettingsDto.UserAccess = organization.OrganizationSettings.UserAccess;
-        _organizationSettingsDto.VehcileAccess = organization.OrganizationSettings.VehcileAccess;
-        _organizationSettingsDto.UseShifts = organization.OrganizationSettings.UseShifts;
-        _organizationSettingsDto.RentalSlots = organization.OrganizationSettings.RentalSlots;
-        _organizationSettingsDto.OwnerSlots = organization.OrganizationSettings.OwnerSlots;
-        _organizationSettingsDto.IsSlotsEditable = organization.OrganizationSettings.IsSlotsEditable;
-        _organizationSettingsDto.OwnerVehicles = organization.OrganizationSettings.OwnerVehicles;
+        if (organization.OrganizationSettings != null)
+        {
+            _organizationSettingsDto = new OrganizationSettingsDto
+            {
+                UserAccess = organization.OrganizationSettings.UserAccess,
+                VehcileAccess = organization.OrganizationSettings.VehcileAccess,
+                UseShifts = organization.OrganizationSettings.UseShifts,
+                RentalSlots = organization.OrganizationSettings.RentalSlots,
+                OwnerSlots = organization.OrganizationSettings.OwnerSlots,
+                IsSlotsEditable = organization.OrganizationSettings.IsSlotsEditable,
+                OwnerVehicles = organization.OrganizationSettings.OwnerVehicles,
+                PosTerminalEnabled = organization.OrganizationSettings.PosTerminalEnabled,
+                PosTerminalConnectionMode = organization.OrganizationSettings.PosTerminalConnectionMode,
+                PosTerminalTcpIpAddress = organization.OrganizationSettings.PosTerminalTcpIpAddress,
+                PosTerminalTcpPort = organization.OrganizationSettings.PosTerminalTcpPort,
+                PosTerminalComName = organization.OrganizationSettings.PosTerminalComName,
+                PosTerminalComBaudRate = organization.OrganizationSettings.PosTerminalComBaudRate,
+                PosTerminalComDataBits = organization.OrganizationSettings.PosTerminalComDataBits,
+                PosTerminalComParity = organization.OrganizationSettings.PosTerminalComParity
+            };
+        }
         StateHasChanged();
 
     }

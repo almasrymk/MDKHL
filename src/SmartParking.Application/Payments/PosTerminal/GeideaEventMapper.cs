@@ -1,12 +1,13 @@
 using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Linq;
 using SmartParking.Enums.PosTerminal;
 
 namespace SmartParking.Payments.PosTerminal;
 
 public static class GeideaEventMapper
 {
-    private static readonly FrozenDictionary<string, GeideaCallbackEvent> EventsMap = new Dictionary<string, GeideaCallbackEvent>
+    private static readonly FrozenDictionary<string, GeideaCallbackEvent> EventsMap = new Dictionary<string, GeideaCallbackEvent>(System.StringComparer.OrdinalIgnoreCase)
     {
         { "OnConnect", GeideaCallbackEvent.OnConnect },
         { "OnDisConnect", GeideaCallbackEvent.OnDisConnect },
@@ -15,9 +16,9 @@ public static class GeideaEventMapper
         { "OnTerminalStatus", GeideaCallbackEvent.OnTerminalStatus },
         { "OnDataReceive", GeideaCallbackEvent.OnDataReceive },
         { "OnWrite", GeideaCallbackEvent.OnWrite }
-    }.ToFrozenDictionary();
+    }.ToFrozenDictionary(System.StringComparer.OrdinalIgnoreCase);
 
-    private static readonly FrozenDictionary<string, GeideaTerminalAction> ActionsMap = new Dictionary<string, GeideaTerminalAction>
+    private static readonly FrozenDictionary<string, GeideaTerminalAction> ActionsMap = new Dictionary<string, GeideaTerminalAction>(System.StringComparer.OrdinalIgnoreCase)
     {
         // Standard Actions
         { "SWIPE_OR_INSERT", GeideaTerminalAction.SwipeOrInsert },
@@ -28,6 +29,7 @@ public static class GeideaEventMapper
         { "IDLE_SCREEN", GeideaTerminalAction.IdleScreen },
         { "CONNECTING", GeideaTerminalAction.Connecting },
         { "RECONNECT", GeideaTerminalAction.ReConnect },
+        { "RECONNECTING", GeideaTerminalAction.ReConnect },
         { "SENDING_REQUEST", GeideaTerminalAction.SendingRequest },
         { "WAITING_RESPONSE", GeideaTerminalAction.WaitingResponse },
         { "SAF_PROCESSING", GeideaTerminalAction.SafProcessing },
@@ -61,13 +63,25 @@ public static class GeideaEventMapper
         { "REFUND_PAN_NOT_MATCHING", GeideaTerminalAction.RefundPanNotMatching },
         { "INVALID_PASSWORD", GeideaTerminalAction.InvalidPassword },
         { "CARD_NOT_DETECTED", GeideaTerminalAction.CardNotDetected }
-    }.ToFrozenDictionary();
+    }.ToFrozenDictionary(System.StringComparer.OrdinalIgnoreCase);
 
-    private static readonly FrozenDictionary<string, GeideaTerminalStatus> StatusesMap = new Dictionary<string, GeideaTerminalStatus>
+    private static readonly FrozenDictionary<string, GeideaTerminalStatus> StatusesMap = new Dictionary<string, GeideaTerminalStatus>(System.StringComparer.OrdinalIgnoreCase)
     {
         { "BUSY", GeideaTerminalStatus.Busy },
         { "AVAILABLE", GeideaTerminalStatus.Available }
-    }.ToFrozenDictionary();
+    }.ToFrozenDictionary(System.StringComparer.OrdinalIgnoreCase);
+
+    private static readonly FrozenSet<string> SupportedEventNames = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase)
+    {
+        "TERMINAL_RESPONSE",
+        "TERMINAL_SETTINGS",
+        "TERMINAL_STATUS",
+        "TERMINAL_ACTION",
+        "MERCHANT_INFO",
+        "TERMINAL_ID",
+        "AVAILABLE_PORTS",
+        "CHECK_STATUS"
+    }.ToFrozenSet(System.StringComparer.OrdinalIgnoreCase);
 
     private static readonly FrozenDictionary<string, (string English, string Arabic)> SamaMessagesMap = new Dictionary<string, (string, string)>
     {
@@ -89,13 +103,45 @@ public static class GeideaEventMapper
     }.ToFrozenDictionary();
 
     public static GeideaCallbackEvent ParseCallbackEvent(string rawEvent)
-        => EventsMap.TryGetValue(rawEvent, out var ev) ? ev : GeideaCallbackEvent.OnWrite; // Fallback to OnWrite or other default
+        => EventsMap.TryGetValue(rawEvent, out var ev) ? ev : GeideaCallbackEvent.OnWrite;
 
     public static GeideaTerminalAction ParseTerminalAction(string rawAction)
         => ActionsMap.TryGetValue(rawAction, out var act) ? act : GeideaTerminalAction.Unknown;
 
     public static GeideaTerminalStatus ParseTerminalStatus(string rawStatus)
-        => StatusesMap.TryGetValue(rawStatus, out var stat) ? stat : GeideaTerminalStatus.Busy;
+        => StatusesMap.TryGetValue(rawStatus, out var stat) ? stat : GeideaTerminalStatus.Unknown;
+
+    public static bool IsSupportedEventName(string eventName)
+        => SupportedEventNames.Contains(eventName);
+
+    public static bool IsTerminalErrorAction(GeideaTerminalAction action) => action switch
+    {
+        GeideaTerminalAction.UserCancelledAndTimeout => true,
+        GeideaTerminalAction.CardReadError => true,
+        GeideaTerminalAction.DataError => true,
+        GeideaTerminalAction.BlockedCard => true,
+        GeideaTerminalAction.NoActiveApplicationFound => true,
+        GeideaTerminalAction.InsertCardOnlyUseSmartCardReader => true,
+        GeideaTerminalAction.MaximumAmountLimitExceeded => true,
+        GeideaTerminalAction.TransactionCancelled => true,
+        GeideaTerminalAction.WrongPin => true,
+        GeideaTerminalAction.RetryLimitExceeded => true,
+        GeideaTerminalAction.MaximumSafReached => true,
+        GeideaTerminalAction.MagStripeNotSupported => true,
+        GeideaTerminalAction.CardSchemeNotSupported => true,
+        GeideaTerminalAction.DeSafFailed => true,
+        GeideaTerminalAction.ReconciliationNoBusiness => true,
+        GeideaTerminalAction.ReconciliationFailed => true,
+        GeideaTerminalAction.NoTxnToReverse => true,
+        GeideaTerminalAction.TryContactingInterface => true,
+        GeideaTerminalAction.SupervisorPasswordQuit => true,
+        GeideaTerminalAction.GprsDown => true,
+        GeideaTerminalAction.RefundPanNotMatching => true,
+        GeideaTerminalAction.InvalidPassword => true,
+        GeideaTerminalAction.CardNotDetected => true,
+        GeideaTerminalAction.PinQuit => true,
+        _ => false
+    };
 
     public static string GetSamaResponseDescription(string responseCode, bool isArabic)
     {

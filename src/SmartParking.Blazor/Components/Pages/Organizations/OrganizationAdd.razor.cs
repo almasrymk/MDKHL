@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
@@ -147,7 +147,19 @@ public partial class OrganizationAdd
         {
             VehcileAccess = _organizationSettingsDto.VehcileAccess,
             UserAccess = _organizationSettingsDto.UserAccess,
-            UseShifts = _organizationSettingsDto.UseShifts
+            UseShifts = _organizationSettingsDto.UseShifts,
+            OwnerSlots = _organizationSettingsDto.OwnerSlots,
+            RentalSlots = _organizationSettingsDto.RentalSlots,
+            IsSlotsEditable = _organizationSettingsDto.IsSlotsEditable,
+            OwnerVehicles = _organizationSettingsDto.OwnerVehicles,
+            PosTerminalEnabled = _organizationSettingsDto.PosTerminalEnabled,
+            PosTerminalConnectionMode = _organizationSettingsDto.PosTerminalConnectionMode,
+            PosTerminalTcpIpAddress = _organizationSettingsDto.PosTerminalTcpIpAddress,
+            PosTerminalTcpPort = _organizationSettingsDto.PosTerminalTcpPort,
+            PosTerminalComName = _organizationSettingsDto.PosTerminalComName,
+            PosTerminalComBaudRate = _organizationSettingsDto.PosTerminalComBaudRate,
+            PosTerminalComDataBits = _organizationSettingsDto.PosTerminalComDataBits,
+            PosTerminalComParity = _organizationSettingsDto.PosTerminalComParity,
         };
         try
         {

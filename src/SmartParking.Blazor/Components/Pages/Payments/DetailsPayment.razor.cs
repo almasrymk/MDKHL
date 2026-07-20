@@ -1,8 +1,16 @@
-﻿using Microsoft.AspNetCore.Components;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.Pages.Invoices;
+using SmartParking.Blazor.Components.Shared;
+using SmartParking.Blazor.Components.PosTerminal;
 using SmartParking.CustomerPackages.Dtos;
+using SmartParking.Entities.Payments;
 using SmartParking.Enums;
+using SmartParking.Enums.PosTerminal;
+using SmartParking.Organizations;
 using SmartParking.Payments;
 using SmartParking.Payments.PaymentRelations;
 
@@ -10,6 +18,9 @@ namespace SmartParking.Blazor.Components.Pages.Payments;
 
 public partial class DetailsPayment
 {
+    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IOrganizationsAppService OrganizationAppService { get; set; } = default!;
+    [Inject] private Volo.Abp.Domain.Repositories.IRepository<PosTerminalTransactionDetail, Guid> PosDetailRepository { get; set; } = default!;
     [Parameter] public string Id { get; set; }  // Capture string ID
     private PaymentGetResponseDto Payment {  get; set; } = new PaymentGetResponseDto();
     private string CreationTime { get; set; }
@@ -173,6 +184,69 @@ public partial class DetailsPayment
         {
             var uri = Navigation.Uri;
             Navigation.NavigateTo(uri, forceLoad: true);
+        }
+    }
+
+    private async Task OpenAdminPosDialog(string operation)
+    {
+        try
+        {
+            var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+
+            var details = await PosDetailRepository.GetListAsync(x => x.PaymentId == Payment.Id);
+            var purchaseDetail = details.FirstOrDefault(x => x.TransactionType == PosTransactionType.Purchase) ?? details.FirstOrDefault();
+
+            var parameters = new DialogParameters<PosAdminTransactionDialog>
+            {
+                { x => x.Operation, operation },
+                { x => x.PaymentId, Payment.Id },
+                { x => x.Amount, Payment.Amount },
+                { x => x.Rrn, purchaseDetail?.RetrievalReferenceNumber },
+                { x => x.Stan, purchaseDetail?.TransactionStan },
+                { x => x.TxnDate, Payment.CreationTime },
+                { x => x.OrgSettings, organization?.OrganizationSettings }
+            };
+
+            var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Small, FullWidth = true };
+            var dialog = await DialogService.ShowAsync<PosAdminTransactionDialog>($"POS {operation}", parameters, options);
+            var result = await dialog.Result;
+
+            if (result != null && !result.Canceled && result.Data is PosTerminalStateSnapshot snapshot)
+            {
+                if (snapshot.Outcome == SamaResponseOutcome.Approved)
+                {
+                    SnackBar.ShowSnackbar(Snackbar, $"Transaction {operation} Approved", MudBlazor.Severity.Success);
+                    await FetchPayment();
+                }
+                else
+                {
+                    SnackBar.ShowSnackbar(Snackbar, snapshot.SamaDescription ?? $"{operation} Declined", MudBlazor.Severity.Warning);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, ex.Message, MudBlazor.Severity.Error);
+        }
+    }
+
+    private async Task OpenPosReconciliationDialog()
+    {
+        try
+        {
+            var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+
+            var parameters = new DialogParameters<PosReconciliationDialog>
+            {
+                { x => x.OrgSettings, organization?.OrganizationSettings }
+            };
+
+            var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Small, FullWidth = true };
+            await DialogService.ShowAsync<PosReconciliationDialog>("POS Reconciliation", parameters, options);
+        }
+        catch (Exception ex)
+        {
+            SnackBar.ShowSnackbar(Snackbar, ex.Message, MudBlazor.Severity.Error);
         }
     }
 }

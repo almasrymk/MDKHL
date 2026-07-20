@@ -107,13 +107,48 @@ public class GeideaEventMapperTests
     }
 
     [Fact]
-    public void ParseTerminalStatus_ShouldFallbackToBusy_ForUnknownStatus()
+    public void ParseTerminalStatus_ShouldFallbackToUnknown_ForUnknownStatus()
     {
         // Act
         var result = GeideaEventMapper.ParseTerminalStatus("UNKNOWN_STATUS");
 
         // Assert
-        result.ShouldBe(GeideaTerminalStatus.Busy);
+        result.ShouldBe(GeideaTerminalStatus.Unknown);
+    }
+
+    [Theory]
+    [InlineData("TERMINAL_RESPONSE", true)]
+    [InlineData("TERMINAL_SETTINGS", true)]
+    [InlineData("TERMINAL_STATUS", true)]
+    [InlineData("TERMINAL_ACTION", true)]
+    [InlineData("MERCHANT_INFO", true)]
+    [InlineData("TERMINAL_ID", true)]
+    [InlineData("AVAILABLE_PORTS", true)]
+    [InlineData("CHECK_STATUS", true)]
+    [InlineData("UNKNOWN_EVENT", false)]
+    public void IsSupportedEventName_ShouldVerifyEventNames(string eventName, bool expected)
+    {
+        // Act
+        var result = GeideaEventMapper.IsSupportedEventName(eventName);
+
+        // Assert
+        result.ShouldBe(expected);
+    }
+
+    [Theory]
+    [InlineData(GeideaTerminalAction.UserCancelledAndTimeout, true)]
+    [InlineData(GeideaTerminalAction.TransactionCancelled, true)]
+    [InlineData(GeideaTerminalAction.WrongPin, true)]
+    [InlineData(GeideaTerminalAction.PinQuit, true)]
+    [InlineData(GeideaTerminalAction.SwipeOrInsert, false)]
+    [InlineData(GeideaTerminalAction.PinEntry, false)]
+    public void IsTerminalErrorAction_ShouldIdentifyErrorActions(GeideaTerminalAction action, bool expected)
+    {
+        // Act
+        var result = GeideaEventMapper.IsTerminalErrorAction(action);
+
+        // Assert
+        result.ShouldBe(expected);
     }
 
     [Theory]

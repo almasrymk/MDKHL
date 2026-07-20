@@ -8,7 +8,7 @@ public class PosTerminalOptions
     public string ServiceUrl { get; set; } = "ws://localhost:5000/messages";
 
     /// <summary>Global connection handshake timeout.</summary>
-    public int ConnectionTimeoutMs { get; set; } = 5000;
+    public int ConnectionTimeoutMs { get; set; } = 15000;
 
     /// <summary>Global transaction timeout (SAMA terminal response wait).</summary>
     public int TransactionTimeoutMs { get; set; } = 60000;

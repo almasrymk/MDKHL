@@ -3,6 +3,7 @@ using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using System;
+using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
@@ -39,5 +40,5 @@ public class Payment : FullAuditedEntity<Guid> , IMultiTenant
     public string ErrorMessagesZatca { get; set; }
     public int? CustomerPackageId { get; set; }
     public virtual CustomerPackage? CustomerPackage { get; set; }
-    public virtual PosTerminalTransactionDetail? PosTerminalDetail { get; set; }
+    public virtual ICollection<PosTerminalTransactionDetail> PosTerminalDetails { get; set; } = new List<PosTerminalTransactionDetail>();
 }

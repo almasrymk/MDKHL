@@ -1,0 +1,81 @@
+@using SmartParking.Blazor.Components.PosTerminal
+@using SmartParking.Enums.PosTerminal
+@using SmartParking.Organizations
+
+@namespace SmartParking.Blazor.Components.PosTerminal
+
+<MudDialog Class="pos-reconciliation-dialog">
+    <DialogContent>
+        <MudPaper Class="pa-4" Elevation="0">
+            <MudStack AlignItems="AlignItems.Center" Spacing="3">
+                <MudText Typo="Typo.h6">POS Terminal Settlement / Reconciliation</MudText>
+
+                @if (!_isConfigured)
+                {
+                    <MudAlert Severity="Severity.Warning" Dense="true">
+                        POS Terminal is not configured for this organization.
+                    </MudAlert>
+                }
+                else if (_state.SessionState == PosSessionState.Connecting || _isBusy)
+                {
+                    <MudProgressCircular Indeterminate="true" Color="MudBlazor.Color.Primary" />
+                    <MudText Typo="Typo.body1">Connecting & running batch reconciliation...</MudText>
+                }
+                else if (_state.SessionState == PosSessionState.Completed)
+                {
+                    if (_state.Outcome == SamaResponseOutcome.ReconciliationSuccessful || _state.SamaCode == "500")
+                    {
+                        <MudAlert Severity="Severity.Success">
+                            <MudText Typo="Typo.h6">Reconciliation Successful (Code 500)</MudText>
+                            <MudText Typo="Typo.body2">Batch totals matched host record.</MudText>
+                        </MudAlert>
+                    }
+                    else if (_state.Outcome == SamaResponseOutcome.ReconciliationFailed || _state.SamaCode == "501")
+                    {
+                        <MudAlert Severity="Severity.Warning">
+                            <MudText Typo="Typo.h6">Batch Discrepancy (Code 501)</MudText>
+                            <MudText Typo="Typo.body2">Host totals do not match terminal batch totals.</MudText>
+                        </MudAlert>
+                    }
+                    else
+                    {
+                        <MudAlert Severity="Severity.Error">
+                            <MudText Typo="Typo.h6">Reconciliation Failed (@_state.SamaCode)</MudText>
+                            <MudText Typo="Typo.body2">@(_state.SamaDescription ?? "Terminal reconciliation failed.")</MudText>
+                        </MudAlert>
+                    }
+                }
+                else if (_state.SessionState == PosSessionState.Error)
+                {
+                    <MudAlert Severity="Severity.Error">
+                        @(_state.LastErrorMessage ?? "Reconciliation operation failed.")
+                    </MudAlert>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2" Class="text-center">
+                        Click below to execute an end-of-day batch settlement with the acquirer host.
+                    </MudText>
+
+                    <MudButton Variant="Variant.Filled"
+                               Color="MudBlazor.Color.Primary"
+                               Size="MudBlazor.Size.Large"
+                               FullWidth="true"
+                               OnClick="ExecuteReconciliationAsync"
+                               Disabled="_isBusy">
+                        Start Reconciliation
+                    </MudButton>
+                }
+
+                @if (_state.SessionState != PosSessionState.Connecting && !_isBusy)
+                {
+                    <MudButton Variant="Variant.Text"
+                               Color="MudBlazor.Color.Default"
+                               OnClick="CloseDialog">
+                        Close
+                    </MudButton>
+                }
+            </MudStack>
+        </MudPaper>
+    </DialogContent>
+</MudDialog>

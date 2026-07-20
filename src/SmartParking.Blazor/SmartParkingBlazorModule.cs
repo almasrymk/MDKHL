@@ -150,6 +150,8 @@ public class SmartParkingBlazorModule : AbpModule
             context.Services.GetConfiguration().GetSection(PaymobOptions.SectionName));
         context.Services.Configure<PosTerminalOptions>(
             context.Services.GetConfiguration().GetSection(PosTerminalOptions.SectionName));
+        context.Services.AddTransient(sp => sp.GetRequiredService<IOptions<PosTerminalOptions>>().Value);
+
 
         // ── Named HttpClients for payment gateway services ────────────────────
         // AddHttpClient lives in Microsoft.Extensions.Http (AspNetCore shared framework)

@@ -1,4 +1,4 @@
-﻿@page "/payments/view/{Id}"
+@page "/payments/view/{Id}"
 @using Microsoft.Extensions.Localization
 @using SmartParking.Currency
 @using SmartParking.CustomerUnitPackages
@@ -234,8 +234,58 @@
             }
         </MudGrid>
 
-        <MudItem class="d-flex justify-content-between mt-12">
+        <MudItem class="d-flex justify-content-between align-center mt-12">
             <MudButton OnClick="@Back" Variant="Variant.Filled" Color="MudBlazor.Color.Dark">@L["Back"]</MudButton>
+            
+            @if (Payment.PaymentMethod == PaymentMethod.POS.ToString())
+            {
+                <MudStack Row="true" Spacing="2">
+                    @if (Payment.PaymentStatus == PaymentStatus.Success.ToString())
+                    {
+                        @* Same-day time-window check for Reversal (KSA local time zone UTC+3) *@
+                        bool isSameDay = Payment.CreationTime.IsSameKsaDay();
+                        if (isSameDay)
+                        {
+                            <MudButton Variant="Variant.Filled"
+                                       Color="MudBlazor.Color.Error"
+                                       OnClick="@(() => OpenAdminPosDialog("REVERSAL"))">
+                                Reversal
+                            </MudButton>
+                        }
+                        else
+                        {
+                            <MudTooltip Text="Reversals are supported for same-day transactions only. Use Refund for historical payments.">
+                                <MudButton Variant="Variant.Filled"
+                                           Color="MudBlazor.Color.Error"
+                                           Disabled="true">
+                                    Reversal
+                                </MudButton>
+                            </MudTooltip>
+                        }
+
+                        <MudButton Variant="Variant.Filled"
+                                   Color="MudBlazor.Color.Warning"
+                                   OnClick="@(() => OpenAdminPosDialog("REFUND"))">
+                            Refund
+                        </MudButton>
+                    }
+                    else if (Payment.PaymentStatus == PaymentStatus.Refunded.ToString())
+                    {
+                        <MudChip T="string" Color="MudBlazor.Color.Warning">Refunded</MudChip>
+                    }
+                    else if (Payment.PaymentStatus == PaymentStatus.Reversed.ToString())
+                    {
+                        <MudChip T="string" Color="MudBlazor.Color.Error">Reversed</MudChip>
+                    }
+
+                    <MudButton Variant="Variant.Outlined"
+                               Color="MudBlazor.Color.Info"
+                               OnClick="@OpenPosReconciliationDialog">
+                        Reconciliation
+                    </MudButton>
+                </MudStack>
+            }
+
             @if (Payment.StatusZatca == Enums.Status.Active)
             {
                 if (Payment.IsSentZatca != true)
