@@ -49,6 +49,7 @@ public partial class CustomInvoiceMainPage : IDisposable
     public string EntryPicture { get; set; }
     public string ExitPicture { get; set; }
     public string PlateNumber { get; set; }
+    public SmartParking.IntegrationUnit.Dtos.VehiclePlateDto VehiclePlate { get; set; } = new();
     public string TicketId { get; set; }
     public decimal InvoiceAmount { get; set; }
     public int VatRate { get; set; }
@@ -265,6 +266,9 @@ public partial class CustomInvoiceMainPage : IDisposable
                 EntryPicture  = invoiceDto.EntryTransactionImage;
                 ExitPicture   = invoiceDto.ExitTransactionImage;
                 PlateNumber   = invoiceDto.PlateNumber;
+                
+                ParsePlateNumber(PlateNumber);
+
                 InvoiceAmount = Math.Round(InvoicePrice + Vat, 2);
                 VatRate       = 15;
                 TicketId      = invoiceDto.TicketId;
@@ -281,6 +285,43 @@ public partial class CustomInvoiceMainPage : IDisposable
             await Task.Delay(1000);
         }
         StateHasChanged();
+    }
+
+    private void ParsePlateNumber(string plate)
+    {
+        if (string.IsNullOrWhiteSpace(plate)) return;
+        
+        var match = System.Text.RegularExpressions.Regex.Match(plate.Replace(" ", ""), @"(?<letters>[A-Za-z\u0600-\u06FF]+)(?<numbers>[\d\u0660-\u0669]+)|(?<numbers>[\d\u0660-\u0669]+)(?<letters>[A-Za-z\u0600-\u06FF]+)");
+        string letters = "";
+        string numbers = "";
+
+        if (match.Success)
+        {
+            letters = match.Groups["letters"].Value;
+            numbers = match.Groups["numbers"].Value;
+        }
+        else
+        {
+            // fallback if it's only numbers or only letters
+            if (System.Text.RegularExpressions.Regex.IsMatch(plate.Replace(" ", ""), @"^[\d\u0660-\u0669]+$"))
+            {
+                numbers = plate.Replace(" ", "");
+            }
+            else if (System.Text.RegularExpressions.Regex.IsMatch(plate.Replace(" ", ""), @"^[A-Za-z\u0600-\u06FF]+$"))
+            {
+                letters = plate.Replace(" ", "");
+            }
+            else 
+            {
+                numbers = plate;
+            }
+        }
+
+        VehiclePlate.EnPlateLetters = string.Join(" ", letters.ToCharArray());
+        VehiclePlate.ArPlateLetters = string.Join(" ", letters.ToCharArray());
+
+        VehiclePlate.EnPlateNumber = numbers;
+        VehiclePlate.ArPlateNumber = numbers;
     }
 
     private void OnSearchValueChanged(string searchValue)

@@ -1,0 +1,137 @@
+@using SmartParking.IntegrationUnit.Dtos
+<div class="custom-cardd">
+<div class="plate-wrapper">
+<div class="saudi-plate-container" dir="ltr">
+    <div class="plate-data-section">
+        <!-- Numbers Column -->
+        <div class="plate-column plate-numbers-column">
+            <div class="plate-cell cell-top" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                @VehiclePlate?.ArPlateNumber
+            </div>
+            <div class="plate-cell" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                @VehiclePlate?.EnPlateNumber
+            </div>
+        </div>
+        <!-- Letters Column -->
+        <div class="plate-column">
+            <div class="plate-cell cell-top" style="letter-spacing: 5px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                @VehiclePlate?.ArPlateLetters
+            </div>
+            <div class="plate-cell" style="letter-spacing: 5px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                @VehiclePlate?.EnPlateLetters
+            </div>
+        </div>
+    </div>
+    <!-- Logo Section -->
+    <div class="plate-logo-section">
+        <img src="images/ksa-plate.png" alt="KSA" class="saudi-logo" />
+        <div class="ksa-text">KSA</div>
+        <div class="ksa-grey-rect"></div>
+        <div class="ksa-dot"></div>
+    </div>
+</div>
+</div>
+</div>
+
+<style>
+    .custom-cardd {
+        background-color: white;
+        padding: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0px 1px 3px 0px #0000001A, 0px 1px 2px -1px #0000001A;
+        border-radius: 14px;
+        width: 100%;
+    }
+
+    .saudi-plate-container {
+        display: flex;
+        border: 4px solid #333;
+        border-radius: 12px;
+        width: 280px;
+        height: 110px;
+        background-color: white;
+        color: #000;
+        overflow: hidden;
+        margin: 0 auto;
+    }
+
+    .plate-data-section {
+        display: flex;
+        flex: 1;
+        flex-direction: row;
+        border-right: 3px solid #333;
+    }
+
+    .plate-column {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .plate-numbers-column {
+        border-right: 2px solid #333;
+    }
+
+    .plate-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .cell-top {
+        border-bottom: 2px solid #333;
+    }
+
+    .plate-logo-section {
+        width: 45px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #fff;
+        padding: 5px 0;
+    }
+
+    .saudi-logo {
+        width: 25px;
+        max-height: 25px;
+        object-fit: contain;
+        margin-bottom: 2px;
+    }
+
+    .ksa-text {
+        font-weight: bold;
+        font-size: 12px;
+        color: #000;
+        writing-mode: vertical-rl;
+        text-orientation: upright;
+        letter-spacing: -2px;
+        margin-bottom: 3px;
+    }
+
+    .ksa-grey-rect {
+        width: 20px;
+        height: 6px;
+        background-color: #d3d3d3;
+        margin-bottom: 3px;
+        flex-shrink: 0;
+    }
+
+    .ksa-dot {
+        width: 10px;
+        height: 10px;
+        background-color: #000;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public VehiclePlateDto VehiclePlate { get; set; } = new VehiclePlateDto();
+}

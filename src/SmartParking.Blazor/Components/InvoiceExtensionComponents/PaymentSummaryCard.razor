@@ -1,5 +1,6 @@
 @using Microsoft.Extensions.Localization
 @using SmartParking.Localization
+@using SmartParking.Currency
 @inject IStringLocalizer<SmartParkingResource> L
 
 
@@ -12,19 +13,19 @@
         <MudGrid>
             <MudItem xs="12" Class="d-flex justify-space-between">
                 <MudText>@L["Amount"]</MudText>
-                <MudText>@Amount.ToString("F2") SAR</MudText>
+                <MudText>@((MarkupString)$"{Amount.ToString("F2")} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")</MudText>
             </MudItem>
 
             <MudItem xs="12" Class="d-flex justify-space-between">
                 <MudText>@L["VAT"] (@VATRate%)</MudText>
-                <MudText>@VATAmount.ToString("F2") SAR</MudText>
+                <MudText>@((MarkupString)$"{VATAmount.ToString("F2")} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")</MudText>
             </MudItem>
 
             <MudDivider Class="my-1" />
 
             <MudItem xs="12" Class="d-flex justify-space-between">
                 <MudText>@L["Total"]</MudText>
-                <MudText>@TotalAmount.ToString("F2") SAR</MudText>
+                <MudText>@((MarkupString)$"{TotalAmount.ToString("F2")} {CurrencyIcon.ToHtml("icon-Saudi_Riyal_Symbolsvg", "14px")}")</MudText>
             </MudItem>
         </MudGrid>
 
