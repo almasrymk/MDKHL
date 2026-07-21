@@ -259,7 +259,7 @@ public partial class CustomInvoiceMainPage : IDisposable
                 InvoicePrice  = Math.Round(invoiceDto.InvoicePrice, 2);
                 Vat           = Math.Round(invoiceDto.Vat, 2);
                 var duration  = invoiceDto.InvoiceTime.Value - invoiceDto.EntranceTime!.Value;
-                Duration      = $"{(int)duration.TotalHours} ساعات {duration.Minutes} دقائق";
+                Duration      = $"{(int)duration.TotalHours} {L["Hours"]} {duration.Minutes} {L["Minutes"]}";
                 CheckIn       = invoiceDto.EntranceTime.Value;
                 Checkout      = invoiceDto.InvoiceTime.Value;
                 EntryPicture  = invoiceDto.EntryTransactionImage;
