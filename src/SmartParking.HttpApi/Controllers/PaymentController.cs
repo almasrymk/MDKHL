@@ -59,7 +59,7 @@ public class PaymentController : ControllerBase
     public async Task<Result> CancelInvoicePayment(int invoiceId, string searchInput)
     {
         //return Result.Success();
-        return await _paymentMobileHelper.HandleCancel(invoiceId, searchInput);
+        return await _paymentMobileHelper.HandleCancel(invoiceId);
     }
 
 }

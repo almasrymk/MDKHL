@@ -25,23 +25,12 @@ public class PaymentMobileHelper : ApplicationService, IPaymentMobileHelper
 
     }
 
-    public async Task<Result> HandleCancel(int invoiceId, string input)
+    public async Task<Result> HandleCancel(int invoiceId)
     {
-        var invoiceSearchDto = new InvoiceSearchDto();
-
-        if (!string.IsNullOrEmpty(input) && char.IsLetter(input.LastOrDefault()))
-        {
-            invoiceSearchDto.TicketId = string.Empty;
-            invoiceSearchDto.PlateNumber = input;
-        }
-        else
-        {
-            invoiceSearchDto.TicketId = input ?? string.Empty;
-            invoiceSearchDto.PlateNumber = string.Empty;
-        }
+        
         try
         {
-            await _publicInvoiceAppService.CancelInvoiceAsync(invoiceId,invoiceSearchDto);
+            await _publicInvoiceAppService.CancelInvoiceAsync(invoiceId);
         }
         catch (Exception ex)
         {

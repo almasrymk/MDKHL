@@ -7,5 +7,5 @@ namespace SmartParking.Payments;
 
 public interface IPaymentMobileHelper : IApplicationService
 {
-    public Task<Result> HandleCancel(int invoiceId, string input);
+    public Task<Result> HandleCancel(int invoiceId);
 }

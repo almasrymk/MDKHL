@@ -5,7 +5,7 @@ namespace SmartParking.Invoices;
 public interface IPublicInvoiceAppService
 {
     Task<InvoiceDto?> GetLatestInvoiceForOrganizationByWatcher(string watcherCode);
-    Task CancelInvoiceAsync(int invoiceId, InvoiceSearchDto searchDto);
+    Task CancelInvoiceAsync(int invoiceId);
 
 
 }

@@ -47,7 +47,7 @@ public class PublicInvoiceAppService : SmartParkingAppService, IPublicInvoiceApp
         _garageTransactionsActionsFactoryAppService = garageTransactionsActionsFactoryAppService;
     }
 
-    public async Task CancelInvoiceAsync(int invoiceId, InvoiceSearchDto searchDto)
+    public async Task CancelInvoiceAsync(int invoiceId)
     {
         using (DataFilter.Disable<IMultiTenant>()) { 
             var invoice = await _invoiceRepository.FirstOrDefaultAsync(inv => inv.Id == invoiceId);
@@ -73,10 +73,16 @@ public class PublicInvoiceAppService : SmartParkingAppService, IPublicInvoiceApp
             {
                 await _garageTransactionRepository.DeleteAsync(exitTransactionId);
             }
+            var isPlateNumber = !string.IsNullOrEmpty(invoice.PlateNumber) && char.IsLetter(invoice.PlateNumber.LastOrDefault());
 
+            var invoiceSearchDto = new InvoiceSearchDto
+            {
+                TicketId = isPlateNumber ? string.Empty : invoice.TicketId ?? string.Empty,
+                PlateNumber = isPlateNumber ? invoice.PlateNumber : string.Empty
+            };
             // Restore entry transaction
             var entryTransaction =
-                await _garageTransactionsActionsFactoryAppService.GetGarageTransaction(searchDto);
+                await _garageTransactionsActionsFactoryAppService.GetGarageTransaction(invoiceSearchDto);
             await _garageTransactionsActionsFactoryAppService.UnMappingEntryTransactionForDeletedExit(entryTransaction);
 
         }

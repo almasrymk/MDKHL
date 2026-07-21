@@ -441,8 +441,8 @@ public partial class CustomInvoiceMainPage : IDisposable
         try
         {
             await InvoiceUiAppService.CancelInvoiceAsync(
-                _currentInvoiceId,
-                InvoiceSearchDto);
+                _currentInvoiceId
+                );
 
             snackbar.Add(
                 $"{L["Done"]} {L["Delete"]} {L["Invoice"]}",
