@@ -62,6 +62,13 @@
         </MudItem>
 
         <MudItem xs="12" md="4">
+            @if (ShowInvoiceDetails)
+            {
+                <div class="mb-2">
+                    <SaudiVehiclePlateCard VehiclePlate="@VehiclePlate" />
+
+                    </div>
+            }
             <PaymentSummaryCard Amount="@InvoicePrice"
                                 VATRate="@VatRate"
                                 VATAmount="@Vat"
@@ -73,10 +80,8 @@
          
             @* ── Unified payment container ───────────────────────────── *@
             <div id="payment-container" class="mt-3"></div>
-            @if (ShowInvoiceDetails)
-            {
-                <SaudiVehiclePlateCard VehiclePlate="@VehiclePlate" />
-            }
+        
+           
         </MudItem>
     </MudGrid>
 </MudContainer>

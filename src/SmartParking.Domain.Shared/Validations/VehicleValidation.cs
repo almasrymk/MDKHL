@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using SmartParking.Localization;
 using System;
@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using SmartParking.IntegrationUnit.Dtos;
 
 namespace SmartParking.Validations;
 
@@ -286,6 +288,90 @@ public static class VehicleValidation
 
     }
 
+    public static VehiclePlateDto Parse(string plate)
+    {
+        if (string.IsNullOrWhiteSpace(plate))
+        {
+            return new VehiclePlateDto
+            {
+                EnPlateNumber = string.Empty,
+                ArPlateNumber = string.Empty,
+                EnPlateLetters = string.Empty,
+                ArPlateLetters = string.Empty
+            };
+        }
 
+        StringBuilder numBuilder = new StringBuilder();
+        StringBuilder letBuilder = new StringBuilder();
 
+        bool hasEnDigit = false;
+        bool hasArDigit = false;
+        bool hasEnLetter = false;
+        bool hasArLetter = false;
+
+        foreach (char c in plate)
+        {
+            if (char.IsWhiteSpace(c) || c == '-' || c == '_')
+                continue;
+
+            if (c >= '0' && c <= '9')
+            {
+                numBuilder.Append(c);
+                hasEnDigit = true;
+            }
+            else if (c >= '٠' && c <= '٩')
+            {
+                numBuilder.Append(c);
+                hasArDigit = true;
+            }
+            else if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+            {
+                letBuilder.Append(c);
+                hasEnLetter = true;
+            }
+            else if (c >= '\u0600' && c <= '\u06FF')
+            {
+                letBuilder.Append(c);
+                hasArLetter = true;
+            }
+            else
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("MixedInvalid"));
+            }
+        }
+
+        if ((hasEnDigit && hasArLetter) || (hasArDigit && hasEnLetter))
+        {
+            throw new Exception(LocalizationHelper.GetLocalizedString("MixedInvalid"));
+        }
+
+        string enNum = string.Empty;
+        string arNum = string.Empty;
+        string enLet = string.Empty;
+        string arLet = string.Empty;
+
+        string numStr = numBuilder.ToString();
+        if (!string.IsNullOrEmpty(numStr))
+        {
+            (enNum, arNum) = HandleKeyUp(numStr);
+        }
+
+        string letStr = letBuilder.ToString();
+        if (!string.IsNullOrEmpty(letStr))
+        {
+            (enLet, arLet) = HandleKeyUpLetters(letStr);
+            if (!string.IsNullOrEmpty(arLet))
+            {
+                arLet = string.Join(" ", arLet.Where(c => !char.IsWhiteSpace(c)));
+            }
+        }
+
+        return new VehiclePlateDto
+        {
+            EnPlateNumber = enNum,
+            ArPlateNumber = arNum,
+            EnPlateLetters = enLet,
+            ArPlateLetters = arLet
+        };
+    }
 }

@@ -290,38 +290,21 @@ public partial class CustomInvoiceMainPage : IDisposable
     private void ParsePlateNumber(string plate)
     {
         if (string.IsNullOrWhiteSpace(plate)) return;
-        
-        var match = System.Text.RegularExpressions.Regex.Match(plate.Replace(" ", ""), @"(?<letters>[A-Za-z\u0600-\u06FF]+)(?<numbers>[\d\u0660-\u0669]+)|(?<numbers>[\d\u0660-\u0669]+)(?<letters>[A-Za-z\u0600-\u06FF]+)");
-        string letters = "";
-        string numbers = "";
 
-        if (match.Success)
+        try
         {
-            letters = match.Groups["letters"].Value;
-            numbers = match.Groups["numbers"].Value;
+            VehiclePlate = VehicleValidation.Parse(plate);
         }
-        else
+        catch
         {
-            // fallback if it's only numbers or only letters
-            if (System.Text.RegularExpressions.Regex.IsMatch(plate.Replace(" ", ""), @"^[\d\u0660-\u0669]+$"))
+            VehiclePlate = new SmartParking.IntegrationUnit.Dtos.VehiclePlateDto
             {
-                numbers = plate.Replace(" ", "");
-            }
-            else if (System.Text.RegularExpressions.Regex.IsMatch(plate.Replace(" ", ""), @"^[A-Za-z\u0600-\u06FF]+$"))
-            {
-                letters = plate.Replace(" ", "");
-            }
-            else 
-            {
-                numbers = plate;
-            }
+                EnPlateNumber = plate,
+                ArPlateNumber = plate,
+                EnPlateLetters = string.Empty,
+                ArPlateLetters = string.Empty
+            };
         }
-
-        VehiclePlate.EnPlateLetters = string.Join(" ", letters.ToCharArray());
-        VehiclePlate.ArPlateLetters = string.Join(" ", letters.ToCharArray());
-
-        VehiclePlate.EnPlateNumber = numbers;
-        VehiclePlate.ArPlateNumber = numbers;
     }
 
     private void OnSearchValueChanged(string searchValue)
