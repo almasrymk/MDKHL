@@ -93,7 +93,7 @@ public partial class CustomInvoiceMainPage : IDisposable
             {
                 // Remove the paymentId from the browser's address bar immediately 
                 // so that refreshing the page does not re-open the dialog.
-                await JS.InvokeVoidAsync("history.replaceState", null, "", "/checkout-extension");
+                // await JS.InvokeVoidAsync("history.replaceState", null, "", "/checkout-extension");
 
                 var payment = await PaymentWebAppService.GetMdkhlAsync(PaymentId.Value);
 
