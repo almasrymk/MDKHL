@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.MultiTenancy;
 
 namespace SmartParking.GarageTransactions;
 
@@ -26,6 +27,9 @@ public class CustomerGarageTransactionActionsAppService : SmartParkingAppService
     [RemoteService(false)]
     public async Task<Result<CreateUpdateInvoiceDto>> VehiclePreCheckoutAsync(string input)
     {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+
         var invoiceSearchDto = new InvoiceSearchDto();
 
         if (!string.IsNullOrEmpty(input) && char.IsLetter(input.LastOrDefault()))
@@ -46,30 +50,34 @@ public class CustomerGarageTransactionActionsAppService : SmartParkingAppService
         }
 
         return await _customerMobileAppService.PreCheckout(transaction.Id);
+        }
     }
 
     [RemoteService(false)]
     public async Task<Result<InvoiceDto>> VehicleCheckoutAsync(string input)
     {
-        var invoiceSearchDto = new InvoiceSearchDto();
-
-        if (!string.IsNullOrEmpty(input) && char.IsLetter(input.LastOrDefault()))
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            invoiceSearchDto.TicketId = string.Empty;
-            invoiceSearchDto.PlateNumber = input;
-        }
-        else
-        {
-            invoiceSearchDto.TicketId = input ?? string.Empty;
-            invoiceSearchDto.PlateNumber = string.Empty;
-        }
+            var invoiceSearchDto = new InvoiceSearchDto();
 
-        var transaction = await _actionsFactoryService.GetGarageTransaction(invoiceSearchDto);
-        if (transaction.CheckoutMobile is not null)
-        {
-            throw new Exception(LocalizationHelper.GetLocalizedString("CarAlreadyExit"));
-        }
+            if (!string.IsNullOrEmpty(input) && char.IsLetter(input.LastOrDefault()))
+            {
+                invoiceSearchDto.TicketId = string.Empty;
+                invoiceSearchDto.PlateNumber = input;
+            }
+            else
+            {
+                invoiceSearchDto.TicketId = input ?? string.Empty;
+                invoiceSearchDto.PlateNumber = string.Empty;
+            }
 
-        return await _customerMobileAppService.Checkout(transaction.Id);
+            var transaction = await _actionsFactoryService.GetGarageTransaction(invoiceSearchDto);
+            if (transaction.CheckoutMobile is not null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("CarAlreadyExit"));
+            }
+
+            return await _customerMobileAppService.Checkout(transaction.Id);
+        }
     }
 }
