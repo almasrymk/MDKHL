@@ -145,3 +145,34 @@ public sealed class PosErrorDetail
     [JsonPropertyName("message")]
     public string Message { get; set; } = string.Empty;
 }
+
+public sealed class PosTerminalJsResponse
+{
+    [JsonPropertyName("success")]
+    public bool Success { get; set; }
+
+    [JsonPropertyName("status")]
+    public string Status { get; set; } = string.Empty;
+
+    [JsonPropertyName("responseCode")]
+    public string? ResponseCode { get; set; }
+
+    [JsonPropertyName("responseMessage")]
+    public string? ResponseMessage { get; set; }
+
+    [JsonPropertyName("maskedPan")]
+    public string? MaskedPan { get; set; }
+
+    [JsonPropertyName("authCode")]
+    public string? AuthCode { get; set; }
+
+    [JsonPropertyName("rrn")]
+    public string? Rrn { get; set; }
+
+    [JsonPropertyName("cardScheme")]
+    public string? CardScheme { get; set; }
+
+    [JsonPropertyName("error")]
+    public PosErrorDetail? Error { get; set; }
+}
+

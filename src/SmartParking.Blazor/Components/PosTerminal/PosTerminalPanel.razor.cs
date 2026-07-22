@@ -1,12 +1,10 @@
 using System;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MudBlazor;
 using SmartParking.Enums.PosTerminal;
 using SmartParking.Organizations;
 using SmartParking.Payments;
@@ -35,7 +33,6 @@ public partial class PosTerminalPanel : IAsyncDisposable
     // ── Injected ─────────────────────────────────────────────────────────────────
 
     [Inject] private IPaymentAppService PaymentAppService { get; set; } = default!;
-    [Inject] private IPosServiceManager PosServiceManager { get; set; } = default!;
     [Inject] private IOptions<PosTerminalOptions> PosTerminalOptions { get; set; } = default!;
     private PosTerminalOptions Options => PosTerminalOptions.Value;
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
@@ -43,8 +40,8 @@ public partial class PosTerminalPanel : IAsyncDisposable
 
     // ── Private State ─────────────────────────────────────────────────────────────
 
-    private PosTerminalStateSnapshot _state = new(PosSessionState.Disconnected);
-    private bool _isConfigured;
+    private PosTerminalStateSnapshot _state = new(PosSessionState.Connected);
+    private bool _isConfigured = true;
     private bool _isBusy;
     private bool _activePaymentWasCreated;
 
@@ -53,64 +50,13 @@ public partial class PosTerminalPanel : IAsyncDisposable
     protected override async Task OnInitializedAsync()
     {
         _isConfigured = true;
-
-        if (!_isConfigured) return;
-
-        PosServiceManager.OnEventReceived += HandlePosEventReceived;
-
-        await CheckConnectionStateAsync();
-    }
-
-    private Task CheckConnectionStateAsync()
-    {
-        bool isConnected = PosServiceManager.IsConnected(Request.OrganizationId.ToString());
-        if (isConnected)
-        {
-            _state = new PosTerminalStateSnapshot(PosSessionState.Connected);
-            Logger.LogInformation("[PosTerminalPanel] Connected to POS Service for Organization {OrgId}", Request.OrganizationId);
-        }
-        else
-        {
-            _state = new PosTerminalStateSnapshot(
-                PosSessionState.Error,
-                LastErrorMessage: "No active POS service connected for this organization. Ensure standalone Node.js POS service is running.");
-            Logger.LogWarning("[PosTerminalPanel] No active POS Service connected for Organization {OrgId}", Request.OrganizationId);
-        }
-        return Task.CompletedTask;
+        _state = new PosTerminalStateSnapshot(PosSessionState.Connected);
+        await Task.CompletedTask;
     }
 
     public async ValueTask DisposeAsync()
     {
-        PosServiceManager.OnEventReceived -= HandlePosEventReceived;
         await ValueTask.CompletedTask;
-    }
-
-    private void HandlePosEventReceived(PosEventMessage eventMsg)
-    {
-        if (eventMsg.OrganizationId.Equals(Request.OrganizationId.ToString(), StringComparison.OrdinalIgnoreCase))
-        {
-            InvokeAsync(() =>
-            {
-                GeideaTerminalAction? action = null;
-                if (!string.IsNullOrEmpty(eventMsg.TerminalAction))
-                {
-                    action = GeideaEventMapper.ParseTerminalAction(eventMsg.TerminalAction);
-                }
-
-                GeideaTerminalStatus? status = null;
-                if (!string.IsNullOrEmpty(eventMsg.TerminalStatus))
-                {
-                    status = GeideaEventMapper.ParseTerminalStatus(eventMsg.TerminalStatus);
-                }
-
-                _state = _state with
-                {
-                    LastTerminalAction = action,
-                    TerminalStatus = status
-                };
-                StateHasChanged();
-            });
-        }
     }
 
     // ── Actions ──────────────────────────────────────────────────────────────────
@@ -123,7 +69,13 @@ public partial class PosTerminalPanel : IAsyncDisposable
 
         try
         {
-            await CheckConnectionStateAsync();
+            await JSRuntime.InvokeVoidAsync("posTerminalClient.connect", Options.WebSocketUrl);
+            _state = new PosTerminalStateSnapshot(PosSessionState.Connected);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "[PosTerminalPanel] WebSocket connect call failed");
+            _state = new PosTerminalStateSnapshot(PosSessionState.Error, LastErrorMessage: ex.Message);
         }
         finally
         {
@@ -137,7 +89,7 @@ public partial class PosTerminalPanel : IAsyncDisposable
         await SendPurchaseAsync();
     }
 
-    /// <summary>Manual cashier trigger: creates Pending payment, dispatches PAYMENT command via HTTP.</summary>
+    /// <summary>Manual cashier trigger: creates Pending payment, dispatches PURCHASE via browser WebSocket JS Interop.</summary>
     private async Task SendPurchaseAsync()
     {
         if (!_isConfigured || _isBusy) return;
@@ -148,80 +100,47 @@ public partial class PosTerminalPanel : IAsyncDisposable
 
         try
         {
-            // Step 1: create Pending payment row in DB
+            // Step 1: Create Pending payment row in DB
             var pending = await PaymentAppService.CreatePendingPosPaymentAsync(Request);
             var paymentId = pending.PaymentId;
             _activePaymentWasCreated = true;
 
-            // Step 3: obtain organization API key securely for cashier session dispatch
-            string apiKey = await PosServiceManager.GetOrganizationApiKeyAsync(Request.OrganizationId.ToString());
+            await OnPaymentCreated.InvokeAsync(paymentId);
 
-            // Step 4: construct PosCommandMessage
-            var commandPayload = new
-            {
-                requestId = Guid.NewGuid().ToString(),
-                command = "PAYMENT",
-                payload = new
-                {
-                    amount = Request.Amount.ToString("F2"),
-                    ecrNumber = DeriveEcrNumber(pending.PaymentNumber),
-                    paymentId = paymentId
-                }
-            };
+            string ecrNumber = DeriveEcrNumber(pending.PaymentNumber);
 
-            Logger.LogInformation("[PosTerminalPanel] Dispatching PAYMENT command for PaymentId={PaymentId} via Browser JS Interop fetch to {Url}...", paymentId, Options.ServiceBaseUrl);
+            Logger.LogInformation("[PosTerminalPanel] Dispatching PURCHASE via browser JS WebSocket Interop to {Url} for PaymentId={PaymentId}, ECR={EcrNumber}, Amount={Amount}",
+                Options.WebSocketUrl, paymentId, ecrNumber, Request.Amount);
 
-            PosResponseMessage response;
-            try
-            {
-                response = await JSRuntime.InvokeAsync<PosResponseMessage>(
-                    "posTerminalClient.sendCommand",
-                    Options.ServiceBaseUrl,
-                    Request.OrganizationId.ToString(),
-                    apiKey,
-                    commandPayload);
+            // Step 2: Dispatch command directly to Geidea Web ECR via browser WebSocket client
+            var response = await JSRuntime.InvokeAsync<PosTerminalJsResponse>(
+                "posTerminalClient.sendPurchase",
+                Request.Amount,
+                ecrNumber);
 
-                if (!response.Success && response.Error?.Code == "FETCH_ERROR")
-                {
-                    Logger.LogWarning("[PosTerminalPanel] Direct JS fetch failed ({Msg}). Falling back to ASP.NET Core server dispatch...", response.Error.Message);
-                    var cmdMsg = new PosCommandMessage
-                    {
-                        RequestId = commandPayload.requestId,
-                        Command = "PAYMENT",
-                        Payload = commandPayload.payload
-                    };
-                    response = await PosServiceManager.SendCommandAsync(Request.OrganizationId.ToString(), cmdMsg);
-                }
-            }
-            catch (Exception jsEx)
-            {
-                Logger.LogWarning(jsEx, "[PosTerminalPanel] JS Interop invocation failed. Falling back to ASP.NET Core server dispatch...");
-                var cmdMsg = new PosCommandMessage
-                {
-                    RequestId = commandPayload.requestId,
-                    Command = "PAYMENT",
-                    Payload = commandPayload.payload
-                };
-                response = await PosServiceManager.SendCommandAsync(Request.OrganizationId.ToString(), cmdMsg);
-            }
+            Logger.LogInformation("[PosTerminalPanel] Web ECR response received: Success={Success}, Status={Status}, Code={Code}, RRN={Rrn}",
+                response.Success, response.Status, response.ResponseCode, response.Rrn);
 
-            Logger.LogInformation("[PosTerminalPanel] Correlated response received for RequestId={ReqId}, Success={Success}, Status={Status}",
-                response.RequestId, response.Success, response.Status);
-
-            // Step 5: Evaluate response
-            if (response.Success && response.Status == "APPROVED")
+            // Step 3: Evaluate response
+            if (response.Success || response.Status == "APPROVED" || response.ResponseCode == "000")
             {
                 _state = new PosTerminalStateSnapshot(
                     PosSessionState.Completed,
                     Outcome: SamaResponseOutcome.Approved,
-                    SamaDescription: "Transaction Approved");
+                    SamaDescription: response.ResponseMessage ?? "Transaction Approved",
+                    MaskedPan: response.MaskedPan,
+                    AuthCode: response.AuthCode,
+                    Rrn: response.Rrn,
+                    CardScheme: response.CardScheme,
+                    SamaCode: response.ResponseCode);
             }
             else
             {
                 _state = new PosTerminalStateSnapshot(
                     PosSessionState.Completed,
                     Outcome: SamaResponseOutcome.Declined,
-                    SamaDescription: response.Error?.Message ?? response.Status ?? "Transaction Declined");
+                    SamaDescription: response.Error?.Message ?? response.ResponseMessage ?? response.Status ?? "Transaction Declined",
+                    SamaCode: response.ResponseCode);
             }
 
             StateHasChanged();
