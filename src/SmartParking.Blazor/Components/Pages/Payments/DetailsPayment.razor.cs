@@ -20,7 +20,6 @@ public partial class DetailsPayment
 {
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IOrganizationsAppService OrganizationAppService { get; set; } = default!;
-    [Inject] private Volo.Abp.Domain.Repositories.IRepository<PosTerminalTransactionDetail, Guid> PosDetailRepository { get; set; } = default!;
     [Parameter] public string Id { get; set; }  // Capture string ID
     private PaymentGetResponseDto Payment {  get; set; } = new PaymentGetResponseDto();
     private string CreationTime { get; set; }
@@ -40,7 +39,6 @@ public partial class DetailsPayment
     private async Task FetchPayment()
     {
         Payment = await paymentWebAppService.GetMdkhlAsync(Guid.Parse(Id));
-        //PaymentDetailsDto paymentRelation = new();
         if (Payment.customerPackageDto == null && Payment.Invoice==null)
              paymentRelation = await PaymentRelationAppService.GetByPaymentIdAsync(Payment.Id);
         Payment.customerPackageDto ??= new CustomerPackageDto();
@@ -85,22 +83,19 @@ public partial class DetailsPayment
         LocalizedPaymentCurrency = Payment?.Currency != null ? L[Payment.Currency] : "";
 
         LocalizedPaymentInvoiceType = Payment?.Invoice?.InvoiceType != null ? L[Payment.Invoice.InvoiceType] : "";
-
-
     }
 
 
     protected override async Task OnInitializedAsync()
     {
        await FetchPayment();
-        
     }
+
     private async Task<Task<IDialogReference>> ViewInvoiceDetails()
     {
         Dictionary<string, Object> data = new();
         if (Payment.Invoice is not null)
         {
-            
             data.Add("Cashier", Payment.CashierName);
             data.Add("OrganizationArName", Payment.Organization.ArabicName);
             data.Add("OrganizationAddress", Payment.Organization.Address);
@@ -109,9 +104,7 @@ public partial class DetailsPayment
             data.Add("ExitTime", Payment.Invoice.InvoiceTime.ToString());
             data.Add("Subscription", "Invoice");
             data.Add("Duration", Payment.Invoice.TotalHours.ToString());
-            
         }
-
         else if(Payment.customerPackageDto is not null && Payment.customerPackageDto.CustomerId != Guid.Empty)
         {
             data.Add("Cashier", Payment.CashierName);
@@ -137,16 +130,8 @@ public partial class DetailsPayment
             data.Add("Duration", customerUnitPackage.DurationOfPackage.ToString());
         }
 
-        //var parameters = new DialogParameters
-        //{
-        //    ["JsonString"] = System.Text.Json.JsonSerializer.Serialize(data)
-        //};
-
-        //return DialogService.ShowAsync<DynamicPrintDialog>("", parameters);
-
         var parameters = new DialogParameters
         {
-
             ["Invoice"] = Payment.Invoice is not null ? Payment.Invoice : null,
             ["PaymentId"] = Payment.Id,
             ["Package"] = Payment.customerPackageDto is not null ? Payment.customerPackageDto : null,
@@ -167,9 +152,8 @@ public partial class DetailsPayment
             ["JsonString"] = System.Text.Json.JsonSerializer.Serialize(data)
         };
         return DialogService.ShowAsync<InvoiceDetailsViewDialog>("", parameters);
-
-
     }
+
     private void Back()
     {
         Navigation.NavigateTo("/payments");
@@ -193,16 +177,13 @@ public partial class DetailsPayment
         {
             var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
 
-            var details = await PosDetailRepository.GetListAsync(x => x.PaymentId == Payment.Id);
-            var purchaseDetail = details.FirstOrDefault(x => x.TransactionType == PosTransactionType.Purchase) ?? details.FirstOrDefault();
-
             var parameters = new DialogParameters<PosAdminTransactionDialog>
             {
                 { x => x.Operation, operation },
                 { x => x.PaymentId, Payment.Id },
                 { x => x.Amount, Payment.Amount },
-                { x => x.Rrn, purchaseDetail?.RetrievalReferenceNumber },
-                { x => x.Stan, purchaseDetail?.TransactionStan },
+                { x => x.Rrn, null },
+                { x => x.Stan, null },
                 { x => x.TxnDate, Payment.CreationTime },
                 { x => x.OrgSettings, organization?.OrganizationSettings }
             };

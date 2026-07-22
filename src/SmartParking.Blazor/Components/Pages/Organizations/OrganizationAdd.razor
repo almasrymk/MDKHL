@@ -98,10 +98,8 @@
                         </MudItem>
                         <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
 
-                        <!-- POS Terminal Configuration -->
-                        <PosTerminalSettingsSection Settings="_organizationSettingsDto" />
 
-                        <MudDivider Style="border-top:1px solid #505254; margin:15px 0px;" />
+
 
                          <MudItem sm="4">
                              <MudTextField Required="true"  RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))"  T="string" InputType="InputType.Text" @bind-Value="CreateUpdateOrganiztion.PhoneNumber" Placeholder="@L["Type Here"]" Label="@L["Contact Phone"]" />

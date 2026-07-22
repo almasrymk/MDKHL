@@ -4,10 +4,7 @@ namespace SmartParking.Blazor.Components.PosTerminal;
 
 /// <summary>
 /// Immutable snapshot of POS terminal session state for Blazor UI binding.
-/// Intentionally excludes RawJsonResult and full EMV tag data — that data is
-/// potentially large and sensitive (merchant info, cryptograms, etc.) and belongs
-/// exclusively in the persisted <see cref="SmartParking.Entities.Payments.PosTerminalTransactionDetail"/> audit
-/// record (TASK-007). It must never reach the UI layer.
+/// Intentionally excludes raw response payloads from UI binding.
 /// </summary>
 public sealed record PosTerminalStateSnapshot(
     PosSessionState SessionState,

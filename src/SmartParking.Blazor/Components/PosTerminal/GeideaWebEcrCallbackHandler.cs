@@ -58,8 +58,7 @@ public class GeideaWebEcrCallbackHandler
         _orgSettings = orgSettings;
         _isArabic = isArabic;
 
-        IsConfigured = orgSettings is { PosTerminalEnabled: true } &&
-                       !string.IsNullOrWhiteSpace(orgSettings.PosTerminalConnectionMode);
+        IsConfigured = true;
 
         State = new PosTerminalStateSnapshot(PosSessionState.Disconnected);
     }
@@ -101,43 +100,13 @@ public class GeideaWebEcrCallbackHandler
         _logger.LogInformation("[Geidea Lifecycle] Pending command payload set.");
     }
 
-    private static string CleanIpAddress(string ip)
+    public string? BuildConnectPayloadJson()
     {
-        if (string.IsNullOrWhiteSpace(ip)) return string.Empty;
-        if (Uri.TryCreate(ip, UriKind.Absolute, out var uri))
-        {
-            return uri.Host;
-        }
-        return ip.Replace("http://", "").Replace("https://", "").Replace("ws://", "").Replace("wss://", "").Split(':')[0].Trim('/');
+        return null;
     }
 
     private string? BuildConnectJson()
     {
-        if (_orgSettings == null) return null;
-        var mode = _orgSettings.PosTerminalConnectionMode?.ToUpperInvariant();
-
-        if (mode == "TCP")
-        {
-            var rawIp = _orgSettings.PosTerminalTcpIpAddress ?? string.Empty;
-            var cleanIp = CleanIpAddress(rawIp);
-            var dto = new ConnectTcpRequestDto
-            {
-                IpAddress = string.IsNullOrEmpty(cleanIp) ? rawIp : cleanIp,
-                Port = _orgSettings.PosTerminalTcpPort ?? 0
-            };
-            return JsonSerializer.Serialize(dto, JsonOptions);
-        }
-        else if (mode == "COM")
-        {
-            var dto = new ConnectComRequestDto
-            {
-                ComName = _orgSettings.PosTerminalComName ?? string.Empty,
-                BraudRate = _orgSettings.PosTerminalComBaudRate ?? string.Empty,
-                DataBits = _orgSettings.PosTerminalComDataBits ?? string.Empty,
-                Parity = _orgSettings.PosTerminalComParity ?? string.Empty
-            };
-            return JsonSerializer.Serialize(dto, JsonOptions);
-        }
         return null;
     }
 

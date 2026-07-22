@@ -428,24 +428,6 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         }
 
         var outcome = SamaResponseCodeMapping.Evaluate(input.SamaCode);
-        
-        var detail = PosTerminalTransactionDetail.Create(
-            payment.Id,
-            input.SamaCode,
-            outcome,
-            input.RawJsonResult,
-            transactionType: PosTransactionType.Purchase,
-            terminalId: input.TerminalId,
-            transactionStan: input.TransactionStan,
-            retrievalReferenceNumber: input.Rrn,
-            authCode: input.AuthCode,
-            maskedPan: input.MaskedPan,
-            cardScheme: input.CardScheme,
-            tenantId: payment.TenantId
-        );
-
-        var detailRepo = LazyServiceProvider.LazyGetRequiredService<Volo.Abp.Domain.Repositories.IRepository<PosTerminalTransactionDetail, Guid>>();
-        await detailRepo.InsertAsync(detail, autoSave: false, cancellationToken: cancellationToken);
 
         if (outcome == SamaResponseOutcome.Approved)
         {
@@ -478,25 +460,6 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
         var outcome = SamaResponseCodeMapping.Evaluate(input.SamaCode);
 
-        // Audit recording (always created for both Approved and Declined)
-        var detail = PosTerminalTransactionDetail.Create(
-            payment.Id,
-            input.SamaCode,
-            outcome,
-            input.RawJsonResult,
-            transactionType: PosTransactionType.Refund,
-            terminalId: input.TerminalId,
-            transactionStan: input.TransactionStan,
-            retrievalReferenceNumber: input.Rrn,
-            authCode: input.AuthCode,
-            maskedPan: input.MaskedPan,
-            cardScheme: input.CardScheme,
-            tenantId: payment.TenantId
-        );
-
-        var detailRepo = LazyServiceProvider.LazyGetRequiredService<Volo.Abp.Domain.Repositories.IRepository<PosTerminalTransactionDetail, Guid>>();
-        await detailRepo.InsertAsync(detail, autoSave: false, cancellationToken: cancellationToken);
-
         // State Transition: Only transition to Refunded on Approved outcome
         if (outcome == SamaResponseOutcome.Approved)
         {
@@ -521,25 +484,6 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         }
 
         var outcome = SamaResponseCodeMapping.Evaluate(input.SamaCode);
-
-        // Audit recording (always created for both Approved and Declined)
-        var detail = PosTerminalTransactionDetail.Create(
-            payment.Id,
-            input.SamaCode,
-            outcome,
-            input.RawJsonResult,
-            transactionType: PosTransactionType.Reversal,
-            terminalId: input.TerminalId,
-            transactionStan: input.TransactionStan,
-            retrievalReferenceNumber: input.Rrn,
-            authCode: input.AuthCode,
-            maskedPan: input.MaskedPan,
-            cardScheme: input.CardScheme,
-            tenantId: payment.TenantId
-        );
-
-        var detailRepo = LazyServiceProvider.LazyGetRequiredService<Volo.Abp.Domain.Repositories.IRepository<PosTerminalTransactionDetail, Guid>>();
-        await detailRepo.InsertAsync(detail, autoSave: false, cancellationToken: cancellationToken);
 
         // State Transition: Only transition to Reversed on Approved outcome
         if (outcome == SamaResponseOutcome.Approved)

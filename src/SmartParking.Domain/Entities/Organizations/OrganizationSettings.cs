@@ -11,13 +11,4 @@ public class OrganizationSettings
     public int OwnerSlots { get; set; }
     public int RentalSlots { get; set; }
     public bool IsSlotsEditable { get; set; }
-    public bool PosTerminalEnabled { get; set; }
-    public string? PosTerminalConnectionMode { get; set; }
-    public string? PosTerminalTcpIpAddress { get; set; }
-    public int? PosTerminalTcpPort { get; set; }
-    public string? PosTerminalComName { get; set; }
-    public string? PosTerminalComBaudRate { get; set; }
-    public string? PosTerminalComDataBits { get; set; }
-    public string? PosTerminalComParity { get; set; }
-
 }

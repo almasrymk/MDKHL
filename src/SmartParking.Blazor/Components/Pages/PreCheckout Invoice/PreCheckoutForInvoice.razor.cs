@@ -58,8 +58,7 @@ public partial class PreCheckoutForInvoice
 
             var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
 
-            if (PaymentMethod == PaymentMethod.POS &&
-                organization.OrganizationSettings is { PosTerminalEnabled: true })
+            if (PaymentMethod == PaymentMethod.POS)
             {
                 var checkoutRequest = new PaymentCheckoutRequestDto
                 {

@@ -120,14 +120,6 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForPath(dest => dest.OrganizationSettings.RentalSlots, opt => opt.MapFrom(src => src.Settings.RentalSlots))
             .ForPath(dest => dest.OrganizationSettings.IsSlotsEditable, opt => opt.MapFrom(src => src.Settings.IsSlotsEditable))
             .ForPath(dest => dest.OrganizationSettings.OwnerVehicles, opt => opt.MapFrom(src => src.Settings.OwnerVehicles))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalEnabled, opt => opt.MapFrom(src => src.Settings.PosTerminalEnabled))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalConnectionMode, opt => opt.MapFrom(src => src.Settings.PosTerminalConnectionMode))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalTcpIpAddress, opt => opt.MapFrom(src => src.Settings.PosTerminalTcpIpAddress))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalTcpPort, opt => opt.MapFrom(src => src.Settings.PosTerminalTcpPort))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalComName, opt => opt.MapFrom(src => src.Settings.PosTerminalComName))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalComBaudRate, opt => opt.MapFrom(src => src.Settings.PosTerminalComBaudRate))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalComDataBits, opt => opt.MapFrom(src => src.Settings.PosTerminalComDataBits))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalComParity, opt => opt.MapFrom(src => src.Settings.PosTerminalComParity))
             .ReverseMap();
 
 
@@ -148,14 +140,6 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForPath(dest => dest.Settings.RentalSlots, opt => opt.MapFrom(src => src.OrganizationSettingsDto.RentalSlots))
             .ForPath(dest => dest.Settings.IsSlotsEditable, opt => opt.MapFrom(src => src.OrganizationSettingsDto.IsSlotsEditable))
             .ForPath(dest => dest.Settings.OwnerVehicles, opt => opt.MapFrom(src => src.OrganizationSettingsDto.OwnerVehicles))
-            .ForPath(dest => dest.Settings.PosTerminalEnabled, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalEnabled))
-            .ForPath(dest => dest.Settings.PosTerminalConnectionMode, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalConnectionMode))
-            .ForPath(dest => dest.Settings.PosTerminalTcpIpAddress, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalTcpIpAddress))
-            .ForPath(dest => dest.Settings.PosTerminalTcpPort, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalTcpPort))
-            .ForPath(dest => dest.Settings.PosTerminalComName, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalComName))
-            .ForPath(dest => dest.Settings.PosTerminalComBaudRate, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalComBaudRate))
-            .ForPath(dest => dest.Settings.PosTerminalComDataBits, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalComDataBits))
-            .ForPath(dest => dest.Settings.PosTerminalComParity, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalComParity))
             .ReverseMap();
 
         CreateMap<OrganizationSettingsDto, OrganizationSettings>()
@@ -167,26 +151,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
              .ForMember(dest => dest.ContactMail , opt => opt.MapFrom(src => src.Email))
              .ForPath(dest => dest.OrganizationSettings.VehcileAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.VehcileAccess))
             .ForPath(dest => dest.OrganizationSettings.UserAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UserAccess))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalEnabled, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalEnabled))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalConnectionMode, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalConnectionMode))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalTcpIpAddress, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalTcpIpAddress))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalTcpPort, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalTcpPort))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalComName, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalComName))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalComBaudRate, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalComBaudRate))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalComDataBits, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalComDataBits))
-            .ForPath(dest => dest.OrganizationSettings.PosTerminalComParity, opt => opt.MapFrom(src => src.OrganizationSettingsDto.PosTerminalComParity))
             .ReverseMap();
         CreateMap<OrganizationDto, CreateUpdateOrganiztionDto>()
             .ForPath(dest => dest.OrganizationSettingsDto.VehcileAccess, opt => opt.MapFrom(src => src.OrganizationSettings.VehcileAccess))
-            .ForPath(dest => dest.OrganizationSettingsDto.UserAccess, opt => opt.MapFrom(src => src.OrganizationSettings.UserAccess))
-            .ForPath(dest => dest.OrganizationSettingsDto.PosTerminalEnabled, opt => opt.MapFrom(src => src.OrganizationSettings.PosTerminalEnabled))
-            .ForPath(dest => dest.OrganizationSettingsDto.PosTerminalConnectionMode, opt => opt.MapFrom(src => src.OrganizationSettings.PosTerminalConnectionMode))
-            .ForPath(dest => dest.OrganizationSettingsDto.PosTerminalTcpIpAddress, opt => opt.MapFrom(src => src.OrganizationSettings.PosTerminalTcpIpAddress))
-            .ForPath(dest => dest.OrganizationSettingsDto.PosTerminalTcpPort, opt => opt.MapFrom(src => src.OrganizationSettings.PosTerminalTcpPort))
-            .ForPath(dest => dest.OrganizationSettingsDto.PosTerminalComName, opt => opt.MapFrom(src => src.OrganizationSettings.PosTerminalComName))
-            .ForPath(dest => dest.OrganizationSettingsDto.PosTerminalComBaudRate, opt => opt.MapFrom(src => src.OrganizationSettings.PosTerminalComBaudRate))
-            .ForPath(dest => dest.OrganizationSettingsDto.PosTerminalComDataBits, opt => opt.MapFrom(src => src.OrganizationSettings.PosTerminalComDataBits))
-            .ForPath(dest => dest.OrganizationSettingsDto.PosTerminalComParity, opt => opt.MapFrom(src => src.OrganizationSettings.PosTerminalComParity));
+            .ForPath(dest => dest.OrganizationSettingsDto.UserAccess, opt => opt.MapFrom(src => src.OrganizationSettings.UserAccess));
 
         //CreateMap<OrganizationSettingsDto, OrganizationSettings>()
         //    .ReverseMap();

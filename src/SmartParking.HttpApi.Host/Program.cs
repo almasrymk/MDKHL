@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -34,6 +34,7 @@ public class Program
         {
             Log.Information("Starting SmartParking.HttpApi.Host.");
             var builder = WebApplication.CreateBuilder(args);
+            builder.Configuration.AddJsonFile("paymentconfig.json", optional: true, reloadOnChange: true);
             builder.Host.AddAppSettingsSecretsJson()
                 .UseAutofac()
                 .UseSerilog();

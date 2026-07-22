@@ -140,16 +140,7 @@ public partial class OrganizationEdit
             UseShifts = _organizationSettingsDto.UseShifts,
             OwnerSlots = _organizationSettingsDto.OwnerSlots,
             RentalSlots = _organizationSettingsDto.RentalSlots,
-            IsSlotsEditable = _organizationSettingsDto.IsSlotsEditable,
-            OwnerVehicles = _organizationSettingsDto.OwnerVehicles,
-            PosTerminalEnabled = _organizationSettingsDto.PosTerminalEnabled,
-            PosTerminalConnectionMode = _organizationSettingsDto.PosTerminalConnectionMode,
-            PosTerminalTcpIpAddress = _organizationSettingsDto.PosTerminalTcpIpAddress,
-            PosTerminalTcpPort = _organizationSettingsDto.PosTerminalTcpPort,
-            PosTerminalComName = _organizationSettingsDto.PosTerminalComName,
-            PosTerminalComBaudRate = _organizationSettingsDto.PosTerminalComBaudRate,
-            PosTerminalComDataBits = _organizationSettingsDto.PosTerminalComDataBits,
-            PosTerminalComParity = _organizationSettingsDto.PosTerminalComParity,
+            OwnerVehicles = _organizationSettingsDto.OwnerVehicles
         };
         
         //_createUpdateOrganiztionDto.OrganizationSettingsDto.VehcileAccess = _organizationSettingsDto.VehcileAccess;
@@ -248,16 +239,7 @@ public partial class OrganizationEdit
                 UseShifts = organization.OrganizationSettings.UseShifts,
                 RentalSlots = organization.OrganizationSettings.RentalSlots,
                 OwnerSlots = organization.OrganizationSettings.OwnerSlots,
-                IsSlotsEditable = organization.OrganizationSettings.IsSlotsEditable,
-                OwnerVehicles = organization.OrganizationSettings.OwnerVehicles,
-                PosTerminalEnabled = organization.OrganizationSettings.PosTerminalEnabled,
-                PosTerminalConnectionMode = organization.OrganizationSettings.PosTerminalConnectionMode,
-                PosTerminalTcpIpAddress = organization.OrganizationSettings.PosTerminalTcpIpAddress,
-                PosTerminalTcpPort = organization.OrganizationSettings.PosTerminalTcpPort,
-                PosTerminalComName = organization.OrganizationSettings.PosTerminalComName,
-                PosTerminalComBaudRate = organization.OrganizationSettings.PosTerminalComBaudRate,
-                PosTerminalComDataBits = organization.OrganizationSettings.PosTerminalComDataBits,
-                PosTerminalComParity = organization.OrganizationSettings.PosTerminalComParity
+                OwnerVehicles = organization.OrganizationSettings.OwnerVehicles
             };
         }
         StateHasChanged();

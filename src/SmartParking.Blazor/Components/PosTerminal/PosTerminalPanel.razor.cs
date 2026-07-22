@@ -5,13 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.JSInterop;
 using MudBlazor;
 using SmartParking.Enums.PosTerminal;
 using SmartParking.Organizations;
 using SmartParking.Payments;
 using SmartParking.Payments.PosTerminal;
-using SmartParking.Payments.PosTerminal.WireContracts;
 
 namespace SmartParking.Blazor.Components.PosTerminal;
 
@@ -35,96 +33,86 @@ public partial class PosTerminalPanel : IAsyncDisposable
 
     // ── Injected ─────────────────────────────────────────────────────────────────
 
-    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
     [Inject] private IPaymentAppService PaymentAppService { get; set; } = default!;
+    [Inject] private IPosServiceManager PosServiceManager { get; set; } = default!;
     [Inject] private IOptions<PosTerminalOptions> PosTerminalOptions { get; set; } = default!;
     private PosTerminalOptions Options => PosTerminalOptions.Value;
     [Inject] private ILogger<PosTerminalPanel> Logger { get; set; } = default!;
-    [Inject] private ILoggerFactory LoggerFactory { get; set; } = default!;
 
     // ── Private State ─────────────────────────────────────────────────────────────
-
-    private GeideaWebEcrInterop _interop = default!;
-    private GeideaWebEcrCallbackHandler _handler = default!;
 
     private PosTerminalStateSnapshot _state = new(PosSessionState.Disconnected);
     private bool _isConfigured;
     private bool _isBusy;
-
-    /// <summary>True once CreatePendingPosPaymentAsync has fired at least once this session.
-    /// Controls which retry path (transaction retry vs connection retry) is shown on Error.</summary>
     private bool _activePaymentWasCreated;
 
     // ── Lifecycle ────────────────────────────────────────────────────────────────
 
     protected override async Task OnInitializedAsync()
     {
-        _interop = new GeideaWebEcrInterop(JSRuntime);
-        _handler = new GeideaWebEcrCallbackHandler(
-            PaymentAppService,
-            _interop,
-            Options,
-            LoggerFactory.CreateLogger(nameof(GeideaWebEcrCallbackHandler)),
-            OrgSettings,
-            isArabic: false); // TODO Phase 6: wire actual culture/locale
-
-        _isConfigured = _handler.IsConfigured;
-
-        // Wire Dispatcher so timer callbacks marshal to Blazor circuit — required by TASK-010 thread safety.
-        _handler.Dispatcher = action => InvokeAsync(action);
-
-        _handler.StateChanged += OnStateChanged;
+        _isConfigured = true;
 
         if (!_isConfigured) return;
 
-        await _interop.InitializeAsync(_handler);
+        PosServiceManager.OnEventReceived += HandlePosEventReceived;
+
+        await CheckConnectionStateAsync();
+    }
+
+    private Task CheckConnectionStateAsync()
+    {
+        bool isConnected = PosServiceManager.IsConnected(Request.OrganizationId.ToString());
+        if (isConnected)
+        {
+            _state = new PosTerminalStateSnapshot(PosSessionState.Connected);
+            Logger.LogInformation("[PosTerminalPanel] Connected to POS Service for Organization {OrgId}", Request.OrganizationId);
+        }
+        else
+        {
+            _state = new PosTerminalStateSnapshot(
+                PosSessionState.Error,
+                LastErrorMessage: "No active POS service connected for this organization. Ensure standalone Node.js POS service is running.");
+            Logger.LogWarning("[PosTerminalPanel] No active POS Service connected for Organization {OrgId}", Request.OrganizationId);
+        }
+        return Task.CompletedTask;
     }
 
     public async ValueTask DisposeAsync()
     {
-        _handler.StateChanged -= OnStateChanged;
-        try
-        {
-            await _interop.DisconnectAsync();
-        }
-        catch (JSDisconnectedException) { }
-        catch (ObjectDisposedException) { }
-        catch (Exception ex)
-        {
-            Logger.LogWarning(ex, "DisconnectAsync failed during PosTerminalPanel dispose");
-        }
-
-        try
-        {
-            await _interop.DisposeAsync();
-        }
-        catch (JSDisconnectedException) { }
-        catch (ObjectDisposedException) { }
-        catch (Exception ex)
-        {
-            Logger.LogWarning(ex, "DisposeAsync failed for Interop during PosTerminalPanel dispose");
-        }
+        PosServiceManager.OnEventReceived -= HandlePosEventReceived;
+        await ValueTask.CompletedTask;
     }
 
-    // ── Event Handling ──────────────────────────────────────────────────────────
-
-    private void OnStateChanged(PosTerminalStateSnapshot snapshot)
+    private void HandlePosEventReceived(PosEventMessage eventMsg)
     {
-        _state = snapshot;
-        _isBusy = false;
-
-        // Render first so Completed state is briefly visible, then notify parent to close.
-        StateHasChanged();
-
-        if (snapshot.SessionState == PosSessionState.Completed)
+        if (eventMsg.OrganizationId.Equals(Request.OrganizationId.ToString(), StringComparison.OrdinalIgnoreCase))
         {
-            _ = OnTransactionCompleted.InvokeAsync(snapshot);
+            InvokeAsync(() =>
+            {
+                GeideaTerminalAction? action = null;
+                if (!string.IsNullOrEmpty(eventMsg.TerminalAction))
+                {
+                    action = GeideaEventMapper.ParseTerminalAction(eventMsg.TerminalAction);
+                }
+
+                GeideaTerminalStatus? status = null;
+                if (!string.IsNullOrEmpty(eventMsg.TerminalStatus))
+                {
+                    status = GeideaEventMapper.ParseTerminalStatus(eventMsg.TerminalStatus);
+                }
+
+                _state = _state with
+                {
+                    LastTerminalAction = action,
+                    TerminalStatus = status
+                };
+                StateHasChanged();
+            });
         }
     }
 
     // ── Actions ──────────────────────────────────────────────────────────────────
 
-    /// <summary>Opens WebSocket and sends CONNECTION command to bridge physical terminal.</summary>
     private async Task ConnectAsync()
     {
         if (!_isConfigured || _isBusy) return;
@@ -133,24 +121,27 @@ public partial class PosTerminalPanel : IAsyncDisposable
 
         try
         {
-            await _interop.ConnectAsync(Options.ServiceUrl);
-            _handler.StartConnectionTimeout();
+            await CheckConnectionStateAsync();
         }
-        catch (Exception ex)
+        finally
         {
-            Logger.LogError(ex, "ConnectAsync failed");
             _isBusy = false;
+            StateHasChanged();
         }
     }
 
-    /// <summary>Manual cashier trigger: creates Pending payment, sets _activePaymentId, sends PURCHASE.</summary>
+    private async Task RetryTransactionAsync()
+    {
+        await SendPurchaseAsync();
+    }
+
+    /// <summary>Manual cashier trigger: creates Pending payment, sends PAYMENT command over WebSocket.</summary>
     private async Task SendPurchaseAsync()
     {
         if (!_isConfigured || _isBusy) return;
         _isBusy = true;
 
-        // Immediately reset state to clear stale SAMA outcomes/PANs from previous attempts
-        _handler.PrepareForTransaction();
+        _state = new PosTerminalStateSnapshot(PosSessionState.TransactionInProgress);
         StateHasChanged();
 
         try
@@ -158,52 +149,60 @@ public partial class PosTerminalPanel : IAsyncDisposable
             // Step 1: create Pending payment row in DB
             var pending = await PaymentAppService.CreatePendingPosPaymentAsync(Request);
             var paymentId = pending.PaymentId;
-
-            // Step 2: set _activePaymentId BEFORE any socket operation (ordering guarantee per ADR-7)
-            _handler.SetActivePaymentId(paymentId);
             _activePaymentWasCreated = true;
 
-            // Step 3: notify parent so it can track this PaymentId (e.g., show in invoice view)
+            // Step 2: notify parent so it can track this PaymentId
             await OnPaymentCreated.InvokeAsync(paymentId);
 
-            // Step 4: serialize and send PURCHASE
-            var purchaseDto = new PurchaseRequestDto
+            // Step 3: construct PosCommandMessage
+            var command = new PosCommandMessage
             {
-                Amount = Request.Amount.ToString("F2"),
-                ECRNumber = DeriveEcrNumber(pending.PaymentNumber)
+                Command = "PAYMENT",
+                Payload = new
+                {
+                    amount = Request.Amount.ToString("F2"),
+                    ecrNumber = DeriveEcrNumber(pending.PaymentNumber),
+                    paymentId = paymentId
+                }
             };
-            var json = JsonSerializer.Serialize(purchaseDto);
-            Logger.LogInformation("Purchase JSON:\n{Json}", json);
 
-            await _interop.SendAsync(json);
+            Logger.LogInformation("[PosTerminalPanel] Dispatching PAYMENT command for PaymentId={PaymentId} via IPosServiceManager...", paymentId);
 
-            // Step 5: start transaction timeout timer (ADR-6)
-            _handler.StartTransactionTimeout();
+            // Step 4: Send over WebSocket to standalone Node.js POS service via IPosServiceManager
+            var response = await PosServiceManager.SendCommandAsync(Request.OrganizationId.ToString(), command);
+
+            Logger.LogInformation("[PosTerminalPanel] Correlated response received for RequestId={ReqId}, Success={Success}, Status={Status}",
+                response.RequestId, response.Success, response.Status);
+
+            // Step 5: Evaluate response
+            if (response.Success && response.Status == "APPROVED")
+            {
+                _state = new PosTerminalStateSnapshot(
+                    PosSessionState.Completed,
+                    Outcome: SamaResponseOutcome.Approved,
+                    SamaDescription: "Transaction Approved");
+            }
+            else
+            {
+                _state = new PosTerminalStateSnapshot(
+                    PosSessionState.Completed,
+                    Outcome: SamaResponseOutcome.Declined,
+                    SamaDescription: response.Error?.Message ?? response.Status ?? "Transaction Declined");
+            }
+
+            StateHasChanged();
+            await OnTransactionCompleted.InvokeAsync(_state);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "SendPurchaseAsync failed");
-            _isBusy = false;
+            Logger.LogError(ex, "[PosTerminalPanel] SendPurchaseAsync failed");
+            _state = new PosTerminalStateSnapshot(
+                PosSessionState.Error,
+                LastErrorMessage: ex.Message);
+            StateHasChanged();
         }
-    }
-
-    /// <summary>Retry after TRANSACTION timeout (ADR-7): tears down socket, creates new payment row on next Send.</summary>
-    private async Task RetryTransactionAsync()
-    {
-        if (_isBusy) return;
-        _isBusy = true;
-        _activePaymentWasCreated = false;
-        StateHasChanged();
-
-        try
+        finally
         {
-            // ResetForTransactionRetryAsync: clears _activePaymentId, disconnects + reconnects WebSocket
-            await _handler.ResetForTransactionRetryAsync();
-            _handler.StartConnectionTimeout();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "RetryTransactionAsync failed");
             _isBusy = false;
         }
     }
@@ -215,22 +214,12 @@ public partial class PosTerminalPanel : IAsyncDisposable
 
     // ── Helpers ──────────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Derives a 16-digit numeric ECRNumber from PaymentNumber.
-    /// PaymentNumber format: "ORG260000042" (alpha prefix + sequential digits).
-    /// Extracts digit chars only -> left-pads to 16 digits.
-    /// Collision-free for practical operation: digit extraction is deterministic and
-    /// PaymentNumber is unique-per-payment; OrgId prefix + sequential counter ensure
-    /// no two payments produce identical digit-only strings.
-    /// </summary>
     private static string DeriveEcrNumber(string paymentNumber)
     {
         var digits = new string(paymentNumber.Where(char.IsDigit).ToArray());
         return digits.Length >= 16 ? digits[^16..] : digits.PadLeft(16, '0');
     }
 
-    /// <summary>Maps GeideaTerminalAction to cashier-facing prompt text.
-    /// TODO Phase 6: localize via IStringLocalizer.</summary>
     private static string GetTerminalActionPrompt(GeideaTerminalAction? action) => action switch
     {
         GeideaTerminalAction.SwipeOrInsert => "Ask customer to insert or swipe card",
@@ -254,20 +243,8 @@ public partial class PosTerminalPanel : IAsyncDisposable
         _ => "Processing — please wait..."
     };
 
-    /// <summary>
-    /// Explicitly disconnects the terminal hardware connection.
-    /// Called by wrapping dialog on cancellation to ensure clean hardware release.
-    /// </summary>
     public async Task CancelTransactionAsync()
     {
-        try
-        {
-            await _interop.DisconnectAsync();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWarning(ex, "DisconnectAsync failed during explicit cancel");
-        }
+        await Task.CompletedTask;
     }
 }
-

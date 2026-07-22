@@ -150,16 +150,7 @@ public partial class OrganizationAdd
             UseShifts = _organizationSettingsDto.UseShifts,
             OwnerSlots = _organizationSettingsDto.OwnerSlots,
             RentalSlots = _organizationSettingsDto.RentalSlots,
-            IsSlotsEditable = _organizationSettingsDto.IsSlotsEditable,
-            OwnerVehicles = _organizationSettingsDto.OwnerVehicles,
-            PosTerminalEnabled = _organizationSettingsDto.PosTerminalEnabled,
-            PosTerminalConnectionMode = _organizationSettingsDto.PosTerminalConnectionMode,
-            PosTerminalTcpIpAddress = _organizationSettingsDto.PosTerminalTcpIpAddress,
-            PosTerminalTcpPort = _organizationSettingsDto.PosTerminalTcpPort,
-            PosTerminalComName = _organizationSettingsDto.PosTerminalComName,
-            PosTerminalComBaudRate = _organizationSettingsDto.PosTerminalComBaudRate,
-            PosTerminalComDataBits = _organizationSettingsDto.PosTerminalComDataBits,
-            PosTerminalComParity = _organizationSettingsDto.PosTerminalComParity,
+            OwnerVehicles = _organizationSettingsDto.OwnerVehicles
         };
         try
         {

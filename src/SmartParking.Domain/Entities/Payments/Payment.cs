@@ -40,5 +40,4 @@ public class Payment : FullAuditedEntity<Guid> , IMultiTenant
     public string ErrorMessagesZatca { get; set; }
     public int? CustomerPackageId { get; set; }
     public virtual CustomerPackage? CustomerPackage { get; set; }
-    public virtual ICollection<PosTerminalTransactionDetail> PosTerminalDetails { get; set; } = new List<PosTerminalTransactionDetail>();
 }

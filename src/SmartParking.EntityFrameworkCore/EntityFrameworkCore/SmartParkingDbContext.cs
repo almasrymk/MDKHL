@@ -107,7 +107,6 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
     public DbSet<SubscriptionType> SubscriptionTypes { get; set; }
 
     public DbSet<Payment> Payments { get; set; }
-    public DbSet<PosTerminalTransactionDetail> PosTerminalTransactionDetails { get; set; }
 
     public DbSet<CameraModel> CameraModels { get; set; }
     public DbSet<CameraBrand> CameraBrands { get; set; }

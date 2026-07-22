@@ -128,15 +128,8 @@ public partial class LastInvoiceAtCamera
         }
         try
         {
-            bool isPosEnabled = _organization?.OrganizationSettings?.PosTerminalEnabled == true;
-
             if (PaymentMethod == PaymentMethod.POS)
             {
-                if (!isPosEnabled)
-                {
-                    SnackBar.ShowSnackbar(Snackbar, "POS Terminal is not enabled for this organization. Check Organization Settings.", MudBlazor.Severity.Warning);
-                    return;
-                }
 
                 var checkoutRequest = new PaymentCheckoutRequestDto
                 {
