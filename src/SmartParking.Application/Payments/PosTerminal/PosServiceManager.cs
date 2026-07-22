@@ -48,6 +48,17 @@ public class PosServiceManager : IPosServiceManager, ISingletonDependency
         return _organizationLookup.Keys.ToList().AsReadOnly();
     }
 
+    public Task<string> GetOrganizationApiKeyAsync(string organizationId)
+    {
+        if (string.IsNullOrWhiteSpace(organizationId) || !_organizationLookup.TryGetValue(organizationId, out var orgConfig))
+        {
+            throw new InvalidOperationException($"OrganizationId '{organizationId}' is not configured on server.");
+        }
+
+        string decryptedApiKey = _encryptionService.DecryptApiKey(orgConfig.EncryptedApiKey, _options.AesMasterKeyHex);
+        return Task.FromResult(decryptedApiKey);
+    }
+
     private string GetNormalizedServiceBaseUrl()
     {
         string url = _options.ServiceBaseUrl;

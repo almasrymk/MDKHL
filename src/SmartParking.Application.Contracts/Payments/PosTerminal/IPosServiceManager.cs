@@ -18,6 +18,11 @@ public interface IPosServiceManager
     IReadOnlyCollection<string> GetConnectedOrganizations();
 
     /// <summary>
+    /// Returns the decrypted API key for an organization for cashier session dispatch.
+    /// </summary>
+    Task<string> GetOrganizationApiKeyAsync(string organizationId);
+
+    /// <summary>
     /// Sends a high-level command to the standalone POS service via HTTP POST and awaits correlated response.
     /// </summary>
     Task<PosResponseMessage> SendCommandAsync(string organizationId, PosCommandMessage command, CancellationToken cancellationToken = default);

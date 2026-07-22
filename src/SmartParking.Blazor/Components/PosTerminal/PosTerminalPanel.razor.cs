@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MudBlazor;
@@ -37,6 +38,7 @@ public partial class PosTerminalPanel : IAsyncDisposable
     [Inject] private IPosServiceManager PosServiceManager { get; set; } = default!;
     [Inject] private IOptions<PosTerminalOptions> PosTerminalOptions { get; set; } = default!;
     private PosTerminalOptions Options => PosTerminalOptions.Value;
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
     [Inject] private ILogger<PosTerminalPanel> Logger { get; set; } = default!;
 
     // ── Private State ─────────────────────────────────────────────────────────────
@@ -135,7 +137,7 @@ public partial class PosTerminalPanel : IAsyncDisposable
         await SendPurchaseAsync();
     }
 
-    /// <summary>Manual cashier trigger: creates Pending payment, sends PAYMENT command over WebSocket.</summary>
+    /// <summary>Manual cashier trigger: creates Pending payment, dispatches PAYMENT command via HTTP.</summary>
     private async Task SendPurchaseAsync()
     {
         if (!_isConfigured || _isBusy) return;
@@ -151,14 +153,15 @@ public partial class PosTerminalPanel : IAsyncDisposable
             var paymentId = pending.PaymentId;
             _activePaymentWasCreated = true;
 
-            // Step 2: notify parent so it can track this PaymentId
-            await OnPaymentCreated.InvokeAsync(paymentId);
+            // Step 3: obtain organization API key securely for cashier session dispatch
+            string apiKey = await PosServiceManager.GetOrganizationApiKeyAsync(Request.OrganizationId.ToString());
 
-            // Step 3: construct PosCommandMessage
-            var command = new PosCommandMessage
+            // Step 4: construct PosCommandMessage
+            var commandPayload = new
             {
-                Command = "PAYMENT",
-                Payload = new
+                requestId = Guid.NewGuid().ToString(),
+                command = "PAYMENT",
+                payload = new
                 {
                     amount = Request.Amount.ToString("F2"),
                     ecrNumber = DeriveEcrNumber(pending.PaymentNumber),
@@ -166,10 +169,41 @@ public partial class PosTerminalPanel : IAsyncDisposable
                 }
             };
 
-            Logger.LogInformation("[PosTerminalPanel] Dispatching PAYMENT command for PaymentId={PaymentId} via IPosServiceManager...", paymentId);
+            Logger.LogInformation("[PosTerminalPanel] Dispatching PAYMENT command for PaymentId={PaymentId} via Browser JS Interop fetch to {Url}...", paymentId, Options.ServiceBaseUrl);
 
-            // Step 4: Send over WebSocket to standalone Node.js POS service via IPosServiceManager
-            var response = await PosServiceManager.SendCommandAsync(Request.OrganizationId.ToString(), command);
+            PosResponseMessage response;
+            try
+            {
+                response = await JSRuntime.InvokeAsync<PosResponseMessage>(
+                    "posTerminalClient.sendCommand",
+                    Options.ServiceBaseUrl,
+                    Request.OrganizationId.ToString(),
+                    apiKey,
+                    commandPayload);
+
+                if (!response.Success && response.Error?.Code == "FETCH_ERROR")
+                {
+                    Logger.LogWarning("[PosTerminalPanel] Direct JS fetch failed ({Msg}). Falling back to ASP.NET Core server dispatch...", response.Error.Message);
+                    var cmdMsg = new PosCommandMessage
+                    {
+                        RequestId = commandPayload.requestId,
+                        Command = "PAYMENT",
+                        Payload = commandPayload.payload
+                    };
+                    response = await PosServiceManager.SendCommandAsync(Request.OrganizationId.ToString(), cmdMsg);
+                }
+            }
+            catch (Exception jsEx)
+            {
+                Logger.LogWarning(jsEx, "[PosTerminalPanel] JS Interop invocation failed. Falling back to ASP.NET Core server dispatch...");
+                var cmdMsg = new PosCommandMessage
+                {
+                    RequestId = commandPayload.requestId,
+                    Command = "PAYMENT",
+                    Payload = commandPayload.payload
+                };
+                response = await PosServiceManager.SendCommandAsync(Request.OrganizationId.ToString(), cmdMsg);
+            }
 
             Logger.LogInformation("[PosTerminalPanel] Correlated response received for RequestId={ReqId}, Success={Success}, Status={Status}",
                 response.RequestId, response.Success, response.Status);
