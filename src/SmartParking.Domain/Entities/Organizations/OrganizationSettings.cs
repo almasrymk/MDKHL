@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartParking.Entities.Organizations;
 [ComplexType]
@@ -11,5 +11,4 @@ public class OrganizationSettings
     public int OwnerSlots { get; set; }
     public int RentalSlots { get; set; }
     public bool IsSlotsEditable { get; set; }
-
 }

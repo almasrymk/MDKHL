@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
@@ -147,7 +147,10 @@ public partial class OrganizationAdd
         {
             VehcileAccess = _organizationSettingsDto.VehcileAccess,
             UserAccess = _organizationSettingsDto.UserAccess,
-            UseShifts = _organizationSettingsDto.UseShifts
+            UseShifts = _organizationSettingsDto.UseShifts,
+            OwnerSlots = _organizationSettingsDto.OwnerSlots,
+            RentalSlots = _organizationSettingsDto.RentalSlots,
+            OwnerVehicles = _organizationSettingsDto.OwnerVehicles
         };
         try
         {

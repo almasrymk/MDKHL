@@ -1,0 +1,169 @@
+@using SmartParking.Blazor.Components.PosTerminal
+@using SmartParking.Enums.PosTerminal
+@using SmartParking.Payments
+@using SmartParking.Organizations
+
+@namespace SmartParking.Blazor.Components.PosTerminal
+
+<MudPaper Class="pa-4" Elevation="3">
+
+    @* ── Not Configured ─────────────────────────────────────────────────────── *@
+    @if (!_isConfigured)
+    {
+        <MudAlert Severity="Severity.Warning" Dense="true">
+            POS Terminal is not configured for this organization. Contact your administrator.
+        </MudAlert>
+    }
+
+    @* ── Disconnected / Connecting ───────────────────────────────────────────── *@
+    else if (_state.SessionState == PosSessionState.Disconnected ||
+             _state.SessionState == PosSessionState.Connecting)
+    {
+        <MudStack AlignItems="AlignItems.Center" Spacing="3">
+            @if (_state.SessionState == PosSessionState.Connecting)
+            {
+                <MudProgressCircular Indeterminate="true" Color="MudBlazor.Color.Primary" />
+                <MudText Typo="Typo.body1">Connecting to terminal...</MudText>
+            }
+            else
+            {
+                <MudIcon Icon="@Icons.Material.Filled.CreditCardOff" Color="MudBlazor.Color.Default" Size="MudBlazor.Size.Large" />
+                <MudText Typo="Typo.body1">Terminal disconnected.</MudText>
+                <MudButton Variant="Variant.Filled"
+                           Color="MudBlazor.Color.Primary"
+                           OnClick="ConnectAsync"
+                           id="btn-pos-connect"
+                           Disabled="_isBusy">
+                    Connect Terminal
+                </MudButton>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(_state.LastErrorMessage))
+            {
+                <MudAlert Severity="Severity.Error" Dense="true">@_state.LastErrorMessage</MudAlert>
+            }
+
+            <MudButton Variant="Variant.Text"
+                       Color="MudBlazor.Color.Default"
+                       OnClick="CancelAsync"
+                       id="btn-pos-cancel-disconnected">
+                Cancel
+            </MudButton>
+        </MudStack>
+    }
+
+    @* ── Connected (Idle — awaiting cashier "Send to Terminal" action) ────────── *@
+    else if (_state.SessionState == PosSessionState.Connected)
+    {
+        <MudStack AlignItems="AlignItems.Center" Spacing="3">
+            <MudIcon Icon="@Icons.Material.Filled.CreditCard" Color="MudBlazor.Color.Success" Size="MudBlazor.Size.Large" />
+            <MudText Typo="Typo.h6">Terminal Ready</MudText>
+            @if (_state.TerminalStatus.HasValue)
+            {
+                <MudChip T="string" Size="MudBlazor.Size.Small" Color="@(_state.TerminalStatus == GeideaTerminalStatus.Available ? MudBlazor.Color.Success : MudBlazor.Color.Warning)">
+                    Terminal: @_state.TerminalStatus
+                </MudChip>
+            }
+            <MudText Typo="Typo.body1">Amount: @Request.Amount SAR</MudText>
+            <MudButton Variant="Variant.Filled"
+                       Color="MudBlazor.Color.Primary"
+                       Size="MudBlazor.Size.Large"
+                       FullWidth="true"
+                       OnClick="SendPurchaseAsync"
+                       id="btn-pos-send-purchase"
+                       Disabled="_isBusy">
+                Send to Terminal
+            </MudButton>
+            <MudButton Variant="Variant.Text"
+                       Color="MudBlazor.Color.Default"
+                       OnClick="CancelAsync"
+                       id="btn-pos-cancel-connected">
+                Cancel
+            </MudButton>
+        </MudStack>
+    }
+
+    @* ── Transaction In Progress / Awaiting Card / Awaiting PIN / Processing ───── *@
+    else if (_state.SessionState == PosSessionState.TransactionInProgress ||
+             _state.SessionState == PosSessionState.AwaitingCard ||
+             _state.SessionState == PosSessionState.AwaitingPin ||
+             _state.SessionState == PosSessionState.Processing)
+    {
+        <MudStack AlignItems="AlignItems.Center" Spacing="3">
+            <MudProgressLinear Indeterminate="true" Color="MudBlazor.Color.Primary" />
+            <MudText Typo="Typo.h6">@GetTerminalActionPrompt(_state.LastTerminalAction)</MudText>
+            @if (!string.IsNullOrWhiteSpace(_state.LastErrorMessage))
+            {
+                <MudText Typo="Typo.body2" Color="MudBlazor.Color.Warning">@_state.LastErrorMessage</MudText>
+            }
+            @* Cancel disabled during Processing to prevent race — terminal may have already charged card *@
+            <MudButton Variant="Variant.Text"
+                       Color="MudBlazor.Color.Error"
+                       OnClick="CancelAsync"
+                       id="btn-pos-cancel-inprogress"
+                       Disabled="@(_state.SessionState == PosSessionState.Processing)">
+                Cancel
+            </MudButton>
+        </MudStack>
+    }
+
+    @* ── Completed ───────────────────────────────────────────────────────────── *@
+    else if (_state.SessionState == PosSessionState.Completed)
+    {
+        bool approved = _state.Outcome == SamaResponseOutcome.Approved;
+        <MudStack AlignItems="AlignItems.Center" Spacing="3">
+            <MudAlert Severity="@(approved ? Severity.Success : Severity.Error)" Dense="false">
+                <MudText Typo="Typo.h6">@(approved ? "Payment Approved" : "Payment Declined")</MudText>
+                <MudText Typo="Typo.body2">@_state.SamaDescription</MudText>
+                @if (approved && !string.IsNullOrWhiteSpace(_state.MaskedPan))
+                {
+                    <MudText Typo="Typo.body2">Card: @_state.MaskedPan (@_state.CardScheme)</MudText>
+                    <MudText Typo="Typo.body2">Auth: @_state.AuthCode &nbsp; RRN: @_state.Rrn</MudText>
+                }
+            </MudAlert>
+        </MudStack>
+    }
+
+    @* ── Error / Timeout ─────────────────────────────────────────────────────── *@
+    else if (_state.SessionState == PosSessionState.Error)
+    {
+        <MudStack AlignItems="AlignItems.Center" Spacing="3">
+            <MudAlert Severity="Severity.Error" Dense="false">
+                @(_state.LastErrorMessage ?? "An unexpected error occurred.")
+            </MudAlert>
+
+            @* Payment was created (Pending) — retry creates a new payment row per ADR-6 *@
+            @if (_activePaymentWasCreated)
+            {
+                <MudButton Variant="Variant.Filled"
+                           Color="MudBlazor.Color.Primary"
+                           OnClick="RetryTransactionAsync"
+                           id="btn-pos-retry-transaction"
+                           Disabled="_isBusy">
+                    Retry Transaction
+                </MudButton>
+                <MudText Typo="Typo.caption" Color="MudBlazor.Color.Warning">
+                    Previous payment left Pending — admin investigation required if card was charged.
+                </MudText>
+            }
+            else
+            {
+                <MudButton Variant="Variant.Filled"
+                           Color="MudBlazor.Color.Primary"
+                           OnClick="ConnectAsync"
+                           id="btn-pos-retry-connection"
+                           Disabled="_isBusy">
+                    Retry Connection
+                </MudButton>
+            }
+
+            <MudButton Variant="Variant.Text"
+                       Color="MudBlazor.Color.Default"
+                       OnClick="CancelAsync"
+                       id="btn-pos-cancel-error">
+                Cancel
+            </MudButton>
+        </MudStack>
+    }
+
+</MudPaper>

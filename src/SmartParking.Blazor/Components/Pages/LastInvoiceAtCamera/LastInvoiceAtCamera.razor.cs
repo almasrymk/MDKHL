@@ -1,6 +1,10 @@
-﻿using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using MudBlazor;
 using SmartParking.Blazor.Components.Shared;
+using SmartParking.Blazor.Components.PosTerminal;
 using SmartParking.Enums;
+using SmartParking.Enums.PosTerminal;
 using SmartParking.Invoices;
 using SmartParking.OpeningGate;
 using SmartParking.Organizations;
@@ -12,6 +16,8 @@ namespace SmartParking.Blazor.Components.Pages.LastInvoiceAtCamera;
 
 public partial class LastInvoiceAtCamera
 {
+    [Inject] private IDialogService DialogService { get; set; } = default!;
+
     private InvoiceDto Invoice = new InvoiceDto();
     private OrganizationDto _organization = new OrganizationDto();
     private ICollection<ShiftWatcherActionDto> _filteredWatchersByShiftZone = new List<ShiftWatcherActionDto>();
@@ -115,7 +121,6 @@ public partial class LastInvoiceAtCamera
     }
     private async Task PayInvoice()
     {
-       
         isPaying = true;
         if (Discount != default)
         {
@@ -123,17 +128,63 @@ public partial class LastInvoiceAtCamera
         }
         try
         {
-            PaymentCheckoutDto payment = await RequestToPaymentCheckout();
-            if (payment != null)
+            if (PaymentMethod == PaymentMethod.POS)
             {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
-                await Task.Delay(500);
-                await OpenGate();
-                await JSRuntime.InvokeVoidAsync("eval", $"window.open('/payments/view/{payment.PaymentId}', '_blank');");
+
+                var checkoutRequest = new PaymentCheckoutRequestDto
+                {
+                    OrganizationId = Invoice.OrganizationId,
+                    PaymentCategory = PaymentCategory.PaymentParking,
+                    InvoiceId = Invoice.Id,
+                    PaymentMethod = PaymentMethod,
+                    Amount = PaymentUtilityCalculationts.GetPriceForPayment(InvoicePrice, Discount),
+                    CustomerId = Invoice.CustomerId,
+                    PaymentName = PaymentMethod.POS.ToString(),
+                    PaymentNumber = string.Empty // Generated inside SavePaymentRequest
+                };
+
+                Guid createdPaymentId = Guid.Empty;
+
+                var parameters = new DialogParameters<PosPaymentDialog>
+                {
+                    { x => x.Request, checkoutRequest },
+                    { x => x.OrgSettings, _organization!.OrganizationSettings },
+                    { x => x.OnPaymentCreated, EventCallback.Factory.Create<Guid>(this, id => createdPaymentId = id) }
+                };
+
+                var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Small, FullWidth = true };
+                var dialog = await DialogService.ShowAsync<PosPaymentDialog>("POS Transaction", parameters, options);
+                var result = await dialog.Result;
+
+                if (result != null && !result.Canceled && result.Data is PosTerminalStateSnapshot snapshot)
+                {
+                    if (snapshot.Outcome == SamaResponseOutcome.Approved)
+                    {
+                        SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
+                        await Task.Delay(500);
+                        await OpenGate();
+                        await JSRuntime.InvokeVoidAsync("eval", $"window.open('/payments/view/{createdPaymentId}', '_blank');");
+                    }
+                    else
+                    {
+                        Snackbar.Add(snapshot.SamaDescription ?? "Transaction Declined", MudBlazor.Severity.Warning);
+                    }
+                }
             }
             else
             {
-                await OpenGate();
+                PaymentCheckoutDto payment = await RequestToPaymentCheckout();
+                if (payment != null)
+                {
+                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
+                    await Task.Delay(500);
+                    await OpenGate();
+                    await JSRuntime.InvokeVoidAsync("eval", $"window.open('/payments/view/{payment.PaymentId}', '_blank');");
+                }
+                else
+                {
+                    await OpenGate();
+                }
             }
         }
         catch(Exception e)
@@ -146,7 +197,6 @@ public partial class LastInvoiceAtCamera
             isPaying = false;
         }
         await Refresh();
-
     }
     private async Task OpenGate()
     {

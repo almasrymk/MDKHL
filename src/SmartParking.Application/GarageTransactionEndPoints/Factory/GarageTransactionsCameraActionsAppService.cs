@@ -92,8 +92,7 @@ public class GarageTransactionsCameraActionsAppService : IGarageTransactionActio
     [RemoteService(false)]
     public async Task<GarageTransactionDto> GetGarageTransaction(InvoiceSearchDto invoiceSearchDto)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
+        
             var query = await _repository.GetQueryableAsync();
             var latestTransaction = await query
                     .Where(gt => gt.PlateNumber == invoiceSearchDto.PlateNumber && gt.IsIn == true)
@@ -123,6 +122,6 @@ public class GarageTransactionsCameraActionsAppService : IGarageTransactionActio
                     })
                     .FirstOrDefaultAsync();
             return latestTransaction;
-        }
+       
     }
 }

@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
+using MudBlazor;
+using SmartParking.Blazor.Components.PosTerminal;
+using SmartParking.Organizations;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.CustomerPackages;
 using SmartParking.Enums;
+using SmartParking.Enums.PosTerminal;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Payments;
@@ -11,6 +15,9 @@ namespace SmartParking.Blazor.Components.Pages.PreCheckout_Invoice;
 
 public partial class PreCheckoutForInvoice
 {
+    [Inject] private IOrganizationsAppService OrganizationAppService { get; set; } = default!;
+    [Inject] private IDialogService DialogService { get; set; } = default!;
+
     [Parameter]
     public int GarageTransactionId { get; set; }
 
@@ -48,12 +55,59 @@ public partial class PreCheckoutForInvoice
             {
                 await InvoiceAppService.UpdateDiscountForInvoice(Id, Discount);
             }
-            PaymentCheckoutDto payment = await RequestToPaymentCheckout();
-            if (payment != null)
+
+            var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+
+            if (PaymentMethod == PaymentMethod.POS)
             {
-                SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]}  {L["Checkout"]}", MudBlazor.Severity.Success);
-                await Task.Delay(1000);
-                Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
+                var checkoutRequest = new PaymentCheckoutRequestDto
+                {
+                    OrganizationId = Invoice.OrganizationId,
+                    PaymentCategory = PaymentCategory.PaymentParking,
+                    InvoiceId = Id,
+                    PaymentMethod = PaymentMethod,
+                    Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Discount),
+                    CustomerId = Invoice.CustomerId,
+                    PaymentName = PaymentMethod.POS.ToString(),
+                    PaymentNumber = string.Empty
+                };
+
+                Guid createdPaymentId = Guid.Empty;
+
+                var parameters = new DialogParameters<PosPaymentDialog>
+                {
+                    { x => x.Request, checkoutRequest },
+                    { x => x.OrgSettings, organization.OrganizationSettings },
+                    { x => x.OnPaymentCreated, EventCallback.Factory.Create<Guid>(this, id => createdPaymentId = id) }
+                };
+
+                var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Small, FullWidth = true };
+                var dialog = await DialogService.ShowAsync<PosPaymentDialog>("POS Transaction", parameters, options);
+                var result = await dialog.Result;
+
+                if (result != null && !result.Canceled && result.Data is PosTerminalStateSnapshot snapshot)
+                {
+                    if (snapshot.Outcome == SamaResponseOutcome.Approved)
+                    {
+                        SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]}  {L["Checkout"]}", MudBlazor.Severity.Success);
+                        await Task.Delay(1000);
+                        Navigation.NavigateTo($"/payments/view/{createdPaymentId}");
+                    }
+                    else
+                    {
+                        Snackbar.Add(snapshot.SamaDescription ?? "Transaction Declined", MudBlazor.Severity.Warning);
+                    }
+                }
+            }
+            else
+            {
+                PaymentCheckoutDto payment = await RequestToPaymentCheckout();
+                if (payment != null)
+                {
+                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]}  {L["Checkout"]}", MudBlazor.Severity.Success);
+                    await Task.Delay(1000);
+                    Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
+                }
             }
         }
         catch (Exception ex)
@@ -64,7 +118,6 @@ public partial class PreCheckoutForInvoice
         {
             IsPaying = false;
         }
-
     }
 
     private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()

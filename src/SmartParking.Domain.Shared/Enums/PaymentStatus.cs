@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +10,7 @@ public enum PaymentStatus
 {
    Pending,
    Success,
-   Cancelled
+   Cancelled,
+   Refunded,
+   Reversed
 }

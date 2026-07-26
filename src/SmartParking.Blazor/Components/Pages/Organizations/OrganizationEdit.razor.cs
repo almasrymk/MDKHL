@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Blazorise;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
@@ -140,8 +140,7 @@ public partial class OrganizationEdit
             UseShifts = _organizationSettingsDto.UseShifts,
             OwnerSlots = _organizationSettingsDto.OwnerSlots,
             RentalSlots = _organizationSettingsDto.RentalSlots,
-            IsSlotsEditable = _organizationSettingsDto.IsSlotsEditable,
-            OwnerVehicles = _organizationSettingsDto.OwnerVehicles,
+            OwnerVehicles = _organizationSettingsDto.OwnerVehicles
         };
         
         //_createUpdateOrganiztionDto.OrganizationSettingsDto.VehcileAccess = _organizationSettingsDto.VehcileAccess;
@@ -231,13 +230,18 @@ public partial class OrganizationEdit
         NumberOfCustomers = SelectedSubscription.NumberOfCustomers;
         SubscriptionSlotNumber = SelectedSubscription.ParkingSlot;
         Parkingslot = SelectedSubscription.ParkingSlot;
-        _organizationSettingsDto.UserAccess = organization.OrganizationSettings.UserAccess;
-        _organizationSettingsDto.VehcileAccess = organization.OrganizationSettings.VehcileAccess;
-        _organizationSettingsDto.UseShifts = organization.OrganizationSettings.UseShifts;
-        _organizationSettingsDto.RentalSlots = organization.OrganizationSettings.RentalSlots;
-        _organizationSettingsDto.OwnerSlots = organization.OrganizationSettings.OwnerSlots;
-        _organizationSettingsDto.IsSlotsEditable = organization.OrganizationSettings.IsSlotsEditable;
-        _organizationSettingsDto.OwnerVehicles = organization.OrganizationSettings.OwnerVehicles;
+        if (organization.OrganizationSettings != null)
+        {
+            _organizationSettingsDto = new OrganizationSettingsDto
+            {
+                UserAccess = organization.OrganizationSettings.UserAccess,
+                VehcileAccess = organization.OrganizationSettings.VehcileAccess,
+                UseShifts = organization.OrganizationSettings.UseShifts,
+                RentalSlots = organization.OrganizationSettings.RentalSlots,
+                OwnerSlots = organization.OrganizationSettings.OwnerSlots,
+                OwnerVehicles = organization.OrganizationSettings.OwnerVehicles
+            };
+        }
         StateHasChanged();
 
     }

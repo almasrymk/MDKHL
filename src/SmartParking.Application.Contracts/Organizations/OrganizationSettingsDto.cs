@@ -1,4 +1,4 @@
-﻿namespace SmartParking.Organizations;
+namespace SmartParking.Organizations;
 
 public class OrganizationSettingsDto
 {
@@ -9,5 +9,4 @@ public class OrganizationSettingsDto
     public int OwnerSlots { get; set; }
     public int RentalSlots { get; set; }
     public bool IsSlotsEditable { get; set; }
-
 }

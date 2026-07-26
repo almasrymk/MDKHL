@@ -9,10 +9,12 @@ using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Entities.Vehicles;
 using SmartParking.Enums;
+using SmartParking.Enums.PosTerminal;
 using SmartParking.Invoices;
 using SmartParking.Organizations;
 using SmartParking.Packages;
 using SmartParking.Payments.PaymentIntegrations;
+using SmartParking.Payments.PosTerminal;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using SmartParking.ZATCATaxInvoice;
@@ -297,7 +299,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         var PaymentNumberExist = await _repository.FirstOrDefaultAsync(p=> p.PaymentNumber == payment.PaymentNumber);
         if(PaymentNumberExist != null)
         {
-            _logger.LogError("This Payment Number Is already Exist with payment id : {PaymentId}", payment.Id);
+            _logger.LogError("This Payment Number Is already Exist with payment id : {PaymentId}", PaymentNumberExist.Id);
             throw new Exception("This Payment Number Is already Exist");
         }
         payment = await _repository.InsertAsync(payment);
@@ -318,6 +320,142 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     }
 
 
+    public async Task<Guid> UpdatePaymentStausByPaymentNumberAsync(string paymentNumber, string checkoutid, PaymentMethod paymentMethod)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var payment = await _repository.FirstOrDefaultAsync(p => p.PaymentNumber == paymentNumber);
+            if (payment == null)
+            {
+                throw new Exception("Payment not found.");
+            }
+            var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
+            if (invoice == null)
+            {
+                throw new Exception("Invoice not found.");
+            }
+            invoice.InvoiceNumber = payment.PaymentNumber;
+            payment.CheckoutId = checkoutid;
+            payment.PaymentMethod = paymentMethod;
+            return payment.Id;
+        }
+    }
+
+    private async Task CallingZatcaIntegration(Payment payment)
+    {
+        QRCodeDto qrCode = new QRCodeDto();
+        var organization = await organizationsAppService.GetAsync(payment.OrganizationId);
+        if (organization != null && organization.StatusZatca == Status.Active && payment.Amount > 0)
+        {
+            var res = await _zatcaTaxInvoiceAppService.SendToZACTA(payment.Id);
+            payment.QrCodeInvoice = qrCode.QRCode = res.invoiceQRCode;
+            payment.IsSentZatca = res.status;
+            payment.ErrorMessagesZatca = null;
+            if (res.validationResults != null && res.validationResults.errorMessages != null && res.validationResults.errorMessages.Count > 0)
+            {
+                var listErrors = res.validationResults.errorMessages.Select(e => e.Message).ToList();
+                payment.ErrorMessagesZatca = string.Join(",", listErrors);
+            }
+            else if (res.validationResults != null && res.validationResults.warningMessages != null && res.validationResults.warningMessages.Count > 0)
+            {
+                var listErrors = res.validationResults.warningMessages.Select(e => e.Message).ToList();
+                payment.ErrorMessagesZatca = string.Join(",", listErrors);
+            }
+        }
+        else
+        {
+            qrCode = await _invoiceUtility.GetQrCodeAsync(payment.Amount, payment.OrganizationId);
+            payment.QrCodeInvoice = qrCode.QRCode;
+        }
+        await CurrentUnitOfWork!.SaveChangesAsync();
+    }
+
+    [RemoteService(IsEnabled = false)]
+    public async Task<PaymentCheckoutDto> CreatePendingPosPaymentAsync(PaymentCheckoutRequestDto request, string? terminalId = null, System.Threading.CancellationToken cancellationToken = default)
+    {
+        request.PaymentMethod = PaymentMethod.POS;
+        return await SavePaymentRequest(request, PaymentStatus.Pending, request.CustomerId, checkoutid: null, entityId: terminalId);
+    }
+
+    [RemoteService(IsEnabled = false)]
+    public async Task<PaymentDto> CompletePosTerminalPaymentAsync(CompletePosTerminalPaymentDto input, System.Threading.CancellationToken cancellationToken = default)
+    {
+        var payment = await _repository.GetAsync(input.PaymentId, cancellationToken: cancellationToken);
+
+        if (payment.PaymentStatus == PaymentStatus.Success || payment.PaymentStatus == PaymentStatus.Cancelled)
+        {
+            _logger.LogInformation("Payment {PaymentId} already processed as {Status}. Short-circuiting.", payment.Id, payment.PaymentStatus);
+            return ObjectMapper.Map<Payment, PaymentDto>(payment);
+        }
+
+        var outcome = SamaResponseCodeMapping.Evaluate(input.SamaCode);
+
+        if (outcome == SamaResponseOutcome.Approved)
+        {
+            payment.PaymentStatus = PaymentStatus.Success;
+            await CallingZatcaIntegration(payment);
+            await UpdateInvoiceStatusAsync(payment.InvoiceId, payment.PaymentNumber);
+        }
+        else
+        {
+            payment.PaymentStatus = PaymentStatus.Cancelled;
+        }
+
+        await _repository.UpdateAsync(payment, autoSave: false, cancellationToken: cancellationToken);
+        await CurrentUnitOfWork!.SaveChangesAsync(cancellationToken);
+
+        return ObjectMapper.Map<Payment, PaymentDto>(payment);
+    }
+
+    [RemoteService(IsEnabled = false)]
+    public async Task<PaymentDto> RefundPosPaymentAsync(CompletePosTerminalRefundDto input, System.Threading.CancellationToken cancellationToken = default)
+    {
+        var payment = await _repository.GetAsync(input.PaymentId, cancellationToken: cancellationToken);
+
+        // Idempotency Guard: If already Refunded or Reversed, short-circuit
+        if (payment.PaymentStatus == PaymentStatus.Refunded || payment.PaymentStatus == PaymentStatus.Reversed)
+        {
+            _logger.LogInformation("Payment {PaymentId} is already in state {Status}. Short-circuiting refund.", payment.Id, payment.PaymentStatus);
+            return ObjectMapper.Map<Payment, PaymentDto>(payment);
+        }
+
+        var outcome = SamaResponseCodeMapping.Evaluate(input.SamaCode);
+
+        // State Transition: Only transition to Refunded on Approved outcome
+        if (outcome == SamaResponseOutcome.Approved)
+        {
+            payment.PaymentStatus = PaymentStatus.Refunded;
+            await _repository.UpdateAsync(payment, autoSave: false, cancellationToken: cancellationToken);
+        }
+
+        await CurrentUnitOfWork!.SaveChangesAsync(cancellationToken);
+        return ObjectMapper.Map<Payment, PaymentDto>(payment);
+    }
+
+    [RemoteService(IsEnabled = false)]
+    public async Task<PaymentDto> ReversePosPaymentAsync(CompletePosTerminalReversalDto input, System.Threading.CancellationToken cancellationToken = default)
+    {
+        var payment = await _repository.GetAsync(input.PaymentId, cancellationToken: cancellationToken);
+
+        // Idempotency Guard: If already Refunded or Reversed, short-circuit
+        if (payment.PaymentStatus == PaymentStatus.Refunded || payment.PaymentStatus == PaymentStatus.Reversed)
+        {
+            _logger.LogInformation("Payment {PaymentId} is already in state {Status}. Short-circuiting reversal.", payment.Id, payment.PaymentStatus);
+            return ObjectMapper.Map<Payment, PaymentDto>(payment);
+        }
+
+        var outcome = SamaResponseCodeMapping.Evaluate(input.SamaCode);
+
+        // State Transition: Only transition to Reversed on Approved outcome
+        if (outcome == SamaResponseOutcome.Approved)
+        {
+            payment.PaymentStatus = PaymentStatus.Reversed;
+            await _repository.UpdateAsync(payment, autoSave: false, cancellationToken: cancellationToken);
+        }
+
+        await CurrentUnitOfWork!.SaveChangesAsync(cancellationToken);
+        return ObjectMapper.Map<Payment, PaymentDto>(payment);
+    }
     #endregion
     #region private methods
 

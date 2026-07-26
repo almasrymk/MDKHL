@@ -12,6 +12,7 @@ using OpenIddict.Validation.AspNetCore;
 using SmartParking.Blazor.Components;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.State;
+using SmartParking.Payments.PosTerminal;
 using SmartParking.Blazor.Filters;
 using SmartParking.Blazor.Menus;
 using SmartParking.Blazor.MultiTenants;
@@ -147,6 +148,10 @@ public class SmartParkingBlazorModule : AbpModule
             context.Services.GetConfiguration().GetSection(GeideaOptions.SectionName));
         context.Services.Configure<PaymobOptions>(
             context.Services.GetConfiguration().GetSection(PaymobOptions.SectionName));
+        context.Services.Configure<PosTerminalOptions>(
+            context.Services.GetConfiguration().GetSection(PosTerminalOptions.SectionName));
+        context.Services.AddTransient(sp => sp.GetRequiredService<IOptions<PosTerminalOptions>>().Value);
+
 
         // ── Named HttpClients for payment gateway services ────────────────────
         // AddHttpClient lives in Microsoft.Extensions.Http (AspNetCore shared framework)

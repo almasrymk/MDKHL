@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using SmartParking.Authentication;
 using SmartParking.Cameras;
 using SmartParking.Cameras.Watchers;
@@ -153,10 +153,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForPath(dest => dest.OrganizationSettings.UserAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UserAccess))
             .ReverseMap();
         CreateMap<OrganizationDto, CreateUpdateOrganiztionDto>()
-    .ForPath(dest => dest.OrganizationSettingsDto.VehcileAccess,
-             opt => opt.MapFrom(src => src.OrganizationSettings.VehcileAccess))
-    .ForPath(dest => dest.OrganizationSettingsDto.UserAccess,
-             opt => opt.MapFrom(src => src.OrganizationSettings.UserAccess));
+            .ForPath(dest => dest.OrganizationSettingsDto.VehcileAccess, opt => opt.MapFrom(src => src.OrganizationSettings.VehcileAccess))
+            .ForPath(dest => dest.OrganizationSettingsDto.UserAccess, opt => opt.MapFrom(src => src.OrganizationSettings.UserAccess));
 
         //CreateMap<OrganizationSettingsDto, OrganizationSettings>()
         //    .ReverseMap();
