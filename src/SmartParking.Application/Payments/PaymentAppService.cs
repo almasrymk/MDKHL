@@ -406,6 +406,25 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
 
         return ObjectMapper.Map<Payment, PaymentDto>(payment);
     }
+    [RemoteService(IsEnabled = false)]
+    public async Task<Guid> UpdatePaymentStausByCheckOutIdAsync(string checkoutid)
+    {
+        var payment = await _repository.FirstOrDefaultAsync(p => p.CheckoutId == checkoutid);
+        if (payment == null)
+        {
+            throw new Exception("Payment not found.");
+        }
+        var invoice = await _invoiceRepo.FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
+        if (invoice == null)
+        {
+            throw new Exception("Invoice not found.");
+        }
+        invoice.InvoiceType = InvoiceType.Paid;
+        invoice.InvoiceNumber = payment.PaymentNumber;
+        payment.PaymentStatus = PaymentStatus.Success;
+        await CallingZatcaIntegration(payment);
+        return payment.Id;
+    }
 
     [RemoteService(IsEnabled = false)]
     public async Task<PaymentDto> RefundPosPaymentAsync(CompletePosTerminalRefundDto input, System.Threading.CancellationToken cancellationToken = default)
@@ -625,6 +644,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
             await _repository.UpdateAsync(payment);
         }
     }
+
+ 
 
     #endregion
 }
