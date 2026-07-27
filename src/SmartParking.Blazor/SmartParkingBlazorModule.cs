@@ -368,14 +368,35 @@ public class SmartParkingBlazorModule : AbpModule
         services.AddAbpSwaggerGen(
             options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "SmartParking API", Version = "v1" });
-                options.DocInclusionPredicate((docName, description) =>
-                true);
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "SmartParking API V1", Version = "v1" });
+                options.SwaggerDoc("v2", new OpenApiInfo { Title = "SmartParking API V2", Version = "v2" });
+                options.DocInclusionPredicate((docName, apiDesc) =>
+                {
+                    if (!string.IsNullOrEmpty(apiDesc.GroupName))
+                    {
+                        return string.Equals(apiDesc.GroupName, docName, StringComparison.OrdinalIgnoreCase);
+                    }
+
+                    var relativePath = apiDesc.RelativePath ?? string.Empty;
+                    var isV2 = relativePath.Contains("/v2/", StringComparison.OrdinalIgnoreCase) ||
+                               relativePath.StartsWith("v2/", StringComparison.OrdinalIgnoreCase) ||
+                               relativePath.Contains("v2", StringComparison.OrdinalIgnoreCase);
+
+                    if (string.Equals(docName, "v2", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return isV2;
+                    }
+
+                    if (string.Equals(docName, "v1", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return !isV2;
+                    }
+
+                    return true;
+                });
                 options.CustomSchemaIds(type => type.FullName);
                 options.DocumentFilter<CustomSwaggerFilter>();
                 options.SchemaFilter<IgnorePropertyInSwaggerFilter>();
-
-
             }
         );
     }
@@ -503,7 +524,8 @@ public class SmartParkingBlazorModule : AbpModule
         app.UseSwagger();
         app.UseAbpSwaggerUI(options =>
         {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "SmartParking API");
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "SmartParking API V1");
+            options.SwaggerEndpoint("/swagger/v2/swagger.json", "SmartParking API V2");
         });
 
         app.UseConfiguredEndpoints(builder =>

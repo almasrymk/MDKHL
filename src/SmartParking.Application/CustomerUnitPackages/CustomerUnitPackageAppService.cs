@@ -1,4 +1,4 @@
-﻿using SmartParking.Cutomers;
+using SmartParking.Cutomers;
 using SmartParking.Entities.CustomerUnitPackages;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Units;

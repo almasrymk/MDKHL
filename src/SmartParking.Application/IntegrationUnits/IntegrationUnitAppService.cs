@@ -20,7 +20,6 @@ using SmartParking.UnitPackageIntegrations.Dtos;
 using SmartParking.UnitPackages;
 using SmartParking.Units;
 using SmartParking.UnitVehiclePackages;
-using SmartParking.Utilities.StaticValues;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
@@ -81,88 +80,129 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
     [RemoteService(false)]
     public async Task<Result<BookingDto>> CreateBookingAsync(CreateUpdateBookingDto dto)
     {
+        var providerName = (dto is CreateUpdateBookingV2Dto v2Dto && !string.IsNullOrWhiteSpace(v2Dto.ProviderName))
+            ? v2Dto.ProviderName
+            : "Pronight Package";
+        var providerArabicName = (dto is CreateUpdateBookingV2Dto v2DtoAr && !string.IsNullOrWhiteSpace(v2DtoAr.ProviderArabicName))
+            ? v2DtoAr.ProviderArabicName
+            : "باقه برونايت";
+        return await CreateBookingInternalAsync(dto, providerName, providerArabicName);
+    }
+
+    [RemoteService(false)]
+    public async Task<Result<BookingDto>> CreateBookingV2Async(CreateUpdateBookingV2Dto dto)
+    {
+        if (dto == null || string.IsNullOrWhiteSpace(dto.ProviderName))
+        {
+            return Result.Error("ProviderName is required.");
+        }
+        return await CreateBookingInternalAsync(dto, dto.ProviderName, dto.ProviderArabicName);
+    }
+
+    private async Task<Result<BookingDto>> CreateBookingInternalAsync(CreateUpdateBookingDto dto, string providerName, string? providerArabicName)
+    {
         using (DataFilter.Disable<IMultiTenant>())
         {
             try
-
-        {
-            var unit = await _unitAppService.GetActiveUnitByCodeAsync(dto.UnitId);
-            if (!unit.IsSuccess)
             {
-                return Result.Error(@L["UnitNotFound"]);
-            }
-            var existingBookings = await _unitPackageIntegrationOrchestratorAppService.BookingIdExist(dto.Booking.BookingId);
-            if (existingBookings)
-            {
-                return Result.Error(@L["BookingIdAlreadyExist"]);
-            }
-            var getCustomer = await _customerAppService.GetCustomerByPhoneNumberAsync(dto.Customer.Mobile);
-            var customer = (getCustomer is null) ? await CreateCustomer(dto.Customer) : getCustomer;
-            var vehicles = await CreateVehicle(dto.Customer.Cars, customer.Id);
-            var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
-            if (vehicles.Count > organization.OrganizationSettings.RentalSlots)
-            {
-                    return Result.Error("Count of vehicles bigger than number of slots");
-            }
-            var resultValidate = await ValidateCustomerUnitPackage(customer.Id, dto, false);
-            if (!resultValidate.IsSuccess)
-            {
-                    return Result.Error(resultValidate.Errors.FirstOrDefault()!);
-            }
-            var customerUnitPackage = await CreateCustomerUnitPackage(customer,dto, customer.Id, unit);
-            var customerPackages = await CreateCustomerPackage(customerUnitPackage, vehicles, customer.MobileNumber);
-            var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage, customerPackages);
-            var PackageResult = await HandlePackageResponseDto(customerPackages);
-            var QrResult = await HandleQrResponseDto(customerPackages, customerUnitPackage);
-            await CreateUnitPackageIntegrationsAsync(unitVehiclePackages, dto.Booking.BookingId, organization.Id, organization.TenantId);
-            return Result.Success(new BookingDto
-            {
-                Status = Status.Active,
-                PhoneNumber = customer.MobileNumber,
-
-                Package = PackageResult,
-                Validity = new ValidityDto
+                var unit = await _unitAppService.GetActiveUnitByCodeAsync(dto.UnitId);
+                if (!unit.IsSuccess)
                 {
-                    StartDate = customerUnitPackage.ActivationDate,
-                    EndDate = customerUnitPackage.DectivationDate
-                },
-                Qr = QrResult,
-                Links = new LinksDto
-                {
-                    bookingId = dto.Booking.BookingId,
-                    UnitId = dto.UnitId
+                    return Result.Error(@L["UnitNotFound"]);
                 }
-            });
-        }
-        catch (BusinessException ex)
-        {
-            if (_unitOfWorkManager.Current != null)
-            {
-                await _unitOfWorkManager.Current.RollbackAsync();
-            }
-            return Result.Error(ex.Code);
-        }
-        catch(InvalidOperationException ex)
-        {
-            if (_unitOfWorkManager.Current != null)
-            {
-                await _unitOfWorkManager.Current.RollbackAsync();
-            }
-            return Result.Error(ex.Message);
+                var existingBookings = await _unitPackageIntegrationOrchestratorAppService.BookingIdExist(dto.Booking.BookingId);
+                if (existingBookings)
+                {
+                    return Result.Error(@L["BookingIdAlreadyExist"]);
+                }
+                var getCustomer = await _customerAppService.GetCustomerByPhoneNumberAsync(dto.Customer.Mobile);
+                var customer = (getCustomer is null) ? await CreateCustomer(dto.Customer) : getCustomer;
+                var vehicles = await CreateVehicle(dto.Customer.Cars, customer.Id);
+                var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
+                if (vehicles.Count > organization.OrganizationSettings.RentalSlots)
+                {
+                    return Result.Error("Count of vehicles bigger than number of slots");
+                }
+                var resultValidate = await ValidateCustomerUnitPackage(customer.Id, dto, false);
+                if (!resultValidate.IsSuccess)
+                {
+                    return Result.Error(resultValidate.Errors.FirstOrDefault()!);
+                }
+                var customerUnitPackage = await CreateCustomerUnitPackage(customer, dto, customer.Id, unit, providerName, providerArabicName);
+                var customerPackages = await CreateCustomerPackage(customerUnitPackage, vehicles, customer.MobileNumber);
+                var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage, customerPackages);
+                var PackageResult = await HandlePackageResponseDto(customerPackages);
+                var QrResult = await HandleQrResponseDto(customerPackages, customerUnitPackage);
+                await CreateUnitPackageIntegrationsAsync(unitVehiclePackages, dto.Booking.BookingId, organization.Id, organization.TenantId);
+                return Result.Success(new BookingDto
+                {
+                    Status = Status.Active,
+                    PhoneNumber = customer.MobileNumber,
 
-        }
-        catch (Exception ex)
-        {
-            if (_unitOfWorkManager.Current != null)
-            {
-                await _unitOfWorkManager.Current.RollbackAsync();
+                    Package = PackageResult,
+                    Validity = new ValidityDto
+                    {
+                        StartDate = customerUnitPackage.ActivationDate,
+                        EndDate = customerUnitPackage.DectivationDate
+                    },
+                    Qr = QrResult,
+                    Links = new LinksDto
+                    {
+                        bookingId = dto.Booking.BookingId,
+                        UnitId = dto.UnitId
+                    }
+                });
             }
-            return Result.Error(ex.Message);
-        }
+            catch (BusinessException ex)
+            {
+                if (_unitOfWorkManager.Current != null)
+                {
+                    await _unitOfWorkManager.Current.RollbackAsync();
+                }
+                return Result.Error(ex.Code);
+            }
+            catch (InvalidOperationException ex)
+            {
+                if (_unitOfWorkManager.Current != null)
+                {
+                    await _unitOfWorkManager.Current.RollbackAsync();
+                }
+                return Result.Error(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                if (_unitOfWorkManager.Current != null)
+                {
+                    await _unitOfWorkManager.Current.RollbackAsync();
+                }
+                return Result.Error(ex.Message);
+            }
         }
     }
+
     [RemoteService(false)]
     public async Task<Result<BookingDto>> UpdateBookingAsync(CreateUpdateBookingDto dto)
+    {
+        var providerName = (dto is CreateUpdateBookingV2Dto v2Dto && !string.IsNullOrWhiteSpace(v2Dto.ProviderName))
+            ? v2Dto.ProviderName
+            : "Pronight Package";
+        var providerArabicName = (dto is CreateUpdateBookingV2Dto v2DtoAr && !string.IsNullOrWhiteSpace(v2DtoAr.ProviderArabicName))
+            ? v2DtoAr.ProviderArabicName
+            : "باقه برونايت";
+        return await UpdateBookingInternalAsync(dto, providerName, providerArabicName);
+    }
+
+    [RemoteService(false)]
+    public async Task<Result<BookingDto>> UpdateBookingV2Async(CreateUpdateBookingV2Dto dto)
+    {
+        if (dto == null || string.IsNullOrWhiteSpace(dto.ProviderName))
+        {
+            return Result.Error("ProviderName is required.");
+        }
+        return await UpdateBookingInternalAsync(dto, dto.ProviderName, dto.ProviderArabicName);
+    }
+
+    private async Task<Result<BookingDto>> UpdateBookingInternalAsync(CreateUpdateBookingDto dto, string providerName, string? providerArabicName)
     {
         try
         {
@@ -205,8 +245,6 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
 
             await _unitOfWorkManager.Current!.SaveChangesAsync();
 
-
-            
             BookingDto result = new BookingDto
             {
                 Status = Status.Active,
@@ -234,7 +272,6 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             }
             return Result.Error(ex.Message);
         }
-        
     }
 
     private async Task<CustomerDto> UpdateCustomer(Guid customerId ,CreateUpdateCustomerDto customerDto)
@@ -298,7 +335,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         }
     }
 
-    private async Task<CustomerUnitPackageDto> CreateCustomerUnitPackage(CustomerDto customerDto, CreateUpdateBookingDto dto , Guid customerId, UnitDto unitDto) 
+    private async Task<CustomerUnitPackageDto> CreateCustomerUnitPackage(CustomerDto customerDto, CreateUpdateBookingDto dto, Guid customerId, UnitDto unitDto, string providerName = "Pronight Package", string? providerArabicName = "باقه برونايت") 
     {
         var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
         CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto = new CustomerUnitPackageAssignationDto
@@ -312,23 +349,22 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         };
         PackageDto packageDto = new PackageDto
         {
-            EnglishName = ProNightStaticValues.EnglishName,
-            ArabicName = ProNightStaticValues.ArabicName,
+            EnglishName = providerName,
+            ArabicName = string.IsNullOrWhiteSpace(providerArabicName) ? providerName : providerArabicName,
             Price = dto.Price.Amount,
             CustomerCategory = "Renter",
-            Description = ProNightStaticValues.Description,
+            Description = "This package is for renters",
             OrganizationId = organization.Id,
-            PackageCategoryType = ProNightStaticValues.PackageCategoryType,
+            PackageCategoryType = PackageCategoryTypes.CustomPackage,
             ActivationDate = dto.Booking.StartDate,
             DectivationDate = dto.Booking.EndDate,
-            PublishFrom = ProNightStaticValues.PublishedFrom,
-            PublishTo = ProNightStaticValues.PublishedTo,
-            Status = ProNightStaticValues.status,
+            PublishFrom = new TimeOnly(00, 00),
+            PublishTo = new TimeOnly(00, 00),
+            Status = Status.Active,
             TenantId = CurrentTenant.Id,
-            PackageStatus = ProNightStaticValues.PackageStatus,
-            Published = ProNightStaticValues.Published,
+            PackageStatus = SubscriptionStatus.Active,
+            Published = true,
             DurationOfPackage = dto.Booking.NoOfDays,
-            
         };
         UnitPackageDto unitPackage = new UnitPackageDto
         {

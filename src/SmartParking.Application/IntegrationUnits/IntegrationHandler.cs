@@ -1,4 +1,4 @@
-﻿using SmartParking.IntegrationUnit;
+using SmartParking.IntegrationUnit;
 using SmartParking.IntegrationUnit.Dtos;
 using SmartParking.Results;
 using System.Linq;
@@ -29,6 +29,26 @@ public class IntegrationHandler : IScopedDependency, IIntegrationHandler
         }
 
         var result = await _integrationUnitAppService.CreateBookingAsync(input);
+        if (!result.IsSuccess)
+        {
+            return Result.Error(result.Errors!.FirstOrDefault());
+        }
+        return Result.Success<BookingDto>(result);
+    }
+
+    public async Task<Result<BookingDto>> HandleBookingV2Async(CreateUpdateBookingV2Dto input)
+    {
+        if (input.CustomerId is not null)
+        {
+            var updateResult = await _integrationUnitAppService.UpdateBookingV2Async(input);
+            if (!updateResult.IsSuccess)
+            {
+                return Result.Error(updateResult?.Errors!.FirstOrDefault());
+            }
+            return Result.Success<BookingDto>(updateResult);
+        }
+
+        var result = await _integrationUnitAppService.CreateBookingV2Async(input);
         if (!result.IsSuccess)
         {
             return Result.Error(result.Errors!.FirstOrDefault());
