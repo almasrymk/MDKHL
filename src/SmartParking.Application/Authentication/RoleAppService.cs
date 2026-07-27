@@ -1,4 +1,4 @@
-﻿using SmartParking.Repositories;
+using SmartParking.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -196,7 +196,10 @@ public class RoleAppService : ApplicationService, IRoleAppService
        );
         
         var org =await _organizationAppService.GetOrganizationForCurrentTenatAsync();
-        user.AddRole(RoleId);
+        if (!user.Roles.Any(r => r.RoleId == RoleId))
+        {
+            user.AddRole(RoleId);
+        }
         
         await _userManager.RemovePasswordAsync(user);
         await _userManager.AddPasswordAsync(user, "P@ssw0rd");

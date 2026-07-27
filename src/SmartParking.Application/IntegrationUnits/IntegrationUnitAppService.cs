@@ -110,6 +110,10 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
                 {
                     return Result.Error(@L["UnitNotFound"]);
                 }
+                if (dto.Customer?.Cars != null && dto.Customer.Cars.Count > 3)
+                {
+                    return Result.Error("Count of cars cannot exceed 3");
+                }
                 var existingBookings = await _unitPackageIntegrationOrchestratorAppService.BookingIdExist(dto.Booking.BookingId);
                 if (existingBookings)
                 {
@@ -210,6 +214,10 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             if (!unit.IsSuccess)
             {
                 return Result.Error(@L["UnitNotFound"]);
+            }
+            if (dto.Customer?.Cars != null && dto.Customer.Cars.Count > 3)
+            {
+                return Result.Error("Count of cars cannot exceed 3");
             }
             var customerDto = await _customerAppService.GetCustomerByPhoneNumberAsync(dto.CustomerId);
             var customer = await UpdateCustomer(customerDto.Id, dto.Customer.MapToCustomerDto(dto.Customer));

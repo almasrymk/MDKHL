@@ -1,7 +1,8 @@
-﻿using SmartParking.Cutomers;
+using SmartParking.Cutomers;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace SmartParking.IntegrationUnit.Dtos;
@@ -14,6 +15,7 @@ public class CreateUpdateCustomerIntegrationUnitDto
     public string NId { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public IdentificationTypes IdType { get; set; }
+    [MaxLength(3, ErrorMessage = "Count of cars cannot exceed 3")]
     public List<CreateUpdateVehicleIntegrationUnitDto> Cars { get; set; }
 
 

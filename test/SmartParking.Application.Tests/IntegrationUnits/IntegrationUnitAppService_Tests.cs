@@ -1,6 +1,7 @@
 using Shouldly;
 using SmartParking.IntegrationUnit;
 using SmartParking.IntegrationUnit.Dtos;
+using System.Linq;
 using Xunit;
 
 namespace SmartParking.IntegrationUnits;
@@ -32,5 +33,19 @@ public class IntegrationUnitAppServiceTests
 
         // Assert
         dto.ShouldBeAssignableTo<CreateUpdateBookingDto>();
+    }
+
+    [Fact]
+    public void CreateUpdateCustomerIntegrationUnitDto_Cars_Should_Have_MaxLength_3()
+    {
+        // Arrange
+        var propertyInfo = typeof(CreateUpdateCustomerIntegrationUnitDto).GetProperty(nameof(CreateUpdateCustomerIntegrationUnitDto.Cars));
+        var maxLengthAttribute = propertyInfo?.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.MaxLengthAttribute), false)
+            .Cast<System.ComponentModel.DataAnnotations.MaxLengthAttribute>()
+            .FirstOrDefault();
+
+        // Assert
+        maxLengthAttribute.ShouldNotBeNull();
+        maxLengthAttribute.Length.ShouldBe(3);
     }
 }

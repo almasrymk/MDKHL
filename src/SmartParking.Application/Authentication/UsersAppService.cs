@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -370,7 +370,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
             {
                 IdentityUser? user = await IsUserFound(id);
 
-                //ChenageRoleInMdkhl(input, user);
+                ChenageRoleInMdkhl(input, user);
                 await UpdateUserProperties(user, input);
                 await AssignRoleIfCustomerAsync(input, user);
                 var updatedUser = await _userManager.UpdateAsync(user);
@@ -531,7 +531,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         IdentityUser? user = await IsUserFound(id);
 
 
-        RemoveRole(input.RoleId, user);
+        await RemoveRole(input.RoleId, user);
         user?.SetProperty("UserTypeId", 3);
         user?.SetProperty("OrganizationId", input.OrganizationId);
 
@@ -592,10 +592,14 @@ public class UsersAppService : ApplicationService, IUsersAppService
             throw new Exception(LocalizationHelper.GetLocalizedString("Role") + " " +
                 LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
-        foreach (var item in user.Roles)
+        var rolesToRemove = user.Roles
+            .Where(r => r.TenantId == CurrentTenant.Id)
+            .Select(r => r.RoleId)
+            .ToList();
+
+        foreach (var roleId in rolesToRemove)
         {
-            if (item.TenantId == CurrentTenant.Id)
-                user.RemoveRole(item.RoleId);
+            user.RemoveRole(roleId);
         }
         user.AddRole(input.RoleId);
     }
@@ -620,9 +624,24 @@ public class UsersAppService : ApplicationService, IUsersAppService
     /// </summary>
     /// <param name="roleId">The ID of the role to remove.</param>
     /// <param name="user">The user to remove the role from.</param>
-    private static async void RemoveRole(Guid roleId, IdentityUser? user)
+    private static Task RemoveRole(Guid roleId, IdentityUser? user)
     {
-        user.RemoveRole(roleId);
+        if (user != null)
+        {
+            if (roleId != Guid.Empty)
+            {
+                user.RemoveRole(roleId);
+            }
+            else
+            {
+                var rolesToRemove = user.Roles.Select(r => r.RoleId).ToList();
+                foreach (var rId in rolesToRemove)
+                {
+                    user.RemoveRole(rId);
+                }
+            }
+        }
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -834,9 +853,10 @@ public class UsersAppService : ApplicationService, IUsersAppService
             throw new Exception(LocalizationHelper.GetLocalizedString("Role") + " " +
                 LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
-        foreach (var item in user.Roles)
+        var rolesToRemove = user.Roles.Select(r => r.RoleId).ToList();
+        foreach (var roleId in rolesToRemove)
         {
-            user.RemoveRole(item.RoleId);
+            user.RemoveRole(roleId);
         }
         user.AddRole(input.RoleId);
     }
@@ -939,8 +959,14 @@ public class UsersAppService : ApplicationService, IUsersAppService
     /// <param name="TenantId">The ID of the organiztion to be assigned to the user.</param>   
     public async Task AssignRoleAndPermissionsAsync(Guid UserId, Guid roleId, Guid TenantId)
     {
-        var userDto = new IdentityUserRoleDto(UserId, roleId, TenantId);
-        await _userRoleRepository.InsertAsync(userDto.GetModel());
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            if (!await _userRoleRepository.AnyAsync(e => e.UserId == UserId && e.RoleId == roleId && e.TenantId == TenantId))
+            {
+                var userDto = new IdentityUserRoleDto(UserId, roleId, TenantId);
+                await _userRoleRepository.InsertAsync(userDto.GetModel(), autoSave: true);
+            }
+        }
     }
     #endregion
 }

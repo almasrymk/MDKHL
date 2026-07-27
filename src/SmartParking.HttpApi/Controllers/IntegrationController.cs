@@ -41,7 +41,7 @@ public class IntegrationController : ControllerBase
     }
 
     [HttpPost("v2/book")]
-    [Authorize]
+  //  [Authorize]
     [ApiExplorerSettings(GroupName = "v2")]
     public async Task<IActionResult> BookV2([FromBody] CreateUpdateBookingV2Dto input)
     {
