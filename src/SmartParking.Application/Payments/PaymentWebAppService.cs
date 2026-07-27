@@ -330,6 +330,51 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
             return paymentDto;
         }
     }
+    public async Task<PaymentDetailDto> GetPaymentDetailAsync(Guid paymentId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var payment = await CheckPayment(paymentId);
+            var organization = await _organizationRepository.FirstOrDefaultAsync(x => x.Id == payment.OrganizationId);
+
+            if (payment.InvoiceId.HasValue && payment.InvoiceId.Value > 0)
+            {
+                var invoiceDto = await CheckInvoice(payment);
+                if (invoiceDto != null)
+                {
+                    var result = ObjectMapper.Map<InvoiceDto, PaymentDetailDto>(invoiceDto);
+                    if (organization != null)
+                    {
+                        if (string.IsNullOrEmpty(result.OrganizationAddress))
+                            result.OrganizationAddress = organization.Address;
+                        if (string.IsNullOrEmpty(result.OrganizationTIN))
+                            result.OrganizationTIN = organization.TaxIdentificationNumber;
+                    }
+                    return result;
+                }
+            }
+
+            if (payment.CustomerPackageId.HasValue && payment.CustomerPackageId.Value > 0)
+            {
+                var customerPackageDto = await CheckPackage(payment);
+                if (customerPackageDto != null)
+                {
+                    return payment.ToPaymentDetailDto(customerPackageDto, organization);
+                }
+            }
+
+            if (payment.PackageId.HasValue && payment.PackageId.Value > 0)
+            {
+                var packageDto = await _packagesAppService.GetAsync(payment.PackageId.Value);
+                if (packageDto != null)
+                {
+                    return payment.ToPaymentDetailDto(packageDto, organization);
+                }
+            }
+
+            return payment.ToPaymentDetailDto(organization);
+        }
+    }
     #endregion
     #region private methods 
     private static IQueryable<PaymentDto> ApplyFilterTenant(Guid? tenantId, IQueryable<PaymentDto> query)

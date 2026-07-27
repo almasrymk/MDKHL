@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,4 +16,5 @@ public interface IPaymentWebAppService
     Task<PagedResultDto<PaymentDto>> SearchOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input);
     Task<PaymentDto> GetPaymentForPackage(int CustomerPackageId);
     Task<PaymentDto> GetPaymentForInvoice(int invoiceId);
+    Task<PaymentDetailDto> GetPaymentDetailAsync(Guid paymentId);
 }

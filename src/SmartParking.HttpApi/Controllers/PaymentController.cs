@@ -17,10 +17,12 @@ namespace SmartParking.Controllers;
 public class PaymentController : ControllerBase
 {
     private readonly IPaymentAppService _paymentAppService;
+    private readonly IPaymentWebAppService _paymentWebAppService;
     private readonly IPaymentMobileHelper _paymentMobileHelper;
-    public PaymentController(IPaymentAppService paymentAppService, IPaymentMobileHelper paymentMobileHelper)
+    public PaymentController(IPaymentAppService paymentAppService, IPaymentWebAppService paymentWebAppService, IPaymentMobileHelper paymentMobileHelper)
     {
         _paymentAppService = paymentAppService;
+        _paymentWebAppService = paymentWebAppService;
         _paymentMobileHelper = paymentMobileHelper;
     }
 
@@ -60,6 +62,12 @@ public class PaymentController : ControllerBase
     {
         //return Result.Success();
         return await _paymentMobileHelper.HandleCancel(invoiceId);
+    }
+    [HttpGet("getinvoicepaymentdetails/{PaymentId}")]
+    [Authorize]
+    public async Task<Result<PaymentDetailDto>> GetPaymentDetaild(Guid PaymentId)
+    {
+        return await _paymentWebAppService.GetPaymentDetailAsync(PaymentId);
     }
 
 }

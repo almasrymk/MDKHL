@@ -1,6 +1,7 @@
 ﻿using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,7 @@ public class EntryDto
     public int PushType { get; set; }
     public string SluiceDevChnId { get; set; }
     public string SluiceDevChnName { get; set; }
+    [RegularExpression(@"^\d+$", ErrorMessage = "TicketID must contain numbers only.")]
     public string TicketID { get; set; }
     public int TotRemianNum { get; set; }
     public string VehicleClass { get; set; }
