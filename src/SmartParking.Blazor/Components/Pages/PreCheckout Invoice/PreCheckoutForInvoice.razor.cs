@@ -1,13 +1,15 @@
+using Blazorise;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using MudBlazor;
 using SmartParking.Blazor.Components.PosTerminal;
-using SmartParking.Organizations;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.CustomerPackages;
 using SmartParking.Enums;
 using SmartParking.Enums.PosTerminal;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
+using SmartParking.Organizations;
 using SmartParking.Payments;
 using SmartParking.Utilities;
 
@@ -28,7 +30,7 @@ public partial class PreCheckoutForInvoice
     public decimal Discount { get; set; } = default;
     public decimal InvoicePrice { get; set; } = default;
     private PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;
-    private bool IsPaying { get; set; } = false;
+    private bool isPaying = false;
     private Task HandleAddDiscount(decimal selected)
     {
         Invoice.Discount = selected;
@@ -46,30 +48,28 @@ public partial class PreCheckoutForInvoice
 
     private async Task PayInvoice()
     {
+        isPaying = true;
+        var invoice = await keeperTransactionsAppService.Checkout(GarageTransactionDto, Invoice);
+        Id = invoice.Value.Id;
+        if (Discount != default)
+        {
+            await InvoiceAppService.UpdateDiscountForInvoice(Id, Discount);
+        }
         try
         {
-            IsPaying = true;
-            var invoice = await keeperTransactionsAppService.Checkout(GarageTransactionDto, Invoice);
-            Id = invoice.Value.Id;
-            if (Discount != default)
-            {
-                await InvoiceAppService.UpdateDiscountForInvoice(Id, Discount);
-            }
-
-            var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
-
             if (PaymentMethod == PaymentMethod.POS)
             {
+
                 var checkoutRequest = new PaymentCheckoutRequestDto
                 {
                     OrganizationId = Invoice.OrganizationId,
                     PaymentCategory = PaymentCategory.PaymentParking,
                     InvoiceId = Id,
                     PaymentMethod = PaymentMethod,
-                    Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Discount),
+                    Amount = PaymentUtilityCalculationts.GetPriceForPayment(InvoicePrice, Invoice.Discount),
                     CustomerId = Invoice.CustomerId,
                     PaymentName = PaymentMethod.POS.ToString(),
-                    PaymentNumber = string.Empty
+                    PaymentNumber = string.Empty // Generated inside SavePaymentRequest
                 };
 
                 Guid createdPaymentId = Guid.Empty;
@@ -77,7 +77,6 @@ public partial class PreCheckoutForInvoice
                 var parameters = new DialogParameters<PosPaymentDialog>
                 {
                     { x => x.Request, checkoutRequest },
-                    { x => x.OrgSettings, organization.OrganizationSettings },
                     { x => x.OnPaymentCreated, EventCallback.Factory.Create<Guid>(this, id => createdPaymentId = id) }
                 };
 
@@ -89,9 +88,9 @@ public partial class PreCheckoutForInvoice
                 {
                     if (snapshot.Outcome == SamaResponseOutcome.Approved)
                     {
-                        SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]}  {L["Checkout"]}", MudBlazor.Severity.Success);
-                        await Task.Delay(1000);
-                        Navigation.NavigateTo($"/payments/view/{createdPaymentId}");
+                        SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
+                        await Task.Delay(500);
+                        await JSRuntime.InvokeVoidAsync("eval", $"window.open('/payments/view/{createdPaymentId}', '_blank');");
                     }
                     else
                     {
@@ -104,19 +103,21 @@ public partial class PreCheckoutForInvoice
                 PaymentCheckoutDto payment = await RequestToPaymentCheckout();
                 if (payment != null)
                 {
-                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]}  {L["Checkout"]}", MudBlazor.Severity.Success);
-                    await Task.Delay(1000);
-                    Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
+                    SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
+                    await Task.Delay(500);
+                    await JSRuntime.InvokeVoidAsync("eval", $"window.open('/payments/view/{payment.PaymentId}', '_blank');");
                 }
+              
             }
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            SnackBar.ShowSnackbar(Snackbar, L["GracePeriodValidation"], MudBlazor.Severity.Error);
+            Snackbar.Add(L[e.Message], MudBlazor.Severity.Error);
+            await Task.Delay(1000);
         }
         finally
         {
-            IsPaying = false;
+            isPaying = false;
         }
     }
 

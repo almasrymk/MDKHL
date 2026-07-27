@@ -18,6 +18,7 @@
 @inject NavigationManager Navigation
 @inject IKeeperTransactionsAppService keeperTransactionsAppService
 @inject ISnackbar Snackbar
+@inject IJSRuntime JSRuntime
 
 <PageTitle>@L["PreInvoice"]</PageTitle>
 
@@ -79,7 +80,7 @@
                            InvoicePrice="@(Invoice?.InvoicePrice??0)"
                            PayInvoice="PayInvoice"
                            PaymentMethod="PaymentMethod"
-                           IsPaying="IsPaying"
+                           IsPaying="isPaying"
                            ShowOpenGate="false" />
 
 </MudGrid>

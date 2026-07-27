@@ -19,7 +19,6 @@ public partial class PosTerminalPanel : IAsyncDisposable
     /// <summary>Full payment request DTO — panel owns CreatePendingPosPaymentAsync internally.</summary>
     [Parameter, EditorRequired] public PaymentCheckoutRequestDto Request { get; set; } = default!;
 
-    [Parameter] public OrganizationSettingsDto? OrgSettings { get; set; }
 
     /// <summary>Fires when a Pending payment row is created, so parent can track the PaymentId.</summary>
     [Parameter] public EventCallback<Guid> OnPaymentCreated { get; set; }

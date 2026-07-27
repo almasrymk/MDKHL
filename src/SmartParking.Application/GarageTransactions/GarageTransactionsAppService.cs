@@ -53,33 +53,7 @@ public class GarageTransactionsAppService :
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            var queryable = from garageTransaction in await _repository.GetQueryableAsync()
-                            where tenantId == null || garageTransaction.TenantId == tenantId
-                            join vehicle in await _VehicleRepository.GetQueryableAsync()
-                                on garageTransaction.PlateNumber equals vehicle.EnPlateNumber
-                                into vehicleJoin1
-                            from v1 in vehicleJoin1.DefaultIfEmpty()
-                            join vehicle2 in await _VehicleRepository.GetQueryableAsync()
-                                on garageTransaction.PlateNumber equals vehicle2.ArPlateNumber
-                                into vehicleJoin2
-                            from v2 in vehicleJoin2.DefaultIfEmpty()
-                            orderby garageTransaction.Garage.NameEn
-                            select new GarageTransactionDto
-                            {
-                                Id = garageTransaction.Id,
-                                PlateNumber = garageTransaction.PlateNumber,
-                                AccurateTime = garageTransaction.AccurateTime,
-                                CameraType = garageTransaction.CameraType,
-                                GarageEnglishName = garageTransaction.Garage.NameEn,
-                                GarageArabicName = garageTransaction.Garage.NameAr,
-                                OrganizationEnglishName = garageTransaction.Organization.EnglishName,
-                                OrganizationArabicName = garageTransaction.Organization.ArabicName,
-                                ArabicName = (v1 == null) ? (v2 == null) ? "NotCustomer" : v2.Customer.ArabicName : v1.Customer.ArabicName,
-                                TicketId = garageTransaction.TicketId,
-                                SnapTime = garageTransaction.SnapTime,
-                                CustomerCategory = garageTransaction.CustomerCategory,
-                                IsMapped = garageTransaction.IsMapped
-                            };
+            IQueryable<GarageTransactionDto> queryable = await InitiatingGTQuery(tenantId);
 
             queryable = ApplySearch(input, queryable);
             queryable = ApplySort(input, queryable);
@@ -91,6 +65,47 @@ public class GarageTransactionsAppService :
                 garageTransactions
             );
         }
+    }
+
+    private async Task<IQueryable<GarageTransactionDto>> InitiatingGTQuery(Guid? tenantId)
+    {
+        
+
+        var garageTransactionsQuery = await _repository.GetQueryableAsync();
+        var vehicles = await _VehicleRepository.GetQueryableAsync();
+        var customerPackages = await _customerPackageRepository.GetQueryableAsync();
+
+            var queryable = from garageTransaction in garageTransactionsQuery
+                            where tenantId == null || garageTransaction.TenantId == tenantId
+                            join vehicle in vehicles on garageTransaction.PlateNumber equals vehicle.EnPlateNumber into vehicleJoin1
+                            let v1 = vehicleJoin1.FirstOrDefault()
+                            let v2 = customerPackages.Where(x => x.ArPlateNumber == garageTransaction.PlateNumber || x.EnPlateNumber==garageTransaction.PlateNumber || (x.PackageCode != null && garageTransaction.TicketId == x.PackageCode)).FirstOrDefault()
+
+                            orderby garageTransaction.Garage.NameEn
+
+            select new GarageTransactionDto
+            {
+                Id = garageTransaction.Id,
+                PlateNumber = garageTransaction.PlateNumber,
+                AccurateTime = garageTransaction.AccurateTime,
+                CameraType = garageTransaction.CameraType,
+                GarageEnglishName = garageTransaction.Garage.NameEn,
+                GarageArabicName = garageTransaction.Garage.NameAr,
+                OrganizationEnglishName = garageTransaction.Organization.EnglishName,
+                OrganizationArabicName = garageTransaction.Organization.ArabicName,
+                ArabicName =
+            v1 != null
+                ? v1.Customer.ArabicName
+                : v2 != null
+                    ? v2.Customer.ArabicName
+                    : "NotCustomer", 
+                TicketId = garageTransaction.TicketId,
+                SnapTime = garageTransaction.SnapTime,
+                CustomerCategory = garageTransaction.CustomerCategory,
+                IsMapped = garageTransaction.IsMapped
+            };
+        return queryable;
+        
     }
 
     public async override Task<GarageTransactionDto> GetAsync(int id)
@@ -109,63 +124,37 @@ public class GarageTransactionsAppService :
     }
     public async Task<PagedResultDto<GarageTransactionDto>> Search(PagedAndSortedAndSearchResultRequestDto input)
     {
-        // Step 1 — DB queryable (SQL-translatable only)
-        var queryable = from garageTransaction in await _repository.GetQueryableAsync()
-                        join vehicle in await _VehicleRepository.GetQueryableAsync()
-                            on garageTransaction.PlateNumber equals vehicle.EnPlateNumber
-                            into vehicleJoin1
-                        from v1 in vehicleJoin1.DefaultIfEmpty()
-                        join vehicle2 in await _VehicleRepository.GetQueryableAsync()
-                            on garageTransaction.PlateNumber equals vehicle2.ArPlateNumber
-                            into vehicleJoin2
-                        from v2 in vehicleJoin2.DefaultIfEmpty()
-                        orderby garageTransaction.Garage.NameEn
-                        select new GarageTransactionRawDto
-                        {
-                            Id = garageTransaction.Id,
-                            PlateNumber = garageTransaction.PlateNumber,
-                            AccurateTime = garageTransaction.AccurateTime,
-                            CameraType = garageTransaction.CameraType,
-                            SnapTime = garageTransaction.SnapTime,
-                            TicketId = garageTransaction.TicketId,
-                            CustomerCategory = garageTransaction.CustomerCategory,
-                            IsMapped = garageTransaction.IsMapped,
-                            IsIn = garageTransaction.IsIn,
-                            CheckoutMobile =   garageTransaction.CheckoutMobile,
-                            GarageEnglishName = garageTransaction.Garage.NameEn,
-                            GarageArabicName = garageTransaction.Garage.NameAr,
-                            OrganizationEnglishName = garageTransaction.Organization.EnglishName,
-                            OrganizationArabicName = garageTransaction.Organization.ArabicName,
-                            Graceperiod = (int?)garageTransaction.Organization.Graceperiod,
-                            ArabicName = v1 == null
-                                                    ? v2 == null ? "NotCustomer" : v2.Customer.ArabicName
-                                                    : v1.Customer.ArabicName,
-                        };
-
-        // Step 2 — Apply search filter and sorting while still in SQL
-        queryable = ApplySearch(input, queryable);
-
-        if (!input.Sorting.IsNullOrEmpty())
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            queryable = input.Sorting.Contains("DESC")
-                ? queryable.OrderBy(input.Sorting.Split(' ')[0] + " descending")
-                : queryable.OrderBy(input.Sorting);
+            // Step 1 — DB queryable (SQL-translatable only)
+            IQueryable<GarageTransactionDto> queryable = await InitiatingGTQuery(CurrentTenant.Id??null);
+
+
+            // Step 2 — Apply search filter and sorting while still in SQL
+            queryable = ApplySearch(input, queryable);
+
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                queryable = input.Sorting.Contains("DESC")
+                    ? queryable.OrderBy(input.Sorting.Split(' ')[0] + " descending")
+                    : queryable.OrderBy(input.Sorting);
+            }
+
+            // Step 3 — Count and paginate while still in SQL (cheap DB operations)
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+
+            // Step 4 — Materialize only the current page (small, bounded dataset)
+            var rawPage = await AsyncExecuter.ToListAsync(queryable);
+
+
+
+            var dtos = rawPage.ToList();
+
+
+            return new PagedResultDto<GarageTransactionDto>(totalCount, dtos);
         }
-
-        // Step 3 — Count and paginate while still in SQL (cheap DB operations)
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-
-        // Step 4 — Materialize only the current page (small, bounded dataset)
-        var rawPage = await AsyncExecuter.ToListAsync(queryable);
-
-
-
-        var dtos = rawPage.Select(x => x.ToDto()).ToList();
-
-
-        return new PagedResultDto<GarageTransactionDto>(totalCount, dtos);
     }
     public async Task<PagedResultDto<GarageTransactionDto>> SearchForMDKHL(PagedAndSortedAndSearchResultRequestDto input)
     {
@@ -332,62 +321,36 @@ public class GarageTransactionsAppService :
     /// <inheritdoc/>
     public async Task<PagedResultDto<GarageTransactionDto>> GetAllTransactionsByOrganizationAsync(PagedAndSortedAndSearchResultRequestDto input, Guid? tenantId)
     {
-        var queryable = from garageTransaction in await _repository.GetQueryableAsync()
-                    where tenantId == null || garageTransaction.TenantId == tenantId
-                    join vehicle in await _VehicleRepository.GetQueryableAsync()
-                        on garageTransaction.PlateNumber equals vehicle.EnPlateNumber
-                        into vehicleJoin1
-                    from v1 in vehicleJoin1.DefaultIfEmpty()
-                    join vehicle2 in await _VehicleRepository.GetQueryableAsync()
-                        on garageTransaction.PlateNumber equals vehicle2.ArPlateNumber
-                        into vehicleJoin2
-                    from v2 in vehicleJoin2.DefaultIfEmpty()
-                    orderby garageTransaction.Garage.NameEn
-                        select new GarageTransactionRawDto
-                        {
-                            Id = garageTransaction.Id,
-                            PlateNumber = garageTransaction.PlateNumber,
-                            AccurateTime = garageTransaction.AccurateTime,
-                            CameraType = garageTransaction.CameraType,
-                            SnapTime = garageTransaction.SnapTime,
-                            TicketId = garageTransaction.TicketId,
-                            CustomerCategory = garageTransaction.CustomerCategory,
-                            IsMapped = garageTransaction.IsMapped,
-                            IsIn = garageTransaction.IsIn,
-                            CheckoutMobile = garageTransaction.CheckoutMobile,
-                            GarageEnglishName = garageTransaction.Garage.NameEn,
-                            GarageArabicName = garageTransaction.Garage.NameAr,
-                            OrganizationEnglishName = garageTransaction.Organization.EnglishName,
-                            OrganizationArabicName = garageTransaction.Organization.ArabicName,
-                            Graceperiod = (int?)garageTransaction.Organization.Graceperiod,
-                            ArabicName = v1 == null
-                                                   ? v2 == null ? "NotCustomer" : v2.Customer.ArabicName
-                                                   : v1.Customer.ArabicName,
-                        };
-        queryable = ApplySearch(input, queryable);
-
-
-        if (!input.Sorting.IsNullOrEmpty())
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            queryable = input.Sorting.Contains("DESC")
-                ? queryable.OrderBy(input.Sorting.Split(' ')[0] + " descending")
-                : queryable.OrderBy(input.Sorting);
+
+            IQueryable<GarageTransactionDto> queryable = await InitiatingGTQuery(tenantId);
+
+            queryable = ApplySearch(input, queryable);
+
+
+            if (!input.Sorting.IsNullOrEmpty())
+            {
+                queryable = input.Sorting.Contains("DESC")
+                    ? queryable.OrderBy(input.Sorting.Split(' ')[0] + " descending")
+                    : queryable.OrderBy(input.Sorting);
+            }
+
+            // Step 3 — Count and paginate while still in SQL (cheap DB operations)
+            var totalCount = await AsyncExecuter.CountAsync(queryable);
+
+            queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
+
+            // Step 4 — Materialize only the current page (small, bounded dataset)
+            var rawPage = await AsyncExecuter.ToListAsync(queryable);
+
+
+
+            var dtos = rawPage.ToList();
+
+
+            return new PagedResultDto<GarageTransactionDto>(totalCount, dtos);
         }
-
-        // Step 3 — Count and paginate while still in SQL (cheap DB operations)
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-
-        queryable = queryable.Skip(input.SkipCount).Take(input.MaxResultCount);
-
-        // Step 4 — Materialize only the current page (small, bounded dataset)
-        var rawPage = await AsyncExecuter.ToListAsync(queryable);
-
-
-
-        var dtos = rawPage.Select(x => x.ToDto()).ToList();
-
-
-        return new PagedResultDto<GarageTransactionDto>(totalCount, dtos);
     }
 
     // Function to convert base64 string to image and save it
@@ -444,28 +407,7 @@ public class GarageTransactionsAppService :
  
     #endregion
     #region Private Methods
-    private IQueryable<GarageTransactionRawDto> ApplySearch(
-        PagedAndSortedAndSearchResultRequestDto input,
-        IQueryable<GarageTransactionRawDto> queryable)
-    {
-        if (string.IsNullOrWhiteSpace(input.SearchingTerm))
-            return queryable;
 
-        var term = input.SearchingTerm.ToLower();
-
-        // Only string fields that EF Core can translate to SQL
-        queryable = queryable.Where(x =>
-            (x.PlateNumber != null && x.PlateNumber.ToLower().Contains(term)) ||
-            (x.TicketId != null && x.TicketId.ToLower().Contains(term)) ||
-            (x.ArabicName != null && x.ArabicName.ToLower().Contains(term)) ||
-            (x.OrganizationArabicName != null && x.OrganizationArabicName.ToLower().Contains(term)) ||
-            (x.OrganizationEnglishName != null && x.OrganizationEnglishName.ToLower().Contains(term)) ||
-            (x.GarageEnglishName != null && x.GarageEnglishName.ToLower().Contains(term)) ||
-            (x.GarageArabicName != null && x.GarageArabicName.ToLower().Contains(term))
-        );
-
-        return queryable;
-    }
 
     private async Task<List<GarageTransactionDto>> ApplyPaged(PagedAndSortedAndSearchResultRequestDto input, IQueryable<GarageTransactionDto> queryable)
     {

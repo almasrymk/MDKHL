@@ -254,7 +254,7 @@ namespace SmartParking.Blazor.Components.Pages.GarageTransactions
 
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Id"], Name = "Id", IsFilterable = false, PropertyName = "Id", IsSortable = true, TypeFilter = TypeFilter.Text });
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["PlateNumber"], Name = "PlateNumber", IsFilterable = true, PropertyName = "PlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
-			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Customer"], Name = "ArabicName", IsFilterable = true, PropertyName = "ArabicName", IsSortable = true, TypeFilter = TypeFilter.Text });
+			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["Customer"], Name = "ArabicName", IsFilterable = false, PropertyName = "ArabicName", IsSortable = false, TypeFilter = TypeFilter.Text });
 			tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["AccurateTime"], Name = "AccurateTime", IsFilterable = true, PropertyName = "AccurateTime", IsSortable = true, TypeFilter = TypeFilter.Text });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["CameraType"], Name = "CameraType", IsFilterable = true, PropertyName = "CameraType", IsSortable = true, TypeFilter = TypeFilter.Enum });
             tableData.Columns.Add(new ColumnDef() { DisplayName = _localizer["TicketId"], Name = "TicketId", IsFilterable = true, PropertyName = "TicketId", IsSortable = true, TypeFilter = TypeFilter.Enum });
