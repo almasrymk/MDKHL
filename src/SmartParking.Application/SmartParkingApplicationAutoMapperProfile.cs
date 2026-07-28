@@ -259,7 +259,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForMember(d => d.CustomerEnName, o => o.MapFrom(s => s.CustomerEnName)).ReverseMap()
             .ForMember(d => d.InvoiceNumber, o => o.MapFrom(s => s.InvoiceNumber));
         
-        CreateMap<InvoiceDto, PaymentDetailDto>().ReverseMap();
+        CreateMap<InvoiceDto, PaymentDetailDto>()
+            .ForMember(d => d.Id, o => o.Ignore())
+            .ReverseMap()
+            .ForMember(d => d.Id, o => o.Ignore());
 
         CreateMap<Invoice, InvoiceMobileDto>()
             .ForMember(d => d.GarageEnglishName, o => o.MapFrom(s => s.Garage.NameEn))
@@ -280,8 +283,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
         CreateMap<InvoiceDto, InvoiceMobileDto>().ReverseMap(); 
         
         CreateMap<Payment, PaymentDto>()
-           .ForPath(dest => dest.PlateNumber, opt => opt.MapFrom(src => src.InvoiceId.HasValue?src.Invoice.PlateNumber:src.CustomerPackage.EnPlateNumber))
-           .ForPath(dest => dest.AmountWithoutDiscount, opt => opt.MapFrom(src => src.InvoiceId.HasValue?(src.Invoice.InvoicePrice+(src.Invoice.InvoicePrice*0.15m)):0))
+           .ForPath(dest => dest.PlateNumber, opt => opt.MapFrom(src => src.Invoice != null ? src.Invoice.PlateNumber : (src.CustomerPackage != null ? src.CustomerPackage.EnPlateNumber : (src.EnPlateNumber ?? src.ArPlateNumber ?? string.Empty))))
+           .ForPath(dest => dest.AmountWithoutDiscount, opt => opt.MapFrom(src => src.Invoice != null ? (src.Invoice.InvoicePrice + (src.Invoice.InvoicePrice * 0.15m)) : 0))
            .ForMember(dest => dest.Customers, opt => opt.MapFrom(src => src.Customers))
            .ReverseMap();
 

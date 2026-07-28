@@ -58,7 +58,7 @@ public class PaymentController : ControllerBase
     [HttpPost("cancel-invoice/{invoiceId}")]
     [Authorize]
     //[IgnoreAntiforgeryToken]
-    public async Task<Result> CancelInvoicePayment(int invoiceId, string searchInput)
+    public async Task<Result> CancelInvoicePayment(int invoiceId)
     {
         //return Result.Success();
         return await _paymentMobileHelper.HandleCancel(invoiceId);

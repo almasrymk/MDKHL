@@ -314,9 +314,11 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var payment = await _paymentRepository.FirstOrDefaultAsync(x => x.InvoiceId == invoiceId);
+            var query = await _paymentRepository.GetQueryableAsync();
+            var payment = await query.Include(x => x.Invoice).Include(x => x.CustomerPackage).Include(x => x.Customers).FirstOrDefaultAsync(x => x.InvoiceId == invoiceId);
+            if (payment == null) return null;
             var paymentDto = ObjectMapper.Map<Payment, PaymentDto>(payment);
-            paymentDto.CashierName = payment is not null ? await GetCashierName(payment.CreatorId) : null;
+            paymentDto.CashierName = await GetCashierName(payment.CreatorId);
             return paymentDto;
         }
     }
@@ -324,9 +326,11 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var payment = await _paymentRepository.FirstOrDefaultAsync(x => x.CustomerPackageId == CustomerPackageId);
+            var query = await _paymentRepository.GetQueryableAsync();
+            var payment = await query.Include(x => x.Invoice).Include(x => x.CustomerPackage).Include(x => x.Customers).FirstOrDefaultAsync(x => x.CustomerPackageId == CustomerPackageId);
+            if (payment == null) return null;
             var paymentDto = ObjectMapper.Map<Payment, PaymentDto>(payment);
-            paymentDto.CashierName = payment is not null ? await GetCashierName(payment.CreatorId) : null;
+            paymentDto.CashierName = await GetCashierName(payment.CreatorId);
             return paymentDto;
         }
     }
@@ -343,6 +347,7 @@ public class PaymentWebAppService : ApplicationService, IPaymentWebAppService
                 if (invoiceDto != null)
                 {
                     var result = ObjectMapper.Map<InvoiceDto, PaymentDetailDto>(invoiceDto);
+                    result.Id = payment.Id;
                     if (organization != null)
                     {
                         if (string.IsNullOrEmpty(result.OrganizationAddress))
