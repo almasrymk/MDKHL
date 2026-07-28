@@ -27,7 +27,6 @@ public class EntryDto
     public int PushType { get; set; }
     public string SluiceDevChnId { get; set; }
     public string SluiceDevChnName { get; set; }
-    [RegularExpression(@"^\d+$", ErrorMessage = "TicketID must contain numbers only.")]
     public string TicketID { get; set; }
     public int TotRemianNum { get; set; }
     public string VehicleClass { get; set; }

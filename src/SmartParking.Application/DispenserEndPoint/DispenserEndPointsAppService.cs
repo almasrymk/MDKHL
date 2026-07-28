@@ -15,6 +15,7 @@ using SmartParking.Utilities;
 using System;
 using System.Globalization;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
@@ -64,7 +65,10 @@ public class DispenserEndPointsAppService : SmartParkingAppService, IDispenserEn
     public async Task<IBaseGateResponseDto> Entry(string OrganizationCode, EntryDto request)
     {
         _logger.LogError($"{DateTime.Now} => start entry");
-
+        if (!Regex.IsMatch(request.TicketID, @"^\d+$"))
+        {
+            throw new Exception("TicketID must contain numbers only.");
+        }
         using (DataFilter.Disable<IMultiTenant>())
         {
             var (organization, dispenser, earlyExit) =
