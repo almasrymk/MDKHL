@@ -372,7 +372,8 @@ public class SmartParkingBlazorModule : AbpModule
                 options.SwaggerDoc("v2", new OpenApiInfo { Title = "SmartParking API V2", Version = "v2" });
                 options.DocInclusionPredicate((docName, apiDesc) =>
                 {
-                    if (!string.IsNullOrEmpty(apiDesc.GroupName))
+                    if (string.Equals(apiDesc.GroupName, "v1", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(apiDesc.GroupName, "v2", StringComparison.OrdinalIgnoreCase))
                     {
                         return string.Equals(apiDesc.GroupName, docName, StringComparison.OrdinalIgnoreCase);
                     }
