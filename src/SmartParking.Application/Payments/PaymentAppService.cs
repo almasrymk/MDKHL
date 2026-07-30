@@ -170,12 +170,12 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     public async Task<PaymentCheckoutDto?> CreateCheckoutInvoicePaymentWebAsync(PaymentCheckoutRequestDto paymentCheckoutRequest)
     {
         var paymentCheckoutDto = await SavePaymentRequest(paymentCheckoutRequest, PaymentStatus.Success, paymentCheckoutRequest.CustomerId);
+        await UpdateInvoiceStatusAsync(paymentCheckoutRequest.InvoiceId,paymentCheckoutDto.PaymentNumber);
         var res = await _zatcaTaxInvoiceAppService.SendToZACTA(paymentCheckoutDto.PaymentId);
         if (res != null)
         {
             _logger.LogInformation("ZATCA Integration Result for PaymentId {PaymentId}: Status: {Status}, InvoiceQRCode: {InvoiceQRCode}", paymentCheckoutDto.PaymentId, res.status, res.invoiceQRCode);
             await UpdatePaymentForZatca(paymentCheckoutDto.PaymentId, res);
-            await UpdateInvoiceStatusAsync(paymentCheckoutRequest.InvoiceId,paymentCheckoutDto.PaymentNumber);
         }
         return paymentCheckoutDto;
     }
