@@ -16,6 +16,7 @@ public partial class PosPaymentDialog
     [Parameter] public PaymentCheckoutRequestDto Request { get; set; } = default!;
     [Parameter] public OrganizationSettingsDto? OrgSettings { get; set; }
     [Parameter] public EventCallback<Guid> OnPaymentCreated { get; set; }
+    [Parameter] public EventCallback OnBeforeSendPurchase { get; set; }
 
     private async Task HandleTransactionCompleted(PosTerminalStateSnapshot snapshot)
     {

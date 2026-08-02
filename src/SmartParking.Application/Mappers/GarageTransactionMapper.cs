@@ -10,13 +10,14 @@ namespace SmartParking.Mappers
     public static class GarageTransactionMapper
     {
         // 1. Entity -> GarageTransactionDto (Read)
-        // Single source of truth for computed properties (matches GarageTransactionWorkerRepository background job logic)
-        private static (DateTime? remainingTime, bool isPending, bool canCheckout)
+        // CanCheckout is a pure DB field — read directly from entity, not computed.
+        // Only RemainingTime and IsPending are computed from grace period logic.
+        private static (DateTime? remainingTime, bool isPending)
             ComputeFields(DateTime? checkoutMobile, int? graceperiod)
         {
             if (!checkoutMobile.HasValue)
             {
-                return (null, false, true);
+                return (null, false);
             }
 
             var now = DateTime.Now;
@@ -24,9 +25,8 @@ namespace SmartParking.Mappers
 
             var remainingTime = graceDeadline <= now ? DateTime.MinValue : graceDeadline;
             var isPending = graceDeadline > now;
-            var canCheckout = graceDeadline <= now;
 
-            return (remainingTime, isPending, canCheckout);
+            return (remainingTime, isPending);
         }
 
         // Used by ToDto (entity → dto, full mapping with auditing fields)
@@ -34,7 +34,7 @@ namespace SmartParking.Mappers
         {
             if (entity == null) return null;
 
-            var (remainingTime, isPending, canCheckout) = ComputeFields(
+            var (remainingTime, isPending) = ComputeFields(
                 entity.CheckoutMobile,
                 entity.Organization?.Graceperiod);
 
@@ -69,10 +69,11 @@ namespace SmartParking.Mappers
                 DeleterId = entity.DeleterId,
                 DeletionTime = entity.DeletionTime,
                 IsDeleted = entity.IsDeleted,
-                // Computed
+                // Computed timing fields
                 RemainingTime = remainingTime,
                 IsPending = isPending,
-                CanCheckout = canCheckout,
+                // CanCheckout is a DB field — read directly
+                CanCheckout = entity.CanCheckout,
             };
         }
 
@@ -141,7 +142,7 @@ namespace SmartParking.Mappers
         {
             if (x == null) return null;
 
-            var (remainingTime, isPending, canCheckout) = ComputeFields(
+            var (remainingTime, isPending) = ComputeFields(
                 x.CheckoutMobile,
                 x.Graceperiod);
 
@@ -169,10 +170,11 @@ namespace SmartParking.Mappers
                 LaneNO = x.LaneNO,
                 TicketId = x.TicketId,
                 ArabicName = x.ArabicName,
-                // Computed
+                // Computed timing fields
                 RemainingTime = remainingTime,
                 IsPending = isPending,
-                CanCheckout = canCheckout,
+                // CanCheckout is a DB field — read directly
+                CanCheckout = x.CanCheckout,
             };
         }
     }

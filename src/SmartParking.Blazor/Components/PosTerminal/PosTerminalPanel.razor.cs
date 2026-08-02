@@ -20,6 +20,9 @@ public partial class PosTerminalPanel : IAsyncDisposable
     [Parameter, EditorRequired] public PaymentCheckoutRequestDto Request { get; set; } = default!;
 
 
+    /// <summary>Fires before creating pending payment and dispatching purchase to POS terminal.</summary>
+    [Parameter] public EventCallback OnBeforeSendPurchase { get; set; }
+
     /// <summary>Fires when a Pending payment row is created, so parent can track the PaymentId.</summary>
     [Parameter] public EventCallback<Guid> OnPaymentCreated { get; set; }
 
@@ -99,6 +102,11 @@ public partial class PosTerminalPanel : IAsyncDisposable
 
         try
         {
+            if (OnBeforeSendPurchase.HasDelegate)
+            {
+                await OnBeforeSendPurchase.InvokeAsync();
+            }
+
             // Step 1: Create Pending payment row in DB
             var pending = await PaymentAppService.CreatePendingPosPaymentAsync(Request);
             var paymentId = pending.PaymentId;

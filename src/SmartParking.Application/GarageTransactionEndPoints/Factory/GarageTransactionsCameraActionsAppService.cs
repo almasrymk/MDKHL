@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Enums;
@@ -28,17 +28,31 @@ public class GarageTransactionsCameraActionsAppService : IGarageTransactionActio
     [RemoteService(false)]
     public async Task UnMappingEntryTransactionForDeletedExit(GarageTransactionDto garageTransactionDto)
     {
-        var query = await _repository.GetQueryableAsync();
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
 
-        var latestTransaction = query
-                .Where(gt => gt.PlateNumber == garageTransactionDto.PlateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == false && gt.IsMapped == true)
-                .OrderByDescending(gt => gt.AccurateTime)
-                .FirstOrDefault();
-        if (latestTransaction == null) {
-            return;
+            var latestTransaction = query
+                    .Where(gt => gt.PlateNumber == garageTransactionDto.PlateNumber && gt.CameraType == WatcherType.Entry && gt.IsIn == false && gt.IsMapped == true)
+                    .OrderByDescending(gt => gt.AccurateTime)
+                    .FirstOrDefault();
+            if (latestTransaction == null) {
+                return;
+            }
+            // Maintain invariant: reset all CanCheckout=true for this vehicle before restoring this entry
+            var allActive = query
+                .Where(gt => gt.CanCheckout == true
+                          && (gt.PlateNumber == garageTransactionDto.PlateNumber))
+                .ToList();
+            allActive.ForEach(gt => gt.CanCheckout = false);
+            if (allActive.Any())
+                await _repository.UpdateManyAsync(allActive);
+
+            latestTransaction.IsIn = true;
+            latestTransaction.IsMapped = false;
+            latestTransaction.CanCheckout = true;  // restore as new stack top
+            await _repository.UpdateAsync(latestTransaction);
         }
-        latestTransaction.IsIn = true;
-        latestTransaction.IsMapped = false;
     }
 
     [RemoteService(false)]

@@ -342,10 +342,8 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
               src.CheckoutMobile.HasValue &&
               src.CheckoutMobile.Value.AddMinutes(src.Organization.Graceperiod) > DateTime.Now
           ))
-          .ForMember(d => d.CanCheckout, s => s.MapFrom(src =>
-              src.CheckoutMobile.HasValue ?
-              src.CheckoutMobile.Value.AddMinutes(src.Organization.Graceperiod) <= DateTime.Now :  src.CameraType == WatcherType.Entry
-          )).ReverseMap();
+          // CanCheckout is a DB field — AutoMapper default (entity.CanCheckout -> dto.CanCheckout) is correct
+          .ReverseMap();
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransaction>().ReverseMap();        
         CreateMap<CreateUpdateGarageTransactionDto, GarageTransactionDto>().ReverseMap();       
         

@@ -1,4 +1,4 @@
-﻿using SmartParking.Entities.GarageTransactions;
+using SmartParking.Entities.GarageTransactions;
 using SmartParking.Enums;
 using System;
 using System.Linq;
@@ -69,6 +69,7 @@ public class GarageTransactionManager : DomainService
         {
             gt.IsIn = false;
             gt.IsMapped = true;
+            gt.CanCheckout = false;
         });
         await _repository.UpdateManyAsync(latestTransactions);
 
@@ -89,6 +90,7 @@ public class GarageTransactionManager : DomainService
         {
             gt.IsIn = false;
             gt.IsMapped = true;
+            gt.CanCheckout = false;
         });
 
         await _repository.UpdateManyAsync(latestTransactions);
@@ -159,6 +161,27 @@ public class GarageTransactionManager : DomainService
                     .OrderByDescending(gt => gt.AccurateTime)
                     .FirstOrDefault();
             return latestTransaction;
+        }
+    }
+
+    /// <summary>
+    /// Resets CanCheckout=false for all active transactions of a vehicle.
+    /// Enforces global invariant: at most one CanCheckout=true per vehicle.
+    /// </summary>
+    public async Task ResetCanCheckoutForVehicle(string plateNumber, string? ticketId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            var transactions = query
+                .Where(gt => gt.CanCheckout == true
+                          && (gt.PlateNumber == plateNumber
+                              || (ticketId != null && gt.TicketId == ticketId)))
+                .ToList();
+
+            transactions.ForEach(gt => gt.CanCheckout = false);
+            if (transactions.Any())
+                await _repository.UpdateManyAsync(transactions);
         }
     }
 
