@@ -54,7 +54,7 @@ public class CustomerUnitPackageAppService :
 
         if (customerPackage is null)
         {
-            throw new EntityNotFoundException(typeof(CustomerPackage), id);
+            throw new EntityNotFoundException(typeof(CustomerUnitPackage), id);
         }
         customerPackage.Status = Status.Deleted;
         await _repository.UpdateAsync(customerPackage, true);

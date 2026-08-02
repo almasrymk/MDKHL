@@ -79,7 +79,7 @@ public class UnitVehiclePackageAppService : CrudAppService<
     public async Task<bool> CheckDuplicationForVehicle(string EnPlateNumber, int customerUnitPackageId)
     {
          return await _repository.AnyAsync(x => x.EnPlateNumber == EnPlateNumber 
-         && x.CustomerUnitPackageId == customerUnitPackageId);
+         && x.CustomerUnitPackageId == customerUnitPackageId && x.IsDeleted==false);
     }
 
     public async Task<PagedResultDto<UnitVehiclePackageDto>> GetAllByCustomerId(Guid customerId, PagedAndSortedResultRequestDto input)
@@ -136,6 +136,13 @@ public class UnitVehiclePackageAppService : CrudAppService<
         var result = await AsyncExecuter.ToListAsync(query);
         return ObjectMapper.Map<List<UnitVehiclePackge>, List<UnitVehiclePackageDto>>(result);
     }
+
+
+    public async Task DeleteByPlateNumber(string EnPlateNumber)
+    {
+        await _repository.DeleteAsync(x => x.EnPlateNumber == EnPlateNumber);
+    }
+
 
     #endregion
 

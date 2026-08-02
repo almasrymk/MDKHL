@@ -2,6 +2,7 @@
 @using SmartParking.CustomerPackages
 @using SmartParking.Cutomers
 @using SmartParking.Localization
+@using SmartParking.UnitVehiclePackages
 @using Volo.Abp.MultiTenancy
 @using AutoMapper
 @using SmartParking.Analysis
@@ -17,6 +18,7 @@
 @inject NavigationManager Navigation
 @inject ICurrentTenant CurrentTenant
 @inject IJSRuntime JSRuntime
+@inject IUnitVehiclePackageAppService UnitVehiclePackageAppService
 <PageTitle>@L["CustomerPackages"]</PageTitle>
 <div class="modal-wrapper ">
     <MudDialog class="mud-modal w-100" Style="min-width:auto !important">

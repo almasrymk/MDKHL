@@ -1,4 +1,4 @@
-﻿@using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Localization
 @using SmartParking.Authentication
 @using SmartParking.Enums
 @using SmartParking.Localization
@@ -108,10 +108,24 @@
                  }
                  @if (AuthorizationService.IsGrantedAnyAsync(PackagePermissions.Default).Result)
                  {
-                    <MudNavLink Href="@(!_isUserAccess ? "/package" : "/unit-package")"
-                                Icon="@Icons.Material.Filled.Subscriptions">
-                        @L["Packages"]
-                    </MudNavLink>
+                    @if (currenttenant.Id == null)
+                    {
+                        <MudNavLink Href="/package"
+                                    Icon="@Icons.Material.Filled.Subscriptions">
+                            @L["Packages"]
+                        </MudNavLink>
+                        <MudNavLink Href="/unit-package"
+                                    Icon="@Icons.Material.Filled.Subscriptions">
+                            @L["UnitPackages"]
+                        </MudNavLink>
+                    }
+                    else
+                    {
+                        <MudNavLink Href="@(!_isUserAccess ? "/package" : "/unit-package")"
+                                    Icon="@Icons.Material.Filled.Subscriptions">
+                            @L["Packages"]
+                        </MudNavLink>
+                    }
                  }
                  @if (AuthorizationService.IsGrantedAnyAsync(InvoicePermission.Default).Result )
                  {

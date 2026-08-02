@@ -35,6 +35,10 @@ public class InvoiceUiAppService : ApplicationService, IInvoiceUiAppService
         {
 
             var dto = await _garageTransactionsActionsFactoryAppService.GetGarageTransaction(invoiceSearchDto);
+            if (dto == null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("NotPlateNumber"));
+            }
             var mapped = ObjectMapper.Map<GarageTransactionDto, GarageTransactionUiDto>(dto);
             return mapped;
         }

@@ -1,4 +1,4 @@
-﻿using SmartParking.Entities.GarageTransactions;
+using SmartParking.Entities.GarageTransactions;
 using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using System;
@@ -10,23 +10,21 @@ namespace SmartParking.Mappers
     public static class GarageTransactionMapper
     {
         // 1. Entity -> GarageTransactionDto (Read)
-        // Single source of truth for computed properties
+        // Single source of truth for computed properties (matches GarageTransactionWorkerRepository background job logic)
         private static (DateTime? remainingTime, bool isPending, bool canCheckout)
-            ComputeFields(DateTime? checkoutMobile, int? graceperiod, WatcherType cameraType, bool isIn, bool isMapped)
+            ComputeFields(DateTime? checkoutMobile, int? graceperiod)
         {
+            if (!checkoutMobile.HasValue)
+            {
+                return (null, false, true);
+            }
+
             var now = DateTime.Now;
-            var graceDeadline = checkoutMobile.HasValue
-                ? checkoutMobile.Value.AddMinutes(graceperiod ?? 0)
-                : (DateTime?)null;
+            var graceDeadline = checkoutMobile.Value.AddMinutes(graceperiod ?? 0);
 
-            var remainingTime = graceDeadline.HasValue
-                ? graceDeadline.Value <= now ? DateTime.MinValue : graceDeadline.Value
-                : (DateTime?)null;
-
-            var isPending = graceDeadline.HasValue && graceDeadline.Value > now;
-            var canCheckout =  isIn
-                              && !isMapped
-                              && (!checkoutMobile.HasValue || graceDeadline!.Value <= now);
+            var remainingTime = graceDeadline <= now ? DateTime.MinValue : graceDeadline;
+            var isPending = graceDeadline > now;
+            var canCheckout = graceDeadline <= now;
 
             return (remainingTime, isPending, canCheckout);
         }
@@ -38,10 +36,7 @@ namespace SmartParking.Mappers
 
             var (remainingTime, isPending, canCheckout) = ComputeFields(
                 entity.CheckoutMobile,
-                entity.Organization?.Graceperiod,
-                entity.CameraType,
-                entity.IsIn,
-                entity.IsMapped);
+                entity.Organization?.Graceperiod);
 
             return new GarageTransactionDto
             {
@@ -136,31 +131,43 @@ namespace SmartParking.Mappers
         {
             return entities?.Select(e => e.ToDto()).ToList() ?? new List<GarageTransactionDto>();
         }
+
+        public static List<GarageTransactionDto> ToDtoList(this IEnumerable<GarageTransactionRawDto> dtos)
+        {
+            return dtos?.Select(x => x.ToDto()).ToList() ?? new List<GarageTransactionDto>();
+        }
+
         public static GarageTransactionDto ToDto(this GarageTransactionRawDto x)
         {
+            if (x == null) return null;
+
             var (remainingTime, isPending, canCheckout) = ComputeFields(
                 x.CheckoutMobile,
-                x.Graceperiod,
-                x.CameraType,
-                x.IsIn,
-                x.IsMapped);
+                x.Graceperiod);
 
             return new GarageTransactionDto
             {
                 Id = x.Id,
+                CameraId = x.CameraId,
                 PlateNumber = x.PlateNumber,
-                AccurateTime = x.AccurateTime,
-                CameraType = x.CameraType,
                 SnapTime = x.SnapTime,
-                TicketId = x.TicketId,
-                CustomerCategory = x.CustomerCategory,
-                IsMapped = x.IsMapped,
+                AccurateTime = x.AccurateTime,
+                OrganizationID = x.OrganizationID,
+                GarageId = x.GarageId,
+                VehiclePicture = x.VehiclePicture,
+                CameraType = x.CameraType,
+                TenantId = x.TenantId,
                 IsIn = x.IsIn,
                 CheckoutMobile = x.CheckoutMobile,
-                GarageEnglishName = x.GarageEnglishName,
-                GarageArabicName = x.GarageArabicName,
-                OrganizationEnglishName = x.OrganizationEnglishName,
+                IsMapped = x.IsMapped,
+                CustomerCategory = x.CustomerCategory,
                 OrganizationArabicName = x.OrganizationArabicName,
+                OrganizationEnglishName = x.OrganizationEnglishName,
+                GarageArabicName = x.GarageArabicName,
+                GarageEnglishName = x.GarageEnglishName,
+                DispenserId = x.DispenserId,
+                LaneNO = x.LaneNO,
+                TicketId = x.TicketId,
                 ArabicName = x.ArabicName,
                 // Computed
                 RemainingTime = remainingTime,

@@ -59,4 +59,6 @@ public interface IUnitVehiclePackageAppService : ICreateAppService<UnitVehiclePa
     /// <param name="id"></param>
     /// <returns></returns>
     Task<List<UnitVehiclePackageDto>> GetAllByCustomerUnitPackageId(int id);
+
+    Task DeleteByPlateNumber(string EnPlateNumber);
 }

@@ -40,6 +40,8 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
         private void Cancel() => MudDialog.Cancel();
         private int TotalItem;
         private TableData itemData = new TableData();
+        PagedResultDto<CustomerPackageDto> customerPackageDto = new();
+
 
         private readonly IStringLocalizer<SmartParkingResource> _localizer;
 
@@ -66,7 +68,7 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 Sorting = pageInfo.SortColumn
             };
 
-            PagedResultDto<CustomerPackageDto> customerPackageDto = new();
+             customerPackageDto = new();
 
             if (CurrentTenant.Id == null)
             {
@@ -239,6 +241,8 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
                 if (!result.Canceled)
                 {
                     await CustomerPackagesAppService.DeleteAsync(id);
+                    var enPlateNumber = customerPackageDto.Items.Where(x => x.Id == id).FirstOrDefault().EnPlateNumber;
+                    await UnitVehiclePackageAppService.DeleteByPlateNumber(enPlateNumber);
                     SnackBar.ShowSnackbar(Snackbar, LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.SUCCESS) + " " +
                         LocalizationHelper.GetLocalizedString(AlertMessages.AlertMessages.DELETE) + " " +
                         LocalizationHelper.GetLocalizedString("Package"), Severity.Success);
