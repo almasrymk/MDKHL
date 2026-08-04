@@ -888,6 +888,7 @@
     "GetQr": "Get Qr Code",
     "Qr": "Qr Code",
     "InvoiceNotFound": "There is no such invoice with this data",
+    "CarNotFound": "Car or ticket not found",
     "InvalidTicket": "The 11-digit ticket number must be entered correctly.",
     "InvoiceNo": "Invoice Number",
     "InvoiceDate": "Invoice Date",

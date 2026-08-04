@@ -401,6 +401,7 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         {
             var _invoicerepository = await _invoiceRepository.GetQueryableAsync();
             var garageTransaction = await _garageTransactionRepository.GetQueryableAsync();
+            garageTransaction = garageTransaction.Where(gt => gt.CameraType == WatcherType.Exit);
 
             var result =
                 from invoice in _invoicerepository

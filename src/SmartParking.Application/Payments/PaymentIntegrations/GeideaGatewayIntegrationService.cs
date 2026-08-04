@@ -193,9 +193,13 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
                 return PaymentVerificationResult.Failed(
                     $"No payment record for merchantReferenceId: {merchantReferenceId}");
 
-            // Overwrite the temporary sessionId with the permanent orderId for audit trail
-            payment.CheckoutId = orderId;
-            var paymentId = await _paymentCompletionService.CompletePaymentByCheckoutIdAsync(payment.CheckoutId);
+            // CompletePaymentByPaymentNumberAsync looks up by PaymentNumber,
+            // updates CheckoutId to orderId in DB, then marks the payment Success.
+            // Using the checkout-id variant here would fail because orderId is not
+            // yet persisted — the in-memory assignment on line 197 never hit the DB.
+            var paymentId = await _paymentCompletionService.CompletePaymentByPaymentNumberAsync(
+                merchantReferenceId, orderId, PaymentMethod.MADA);
+
             return PaymentVerificationResult.Success(paymentId);
         }
     }

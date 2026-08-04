@@ -145,7 +145,6 @@
                 function onSuccess(data) {
                     console.log("Geidea success", data);
                     if (window.dotNetHelper) {
-                        window.dotNetHelper.invokeMethodAsync('HandlePaymentSuccess', data);
                     }
                 },
                 function onError(error) {

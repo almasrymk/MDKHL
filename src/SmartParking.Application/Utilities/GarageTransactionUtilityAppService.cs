@@ -424,8 +424,8 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
                                    DispenserTransaction = x.DispenserTransaction,
                                    CameraTransaction = x.CameraTransaction,
                                    TenantId = x.TenantId!.Value,
-                                   UserAccess = x.Settings.CustomerPackage,
-                                   VehicleAccess = x.Settings.VehcilePackage
+                                   UserAccess = x.Settings != null && x.Settings.CustomerPackage,
+                                   VehicleAccess = x.Settings != null && x.Settings.VehcilePackage,
 
                                }).FirstOrDefaultAsync();
 

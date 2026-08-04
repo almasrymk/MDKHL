@@ -33,29 +33,26 @@ public class InvoiceUiAppService : ApplicationService, IInvoiceUiAppService
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-
             var dto = await _garageTransactionsActionsFactoryAppService.GetGarageTransaction(invoiceSearchDto);
             if (dto == null)
             {
-                throw new Exception(LocalizationHelper.GetLocalizedString("NotPlateNumber"));
+                return null!;
             }
             var mapped = ObjectMapper.Map<GarageTransactionDto, GarageTransactionUiDto>(dto);
             return mapped;
         }
-        
-
     }
 
 
     [RemoteService(false)]
     public async Task<CreateUpdateInvoiceUiDto> PreCheckout(GarageTransactionUiDto garageTransactionUiDto)
     {
-        
+        if (garageTransactionUiDto == null) return null!;
         var input = ObjectMapper.Map<GarageTransactionUiDto, GarageTransactionDto>(garageTransactionUiDto);
+        if (input == null) return null!;
         var dto = await _keeperTransactionsAppService.PreCheckout(input.Id);
+        if (dto?.Value == null) return null!;
         return ObjectMapper.Map<CreateUpdateInvoiceDto, CreateUpdateInvoiceUiDto>(dto.Value);
-        
-        
     }
 
     [RemoteService(false)]
@@ -64,7 +61,8 @@ public class InvoiceUiAppService : ApplicationService, IInvoiceUiAppService
         using (DataFilter.Disable<IMultiTenant>())
         {
             var transaction = await GetGarageTransaction(invoiceSearchDto);
-            if (transaction?.CheckoutMobile is not null)
+            if (transaction == null) return null!;
+            if (transaction.CheckoutMobile is not null)
                 throw new UserFriendlyException(L["CarAlreadyExit"]);
             return await PreCheckout(transaction);
         }

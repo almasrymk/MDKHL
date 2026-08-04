@@ -133,6 +133,9 @@ public partial class PreCheckoutForInvoice
         finally
         {
             isPaying = false;
+            Navigation.NavigateTo($"/invoices/details/{Id}",true);
+
+
         }
     }
 
