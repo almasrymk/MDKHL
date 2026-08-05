@@ -9,5 +9,6 @@ namespace SmartParking.Enums;
 public enum InvoiceType
 {
     Paid,
-    UnPaid
+    UnPaid,
+    Pending
 }

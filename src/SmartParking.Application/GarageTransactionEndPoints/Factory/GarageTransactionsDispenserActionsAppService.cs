@@ -33,20 +33,20 @@ public class GarageTransactionsDispenserActionsAppService :  IGarageTransactionA
         {
             var query = await _repository.GetQueryableAsync();
 
-            var latestTransaction = query
-                    .Where(gt => gt.TicketId == garageTransactionDto.TicketId && gt.CameraType == WatcherType.Entry && gt.IsIn == false && gt.IsMapped == true)
+            var latestTransaction = await query
+                    .Where(gt => gt.TicketId == garageTransactionDto.TicketId && gt.CameraType == WatcherType.Entry )
                     .OrderByDescending(gt => gt.AccurateTime)
-                    .SingleOrDefault();
+                    .FirstOrDefaultAsync();
             if (latestTransaction == null)
             {
                 return;
             }
             // Maintain invariant: reset all CanCheckout=true for this vehicle before restoring this entry
-            var allActive = query
+            var allActive =await query
                 .Where(gt => gt.CanCheckout == true
                           && (gt.TicketId == garageTransactionDto.TicketId
                               || gt.PlateNumber == garageTransactionDto.PlateNumber))
-                .ToList();
+                .ToListAsync();
             allActive.ForEach(gt => gt.CanCheckout = false);
             if (allActive.Any())
                 await _repository.UpdateManyAsync(allActive);
@@ -54,6 +54,7 @@ public class GarageTransactionsDispenserActionsAppService :  IGarageTransactionA
             latestTransaction.IsIn = true;
             latestTransaction.IsMapped = false;
             latestTransaction.CanCheckout = true;  // restore as new stack top
+            latestTransaction.CheckoutMobile = null;
             await _repository.UpdateAsync(latestTransaction);
         }
     }

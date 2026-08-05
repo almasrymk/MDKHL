@@ -401,13 +401,13 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         {
             var _invoicerepository = await _invoiceRepository.GetQueryableAsync();
             var garageTransaction = await _garageTransactionRepository.GetQueryableAsync();
-            garageTransaction = garageTransaction.Where(gt => gt.CameraType == WatcherType.Exit);
 
             var result =
                 from invoice in _invoicerepository
                 join transaction in garageTransaction
                     on invoice.GarageTransactionExitId equals transaction.Id
                 where
+                    transaction.CheckoutMobile == null &&
                     (transaction.Camera.DeviceId == watcherCode || transaction.LaneNO == watcherCode)
                     && invoice.OrganizationId == organizationId
                     && invoice.InvoicePrice > 0
