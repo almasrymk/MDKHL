@@ -1,4 +1,4 @@
-﻿using JetBrains.Annotations;
+using JetBrains.Annotations;
 using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
@@ -37,8 +37,7 @@ public class UpdateUserDto
     public bool ISNoRole { get; set; }
     [Required]
     public IdentificationTypes IdentificationTypes { get; set; }
-    [Required]
-    public string NationalId { get; set; }
+    public string? NationalId { get; set; }
     public bool IsCustomer { get; set; }
     public UserTypeCategory? UserTypeCategory { get; set; }
     public int OrganizationId { get; set; }

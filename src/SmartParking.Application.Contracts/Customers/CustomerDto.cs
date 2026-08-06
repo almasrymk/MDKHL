@@ -1,4 +1,4 @@
-﻿
+
 using SmartParking.CustomerPackages;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
@@ -20,7 +20,7 @@ public class CustomerDto:AuditedEntityDto<Guid>
     public string ArabicName { get; set; }
     public string Email { get; set; }
     public string MobileNumber { get; set; }
-    public string NationalId { get; set; }
+    public string? NationalId { get; set; }
     public IdentificationTypes identificationTypes { get; set; }
     public List<VehicleDto> Vehicles { get; set; } = new();
     public string OrganizationArabicName { get; set; }

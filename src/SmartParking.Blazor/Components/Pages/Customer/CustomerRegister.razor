@@ -1,4 +1,4 @@
-﻿@page "/customers/register"
+@page "/customers/register"
 @using SmartParking.Authentication
 @using SmartParking.CustomerPackages
 @using SmartParking.Cutomers
@@ -78,8 +78,7 @@
                         </MudItem>
                         <MudItem sm="6">
                             <MudTextField T="string" Placeholder="@L["Type Here"]" ReadOnly="showVehicle"
-                                          Label="@L["NationalId"]" @bind-Value="createUpdateCustomerDto.NationalId" Required
-                                          RequiredError="@(LocalizationHelper.GetLocalizedString("EmptyValidation"))" />
+                                          Label="@L["NationalId"]" @bind-Value="createUpdateCustomerDto.NationalId" />
                         </MudItem>
                         @if (createUpdateCustomerDto.IsUser && CurrentTenant.Id is null)
                         {

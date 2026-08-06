@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -77,6 +77,9 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 throw new BusinessException(LocalizationHelper.GetLocalizedString("User") + " " +
                LocalizationHelper.GetLocalizedString("DuplicateValidation"));
             }
+            input.NationalId = NationalIdHelper.Normalize(input.NationalId);
+            if (input.NationalId == null)
+                input.IdentificationType = IdentificationTypes.None;
             await _baseCustomer.CheckCustomer(input);
             var result1 = await _baseCustomer.CheckIfPhoneNumberIsUnique(input.PhoneNumber);
             if (!result1)
@@ -85,12 +88,14 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                     LocalizationHelper.GetLocalizedString("DuplicateValidation"));
 
             }
-            var result2 = await _baseCustomer.CheckIfNationalIDIsUnique(input.NationalId);
-            if (!result2)
+            if (!string.IsNullOrWhiteSpace(input.NationalId))
             {
-                throw new BusinessException(LocalizationHelper.GetLocalizedString("NationId") + " " +
-                    LocalizationHelper.GetLocalizedString("DuplicateValidation"));
-
+                var result2 = await _baseCustomer.CheckIfNationalIDIsUnique(input.NationalId);
+                if (!result2)
+                {
+                    throw new BusinessException(LocalizationHelper.GetLocalizedString("NationId") + " " +
+                        LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+                }
             }
             var customer = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
             customer.IdentificationTypes = input.IdentificationType;
@@ -499,7 +504,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                     LocalizationHelper.GetLocalizedString("NotFoundValidation"));
 
             }
-            if (customer.IdentificationTypes != input.IdentificationType || customer.NationalId != input.NationalId)
+            if (customer.IdentificationTypes != input.IdentificationType || customer.NationalId != NationalIdHelper.Normalize(input.NationalId))
             {
                 await _baseCustomer.CheckCustomer(input);
             }
@@ -753,7 +758,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             queryable = queryable.Where(or =>
                 or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                (or.NationalId != null && or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower())) ||
                 or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.Surname.ToLower().Contains(input.SearchingTerm.ToLower()) ||
@@ -784,7 +789,7 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
             queryable = queryable.Where(or =>
                 or.IdentityUser.UserName.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.Name.ToLower().Contains(input.SearchingTerm.ToLower()) ||
-                or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower()) ||
+                (or.NationalId != null && or.NationalId.ToLower().Contains(input.SearchingTerm.ToLower())) ||
                 or.IdentityUser.Email.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.PhoneNumber.ToLower().Contains(input.SearchingTerm.ToLower()) ||
                 or.IdentityUser.Surname.ToLower().Contains(input.SearchingTerm.ToLower()) ||
