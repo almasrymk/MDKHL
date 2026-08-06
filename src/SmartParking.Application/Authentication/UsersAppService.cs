@@ -428,12 +428,15 @@ public class UsersAppService : ApplicationService, IUsersAppService
                 IdentityUser? user = await IsUserFound(id);
                 var UpdateDataDto = new UpdateUserDto
                 {
+                    UserName = user.UserName,
                     Name = input.FullName,
-                    IdentificationTypes = (IdentificationTypes)Enum.Parse(typeof(IdentificationTypes), input.IdentificationTypes),
+                    Surname = user.Surname,
+                    ConcurrencyStamp = user.ConcurrencyStamp,
+                    IdentificationTypes = Enum.TryParse<IdentificationTypes>(input.IdentificationTypes, true, out var identificationType) ? identificationType : IdentificationTypes.None,
                     PhoneNumber = input.Phone,
                     Email = input.Email,
                     NationalId = input.NationalId,
-                    OrganizationId=user.GetProperty<int>("OrganizationId")
+                    OrganizationId = user.GetProperty<int>("OrganizationId")
 
                 };
                 await UpdateUserProperties(user, UpdateDataDto);

@@ -69,6 +69,7 @@ public class InvoicePaymentInitializationStrategy : IPaymentInitializationStrate
 
     private async Task MarkInvoiceTypeStatusPending(int invoiceId)
     {
+        
         var queryable = await _invoiceRepo.GetQueryableAsync();
 
         await queryable

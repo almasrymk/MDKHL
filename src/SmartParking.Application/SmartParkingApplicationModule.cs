@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SmartParking.Payments.PaymentIntegrations;
+using SmartParking.Payments.Reconciliation;
 using Org.BouncyCastle.Asn1.X509.Qualified;
 using SmartParking.Application.Utilities;
 using SmartParking.BarrierAppService;
@@ -55,6 +56,8 @@ public class SmartParkingApplicationModule : AbpModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         var configuration = context.Services.GetConfiguration();
+
+        Configure<PaymentReconciliationOptions>(configuration.GetSection(PaymentReconciliationOptions.SectionName));
 
         // ── Active-provider IPaymentGatewayIntegrationService ─────────────────
         // Resolves the configured active gateway so Blazor pages can inject
@@ -124,6 +127,7 @@ public class SmartParkingApplicationModule : AbpModule
 
 
         context.Services.AddTransient<WebSocketHeartbeatWorker>();
+        context.Services.AddTransient<PaymentReconciliationWorker>();
         Configure<AbpAutoMapperOptions>(options =>
         {
             options.AddMaps<SmartParkingApplicationModule>();
@@ -140,6 +144,10 @@ public class SmartParkingApplicationModule : AbpModule
         var backgroundWorkerManager = context.ServiceProvider.GetRequiredService<IBackgroundWorkerManager>();
         var worker = context.ServiceProvider.GetRequiredService<WebSocketHeartbeatWorker>();
         backgroundWorkerManager.AddAsync(worker);
+
+        var reconciliationWorker = context.ServiceProvider.GetRequiredService<PaymentReconciliationWorker>();
+        backgroundWorkerManager.AddAsync(reconciliationWorker);
+
         base.OnApplicationInitialization(context);
     }
 

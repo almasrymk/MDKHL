@@ -9,6 +9,7 @@ using SmartParking.Enums;
 using SmartParking.Invoices;
 using SmartParking.Payments;
 using SmartParking.Payments.PaymentIntegrations;
+using SmartParking.Payments.Reconciliation;
 using SmartParking.Utilities;
 using SmartParking.Validations;
 using SmartParking.GarageTransactions;
@@ -28,6 +29,8 @@ public partial class CustomInvoiceMainPage : IDisposable
     [Inject] private IOptionsMonitor<GeideaOptions>     GeideaOptions  { get; set; } = default!;
     [Inject] private IOptionsMonitor<OppwaRootOptions>  OppwaOptions   { get; set; } = default!;
     [Inject] private IPaymentWebAppService              PaymentWebAppService { get; set; } = default!;
+    [Inject] private IPaymentAppService                  PaymentAppService { get; set; } = default!;
+    [Inject] private IPaymentReconciliationAppService    PaymentReconciliationAppService { get; set; } = default!;
     [Inject] private IOrganizationsAppService           OrganizationsAppService { get; set; } = default!;
     [Inject] private ILogger<CustomInvoiceMainPage>     Logger { get; set; } = default!;
 
@@ -69,6 +72,8 @@ public partial class CustomInvoiceMainPage : IDisposable
 
     private int _currentInvoiceId;
     private bool _checkoutClicked = false;
+    private bool _hasProcessedPaymentCallback = false;
+    private bool _shouldShowSuccessDialog = false;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -98,6 +103,67 @@ public partial class CustomInvoiceMainPage : IDisposable
             SearchText = RouteTicketId;
             await OnSearch();
         }
+
+        if (PaymentId.HasValue)
+        {
+            await ProcessPaymentCallbackAsync();
+        }
+    }
+
+    private async Task ProcessPaymentCallbackAsync()
+    {
+        if (_hasProcessedPaymentCallback || !PaymentId.HasValue) return;
+        _hasProcessedPaymentCallback = true;
+
+        Logger.LogInformation("[TRACE] ProcessPaymentCallbackAsync — Processing PaymentId={PaymentId}", PaymentId.Value);
+
+        PaymentGetResponseDto? payment = null;
+        bool fetchException = false;
+        try
+        {
+            payment = await PaymentWebAppService.GetMdkhlAsync(PaymentId.Value);
+        }
+        catch (Exception fetchEx)
+        {
+            fetchException = true;
+            Logger.LogWarning("[TRACE] ProcessPaymentCallbackAsync — GetMdkhlAsync threw for PaymentId={PaymentId}: {Message}", PaymentId.Value, fetchEx.Message);
+        }
+
+        if (fetchException)
+        {
+            // Payment record already deleted or invalid, clean URL bar without duplicate cancellation
+            var cleanPath = new Uri(navigationManager.Uri).GetLeftPart(UriPartial.Path);
+            navigationManager.NavigateTo(cleanPath, forceLoad: false);
+            return;
+        }
+
+        var expectedStatus = PaymentStatus.Success.ToString();
+        bool isSuccess = payment != null && string.Equals(payment.PaymentStatus, expectedStatus, StringComparison.OrdinalIgnoreCase);
+
+        if (isSuccess)
+        {
+            Logger.LogInformation("[TRACE] ProcessPaymentCallbackAsync — Payment successful. Status={Status}, PaymentId={PaymentId}", payment!.PaymentStatus, PaymentId.Value);
+
+            InvoicePrice = payment.Invoice?.InvoicePrice ?? payment.Amount;
+            InvoiceSearchDto.TicketId = payment.Invoice?.TicketId ?? "";
+            VatRate = 15;
+            Vat = payment.Invoice?.Vat ?? 0;
+            InvoiceAmount = InvoicePrice + Vat;
+            CheckIn = payment.Invoice?.EntranceTime ?? DateTime.Now;
+            Checkout = payment.Invoice?.InvoiceTime ?? DateTime.Now;
+            _currentInvoiceId = payment.Invoice?.Id ?? 0;
+
+            _shouldShowSuccessDialog = true;
+        }
+        else
+        {
+            Logger.LogWarning(
+                "[TRACE] ProcessPaymentCallbackAsync — Payment not successful. Status={Status}, PaymentId={PaymentId}",
+                payment?.PaymentStatus ?? "Null", PaymentId.Value);
+
+            int invoiceIdToCancel = payment?.Invoice?.Id ?? _currentInvoiceId;
+            await CancelInvoiceAndDeletePaymentAsync(invoiceIdToCancel, PaymentId.Value);
+        }
     }
 
     // ── Event handlers ────────────────────────────────────────────────────────
@@ -106,96 +172,30 @@ public partial class CustomInvoiceMainPage : IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Logger.LogInformation(
-            "[TRACE] OnAfterRenderAsync — firstRender={FirstRender}, PaymentId={PaymentId}, Thread={Thread}",
-            firstRender, PaymentId, System.Threading.Thread.CurrentThread.ManagedThreadId);
-
-        if (firstRender && PaymentId.HasValue)
+        if (firstRender && _shouldShowSuccessDialog && PaymentId.HasValue)
         {
-            Logger.LogInformation("[TRACE] OnAfterRenderAsync — PaymentId present, entering payment-callback path");
-
+            _shouldShowSuccessDialog = false;
+            PaymentGetResponseDto? payment = null;
             try
             {
-                Logger.LogInformation("[TRACE] OnAfterRenderAsync — calling GetMdkhlAsync({PaymentId})", PaymentId.Value);
-
-                PaymentGetResponseDto payment;
-                try
-                {
-                    payment = await PaymentWebAppService.GetMdkhlAsync(PaymentId.Value);
-                }
-                catch (Exception fetchEx)
-                {
-                    Logger.LogError(fetchEx, "[TRACE] OnAfterRenderAsync — GetMdkhlAsync THREW an exception");
-                    snackbar.Add("Payment lookup error: " + fetchEx.Message, Severity.Error);
-                    return;
-                }
-
-                if (payment == null)
-                {
-                    Logger.LogWarning("[TRACE] OnAfterRenderAsync — GetMdkhlAsync returned NULL");
-                    snackbar.Add("Payment record not found.", Severity.Warning);
-                    return;
-                }
-
-                Logger.LogInformation(
-                    "[TRACE] OnAfterRenderAsync — payment found. PaymentStatus={Status}, Amount={Amount}, InvoiceId={InvoiceId}",
-                    payment.PaymentStatus, payment.Amount, payment.Invoice?.Id);
-
-                var expectedStatus = PaymentStatus.Success.ToString();
-                Logger.LogInformation(
-                    "[TRACE] OnAfterRenderAsync — comparing PaymentStatus '{Actual}' == '{Expected}' → {Match}",
-                    payment.PaymentStatus, expectedStatus,
-                    payment.PaymentStatus == expectedStatus);
-
-                if (payment.PaymentStatus == expectedStatus)
-                {
-                    InvoicePrice = payment.Invoice?.InvoicePrice ?? payment.Amount;
-                    InvoiceSearchDto.TicketId = payment.Invoice?.TicketId ?? "";
-                    VatRate = 15;
-                    Vat = payment.Invoice?.Vat ?? 0;
-                    InvoiceAmount = InvoicePrice + Vat;
-                    CheckIn = payment.Invoice?.EntranceTime ?? DateTime.Now;
-                    Checkout = payment.Invoice?.InvoiceTime ?? DateTime.Now;
-                    _currentInvoiceId = payment.Invoice?.Id ?? 0;
-
-                    string qrData = payment.QrCodeInvoice;
-                    int gracePeriod = payment.Organization?.Graceperiod ?? 0;
-
-                    Logger.LogInformation(
-                        "[TRACE] OnAfterRenderAsync — about to call ShowPaymentSuccessDialogAsync. InvoicePrice={Price}, TicketId={TicketId}, InvoiceId={InvoiceId}",
-                        InvoicePrice, InvoiceSearchDto.TicketId, _currentInvoiceId);
-
-                    await ShowPaymentSuccessDialogAsync(
-                        (double)InvoicePrice,
-                        InvoiceSearchDto.TicketId,
-                        (double)VatRate,
-                        (double)Vat,
-                        (double)InvoiceAmount,
-                        qrData,
-                        CheckIn,
-                        Checkout,
-                        _currentInvoiceId,
-                        gracePeriod);
-
-                    Logger.LogInformation("[TRACE] OnAfterRenderAsync — returned from ShowPaymentSuccessDialogAsync");
-                }
-                else
-                {
-                    Logger.LogWarning(
-                        "[TRACE] OnAfterRenderAsync — payment status not Success, skipping dialog. Status={Status}",
-                        payment.PaymentStatus);
-                    snackbar.Add($"Payment status: {payment.PaymentStatus}", Severity.Warning);
-                }
+                payment = await PaymentWebAppService.GetMdkhlAsync(PaymentId.Value);
             }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "[TRACE] OnAfterRenderAsync — unhandled exception in payment-callback path");
-                snackbar.Add("Payment callback error: " + ex.Message, Severity.Error);
-            }
-        }
-        else if (firstRender)
-        {
-            Logger.LogInformation("[TRACE] OnAfterRenderAsync — firstRender=true but NO PaymentId in query string. Normal page load.");
+            catch { }
+
+            string qrData = payment?.QrCodeInvoice ?? "";
+            int gracePeriod = payment?.Organization?.Graceperiod ?? 0;
+
+            await ShowPaymentSuccessDialogAsync(
+                (double)InvoicePrice,
+                InvoiceSearchDto.TicketId,
+                (double)VatRate,
+                (double)Vat,
+                (double)InvoiceAmount,
+                qrData,
+                CheckIn,
+                Checkout,
+                _currentInvoiceId,
+                gracePeriod);
         }
     }
 
@@ -575,28 +575,44 @@ public partial class CustomInvoiceMainPage : IDisposable
         return qrData;
     }
 
+    private bool _hasCancelledInvoice = false;
+
     private async Task Cancel()
     {
+        await CancelInvoiceAndDeletePaymentAsync(_currentInvoiceId, PaymentId);
+    }
+
+    private async Task CancelInvoiceAndDeletePaymentAsync(int invoiceId, Guid? paymentId)
+    {
+        if (_hasCancelledInvoice) return;
+        _hasCancelledInvoice = true;
+
         try
         {
-            await InvoiceUiAppService.CancelInvoiceAsync(
-                _currentInvoiceId
-                );
+            await PaymentReconciliationAppService.ProcessNonSuccessPaymentAsync(paymentId ?? Guid.Empty, invoiceId);
 
-            snackbar.Add(
-                $"{L["Done"]} {L["Delete"]} {L["Invoice"]}",
-                Severity.Success);
+            snackbar.Add($"{L["Done"]} {L["Delete"]} {L["Invoice"]}", Severity.Success);
 
-            await Task.Delay(1000);
+            await Task.Delay(500);
 
             ResetPage();
 
-            navigationManager.NavigateTo(
-                navigationManager.Uri,
-                forceLoad: true);
+            var cleanPath = new Uri(navigationManager.Uri).GetLeftPart(UriPartial.Path);
+            try
+            {
+                await JS.InvokeVoidAsync("history.replaceState", null, "", cleanPath);
+            }
+            catch { }
+
+            navigationManager.NavigateTo(cleanPath, forceLoad: true);
+        }
+        catch (NavigationException)
+        {
+            throw; // Let Blazor handle forceLoad navigation redirect
         }
         catch (Exception ex)
         {
+            Logger.LogError(ex, "[TRACE] CancelInvoiceAndDeletePaymentAsync — error during cancellation");
             snackbar.Add(ex.Message, Severity.Error);
         }
     }

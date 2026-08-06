@@ -13,6 +13,7 @@ using SmartParking.Blazor.Components;
 using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.State;
 using SmartParking.Payments.PosTerminal;
+using SmartParking.Payments.Reconciliation;
 using SmartParking.Blazor.Filters;
 using SmartParking.Blazor.Menus;
 using SmartParking.Blazor.MultiTenants;
@@ -142,6 +143,8 @@ public class SmartParkingBlazorModule : AbpModule
     {
 
         var hostingEnvironment = context.Services.GetHostingEnvironment();
+        context.Services.Configure<PaymentReconciliationOptions>(
+            context.Services.GetConfiguration().GetSection(PaymentReconciliationOptions.SectionName));
         context.Services.Configure<OppwaRootOptions>(
             context.Services.GetConfiguration().GetSection("Providers:Oppwa"));
         context.Services.Configure<GeideaOptions>(
