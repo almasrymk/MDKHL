@@ -262,6 +262,15 @@ public class SmartParkingDbContext : AbpDbContext<SmartParkingDbContext>, IIdent
         builder.ConfigureBackgroundJobs();
         builder.ConfigureAuditLogging();
         builder.ConfigureIdentity();
+        builder.Entity<IdentityUser>(b =>
+        {
+            b.Property(u => u.Email)
+                .IsRequired(false)
+                .HasConversion(v => v, v => v ?? string.Empty);
+            b.Property(u => u.NormalizedEmail)
+                .IsRequired(false)
+                .HasConversion(v => v, v => v ?? string.Empty);
+        });
         builder.ConfigureOpenIddict();
         builder.ConfigureFeatureManagement();
         builder.ConfigureTenantManagement();

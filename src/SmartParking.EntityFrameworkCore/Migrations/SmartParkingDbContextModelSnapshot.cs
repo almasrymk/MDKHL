@@ -4474,7 +4474,6 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("Email");
@@ -4544,7 +4543,6 @@ namespace SmartParking.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("NormalizedEmail")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("NormalizedEmail");
