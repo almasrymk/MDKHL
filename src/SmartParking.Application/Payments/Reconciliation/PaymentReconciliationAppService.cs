@@ -62,21 +62,6 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
             int targetInvoiceId = (invoiceId.HasValue && invoiceId.Value > 0)
                 ? invoiceId.Value
                 : (payment?.InvoiceId ?? 0);
-
-            // 1. Cancel invoice (unmaps entry transaction for re-checkout, deletes exit transaction & invoice)
-            if (targetInvoiceId > 0)
-            {
-                try
-                {
-                    await _publicInvoiceAppService.CancelInvoiceAsync(targetInvoiceId);
-                    Logger.LogInformation("[RECONCILIATION] Successfully cancelled invoice {InvoiceId}", targetInvoiceId);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWarning(ex, "[RECONCILIATION] Invoice {InvoiceId} cancellation skipped/failed (may already be deleted)", targetInvoiceId);
-                }
-            }
-
             // 2. Delete payment if record still exists
             if (paymentId != Guid.Empty)
             {
@@ -94,6 +79,21 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
                     Logger.LogWarning(ex, "[RECONCILIATION] Payment {PaymentId} deletion skipped/failed (may already be deleted)", paymentId);
                 }
             }
+            // 1. Cancel invoice (unmaps entry transaction for re-checkout, deletes exit transaction & invoice)
+            if (targetInvoiceId > 0)
+            {
+                try
+                {
+                    await _publicInvoiceAppService.CancelInvoiceAsync(targetInvoiceId);
+                    Logger.LogInformation("[RECONCILIATION] Successfully cancelled invoice {InvoiceId}", targetInvoiceId);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning(ex, "[RECONCILIATION] Invoice {InvoiceId} cancellation skipped/failed (may already be deleted)", targetInvoiceId);
+                }
+            }
+
+        
         }
     }
 
