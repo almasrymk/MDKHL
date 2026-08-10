@@ -132,7 +132,7 @@ public class VehicleAppService : ApplicationService, IVehicleAppService
             {
                 return Result<VehicleDto>.NotFound("vehicle not found");
             }
-            var package = vehicle.Customer.CustomerPackages.FirstOrDefault();
+            var package = vehicle.Customer.CustomerPackages.Where(x => x.EnPlateNumber== vehicle.EnPlateNumber).FirstOrDefault();
             if (package != null)
             {
                 return Result<VehicleDto>.Forbidden();

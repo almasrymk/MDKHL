@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
+using SmartParking.CustomerPackages;
 using SmartParking.Entities.Payments;
 using SmartParking.Enums;
 using SmartParking.Invoices;
@@ -12,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 
@@ -23,6 +25,7 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
     private readonly IPublicInvoiceAppService _publicInvoiceAppService;
     private readonly IPaymentAppService _paymentAppService;
     private readonly IPaymentCompletionService _paymentCompletionService;
+    private readonly ICustomerPackagesAppService _customerPackagesAppService;
     private readonly IDataFilter _dataFilter;
     private readonly IOptions<PaymentReconciliationOptions> _reconciliationOptions;
 
@@ -31,6 +34,7 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
         IPublicInvoiceAppService publicInvoiceAppService,
         IPaymentAppService paymentAppService,
         IPaymentCompletionService paymentCompletionService,
+        ICustomerPackagesAppService customerPackagesAppService,
         IDataFilter dataFilter,
         IOptions<PaymentReconciliationOptions> reconciliationOptions)
     {
@@ -38,6 +42,7 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
         _publicInvoiceAppService = publicInvoiceAppService;
         _paymentAppService = paymentAppService;
         _paymentCompletionService = paymentCompletionService;
+        _customerPackagesAppService = customerPackagesAppService;
         _dataFilter = dataFilter;
         _reconciliationOptions = reconciliationOptions;
     }
@@ -52,6 +57,11 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
                 try
                 {
                     payment = await _paymentRepository.FirstOrDefaultAsync(p => p.Id == paymentId);
+                    if (payment != null && payment.PaymentStatus == PaymentStatus.Success)
+                    {
+                        Logger.LogWarning("[RECONCILIATION] Payment {PaymentId} is already successful, cannot be cancelled.", paymentId);
+                        return;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -59,41 +69,101 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
                 }
             }
 
-            int targetInvoiceId = (invoiceId.HasValue && invoiceId.Value > 0)
-                ? invoiceId.Value
-                : (payment?.InvoiceId ?? 0);
-            // 2. Delete payment if record still exists
-            if (paymentId != Guid.Empty)
+            bool isPackagePayment = payment != null && payment.CustomerPackageId.HasValue && payment.CustomerPackageId.Value > 0;
+
+            if (isPackagePayment)
             {
+                int customerPackageId = payment!.CustomerPackageId!.Value;
+
+                Logger.LogInformation(
+                    "[RECONCILIATION] Payment cancellation started. PaymentId={PaymentId}, PaymentType=CustomerPackage, CustomerPackageId={CustomerPackageId}",
+                    payment.Id, customerPackageId);
+
+                // 1. Delete Customer Package using ICustomerPackagesAppService.DeleteAsync
+                Logger.LogInformation("[RECONCILIATION] Deleting CustomerPackage {CustomerPackageId} for Payment {PaymentId}", customerPackageId, payment.Id);
                 try
                 {
-                    var existingPayment = await _paymentRepository.FirstOrDefaultAsync(p => p.Id == paymentId);
+                    await _customerPackagesAppService.DeleteAsync(customerPackageId);
+                    Logger.LogInformation("[RECONCILIATION] CustomerPackage {CustomerPackageId} deleted successfully", customerPackageId);
+                }
+                catch (EntityNotFoundException ex)
+                {
+                    Logger.LogInformation(ex, "[RECONCILIATION] CustomerPackage {CustomerPackageId} already deleted or not found. Skipping package deletion safely.", customerPackageId);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning(ex, "[RECONCILIATION] CustomerPackage {CustomerPackageId} deletion failed or skipped (may already be deleted)", customerPackageId);
+                }
+
+                // 2. Delete Payment
+                try
+                {
+                    var existingPayment = await _paymentRepository.FirstOrDefaultAsync(p => p.Id == payment.Id);
                     if (existingPayment != null)
                     {
                         await _paymentRepository.DeleteAsync(existingPayment.Id);
-                        Logger.LogInformation("[RECONCILIATION] Successfully deleted payment {PaymentId}", paymentId);
+                        Logger.LogInformation("[RECONCILIATION] Payment {PaymentId} deleted successfully", payment.Id);
+                    }
+                    else
+                    {
+                        Logger.LogInformation("[RECONCILIATION] Payment {PaymentId} already deleted or not found", payment.Id);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogWarning(ex, "[RECONCILIATION] Payment {PaymentId} deletion skipped/failed (may already be deleted)", paymentId);
+                    Logger.LogWarning(ex, "[RECONCILIATION] Payment {PaymentId} deletion skipped/failed (may already be deleted)", payment.Id);
                 }
             }
-            // 1. Cancel invoice (unmaps entry transaction for re-checkout, deletes exit transaction & invoice)
-            if (targetInvoiceId > 0)
+            else
             {
-                try
+                int targetInvoiceId = (invoiceId.HasValue && invoiceId.Value > 0)
+                    ? invoiceId.Value
+                    : (payment?.InvoiceId ?? 0);
+
+                Logger.LogInformation(
+                    "[RECONCILIATION] Payment cancellation started. PaymentId={PaymentId}, PaymentType=Invoice, InvoiceId={InvoiceId}",
+                    paymentId, targetInvoiceId);
+
+                // 1. Delete payment if record still exists
+                if (paymentId != Guid.Empty)
                 {
-                    await _publicInvoiceAppService.CancelInvoiceAsync(targetInvoiceId);
-                    Logger.LogInformation("[RECONCILIATION] Successfully cancelled invoice {InvoiceId}", targetInvoiceId);
+                    try
+                    {
+                        var existingPayment = await _paymentRepository.FirstOrDefaultAsync(p => p.Id == paymentId);
+                        if (existingPayment != null)
+                        {
+                            await _paymentRepository.DeleteAsync(existingPayment.Id);
+                            Logger.LogInformation("[RECONCILIATION] Successfully deleted payment {PaymentId}", paymentId);
+                        }
+                        else
+                        {
+                            Logger.LogInformation("[RECONCILIATION] Payment {PaymentId} already deleted or not found", paymentId);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWarning(ex, "[RECONCILIATION] Payment {PaymentId} deletion skipped/failed (may already be deleted)", paymentId);
+                    }
                 }
-                catch (Exception ex)
+
+                // 2. Cancel invoice (unmaps entry transaction for re-checkout, deletes exit transaction & invoice)
+                if (targetInvoiceId > 0)
                 {
-                    Logger.LogWarning(ex, "[RECONCILIATION] Invoice {InvoiceId} cancellation skipped/failed (may already be deleted)", targetInvoiceId);
+                    try
+                    {
+                        await _publicInvoiceAppService.CancelInvoiceAsync(targetInvoiceId);
+                        Logger.LogInformation("[RECONCILIATION] Successfully cancelled invoice {InvoiceId}", targetInvoiceId);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWarning(ex, "[RECONCILIATION] Invoice {InvoiceId} cancellation skipped/failed (may already be deleted)", targetInvoiceId);
+                    }
+                }
+                else if (payment == null && paymentId != Guid.Empty)
+                {
+                    Logger.LogInformation("[RECONCILIATION] Payment {PaymentId} not found (may already be deleted). Handled idempotently.", paymentId);
                 }
             }
-
-        
         }
     }
 

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Payments;
 using SmartParking.Enums;
+using SmartParking.Payments.Reconciliation;
 using SmartParking.Utilities;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
     private readonly IPaymentAppService _paymentAppService;
     private readonly IDataFilter _dataFilter;
     private readonly IPaymentCompletionService _paymentCompletionService;
+    private readonly IPaymentReconciliationAppService _paymentReconciliationAppService;
     private readonly ILogger<GeideaGatewayIntegrationService> _logger;
 
     private static readonly JsonSerializerOptions _jsonOptions = new()
@@ -59,6 +61,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
         IPaymentAppService paymentAppService,
         IDataFilter dataFilter,
         IPaymentCompletionService paymentCompletionService,
+        IPaymentReconciliationAppService paymentReconciliationAppService,
         ILogger<GeideaGatewayIntegrationService> logger)
     {
         _http = http;
@@ -68,6 +71,7 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
         _paymentAppService = paymentAppService;
         _dataFilter = dataFilter;
         _paymentCompletionService = paymentCompletionService;
+        _paymentReconciliationAppService = paymentReconciliationAppService;
         _logger = logger;
     }
 
@@ -176,9 +180,30 @@ public class GeideaGatewayIntegrationService : IPaymentGatewayIntegrationService
             return PaymentVerificationResult.Failed("Missing orderId in Geidea callback");
 
         if (!string.Equals(status, "Success", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!string.IsNullOrEmpty(merchantReferenceId))
+            {
+                try
+                {
+                    using (_dataFilter.Disable<IMultiTenant>())
+                    {
+                        var payment = await _repository.FirstOrDefaultAsync(p => p.PaymentNumber == merchantReferenceId);
+                        if (payment != null)
+                        {
+                            await _paymentReconciliationAppService.ProcessNonSuccessPaymentAsync(payment.Id, payment.InvoiceId);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Geidea callback: Failed to process non-success payment for merchantReferenceId {MerchantRef}", merchantReferenceId);
+                }
+            }
+
             return PaymentVerificationResult.Failed(
                 $"Geidea payment did not succeed. Status={status}, " +
                 $"Code={responseCode}, Message={responseMessage}");
+        }
 
         if (string.IsNullOrEmpty(merchantReferenceId))
             return PaymentVerificationResult.Failed("Missing merchantReferenceId in Geidea callback");

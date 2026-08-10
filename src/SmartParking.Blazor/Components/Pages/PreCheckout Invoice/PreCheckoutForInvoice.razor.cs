@@ -148,7 +148,7 @@ public partial class PreCheckoutForInvoice
             PaymentCategory = PaymentCategory.PaymentParking,
             InvoiceId = Id,
             PaymentMethod = PaymentMethod,
-            Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Discount),
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Invoice.Discount),
             CustomerId = Invoice.CustomerId
         };
 

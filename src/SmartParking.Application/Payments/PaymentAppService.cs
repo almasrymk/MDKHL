@@ -544,6 +544,7 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
         {
             var customers = await _customerRepo.GetQueryableAsync();
             var payments = await _repository.GetQueryableAsync();
+            payments = payments.Where(payms => payms.PaymentStatus == PaymentStatus.Success);
             var customerPackages = await _customerPackageRepository.GetQueryableAsync();
             var organizations = await _organizationRepository.GetQueryableAsync();
             var vehicles = await _vehicleRepository.GetQueryableAsync();
