@@ -16,6 +16,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using SmartParking.Results;
 
 namespace SmartParking.Payments.Reconciliation;
 
@@ -47,7 +48,7 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
         _reconciliationOptions = reconciliationOptions;
     }
 
-    public async Task ProcessNonSuccessPaymentAsync(Guid paymentId, int? invoiceId = null)
+    public async Task<Result> ProcessNonSuccessPaymentAsync(Guid paymentId, int? invoiceId = null)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -60,12 +61,13 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
                     if (payment != null && payment.PaymentStatus == PaymentStatus.Success)
                     {
                         Logger.LogWarning("[RECONCILIATION] Payment {PaymentId} is already successful, cannot be cancelled.", paymentId);
-                        return;
+                        return Result.Error(" Payment is already successful, cannot be cancelled.");
                     }
                 }
                 catch (Exception ex)
                 {
                     Logger.LogWarning(ex, "[RECONCILIATION] Failed to fetch payment {PaymentId}", paymentId);
+                    return Result.Error("Failed to fetch payment.");
                 }
             }
 
@@ -113,6 +115,8 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
                 {
                     Logger.LogWarning(ex, "[RECONCILIATION] Payment {PaymentId} deletion skipped/failed (may already be deleted)", payment.Id);
                 }
+
+                return Result.SuccessWithMessage("Payment and associated package cancellation processed successfully.");
             }
             else
             {
@@ -163,6 +167,7 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
                 {
                     Logger.LogInformation("[RECONCILIATION] Payment {PaymentId} not found (may already be deleted). Handled idempotently.", paymentId);
                 }
+                return Result.SuccessWithMessage("Payment and associated invoice cancellation processed successfully.");
             }
         }
     }

@@ -1,17 +1,22 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Localization;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
-using SmartParking.Localization;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp.Application.Dtos;
-using SmartParking.Invoices;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Globalization;
-using static NuGet.Client.ManagedCodeConventions;
-using Volo.Abp.MultiTenancy;
 using SmartParking.Currency;
+using SmartParking.Invoices;
+using SmartParking.Localization;
+using SmartParking.Payments;
+using SmartParking.Permissions.InvoicesPermissions;
+using SmartParking.Permissions.PaymentsPermissions;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
+using Volo.Abp.MultiTenancy;
+using static NuGet.Client.ManagedCodeConventions;
 
 namespace SmartParking.Blazor.Components.Pages.Invoices;
 
@@ -22,12 +27,30 @@ public partial class Invoice
     public int RowPerPage { get; set; } = 10; // Default value is 10
 
     private TableData itemData = new TableData();
+    private List<MudMenuData> MenuDatas = new List<MudMenuData>();
+
+    public Guid? TenantId { get; private set; }
+    private string sortColumn;
+
+
+    private string ValueOfMenue = "All";
 
     private string termSearch;
     private readonly IStringLocalizer<SmartParkingResource> _localizer;
     public Invoice(IStringLocalizer<SmartParkingResource> localizer)
     {
         _localizer = localizer;
+    }
+    protected async override Task OnInitializedAsync()
+    {
+        if (!await AuthorizationService.IsGrantedAsync(InvoicePermission.Default))
+        {
+
+            Navigation.NavigateTo("/Account/AccessDenied", true);
+        }
+        await CreateMenue();
+        await base.OnInitializedAsync();
+
     }
 
     /// <summary>
@@ -57,7 +80,53 @@ public partial class Invoice
 
 
     }
+    private async Task CreateMenue()
+    {
+        var itemsOrganizations = new List<MenuItem>();
+        var organizations = await OrganizationAppService.GetListAsync(new PagedAndSortedResultRequestDto());
+        itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = @L["All"], OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, null)) });
+        if (CultureInfo.CurrentCulture.Name == "ar")
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.ArabicName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
+        }
+        else
+        {
+            foreach (var org in organizations.Items)
+            {
+                itemsOrganizations.Add(new MenuItem { MenueName = "Organization", Label = org.EnglishName, OnClick = EventCallback.Factory.Create<string>(this, async (string selectedValue) => await HandleSelectTenantAsync(ValueOfMenue, org.TenantId)) });
+            }
+        }
 
+        MenuDatas = new List<MudMenuData>
+        {
+            new MudMenuData
+            {
+                Name = @L["Organizations"],
+                Label = @L[ValueOfMenue],
+                Items =itemsOrganizations
+            },
+        };
+    }
+    public async Task HandleSelectTenantAsync(string selectedValue, Guid? tenantId)
+    {
+        TenantId = tenantId;
+        ValueOfMenue = selectedValue;
+        var request = new PagedAndSortedAndSearchResultRequestDto
+        {
+            MaxResultCount = RowPerPage,
+            SkipCount = (CurrentPage - 1) * RowPerPage,
+            Sorting = sortColumn,
+            SearchingTerm = termSearch
+        };
+
+        PagedResultDto<InvoiceDto> invoiceDto = await AppService.GetAllInvoicesByOrganizationAsync(request, TenantId);
+
+        TotalItem = (int)invoiceDto.TotalCount;
+         CreateTable(invoiceDto);
+    }
     /// <summary>
     /// Searches for hotels on the server side using the hotel code search term.
     /// </summary>
@@ -124,7 +193,7 @@ public partial class Invoice
         else
         {
             // Retrieve the list of cities from the server
-            var invoiceDto = await AppService.GetAllInvoicesByOrganizationAsync(input , null);
+            var invoiceDto = await AppService.GetAllInvoicesByOrganizationAsync(input , TenantId);
             TotalItem = (int)invoiceDto.TotalCount;
             CreateTable(invoiceDto);
         }

@@ -8,6 +8,7 @@ using SmartParking.Blazor.Components.Shared;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Cutomers;
 using SmartParking.CustomerUnitPackages;
+using SmartParking.Enums;
 using SmartParking.Localization;
 using SmartParking.Permissions.UnitVehiclePackagesPermissions;
 using SmartParking.UnitVehiclePackages;
@@ -69,18 +70,7 @@ public partial class UnitVehiclePackage
 
     private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
-        var input = new PagedAndSortedAndFilteredResultRequestDto
-        {
-            MaxResultCount = pageInfo.RowsPerPage,
-            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch,
-            filters = pageInfo.Filters
-        };
-
-        var unitsDto = await UnitVehiclePackageAppService.GetListAsync(input);
-        TotalItem = (int)unitsDto.TotalCount;
-        await CreateTable(unitsDto);
+        await FetchTableData(pageInfo);
     }
 
    
@@ -121,7 +111,7 @@ public partial class UnitVehiclePackage
             tableData.Columns.Add(new ColumnDef() { DisplayName = L["ArPlateNumber"], Name = "ArPlateNumber", IsFilterable = true, PropertyName = "ArPlateNumber", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["ActivationDate"], Name = "ActivationDate", IsFilterable = true, PropertyName = "ActivationDate", IsSortable = true, TypeFilter = TypeFilter.Date });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["DeactivationDate"], Name = "DeactivationDate", IsFilterable = true, PropertyName = "DectivationDate", IsSortable = true, TypeFilter = TypeFilter.Date });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = L["CustomerUnitPackageType"], Name = "CustomerUnitPackageType", IsFilterable = true, PropertyName = "CustomerUnitPackageType", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["CustomerUnitPackageType"], Name = "CustomerUnitPackageType", IsFilterable = true, PropertyName = "CustomerUnitPackageType", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(CustomerUnitPackageType) });
 
 
         foreach (var item in packages.Items)

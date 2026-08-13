@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.UnitVehiclePackges;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,41 @@ public class UnitVehiclePackageAppService : CrudAppService<
     }
 
     #region public methods
+
+    public async Task<PagedResultDto<UnitVehiclePackageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+        return await GetListAsync(input);
+    }
+
+    protected override async Task<IQueryable<UnitVehiclePackge>> CreateFilteredQueryAsync(PagedAndSortedResultRequestDto input)
+    {
+        var query = await base.CreateFilteredQueryAsync(input);
+        query = query.Include(x => x.Customer)
+                     .Include(x => x.CustomerUnitPackage);
+
+        if (input is PagedAndSortedAndFilteredResultRequestDto filteredInput && filteredInput.filters != null && filteredInput.filters.Any())
+        {
+            var filterExpression = BuildExpression<UnitVehiclePackge>.BuildFilterExpression(filteredInput.filters);
+            if (filterExpression != null)
+            {
+                query = query.Where(filterExpression);
+            }
+        }
+
+        if (input is PagedAndSortedAndSearchResultRequestDto searchInput && !string.IsNullOrWhiteSpace(searchInput.SearchingTerm))
+        {
+            var term = searchInput.SearchingTerm.ToLower();
+            query = query.Where(x =>
+                x.UnitCode.ToLower().Contains(term) ||
+                x.EnPlateNumber.ToLower().Contains(term) ||
+                x.ArPlateNumber.ToLower().Contains(term) ||
+                (x.Customer != null && x.Customer.ArabicName.ToLower().Contains(term)) ||
+                (x.CustomerUnitPackage != null && x.CustomerUnitPackage.ArabicName.ToLower().Contains(term))
+            );
+        }
+
+        return query;
+    }
 
     public override async Task<UnitVehiclePackageDto> CreateAsync(CreateUpdateUnitVehiclePackageDto input)
     {

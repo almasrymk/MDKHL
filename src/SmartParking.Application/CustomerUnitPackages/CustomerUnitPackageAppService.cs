@@ -1,9 +1,11 @@
+using Microsoft.EntityFrameworkCore;
 using SmartParking.Cutomers;
 using SmartParking.Entities.CustomerUnitPackages;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Units;
 using SmartParking.Entities.UnitVehiclePackges;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using SmartParking.Results;
 using SmartParking.UnitPackages;
 using SmartParking.UnitVehiclePackages;
@@ -46,6 +48,39 @@ public class CustomerUnitPackageAppService :
         _dataFilter = dataFilter;
         _unitRepository = unitRepository;
         _customerAppService = customerAppService;
+    }
+
+    public async Task<PagedResultDto<CustomerUnitPackageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+        return await GetListAsync(input);
+    }
+
+    protected override async Task<IQueryable<CustomerUnitPackage>> CreateFilteredQueryAsync(PagedAndSortedResultRequestDto input)
+    {
+        var query = await base.CreateFilteredQueryAsync(input);
+        query = query.Include(x => x.Customer);
+
+        if (input is PagedAndSortedAndFilteredResultRequestDto filteredInput && filteredInput.filters != null && filteredInput.filters.Any())
+        {
+            var filterExpression = BuildExpression<CustomerUnitPackage>.BuildFilterExpression(filteredInput.filters);
+            if (filterExpression != null)
+            {
+                query = query.Where(filterExpression);
+            }
+        }
+
+        if (input is PagedAndSortedAndSearchResultRequestDto searchInput && !string.IsNullOrWhiteSpace(searchInput.SearchingTerm))
+        {
+            var term = searchInput.SearchingTerm.ToLower();
+            query = query.Where(x =>
+                x.UnitCode.ToLower().Contains(term) ||
+                x.ArabicName.ToLower().Contains(term) ||
+                x.EnglishName.ToLower().Contains(term) ||
+                (x.Customer != null && x.Customer.ArabicName.ToLower().Contains(term))
+            );
+        }
+
+        return query;
     }
 
     public override async Task DeleteAsync(int id)
@@ -106,9 +141,25 @@ public class CustomerUnitPackageAppService :
     {
         return await _repository.AnyAsync(x => x.CustomerId != CustomerId
         && x.DectivationDate >= dto.Package.ActivationDate
+        && x.ActivationDate <= dto.Package.DectivationDate
         && x.UnitCode == unitCode
         && x.EnglishName != PackageStaticValues.EnglishName
         && x.Status != Status.Deleted);
+    }
+
+    public async Task<CustomerUnitPackageDto> GetConflictingRentalPackageAsync(Guid customerId, UnitPackageDto dto, string unitCode)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var package = await _repository.FirstOrDefaultAsync(x => x.CustomerId != customerId
+            && x.DectivationDate >= dto.Package.ActivationDate
+            && x.ActivationDate <= dto.Package.DectivationDate
+            && x.UnitCode == unitCode
+            && x.EnglishName != PackageStaticValues.EnglishName
+            && x.Status != Status.Deleted);
+
+            return ObjectMapper.Map<CustomerUnitPackage, CustomerUnitPackageDto>(package!);
+        }
     }
 
     public async Task<bool> IfCustomerHasMultiplePackageAsync(string UnitCode, UnitPackageDto dto)

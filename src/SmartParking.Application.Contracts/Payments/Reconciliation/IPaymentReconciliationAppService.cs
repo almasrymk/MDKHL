@@ -1,3 +1,4 @@
+using SmartParking.Results;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ public interface IPaymentReconciliationAppService : IApplicationService
     /// restoring the entry transaction for re-checkout, and deleting the payment record.
     /// Idempotent: safe to invoke multiple times even if payment or invoice is already deleted.
     /// </summary>
-    Task ProcessNonSuccessPaymentAsync(Guid paymentId, int? invoiceId = null);
+    Task<Result> ProcessNonSuccessPaymentAsync(Guid paymentId, int? invoiceId = null);
 
     /// <summary>
     /// Background job execution method to find all stale pending payments older than configured timeout

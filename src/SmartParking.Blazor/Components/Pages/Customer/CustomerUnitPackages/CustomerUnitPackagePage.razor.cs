@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SmartParking.Blazor.Components.DataGrid;
 using SmartParking.Customers;
 using SmartParking.CustomerUnitPackages;
+using SmartParking.Enums;
 using SmartParking.UnitVehiclePackages;
 using System.Globalization;
 using Volo.Abp.Application.Dtos;
@@ -32,30 +33,20 @@ public partial class CustomerUnitPackagePage
 
     private async Task HandleFilter(PageChangeEventArgs pageInfo)
     {
-        var input = new PagedAndSortedAndFilteredResultRequestDto
-        {
-            MaxResultCount = pageInfo.RowsPerPage,
-            SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
-            Sorting = pageInfo.SortColumn,
-            SearchingTerm = termSearch,
-            filters = pageInfo.Filters
-        };
-
-        var unitsDto = await CustomerUnitPackageAppService.GetListAsync(input);
-        TotalItem = (int)unitsDto.TotalCount;
-        await CreateTable(unitsDto);
+        await FetchTableData(pageInfo);
     }
 
 
 
     private async Task FetchTableData(PageChangeEventArgs pageInfo)
     {
-        var input = new PagedAndSortedAndSearchResultRequestDto
+        var input = new PagedAndSortedAndFilteredResultRequestDto
         {
             MaxResultCount = pageInfo.RowsPerPage,
             SkipCount = (pageInfo.PageNumber - 1) * pageInfo.RowsPerPage,
             Sorting = pageInfo.SortColumn,
-            SearchingTerm = pageInfo.SearchTerm
+            SearchingTerm = pageInfo.SearchTerm,
+            filters = pageInfo.Filters
         };
 
         var unitsDto = await CustomerUnitPackageAppService.GetListAsync(input);
@@ -78,7 +69,7 @@ public partial class CustomerUnitPackagePage
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["UnitCode"], Name = "UnitCode", IsFilterable = true, PropertyName = "UnitCode", IsSortable = true, TypeFilter = TypeFilter.Text });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["ActivationDate"], Name = "ActivationDate", IsFilterable = true, PropertyName = "ActivationDate", IsSortable = true, TypeFilter = TypeFilter.Date });
         tableData.Columns.Add(new ColumnDef() { DisplayName = L["DeactivationDate"], Name = "DeactivationDate", IsFilterable = true, PropertyName = "DectivationDate", IsSortable = true, TypeFilter = TypeFilter.Date });
-        tableData.Columns.Add(new ColumnDef() { DisplayName = L["CustomerUnitPackageType"], Name = "CustomerUnitPackageType", IsFilterable = true, PropertyName = "UnitPackageType", IsSortable = true, TypeFilter = TypeFilter.Text });
+        tableData.Columns.Add(new ColumnDef() { DisplayName = L["CustomerUnitPackageType"], Name = "CustomerUnitPackageType", IsFilterable = true, PropertyName = "UnitPackageType", IsSortable = true, TypeFilter = TypeFilter.Enum, TypeOfColumn = typeof(CustomerUnitPackageType) });
 
 
         foreach (var item in packages.Items)

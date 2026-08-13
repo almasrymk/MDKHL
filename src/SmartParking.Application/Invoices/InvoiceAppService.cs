@@ -273,7 +273,7 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, int, PagedA
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
-                return await GetAll(input, null);
+                return await GetAll(input, tenantId);
             }
         }
         return await GetAll(input, tenantId);

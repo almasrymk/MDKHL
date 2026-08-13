@@ -542,30 +542,37 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
     {
         using (dataFilter.Disable<IMultiTenant>())
         {
-            var customers = await _customerRepo.GetQueryableAsync();
+            var customerQuery = await _customerRepo.GetQueryableAsync();
+            var customer = await customerQuery.Include(x => x.IdentityUser)
+                                              .FirstOrDefaultAsync(_ => _.IdentityUserId == CurrentUser.Id);
+            if (customer == null)
+            {
+                return new List<PaymentPackageDto>();
+            }
+
+            string customerArabicName = customer.ArabicName ?? string.Empty;
+            string customerEnglishName = customer.IdentityUser?.Name ?? CurrentUser.Name ?? CurrentUser.UserName ?? string.Empty;
+
             var payments = await _repository.GetQueryableAsync();
-            payments = payments.Where(payms => payms.PaymentStatus == PaymentStatus.Success);
             var customerPackages = await _customerPackageRepository.GetQueryableAsync();
             var organizations = await _organizationRepository.GetQueryableAsync();
             var vehicles = await _vehicleRepository.GetQueryableAsync();
-            var customer = await _customerRepo.FirstOrDefaultAsync(_ => _.IdentityUserId == CurrentUser.Id);
             
             var result = 
                 await (
                     from p in payments
-                    join c in customers
-                    on p.CustomerId equals c.Id
-                    where c.Id == customer.Id
 
                     join o in organizations
                     on p.OrganizationId equals o.Id
-                    where o.Id == organizationId
 
                     join cp in customerPackages
                     on p.CustomerPackageId equals cp.Id
 
-                    join v in vehicles
-                    on cp.ArPlateNumber equals v.ArPlateNumber
+                    let v = vehicles.Where(x => x.ArPlateNumber == cp.ArPlateNumber && x.CustomerId == customer.Id).FirstOrDefault()
+
+                    where p.PaymentStatus == PaymentStatus.Success 
+                       && (p.CustomerId == customer.Id || cp.CustomerId == customer.Id)
+                       && (organizationId == 0 || o.Id == organizationId)
 
                     select new PaymentPackageDto
                     {
@@ -582,8 +589,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                         OrganizationEnglishName = o.EnglishName,
                         OrganizationAddress = o.Address,
 
-                        CustomerArabicName = c.ArabicName,
-                        CustomerEnglishName = c.IdentityUser.Name,
+                        CustomerArabicName = customerArabicName,
+                        CustomerEnglishName = customerEnglishName,
 
                         EnPlateNumber = cp.EnPlateNumber,
                         ArPlateNumber = cp.ArPlateNumber,
@@ -607,8 +614,8 @@ public class PaymentAppService : CrudAppService<Payment, PaymentDto, Guid, Paged
                         Discount = cp.Discount,
                         Vat = cp.Vat,
 
-                        LicenseTypeImage = v != null ? v.LicenceType.Image : null,
-                        VehicleModelImage = v != null ? v.VehicleModel.Image : null
+                        LicenseTypeImage = v != null && v.LicenceType != null ? v.LicenceType.Image : null,
+                        VehicleModelImage = v != null && v.VehicleModel != null ? v.VehicleModel.Image : null
                     }
 
                 ).ToListAsync();
