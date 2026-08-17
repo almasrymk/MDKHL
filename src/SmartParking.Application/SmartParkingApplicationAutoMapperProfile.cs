@@ -351,6 +351,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         // unLinked transaction 
         CreateMap<UnLinkedTransaction, UnLinkedTransactionDto>();
+        CreateMap<UnLinkedTransaction, SmartParking.Mobile.Keepers.Dtos.UnlinkedTransactionViewDto>();
         CreateMap<CreateUpdateGarageTransactionEndPointDto, UnLinkedTransaction>();
 
 

@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using OpenIddict.Server;
+using SmartParking.CustomerPackages.CustomerPackageTransactions;
+using SmartParking.Entities.Cameras.Watchers;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
@@ -10,7 +13,10 @@ using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Invoices;
+using SmartParking.Mobile.Keepers.Dtos;
 using SmartParking.Mobile.Vehicles;
+using SmartParking.OpeningGate;
+using SmartParking.Organizations;
 using SmartParking.Payments;
 using SmartParking.Permissions.CheckoutPermissions;
 using SmartParking.QRCode;
@@ -31,6 +37,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.PermissionManagement;
 using Volo.Abp.TenantManagement;
+using Volo.Abp.Uow;
 using Volo.Abp.Users;
 
 namespace SmartParking.Mobile.Keepers;
@@ -56,6 +63,12 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
     private readonly IQRCodeAppService _qrCodeAppService;
     private readonly IAuthorizationService _authorizationService;
     private readonly IShiftZoneActionAppService _shiftZoneActionAppService;
+    private readonly IRepository<UnLinkedTransaction, int> _unlinkedTransactionRepository;
+    private readonly IRepository<Camera, int> _cameraRepository;
+    private readonly IGarageTransactionsAppService _garageTransactionsAppService;
+    private readonly ICustomerPackageHandlerAppService _customerPackageHandlerAppService;
+    private readonly IOpenGateFactoryService _openGateFactoryAppService;
+    private readonly IOrganizationsAppService _organizationAppService;
     private string _notFound = "Not found";
 
 
@@ -76,7 +89,13 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
          IPaymentWebAppService paymentWebAppService,
          IShiftZoneActionAppService shiftZoneActionAppService,
          IQRCodeAppService qrCodeAppService,
-         IAuthorizationService authorizationService)
+         IAuthorizationService authorizationService,
+         IRepository<UnLinkedTransaction, int> unlinkedTransactionRepository,
+         IRepository<Camera, int> cameraRepository,
+         IGarageTransactionsAppService garageTransactionsAppService,
+         ICustomerPackageHandlerAppService customerPackageHandlerAppService,
+         IOpenGateFactoryService openGateFactoryAppService,
+         IOrganizationsAppService organizationAppService)
     {
         _invoiceRepository = invoiceRepository;
         _signInManager = signInManager;
@@ -95,6 +114,12 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
         _qrCodeAppService = qrCodeAppService;
         _authorizationService = authorizationService;
         _shiftZoneActionAppService = shiftZoneActionAppService;
+        _unlinkedTransactionRepository = unlinkedTransactionRepository;
+        _cameraRepository = cameraRepository;
+        _garageTransactionsAppService = garageTransactionsAppService;
+        _customerPackageHandlerAppService = customerPackageHandlerAppService;
+        _openGateFactoryAppService = openGateFactoryAppService;
+        _organizationAppService = organizationAppService;
     }
 
     #region Public Methods
@@ -514,6 +539,136 @@ public class KeeperAppService : ApplicationService, IKeeperAppService
             }
         }
         return null;
+    }
+
+    /// <inheritdoc/>
+    public async Task<Result<UnlinkedTransactionViewDto>> GetLatestUnlinkedTransactionByWatcherCodeAsync(int organizationId, string watcherCode)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var watcher = await _cameraRepository.FirstOrDefaultAsync(c => c.DeviceId == watcherCode && c.OrganizationId == organizationId);
+            if (watcher == null)
+            {
+                return Result<UnlinkedTransactionViewDto>.Success(new UnlinkedTransactionViewDto { NoTransaction = true });
+            }
+
+            var query = await _unlinkedTransactionRepository.GetQueryableAsync();
+            var unlinked = await query
+                .Where(u => u.DeviceId == watcherCode && u.IsDeleted == false)
+                .OrderByDescending(u => u.CreationTime)
+                .FirstOrDefaultAsync();
+
+            if (unlinked == null)
+            {
+                return Result<UnlinkedTransactionViewDto>.Success(new UnlinkedTransactionViewDto { NoTransaction = true });
+            }
+
+            var dto = ObjectMapper.Map<UnLinkedTransaction, UnlinkedTransactionViewDto>(unlinked);
+            dto.OrganizationId = watcher.OrganizationId;
+            dto.GarageId = watcher.GarageId;
+            dto.NoTransaction = false;
+
+            return Result<UnlinkedTransactionViewDto>.Success(dto);
+        }
+    }
+
+    /// <inheritdoc/>
+    [UnitOfWork]
+    public async Task<Result<GarageTransactionDto>> SendUnlinkedTransactionAsEntryAsync(SendUnlinkedAsEntryDto input)
+    {
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var unlinked = await _unlinkedTransactionRepository.FirstOrDefaultAsync(u => u.Id == input.UnlinkedTransactionId && u.IsDeleted == false);
+            if (unlinked == null)
+            {
+                return Result<GarageTransactionDto>.Invalid(new ValidationError
+                {
+                    ErrorMessage = "Transaction not found or has already been processed."
+                });
+            }
+
+            var camera = await _cameraRepository.FirstOrDefaultAsync(c => c.DeviceId == input.WatcherCode && c.OrganizationId == input.OrganizationId);
+            if (camera == null)
+            {
+                return Result<GarageTransactionDto>.Invalid(new ValidationError
+                {
+                    ErrorMessage = "Camera device not found under current organization."
+                });
+            }
+
+            string plate = (input.CorrectedPlateNumber ?? unlinked.PlateNumber ?? "").Trim().Replace(" ", "");
+            if (string.IsNullOrEmpty(plate))
+            {
+                return Result<GarageTransactionDto>.Invalid(new ValidationError
+                {
+                    ErrorMessage = "Plate number is required."
+                });
+            }
+
+            // Application-level check for duplicate active entry
+            var existingActive = await _garageTransactionRepository.FirstOrDefaultAsync(
+                gt => gt.PlateNumber == plate && gt.OrganizationID == camera.OrganizationId && gt.IsIn == true && gt.IsMapped == false);
+            if (existingActive != null)
+            {
+                return Result<GarageTransactionDto>.Invalid(new ValidationError
+                {
+                    ErrorMessage = $"An open entry transaction already exists for plate {plate}."
+                });
+            }
+
+            var packageDto = await _customerPackageHandlerAppService.GetOneActiveCustomerPackage(new GarageTransactionDto
+            {
+                OrganizationID = camera.OrganizationId,
+                PlateNumber = plate,
+                AccurateTime = unlinked.AccurateTime ?? unlinked.SnapTime ?? DateTime.Now
+            });
+            var category = packageDto?.CustomerCategory ?? CustomerCategoryStatus.Customer;
+
+            var entryDto = new CreateUpdateGarageTransactionDto
+            {
+                PlateNumber = plate,
+                CameraId = camera.Id,
+                OrganizationID = camera.OrganizationId,
+                GarageId = camera.GarageId,
+                TenantId = camera.TenantId,
+                CameraType = WatcherType.Entry,
+                IsIn = true,
+                IsMapped = false,
+                CanCheckout = true,
+                IsPending = false,
+                VehiclePicture = unlinked.VehiclePicture,
+                AccurateTime = unlinked.AccurateTime ?? unlinked.SnapTime ?? DateTime.Now,
+                SnapTime = unlinked.SnapTime ?? unlinked.CreationTime,
+                CustomerCategory = category,
+                LaneNO = input.WatcherCode
+            };
+
+            var created = await _garageTransactionsAppService.CreateAsync(entryDto);
+
+            await _unlinkedTransactionRepository.DeleteAsync(unlinked.Id);
+
+            if (input.TriggerGateOpen)
+            {
+                try
+                {
+                    var org = await _organizationAppService.GetOrganizationForCurrentTenatAsync();
+                    var openGateService = await _openGateFactoryAppService.GetOpeningGateService(org);
+                    await openGateService.OpenGateAsync(new OpenGateDto
+                    {
+                        WatcherCode = input.WatcherCode,
+                        OrganizationId = input.OrganizationId
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Failed to actuate gate barrier during unlinked recovery.");
+                }
+            }
+
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            return Result<GarageTransactionDto>.Success(created);
+        }
     }
     #endregion
 }

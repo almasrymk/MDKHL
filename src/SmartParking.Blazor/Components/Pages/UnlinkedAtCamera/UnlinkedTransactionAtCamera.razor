@@ -1,0 +1,186 @@
+@using Microsoft.Extensions.Localization
+@using SmartParking.Blazor.Components.Pages.LastInvoiceAtCamera
+@using SmartParking.Blazor.Components.Shared
+@using SmartParking.GarageTransactionEndPoints
+@using SmartParking.Localization
+@using System.Globalization
+@using SmartParking.Mobile.Keepers
+@using SmartParking.Mobile.Keepers.Dtos
+@using SmartParking.OpeningGate
+@using SmartParking.Organizations
+@using SmartParking.Permissions.CheckoutPermissions
+@using SmartParking.Permissions.UnLinkedTransactionPermissions
+@using SmartParking.Shifts
+@page "/unlinked-at-camera"
+@inject IKeeperAppService KeeperAppService
+@inject IKeeperTransactionsAppService KeeperTransactionsAppService
+@inject IStringLocalizer<SmartParkingResource> L
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject NavigationManager Navigation
+@inject IAuthorizationService AuthorizationService
+@inject IOrganizationsAppService OrganizationAppService
+@inject IShiftZoneActionAppService ShiftZoneActionAppService
+
+<PageTitle>@L["UnLinkedTransaction"]</PageTitle>
+
+<MudGrid>
+    <!-- Header: Title, Refresh, and Device Selector -->
+    <MudItem sm="12" xs="12" Class="d-flex flex-column flex-sm-row align-center justify-content-between mb-3">
+        <MudItem sm="6" xs="12" Class="d-flex align-center">
+            <MudText Typo="Typo.h5" Class="fw-bold mb-0">@L["UnLinkedTransaction"]</MudText>
+            <MudButton Variant="Variant.Filled"
+                       Class="mx-3"
+                       Color="MudBlazor.Color.Inherit"
+                       OnClick="RefreshAsync"
+                       Disabled="@isLoading">
+                <MudIcon Icon="@Icons.Material.Filled.Refresh" />
+            </MudButton>
+        </MudItem>
+
+        <MudItem sm="6" xs="12" Class="d-flex align-center justify-content-end gap-2">
+            <MudSelect T="string"
+                       Label="@L["DeviceId"]"
+                       Dense="true"
+                       Class="flex-grow-1"
+                       Style="max-width: 320px;"
+                       OnOpen="(async () => await OpenFilteredWatchersAsync())"
+                       @bind-Value="SelectedDeviceId">
+                @foreach (var watcher in _filteredWatchersByShiftZone)
+                {
+                    <MudSelectItem T="string" Value="@watcher.WatcherCode">
+                        @watcher.WatcherName
+                    </MudSelectItem>
+                }
+            </MudSelect>
+
+            @if (AuthorizationService.IsGrantedAnyAsync(CheckoutPermissions.OpenGateIcon).Result)
+            {
+                <MudTooltip Text="@L["OpenGate"]">
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Inherit" OnClick="OpenGateAsync" Disabled="@(string.IsNullOrEmpty(SelectedDeviceId))">
+                        <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="22.000000pt" height="20.000000pt" viewBox="0 0 244.000000 235.000000" preserveAspectRatio="xMidYMid meet">
+                            <g transform="translate(0.000000,235.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+                                <path d="M586 2289 c-18 -14 -26 -30 -26 -52 0 -28 63 -95 635 -667 l635 -635 0 -378 0 -377 240 0 240 0 0 395 c0 388 0 395 -20 395 -15 0 -20 7 -20 25 l0 25 -163 0 -163 0 -630 631 c-346 347 -641 637 -656 645 -35 18 -40 18 -72 -7z m1664 -1439 l0 -60 -180 0 -180 0 0 60 0 60 180 0 180 0 0 -60z" />
+                                <path d="M480 1119 c-57 -23 -91 -63 -171 -203 l-82 -144 -27 20 c-37 27 -94 16 -137 -28 -38 -37 -41 -56 -13 -84 16 -16 33 -20 82 -20 l63 0 -3 -276 c-4 -334 -12 -314 120 -314 122 0 128 4 128 90 l0 70 435 0 435 0 0 -70 c0 -86 6 -90 124 -90 135 0 129 -17 124 316 l-3 274 52 0 c78 0 103 13 103 53 0 74 -134 127 -176 70 -8 -12 -26 12 -84 114 -100 174 -106 182 -164 209 -51 24 -52 24 -416 23 -215 0 -375 -4 -390 -10z m765 -78 c31 -19 155 -222 155 -254 0 -16 -37 -17 -524 -17 -329 0 -527 4 -531 10 -10 17 126 241 160 261 28 17 57 19 370 19 314 0 342 -2 370 -19z m-783 -482 c45 -10 61 -21 111 -73 33 -33 54 -62 48 -64 -7 -2 -50 1 -96 8 -94 13 -196 57 -255 109 l-35 30 87 1 c48 0 111 -5 140 -11z m1018 -20 c-72 -63 -171 -101 -300 -115 l-64 -7 33 42 c72 90 117 109 271 110 l95 0 -35 -30z m-390 -214 l0 -45 -215 0 -215 0 0 45 0 45 215 0 215 0 0 -45z" />
+                                <path d="M1740 100 l0 -30 330 0 330 0 0 30 0 30 -330 0 -330 0 0 -30z" />
+                            </g>
+                        </svg>
+                    </MudButton>
+                </MudTooltip>
+            }
+        </MudItem>
+    </MudItem>
+
+    @if (isLoading)
+    {
+        <MudItem xs="12" Class="d-flex justify-center my-8">
+            <MudProgressCircular Color="MudBlazor.Color.Primary" Indeterminate="true" Size="MudBlazor.Size.Large" />
+        </MudItem>
+    }
+    else if (_unlinkedTransaction != null && !_unlinkedTransaction.NoTransaction)
+    {
+        <!-- Left Column: Vehicle Image and Metadata Details -->
+        <MudItem md="7" xs="12">
+            <MudCard Elevation="2" Class="pa-4 mb-4">
+                <div class="d-flex justify-center mb-4">
+                    <CarImageDetails Date="@(_unlinkedTransaction.AccurateTime ?? _unlinkedTransaction.SnapTime ?? DateTime.Now)"
+                                     Image="@_unlinkedTransaction.VehiclePicture"
+                                     Title="@L["CapturedVehicleImage"]" />
+                </div>
+
+                <div class="px-2">
+                    <LastInvoiceOnGateDetails Key="@L["DeviceId"]" Value="@_unlinkedTransaction.DeviceId" />
+                    <LastInvoiceOnGateDetails Key="@L["CaptureTime"]" Value="@((_unlinkedTransaction.AccurateTime ?? _unlinkedTransaction.SnapTime ?? DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"))" />
+                    <LastInvoiceOnGateDetails Key="@L["OrganizationName"]" Value="@(CultureInfo.CurrentCulture.Name == "en" ? _unlinkedTransaction.OrganizationEnglishName : _unlinkedTransaction.OrganizationArabicName)" />
+                    <LastInvoiceOnGateDetails Key="@L["GarageName"]" Value="@(CultureInfo.CurrentCulture.Name == "en" ? _unlinkedTransaction.GarageEnglishName : _unlinkedTransaction.GarageArabicName)" />
+                    <LastInvoiceOnGateDetails Key="@L["Direction"]" Value="@L["Entry"]" />
+                </div>
+            </MudCard>
+        </MudItem>
+
+        <!-- Right Column: Recovery Actions and Plate Number Correction -->
+        <MudItem md="5" xs="12">
+            <MudCard Elevation="2" Class="pa-4">
+                <MudCardHeader Class="px-0 pt-0">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6" Class="fw-bold">@L["AccessRequestAction"]</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudChip T="string" Color="MudBlazor.Color.Warning" Size="MudBlazor.Size.Small" Variant="Variant.Filled">
+                            @L["PendingApproval"]
+                        </MudChip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+
+                <MudCardContent Class="px-0">
+                    <MudText Typo="Typo.body2" Class="text-muted mb-4">
+                        @L["UnlinkedRecoveryDescription"]
+                    </MudText>
+
+                    <MudTextField @bind-Value="editablePlateNumber"
+                                  Label="@L["PlateNumber"]"
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  RequiredError="@L["PlateNumberRequired"]"
+                                  Class="mb-4"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.DirectionsCar" />
+
+                    <MudCheckBox @bind-Value="triggerGateOpen"
+                                 Label="@L["TriggerGateOpenOnAccept"]"
+                                 Color="MudBlazor.Color.Primary"
+                                 Class="mb-4" />
+                </MudCardContent>
+
+                <MudCardActions Class="px-0 d-flex flex-column gap-2">
+                    <MudButton Variant="Variant.Filled"
+                               Color="MudBlazor.Color.Primary"
+                               Size="MudBlazor.Size.Large"
+                               FullWidth="true"
+                               StartIcon="@Icons.Material.Filled.CheckCircle"
+                               OnClick="SendAsEntryAsync"
+                               Disabled="@(isSubmitting || string.IsNullOrWhiteSpace(editablePlateNumber))">
+                        @if (isSubmitting)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="MudBlazor.Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">@L["Processing"]</MudText>
+                        }
+                        else
+                        {
+                            <MudText>@L["SendAsEntryTransaction"]</MudText>
+                        }
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    }
+    else
+    {
+        <!-- Empty State -->
+        <MudItem xs="12">
+            <MudCard Elevation="1" Class="pa-8 d-flex flex-column align-center justify-center text-center">
+                <MudIcon Icon="@Icons.Material.Outlined.CheckCircleOutline" Color="MudBlazor.Color.Success" Style="font-size: 4rem;" Class="mb-3" />
+                <MudText Typo="Typo.h6" Class="fw-bold mb-1">
+                    @if (string.IsNullOrEmpty(SelectedDeviceId))
+                    {
+                        @L["PleaseSelectDevice"]
+                    }
+                    else
+                    {
+                        @L["NoPendingUnlinkedTransactions"]
+                    }
+                </MudText>
+                <MudText Typo="Typo.body2" Class="text-muted">
+                    @if (string.IsNullOrEmpty(SelectedDeviceId))
+                    {
+                        @L["SelectWatcherToViewDetections"]
+                    }
+                    else
+                    {
+                        @L["AllDetectionsProcessedForDevice"]
+                    }
+                </MudText>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>

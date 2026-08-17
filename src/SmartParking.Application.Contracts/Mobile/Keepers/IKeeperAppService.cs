@@ -1,4 +1,4 @@
-﻿using SmartParking.GarageTransactions;
+using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Invoices;
 using SmartParking.Results;
@@ -104,4 +104,19 @@ public interface IKeeperAppService
     /// A task representing the asynchronous operation, containing a <see cref="Result{Boolean}"/> indicating whether the current user has an active shift zone action.
     /// </returns>
     Task<Result<bool>> HasActiveShiftZoneActionAsync();
+
+    /// <summary>
+    /// Retrieves the latest unlinked transaction for a selected watcher/camera device.
+    /// </summary>
+    /// <param name="organizationId">The organization ID.</param>
+    /// <param name="watcherCode">The watcher/device code.</param>
+    /// <returns>A Result containing the UnlinkedTransactionViewDto.</returns>
+    Task<Result<SmartParking.Mobile.Keepers.Dtos.UnlinkedTransactionViewDto>> GetLatestUnlinkedTransactionByWatcherCodeAsync(int organizationId, string watcherCode);
+
+    /// <summary>
+    /// Converts a pending unlinked transaction into an active ENTRY GarageTransaction.
+    /// </summary>
+    /// <param name="input">The recovery input data.</param>
+    /// <returns>A Result containing the created GarageTransactionDto.</returns>
+    Task<Result<GarageTransactionDto>> SendUnlinkedTransactionAsEntryAsync(SmartParking.Mobile.Keepers.Dtos.SendUnlinkedAsEntryDto input);
 }

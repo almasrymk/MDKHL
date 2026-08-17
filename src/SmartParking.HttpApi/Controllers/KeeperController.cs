@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartParking.Authentication;
 using SmartParking.GarageTransactionEndPoints;
@@ -252,6 +252,20 @@ public class KeeperController : AbpController
     public async Task<Result<string>> GetPaymentQrCodeByInvoiceId([FromQuery]int InvoiceId)
     {
         return await _keeperAppService.GetPaymentQrCodeByInvoiceId(InvoiceId);
+    }
+
+    [HttpGet("latest-unlinked")]
+    [Authorize]
+    public async Task<Result<SmartParking.Mobile.Keepers.Dtos.UnlinkedTransactionViewDto>> GetLatestUnlinkedTransaction([FromQuery] int organizationId, [FromQuery] string watcherCode)
+    {
+        return await _keeperAppService.GetLatestUnlinkedTransactionByWatcherCodeAsync(organizationId, watcherCode);
+    }
+
+    [HttpPost("send-unlinked-as-entry")]
+    [Authorize]
+    public async Task<Result<GarageTransactionDto>> SendUnlinkedTransactionAsEntry([FromBody] SmartParking.Mobile.Keepers.Dtos.SendUnlinkedAsEntryDto input)
+    {
+        return await _keeperAppService.SendUnlinkedTransactionAsEntryAsync(input);
     }
 
 }
