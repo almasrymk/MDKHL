@@ -1028,8 +1028,36 @@
     "EnterTicketOrPlateNumber": "ادخل رقم التذكرة أو رقم اللوحة",
     "VehicleImages": "صور المركبة",
     "VehicleInformation": "معلومات المركبة",
-    "RenterSlotsLimitationOverUnitValidation": "عدد اماكن الركن المتاحة للوحدة"
-
+    "RenterSlotsLimitationOverUnitValidation": "عدد اماكن الركن المتاحة للوحدة",
+    "UnlinkedEntry": "مدخلات غير مرتبطة",
+    "UnlinkedEntryAtCamera": "مدخلات غير مرتبطة",
+    "UnlinkedEntryRecovery": "استعادة المدخلات غير المرتبطة",
+    "UnlinkedEntryRecoveryDescription": "مراجعة ومعالجة لقطات المركبات التي تعذر قبول دخولها تلقائياً.",
+    "UnlinkedEntryCreatedSuccessfully": "تم إنشاء حركة الدخول بنجاح",
+    "FailedToAddUnlinkedEntry": "فشل في إنشاء حركة الدخول",
+    "NoPendingUnlinkedEntries": "لا توجد مدخلات غير مرتبطة معلقة",
+    "NoPendingUnlinkedTransactions": "لا توجد مدخلات غير مرتبطة معلقة",
+    "AllDetectionsProcessedForDevice": "تمت معالجة جميع اللقطات لهذا الجهاز.",
+    "AllEntriesProcessedForDevice": "تمت معالجة جميع اللقطات لهذا الجهاز.",
+    "CapturedVehicleImage": "صورة المركبة الملتقطة",
+    "CaptureTime": "وقت الالتقاط",
+    "AccessRequestAction": "إجراء طلب الدخول",
+    "PendingApproval": "بانتظار الموافقة",
+    "TriggerGateOpenOnAccept": "فتح البوابة عند الموافقة",
+    "SendAsEntryTransaction": "إرسال كحركة دخول",
+    "PlateNumberRequired": "رقم اللوحة مطلوب",
+    "ConfirmRecovery": "تأكيد الدخول",
+    "AreYouSureYouWantToSendAsEntry": "هل أنت متأكد من رغبتك في اعتماد حركة الدخول لهذه المركبة؟",
+    "ViewOnlyPermissionNotice": "لديك صلاحية العرض فقط. يرجى التواصل مع المسؤول لمنحك صلاحية الاعتماد.",
+    "GateOpenedSuccessfully": "تم فتح البوابة بنجاح",
+    "FailedToOpenGate": "فشل في فتح البوابة",
+    "SelectWatcherToViewDetections": "اختر كاميرا لعرض طلبات الدخول المعلقة.",
+    "PleaseSelectDevice": "يرجى اختيار جهاز",
+    "Permission:UnlinkedEntry": "موديول مدخلات غير مرتبطة",
+    "Permission:SendAsEntry": "إرسال كحركة دخول",
+    "TicketNumberRequired": "رقم التذكرة مطلوب",
+    "ExitWatcherNotAllowed": "لا يمكن استعادة حركات كاميرا الخروج كحركة دخول.",
+    "NoTransactionSelected": "لم يتم تحديد حركة"
 
   }
 }

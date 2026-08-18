@@ -150,7 +150,8 @@ public partial class OrganizationAdd
             UseShifts = _organizationSettingsDto.UseShifts,
             OwnerSlots = _organizationSettingsDto.OwnerSlots,
             RentalSlots = _organizationSettingsDto.RentalSlots,
-            OwnerVehicles = _organizationSettingsDto.OwnerVehicles
+            OwnerVehicles = _organizationSettingsDto.OwnerVehicles,
+            UnlinkedEntry = _organizationSettingsDto.UnlinkedEntry
         };
         try
         {

@@ -71,8 +71,13 @@
                             <MudSwitch Label=@L["VhecileAccess"] @bind-Value="organizationSettings.VehcileAccess" ReadOnly Color="MudBlazor.Color.Primary" />
                         </MudItem>
 
-                        <MudItem sm="6">
+                        <MudItem sm="5">
                             <MudSwitch Label=@L["Shift"] @bind-Value="organizationSettings.UseShifts" ReadOnly
+                                       Color="MudBlazor.Color.Primary" />
+                        </MudItem>
+
+                        <MudItem sm="5">
+                            <MudSwitch Label=@L["UnlinkedEntry"] @bind-Value="organizationSettings.UnlinkedEntry" ReadOnly
                                        Color="MudBlazor.Color.Primary" />
                         </MudItem>
 

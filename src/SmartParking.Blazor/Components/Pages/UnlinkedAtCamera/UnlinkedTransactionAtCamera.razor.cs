@@ -6,7 +6,7 @@ using SmartParking.Mobile.Keepers.Dtos;
 using SmartParking.OpeningGate;
 using SmartParking.Organizations;
 using SmartParking.Permissions.CheckoutPermissions;
-using SmartParking.Permissions.UnLinkedTransactionPermissions;
+using SmartParking.Permissions.UnlinkedEntryPermissions;
 using SmartParking.Shifts;
 using System;
 using System.Collections.Generic;
@@ -22,6 +22,7 @@ public partial class UnlinkedTransactionAtCamera
     private UnlinkedTransactionViewDto? _unlinkedTransaction;
 
     private string editablePlateNumber = string.Empty;
+    private string editableTicketNumber = string.Empty;
     private bool triggerGateOpen = true;
     private bool isLoading = false;
     private bool isSubmitting = false;
@@ -42,14 +43,18 @@ public partial class UnlinkedTransactionAtCamera
     {
         try
         {
-            if (!await AuthorizationService.IsGrantedAsync(UnLinkedTransactionPermission.Default) &&
-                !await AuthorizationService.IsGrantedAsync(CheckoutPermissions.Default))
+            _organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+            if (_organization?.OrganizationSettings?.UnlinkedEntry != true)
             {
                 Navigation.NavigateTo("/Account/AccessDenied", true);
                 return;
             }
 
-            _organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+            if (!await AuthorizationService.IsGrantedAsync(UnlinkedEntryPermissions.Default))
+            {
+                Navigation.NavigateTo("/Account/AccessDenied", true);
+                return;
+            }
         }
         catch (Exception ex)
         {
@@ -78,6 +83,7 @@ public partial class UnlinkedTransactionAtCamera
         {
             _unlinkedTransaction = null;
             editablePlateNumber = string.Empty;
+            editableTicketNumber = string.Empty;
             StateHasChanged();
             return;
         }
@@ -89,21 +95,33 @@ public partial class UnlinkedTransactionAtCamera
     {
         if (string.IsNullOrEmpty(SelectedDeviceId)) return;
 
+        if (!await AuthorizationService.IsGrantedAsync(UnlinkedEntryPermissions.View))
+        {
+            SnackBar.ShowSnackbar(Snackbar, L["AccessDenied"], Severity.Warning);
+            return;
+        }
+
         isLoading = true;
         StateHasChanged();
 
         try
         {
-            var result = await KeeperAppService.GetLatestUnlinkedTransactionByWatcherCodeAsync(_organization.Id, SelectedDeviceId);
+            var result = await KeeperTransactionAppService.GetLatestUnlinkedTransactionByWatcherCodeAsync(_organization.Id, SelectedDeviceId);
             if (result != null && result.IsSuccess && result.Value != null && !result.Value.NoTransaction)
             {
                 _unlinkedTransaction = result.Value;
                 editablePlateNumber = _unlinkedTransaction.PlateNumber ?? string.Empty;
+                editableTicketNumber = _unlinkedTransaction.TicketNumber ?? string.Empty;
             }
             else
             {
                 _unlinkedTransaction = null;
                 editablePlateNumber = string.Empty;
+                editableTicketNumber = string.Empty;
+                if (result != null && !result.IsSuccess && result.ValidationErrors != null && result.ValidationErrors.Count > 0)
+                {
+                    SnackBar.ShowSnackbar(Snackbar, result.ValidationErrors[0].ErrorMessage, Severity.Warning);
+                }
             }
         }
         catch (Exception ex)
@@ -111,6 +129,7 @@ public partial class UnlinkedTransactionAtCamera
             SnackBar.ShowSnackbar(Snackbar, ex.Message, Severity.Error);
             _unlinkedTransaction = null;
             editablePlateNumber = string.Empty;
+            editableTicketNumber = string.Empty;
         }
         finally
         {
@@ -130,7 +149,11 @@ public partial class UnlinkedTransactionAtCamera
 
     private async Task OpenGateAsync()
     {
-        if (string.IsNullOrEmpty(SelectedDeviceId)) return;
+        if (string.IsNullOrEmpty(SelectedDeviceId) || _unlinkedTransaction == null || _unlinkedTransaction.NoTransaction)
+        {
+            SnackBar.ShowSnackbar(Snackbar, L["NoTransactionSelected"], Severity.Warning);
+            return;
+        }
 
         try
         {
@@ -157,13 +180,30 @@ public partial class UnlinkedTransactionAtCamera
 
     private async Task SendAsEntryAsync()
     {
-        if (_unlinkedTransaction == null || string.IsNullOrEmpty(SelectedDeviceId)) return;
-
-        string plate = (editablePlateNumber ?? string.Empty).Trim().Replace(" ", "");
-        if (string.IsNullOrEmpty(plate))
+        if (_unlinkedTransaction == null || _unlinkedTransaction.NoTransaction || string.IsNullOrEmpty(SelectedDeviceId))
         {
-            SnackBar.ShowSnackbar(Snackbar, L["PlateNumberRequired"], Severity.Warning);
+            SnackBar.ShowSnackbar(Snackbar, L["NoTransactionSelected"], Severity.Warning);
             return;
+        }
+
+        string ticket = (editableTicketNumber ?? string.Empty).Trim();
+        string plate = (editablePlateNumber ?? string.Empty).Trim().Replace(" ", "");
+
+        if (_organization.DispenserTransaction)
+        {
+            if (string.IsNullOrEmpty(ticket))
+            {
+                SnackBar.ShowSnackbar(Snackbar, L["TicketNumberRequired"], Severity.Warning);
+                return;
+            }
+        }
+        else
+        {
+            if (string.IsNullOrEmpty(plate))
+            {
+                SnackBar.ShowSnackbar(Snackbar, L["PlateNumberRequired"], Severity.Warning);
+                return;
+            }
         }
 
         bool? confirm = await DialogService.ShowMessageBox(
@@ -184,22 +224,23 @@ public partial class UnlinkedTransactionAtCamera
                 UnlinkedTransactionId = _unlinkedTransaction.Id,
                 OrganizationId = _organization.Id,
                 WatcherCode = SelectedDeviceId,
-                CorrectedPlateNumber = plate,
+                CorrectedPlateNumber = string.IsNullOrEmpty(plate) ? null : plate,
+                TicketNumber = string.IsNullOrEmpty(ticket) ? null : ticket,
                 TriggerGateOpen = triggerGateOpen
             };
 
-            var result = await KeeperAppService.SendUnlinkedTransactionAsEntryAsync(input);
+            var result = await KeeperTransactionAppService.SendUnlinkedTransactionAsEntryAsync(input);
 
             if (result != null && result.IsSuccess)
             {
-                SnackBar.ShowSnackbar(Snackbar, L["UnLinkedTransactionCreatedSuccessfully"], Severity.Success);
+                SnackBar.ShowSnackbar(Snackbar, L["UnlinkedEntryCreatedSuccessfully"], Severity.Success);
                 await LoadUnlinkedTransactionForSelectedDeviceAsync();
             }
             else
             {
                 string errorMsg = result?.ValidationErrors != null && result.ValidationErrors.Count > 0
                     ? result.ValidationErrors[0].ErrorMessage
-                    : result?.Errors?.FirstOrDefault() ?? L["FailedToAddUnLinkedTransaction"];
+                    : result?.Errors?.FirstOrDefault() ?? L["FailedToAddUnlinkedEntry"];
                 SnackBar.ShowSnackbar(Snackbar, errorMsg, Severity.Error);
             }
         }

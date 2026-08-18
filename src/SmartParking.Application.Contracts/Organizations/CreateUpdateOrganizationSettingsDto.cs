@@ -1,4 +1,4 @@
-﻿namespace SmartParking.Organizations;
+namespace SmartParking.Organizations;
 
 public class CreateUpdateOrganizationSettingsDto
 {
@@ -6,5 +6,6 @@ public class CreateUpdateOrganizationSettingsDto
     public bool UserAccess { get; set; }
     public bool VehcileAccess { get; set; }
     public bool UseShifts { get; set; }
+    public bool UnlinkedEntry { get; set; }
 
 }

@@ -979,8 +979,36 @@
     "CarAlreadyExit": "The car has already exited the garage",
     "EnterTicketOrPlateNumber": "Enter Ticket Number or Plate Number",
     "VehicleImages": "Vehicle Images",
-    "VehicleInformation": "Vehicle Information"
-
+    "VehicleInformation": "Vehicle Information",
+    "UnlinkedEntry": "Unlinked Entry",
+    "UnlinkedEntryAtCamera": "Unlinked Entry",
+    "UnlinkedEntryRecovery": "Unlinked Entry Recovery",
+    "UnlinkedEntryRecoveryDescription": "Review and process incoming vehicle detections that could not be automatically admitted.",
+    "UnlinkedEntryCreatedSuccessfully": "Entry transaction created successfully",
+    "FailedToAddUnlinkedEntry": "Failed to create entry transaction",
+    "NoPendingUnlinkedEntries": "No pending unlinked entries",
+    "NoPendingUnlinkedTransactions": "No pending unlinked entries",
+    "AllDetectionsProcessedForDevice": "All detections have been processed for this device.",
+    "AllEntriesProcessedForDevice": "All detections have been processed for this device.",
+    "CapturedVehicleImage": "Captured Vehicle Image",
+    "CaptureTime": "Capture Time",
+    "AccessRequestAction": "Access Request Action",
+    "PendingApproval": "Pending Approval",
+    "TriggerGateOpenOnAccept": "Open barrier on approval",
+    "SendAsEntryTransaction": "Send as Entry Transaction",
+    "PlateNumberRequired": "Plate number is required",
+    "ConfirmRecovery": "Confirm Recovery",
+    "AreYouSureYouWantToSendAsEntry": "Are you sure you want to approve entry for this vehicle?",
+    "ViewOnlyPermissionNotice": "You have view-only permissions. Contact your administrator to enable entry approval.",
+    "GateOpenedSuccessfully": "Gate barrier opened successfully",
+    "FailedToOpenGate": "Failed to open gate barrier",
+    "SelectWatcherToViewDetections": "Select a watcher device to view pending access requests.",
+    "PleaseSelectDevice": "Please select a device",
+    "Permission:UnlinkedEntry": "Unlinked Entry Management",
+    "Permission:SendAsEntry": "Send As Entry",
+    "TicketNumberRequired": "Ticket number is required",
+    "ExitWatcherNotAllowed": "Exit watcher transactions cannot be recovered as entry.",
+    "NoTransactionSelected": "No transaction selected"
 
   }
 }

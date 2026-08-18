@@ -9,10 +9,10 @@
 @using SmartParking.OpeningGate
 @using SmartParking.Organizations
 @using SmartParking.Permissions.CheckoutPermissions
-@using SmartParking.Permissions.UnLinkedTransactionPermissions
+@using SmartParking.Permissions.UnlinkedEntryPermissions
 @using SmartParking.Shifts
 @page "/unlinked-at-camera"
-@inject IKeeperAppService KeeperAppService
+@inject IKeeperTransactionAppService KeeperTransactionAppService
 @inject IKeeperTransactionsAppService KeeperTransactionsAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ISnackbar Snackbar
@@ -22,13 +22,13 @@
 @inject IOrganizationsAppService OrganizationAppService
 @inject IShiftZoneActionAppService ShiftZoneActionAppService
 
-<PageTitle>@L["UnLinkedTransaction"]</PageTitle>
+<PageTitle>@L["UnlinkedEntry"]</PageTitle>
 
 <MudGrid>
     <!-- Header: Title, Refresh, and Device Selector -->
     <MudItem sm="12" xs="12" Class="d-flex flex-column flex-sm-row align-center justify-content-between mb-3">
         <MudItem sm="6" xs="12" Class="d-flex align-center">
-            <MudText Typo="Typo.h5" Class="fw-bold mb-0">@L["UnLinkedTransaction"]</MudText>
+            <MudText Typo="Typo.h5" Class="fw-bold mb-0">@L["UnlinkedEntry"]</MudText>
             <MudButton Variant="Variant.Filled"
                        Class="mx-3"
                        Color="MudBlazor.Color.Inherit"
@@ -57,7 +57,7 @@
             @if (AuthorizationService.IsGrantedAnyAsync(CheckoutPermissions.OpenGateIcon).Result)
             {
                 <MudTooltip Text="@L["OpenGate"]">
-                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Inherit" OnClick="OpenGateAsync" Disabled="@(string.IsNullOrEmpty(SelectedDeviceId))">
+                    <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Inherit" OnClick="OpenGateAsync" Disabled="@(string.IsNullOrEmpty(SelectedDeviceId) || _unlinkedTransaction == null || _unlinkedTransaction.NoTransaction)">
                         <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="22.000000pt" height="20.000000pt" viewBox="0 0 244.000000 235.000000" preserveAspectRatio="xMidYMid meet">
                             <g transform="translate(0.000000,235.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
                                 <path d="M586 2289 c-18 -14 -26 -30 -26 -52 0 -28 63 -95 635 -667 l635 -635 0 -378 0 -377 240 0 240 0 0 395 c0 388 0 395 -20 395 -15 0 -20 7 -20 25 l0 25 -163 0 -163 0 -630 631 c-346 347 -641 637 -656 645 -35 18 -40 18 -72 -7z m1664 -1439 l0 -60 -180 0 -180 0 0 60 0 60 180 0 180 0 0 -60z" />
@@ -117,14 +117,39 @@
                         @L["UnlinkedRecoveryDescription"]
                     </MudText>
 
-                    <MudTextField @bind-Value="editablePlateNumber"
-                                  Label="@L["PlateNumber"]"
-                                  Variant="Variant.Outlined"
-                                  Required="true"
-                                  RequiredError="@L["PlateNumberRequired"]"
-                                  Class="mb-4"
-                                  Adornment="Adornment.Start"
-                                  AdornmentIcon="@Icons.Material.Filled.DirectionsCar" />
+                    @if (_organization.DispenserTransaction)
+                    {
+                        <!-- Dispenser Transaction: Ticket Number (Required) -->
+                        <MudTextField @bind-Value="editableTicketNumber"
+                                      Label="@L["TicketId"]"
+                                      Variant="Variant.Outlined"
+                                      Required="true"
+                                      RequiredError="@L["TicketNumberRequired"]"
+                                      Class="mb-4"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.ConfirmationNumber" />
+
+                        <!-- Dispenser Transaction: Plate Number (Optional) -->
+                        <MudTextField @bind-Value="editablePlateNumber"
+                                      Label="@L["PlateNumber"]"
+                                      Variant="Variant.Outlined"
+                                      Required="false"
+                                      Class="mb-4"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.DirectionsCar" />
+                    }
+                    else
+                    {
+                        <!-- Camera Transaction: Plate Number (Required) -->
+                        <MudTextField @bind-Value="editablePlateNumber"
+                                      Label="@L["PlateNumber"]"
+                                      Variant="Variant.Outlined"
+                                      Required="true"
+                                      RequiredError="@L["PlateNumberRequired"]"
+                                      Class="mb-4"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.DirectionsCar" />
+                    }
 
                     <MudCheckBox @bind-Value="triggerGateOpen"
                                  Label="@L["TriggerGateOpenOnAccept"]"
@@ -133,23 +158,32 @@
                 </MudCardContent>
 
                 <MudCardActions Class="px-0 d-flex flex-column gap-2">
-                    <MudButton Variant="Variant.Filled"
-                               Color="MudBlazor.Color.Primary"
-                               Size="MudBlazor.Size.Large"
-                               FullWidth="true"
-                               StartIcon="@Icons.Material.Filled.CheckCircle"
-                               OnClick="SendAsEntryAsync"
-                               Disabled="@(isSubmitting || string.IsNullOrWhiteSpace(editablePlateNumber))">
-                        @if (isSubmitting)
-                        {
-                            <MudProgressCircular Class="ms-n1" Size="MudBlazor.Size.Small" Indeterminate="true" />
-                            <MudText Class="ms-2">@L["Processing"]</MudText>
-                        }
-                        else
-                        {
-                            <MudText>@L["SendAsEntryTransaction"]</MudText>
-                        }
-                    </MudButton>
+                    @if (AuthorizationService.IsGrantedAsync(UnlinkedEntryPermissions.SendAsEntry).Result)
+                    {
+                        <MudButton Variant="Variant.Filled"
+                                   Color="MudBlazor.Color.Primary"
+                                   Size="MudBlazor.Size.Large"
+                                   FullWidth="true"
+                                   StartIcon="@Icons.Material.Filled.CheckCircle"
+                                   OnClick="SendAsEntryAsync"
+                                   Disabled="@(isSubmitting || (_organization.DispenserTransaction ? string.IsNullOrWhiteSpace(editableTicketNumber) : string.IsNullOrWhiteSpace(editablePlateNumber)))">
+                            @if (isSubmitting)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="MudBlazor.Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">@L["Processing"]</MudText>
+                            }
+                            else
+                            {
+                                <MudText>@L["SendAsEntryTransaction"]</MudText>
+                            }
+                        </MudButton>
+                    }
+                    else
+                    {
+                        <MudAlert Severity="Severity.Info" Dense="true" Class="w-100">
+                            @L["ViewOnlyPermissionNotice"]
+                        </MudAlert>
+                    }
                 </MudCardActions>
             </MudCard>
         </MudItem>

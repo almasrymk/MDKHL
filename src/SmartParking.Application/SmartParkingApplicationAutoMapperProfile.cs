@@ -120,6 +120,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForPath(dest => dest.OrganizationSettings.RentalSlots, opt => opt.MapFrom(src => src.Settings.RentalSlots))
             .ForPath(dest => dest.OrganizationSettings.IsSlotsEditable, opt => opt.MapFrom(src => src.Settings.IsSlotsEditable))
             .ForPath(dest => dest.OrganizationSettings.OwnerVehicles, opt => opt.MapFrom(src => src.Settings.OwnerVehicles))
+            .ForPath(dest => dest.OrganizationSettings.UnlinkedEntry, opt => opt.MapFrom(src => src.Settings.UnlinkedEntry))
             .ReverseMap();
 
 
@@ -140,6 +141,7 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
             .ForPath(dest => dest.Settings.RentalSlots, opt => opt.MapFrom(src => src.OrganizationSettingsDto.RentalSlots))
             .ForPath(dest => dest.Settings.IsSlotsEditable, opt => opt.MapFrom(src => src.OrganizationSettingsDto.IsSlotsEditable))
             .ForPath(dest => dest.Settings.OwnerVehicles, opt => opt.MapFrom(src => src.OrganizationSettingsDto.OwnerVehicles))
+            .ForPath(dest => dest.Settings.UnlinkedEntry, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UnlinkedEntry))
             .ReverseMap();
 
         CreateMap<OrganizationSettingsDto, OrganizationSettings>()
@@ -151,10 +153,12 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
              .ForMember(dest => dest.ContactMail , opt => opt.MapFrom(src => src.Email))
              .ForPath(dest => dest.OrganizationSettings.VehcileAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.VehcileAccess))
             .ForPath(dest => dest.OrganizationSettings.UserAccess, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UserAccess))
+            .ForPath(dest => dest.OrganizationSettings.UnlinkedEntry, opt => opt.MapFrom(src => src.OrganizationSettingsDto.UnlinkedEntry))
             .ReverseMap();
         CreateMap<OrganizationDto, CreateUpdateOrganiztionDto>()
             .ForPath(dest => dest.OrganizationSettingsDto.VehcileAccess, opt => opt.MapFrom(src => src.OrganizationSettings.VehcileAccess))
-            .ForPath(dest => dest.OrganizationSettingsDto.UserAccess, opt => opt.MapFrom(src => src.OrganizationSettings.UserAccess));
+            .ForPath(dest => dest.OrganizationSettingsDto.UserAccess, opt => opt.MapFrom(src => src.OrganizationSettings.UserAccess))
+            .ForPath(dest => dest.OrganizationSettingsDto.UnlinkedEntry, opt => opt.MapFrom(src => src.OrganizationSettings.UnlinkedEntry));
 
         //CreateMap<OrganizationSettingsDto, OrganizationSettings>()
         //    .ReverseMap();

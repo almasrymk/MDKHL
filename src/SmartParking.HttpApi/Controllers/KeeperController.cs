@@ -6,7 +6,9 @@ using SmartParking.GarageTransactions;
 using SmartParking.Invoices;
 using SmartParking.Mobile.Invoices;
 using SmartParking.Mobile.Keepers;
+using SmartParking.Mobile.Keepers.Dtos;
 using SmartParking.OpeningGate;
+using SmartParking.Permissions.UnlinkedEntryPermissions;
 using SmartParking.Results;
 using SmartParking.Shifts;
 using SmartParking.Watchers;
@@ -21,19 +23,25 @@ namespace SmartParking.Controllers;
 
 [Route("api/Keeper")]
 [ApiController]
-
 public class KeeperController : AbpController
 {
-    private readonly IKeeperAppService _keeperAppService;
+    private readonly IKeeperAuthenticationAppService _keeperAuthenticationAppService;
+    private readonly IKeeperInvoiceAppService _keeperInvoiceAppService;
+    private readonly IKeeperTransactionAppService _keeperTransactionAppService;
+    private readonly IShiftZoneActionAppService _shiftZoneActionAppService;
     private readonly IAuthenticationAppService _authenticationAppService;
     private readonly IUsersAppService _usersAppService;
     private readonly ICurrentUser _currentUser;
     private readonly IInvoiceAppService _invoiceAppService;
     private readonly IKeeperTransactionsAppService _keeperTransactionsAppService;
     private readonly IGarageTransactionsAppService _garageTransactionsAppService;
-
     private readonly IWatcherAppService _watcherAppService;
-    public KeeperController(IKeeperAppService keeperAppService,
+
+    public KeeperController(
+        IKeeperAuthenticationAppService keeperAuthenticationAppService,
+        IKeeperInvoiceAppService keeperInvoiceAppService,
+        IKeeperTransactionAppService keeperTransactionAppService,
+        IShiftZoneActionAppService shiftZoneActionAppService,
         IAuthenticationAppService authenticationAppService,
         ICurrentUser currentUser,
         IInvoiceAppService invoiceAppService,
@@ -42,7 +50,10 @@ public class KeeperController : AbpController
         IKeeperTransactionsAppService keeperTransactionsAppService = null,
         IWatcherAppService watcherAppService = null)
     {
-        _keeperAppService = keeperAppService;
+        _keeperAuthenticationAppService = keeperAuthenticationAppService;
+        _keeperInvoiceAppService = keeperInvoiceAppService;
+        _keeperTransactionAppService = keeperTransactionAppService;
+        _shiftZoneActionAppService = shiftZoneActionAppService;
         _authenticationAppService = authenticationAppService;
         _currentUser = currentUser;
         _invoiceAppService = invoiceAppService;
@@ -55,22 +66,19 @@ public class KeeperController : AbpController
     [HttpPost("login")]
     [AllowAnonymous]
     [IgnoreAntiforgeryToken]
-
     public async Task<Result<LoginResponseDto>> Login(LoginRequestDto input)
     {
         try
         {
-            
             if (_currentUser.IsAuthenticated)
             {
                 return Result<LoginResponseDto>.Invalid(new ValidationError
                 {
-                    
                     ErrorCode = "400",
                     ErrorMessage = "You are already logged in."
                 });
             }
-            return await _keeperAppService.LoginAsync(input);
+            return await _keeperAuthenticationAppService.LoginAsync(input);
         }
         catch
         {
@@ -85,26 +93,29 @@ public class KeeperController : AbpController
     [HttpGet("getgatesforcurrentkeepers")]
     public async Task<Result<ICollection<ShiftWatcherActionDto>>> GetShiftWatcherActionAsync()
     {
-        return await _keeperAppService.GetShiftWatcherActionAsync();
+        var result = await _shiftZoneActionAppService.GetShiftZoneDevicesDataAsync();
+        if (result == null)
+        {
+            return Result<ICollection<ShiftWatcherActionDto>>.Success(new List<ShiftWatcherActionDto>());
+        }
+        return Result<ICollection<ShiftWatcherActionDto>>.Success(result.Value);
     }
+
     [HttpGet("hasactiveshiftzoneaction")]
     public async Task<Result<bool>> HasActiveShiftZoneActionAsync()
     {
-        return await _keeperAppService.HasActiveShiftZoneActionAsync();
+        return await _shiftZoneActionAppService.GetCurrentUserActiveShiftZoneStatusAsync();
     }
 
     [HttpPost("Mdkhl/login")]
-
     public async Task<Result<LoginKeeperAppResponse>> LoginMdkhlKeeper(LoginMobileInputDto input)
     {
         try
         {
-            
             if (_currentUser.IsAuthenticated)
             {
                 return Result<LoginKeeperAppResponse>.Invalid(new ValidationError
                 {
-                    
                     ErrorCode = "400",
                     ErrorMessage = "You are already logged in."
                 });
@@ -123,73 +134,75 @@ public class KeeperController : AbpController
 
     [HttpPost("invoice")]
     [Authorize]
-    public async Task<Result<PagedResultDto<InvoiceDto>>> GetAllInvoicesByOrganizationId([FromQuery] int organizationId , PagedAndSortedAndSearchResultRequestDto paged)
+    public async Task<Result<PagedResultDto<InvoiceDto>>> GetAllInvoicesByOrganizationId([FromQuery] int organizationId, PagedAndSortedAndSearchResultRequestDto paged)
     {
-        return await _keeperAppService.GetAllInvoicesByOrganizationIdAsync(organizationId, paged);
-    }    
-    
+        return await _keeperInvoiceAppService.GetAllInvoicesByOrganizationIdAsync(organizationId, paged);
+    }
+
     [HttpGet("paid/invoice")]
     [Authorize]
     public async Task<Result<List<InvoiceDto>>> GetAllInvoicesByOrganizationPaidId([FromQuery] int organizationId)
     {
-        return await _keeperAppService.GetAllInvoicesByOrganizationIdPaidAsync(organizationId);
+        return await _keeperInvoiceAppService.GetAllInvoicesByOrganizationIdPaidAsync(organizationId);
     }
+
     [HttpGet("lastinvoice")]
     [Authorize]
     public async Task<Result<InvoiceDto>> GetLastInvoiceByOrganizationId([FromQuery] int organizationId, [FromQuery] string watcherCode)
     {
-        return await _keeperAppService.GetLastInvoiceByOrganizationIdAndWatcherCodeAsync(organizationId, watcherCode);
+        return await _keeperInvoiceAppService.GetLastInvoiceByOrganizationIdAndWatcherCodeAsync(organizationId, watcherCode);
     }
 
     [HttpGet("garageTransactionWithoutPlateNumber")]
     [Authorize]
     public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumber([FromQuery] int organizationId, Guid userId)
     {
-        return await _keeperAppService.GetAllGarageTransactionsWithNoPlateNumberAsync(organizationId, userId);
+        return await _keeperTransactionAppService.GetAllGarageTransactionsWithNoPlateNumberAsync(organizationId, userId);
     }
 
     [HttpPost("garageTransaction")]
     [Authorize]
-    public async Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllGarageTransactions([FromQuery] int organizationId, Guid userId , PagedAndSortedAndSearchResultRequestDto paged)
+    public async Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllGarageTransactions([FromQuery] int organizationId, Guid userId, PagedAndSortedAndSearchResultRequestDto paged)
     {
-        return await _keeperAppService.GetAllGarageTransactionsAsync(organizationId, userId , paged);
+        return await _keeperTransactionAppService.GetAllGarageTransactionsAsync(organizationId, userId, paged);
     }
 
     [HttpPut("correctTransaction")]
     [Authorize]
-    public async Task<Result<LoginResponseDto>> CorrectTransactionByPlateNumber([FromQuery] int garageTransactionId, string plateNumber)
+    public async Task<Result> CorrectTransactionByPlateNumber([FromQuery] int garageTransactionId, string plateNumber)
     {
-        return await _keeperAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId, plateNumber);
+        return await _keeperTransactionAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId, plateNumber);
     }
 
     [HttpPost("existingTransaction")]
     [Authorize]
-    public async Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllExistingTransactions([FromQuery] int organizationId, Guid userId , PagedAndSortedAndSearchResultRequestDto paged)
+    public async Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllExistingTransactions([FromQuery] int organizationId, Guid userId, PagedAndSortedAndSearchResultRequestDto paged)
     {
-        return await _keeperAppService.GetAllExistingTransactionsAsync(organizationId, userId , paged);
+        return await _keeperTransactionAppService.GetAllExistingTransactionsAsync(organizationId, userId, paged);
     }
 
     [HttpGet("PayAtExitCamera")]
     [Authorize]
     public async Task<Result<InvoiceMobileDto>> PayInvoice(int InvoiceId, decimal DiscountValue, int paymentMethodType)
     {
-        var invoice = await _keeperAppService.CheckoutAsync(InvoiceId, paymentMethodType, DiscountValue);
+        var invoice = await _keeperInvoiceAppService.CheckoutAsync(InvoiceId, paymentMethodType, DiscountValue);
         var gt = await _garageTransactionsAppService.GetAsync(invoice.Value.GarageTransactionExitId);
         string code = gt.LaneNO;
         if (string.IsNullOrEmpty(gt.LaneNO))
         {
-            code =await _watcherAppService.GetWatcherCodeByWatcherIdAsync(gt.CameraId.Value);
+            code = await _watcherAppService.GetWatcherCodeByWatcherIdAsync(gt.CameraId.Value);
         }
         await _keeperTransactionsAppService.OpenGate(new OpenGateDto
         {
-            WatcherCode = code ,
+            WatcherCode = code,
             OrganizationId = invoice.Value.OrganizationId,
         });
         return invoice;
     }
+
     [HttpPut("cancelinvoiceandmapping")]
     [Authorize]
-    public async Task<Result<bool>> RemoveInvoiceAndUnMappEntryTransaction(int InvoiceId,int ExitTransactionId)
+    public async Task<Result<bool>> RemoveInvoiceAndUnMappEntryTransaction(int InvoiceId, int ExitTransactionId)
     {
         try
         {
@@ -197,13 +210,13 @@ public class KeeperController : AbpController
             await _garageTransactionsAppService.DeleteAsync(ExitTransactionId);
             return Result.Success();
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             return Result<bool>.Invalid(new ValidationError
             {
                 ErrorCode = "404",
                 ErrorMessage = ex.Message
             });
-
         }
     }
 
@@ -218,17 +231,16 @@ public class KeeperController : AbpController
     [Authorize]
     public async Task<Result<InvoiceMobileDto>> PayInvoiceByCustomerRequest(int InvoiceId, string PaymentType, decimal DiscountValue)
     {
-        return await _keeperAppService.PayCashForCustomerRequestAsync(InvoiceId, PaymentType, DiscountValue);
-
+        return await _keeperInvoiceAppService.PayCashForCustomerRequestAsync(InvoiceId, PaymentType, DiscountValue);
     }
+
     [HttpGet("KeeperCheckout")]
     [Authorize]
-    public async Task<Result<InvoiceMobileDto>> KeeperCheckoutForTransaction(int transactionId, string PaymentType,decimal DiscountValue)
+    public async Task<Result<InvoiceMobileDto>> KeeperCheckoutForTransaction(int transactionId, string PaymentType, decimal DiscountValue)
     {
         var invoice = await _keeperTransactionsAppService.Checkout(transactionId);
-        return await _keeperAppService.PayCashForCustomerRequestAsync(invoice.Value.Id, PaymentType, DiscountValue);
+        return await _keeperInvoiceAppService.PayCashForCustomerRequestAsync(invoice.Value.Id, PaymentType, DiscountValue);
     }
-
 
     [HttpGet("KeeperPreCheckout")]
     [Authorize]
@@ -249,23 +261,22 @@ public class KeeperController : AbpController
 
     [HttpGet("getpaymentbyinvoiceid")]
     [Authorize]
-    public async Task<Result<string>> GetPaymentQrCodeByInvoiceId([FromQuery]int InvoiceId)
+    public async Task<Result<string>> GetPaymentQrCodeByInvoiceId([FromQuery] int InvoiceId)
     {
-        return await _keeperAppService.GetPaymentQrCodeByInvoiceId(InvoiceId);
+        return await _keeperInvoiceAppService.GetPaymentQrCodeByInvoiceId(InvoiceId);
     }
 
     [HttpGet("latest-unlinked")]
-    [Authorize]
-    public async Task<Result<SmartParking.Mobile.Keepers.Dtos.UnlinkedTransactionViewDto>> GetLatestUnlinkedTransaction([FromQuery] int organizationId, [FromQuery] string watcherCode)
+    [Authorize(UnlinkedEntryPermissions.View)]
+    public async Task<Result<UnlinkedTransactionViewDto>> GetLatestUnlinkedTransaction([FromQuery] int organizationId, [FromQuery] string watcherCode)
     {
-        return await _keeperAppService.GetLatestUnlinkedTransactionByWatcherCodeAsync(organizationId, watcherCode);
+        return await _keeperTransactionAppService.GetLatestUnlinkedTransactionByWatcherCodeAsync(organizationId, watcherCode);
     }
 
     [HttpPost("send-unlinked-as-entry")]
-    [Authorize]
-    public async Task<Result<GarageTransactionDto>> SendUnlinkedTransactionAsEntry([FromBody] SmartParking.Mobile.Keepers.Dtos.SendUnlinkedAsEntryDto input)
+    [Authorize(UnlinkedEntryPermissions.SendAsEntry)]
+    public async Task<Result<GarageTransactionDto>> SendUnlinkedTransactionAsEntry([FromBody] SendUnlinkedAsEntryDto input)
     {
-        return await _keeperAppService.SendUnlinkedTransactionAsEntryAsync(input);
+        return await _keeperTransactionAppService.SendUnlinkedTransactionAsEntryAsync(input);
     }
-
 }

@@ -16,6 +16,8 @@ using SmartParking.GarageTransactions.Factory;
 using SmartParking.Invoices;
 using SmartParking.Invoices.Factory;
 using SmartParking.KeeperShifts;
+using SmartParking.OpenGate;
+using SmartParking.OpeningGate;
 using SmartParking.PDF;
 using SmartParking.PDF.Contracts;
 using SmartParking.Utilities;
@@ -123,6 +125,7 @@ public class SmartParkingApplicationModule : AbpModule
         context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, CameraTransactionActionsAppService>();
         context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, DispenserTransactionActionsAppService>();
         context.Services.AddScoped<IAssignCustomerPackagesAppService, OrganizationAwareCustomerPackagesAppService>();
+        context.Services.AddScoped<IOpenGateFactoryService, OpenGateFactoryService>();
 
 
 

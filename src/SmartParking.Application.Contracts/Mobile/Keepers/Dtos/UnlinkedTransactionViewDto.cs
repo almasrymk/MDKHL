@@ -18,4 +18,7 @@ public class UnlinkedTransactionViewDto
     public string GarageArabicName { get; set; } = string.Empty;
     public string GarageEnglishName { get; set; } = string.Empty;
     public bool NoTransaction { get; set; } = false;
+    public bool IsDispenserTransaction { get; set; }
+    public bool IsCameraTransaction { get; set; }
+    public string? TicketNumber { get; set; }
 }

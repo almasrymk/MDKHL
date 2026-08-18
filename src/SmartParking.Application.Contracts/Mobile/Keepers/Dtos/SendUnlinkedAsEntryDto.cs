@@ -15,5 +15,7 @@ public class SendUnlinkedAsEntryDto
 
     public string? CorrectedPlateNumber { get; set; }
 
+    public string? TicketNumber { get; set; }
+
     public bool TriggerGateOpen { get; set; } = true;
 }

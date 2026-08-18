@@ -1,6 +1,5 @@
-﻿using SmartParking.Permissions.CameraPermissions;
+using SmartParking.Permissions.CameraPermissions;
 using SmartParking.Permissions.MyAccount;
-using SmartParking.Permissions.UnLinkedTransactionPermissions;
 using SmartParking.StringLocalizer;
 using System;
 using System.Collections.Generic;

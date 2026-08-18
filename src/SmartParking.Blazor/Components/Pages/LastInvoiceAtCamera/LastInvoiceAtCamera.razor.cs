@@ -100,7 +100,7 @@ public partial class LastInvoiceAtCamera
         try
         {
 
-            var result = await KeeperAppService
+            var result = await KeeperInvoiceAppService
                 .GetLastInvoiceByOrganizationIdAndWatcherCodeAsync(_organization.Id, SelectedDeviceId);
 
             Invoice = result?.Value ?? new InvoiceDto();
