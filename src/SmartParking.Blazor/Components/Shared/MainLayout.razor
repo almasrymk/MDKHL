@@ -1,4 +1,4 @@
-﻿
+
 @using Abp.Web.Http
 @using Microsoft.Extensions.Localization
 @using Microsoft.Extensions.Options
@@ -119,8 +119,8 @@
         UserName = CurrentUser.Name;
         var user = await UsersAppService.GetAsync(CurrentUser.Id);
         Picture = string.IsNullOrWhiteSpace(user.Image)?"images/MDHKL_04.png":user.Image;
-        hasPermission = currenttenant.Id != null && AuthorizationService.IsGrantedAnyAsync(MyAccountPermissions.Default).Result;
-        base.OnInitializedAsync();
+        hasPermission = currenttenant.Id != null && await AuthorizationService.IsGrantedAnyAsync(MyAccountPermissions.Default);
+        await base.OnInitializedAsync();
     }
     protected override void OnParametersSet()
     {

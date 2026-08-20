@@ -1,0 +1,32 @@
+@using Volo.Abp.UI.Navigation
+
+@if (Item != null)
+{
+    @if (Item.Items != null && Item.Items.Count > 0)
+    {
+        <MudNavGroup Icon="@Item.Icon" Title="@Item.DisplayName" @bind-Expanded="_isExpanded">
+            @foreach (var child in Item.Items)
+            {
+                <SPMenuItemRenderer Item="@child" Depth="@(Depth + 1)" />
+            }
+        </MudNavGroup>
+    }
+    else
+    {
+        <MudNavLink Href="@Item.Url"
+                    Icon="@Item.Icon"
+                    Match="@(Item.Url == "/" ? NavLinkMatch.All : NavLinkMatch.Prefix)">
+            @Item.DisplayName
+        </MudNavLink>
+    }
+}
+
+@code {
+    [Parameter]
+    public ApplicationMenuItem Item { get; set; } = default!;
+
+    [Parameter]
+    public int Depth { get; set; } = 0;
+
+    private bool _isExpanded = false;
+}
