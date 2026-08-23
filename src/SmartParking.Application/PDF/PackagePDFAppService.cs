@@ -1,4 +1,4 @@
-﻿using AraibcPdfUnicodeGlyphsResharper;
+using AraibcPdfUnicodeGlyphsResharper;
 using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
@@ -83,11 +83,7 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
     public void AddOrganizationSection(Document doc, PackagePdfData data, bool isArabic)
     {
         float scale = ScaleFactor(doc);
-        var table = new Table(UnitValue.CreatePercentArray(new float[] { 4, 4, 0.11f, 4, 4 }))
-            .UseAllAvailableWidth()
-            .SetMarginRight(7)
-            .SetBorder(Border.NO_BORDER);
-        var addressSection = new Table(UnitValue.CreatePercentArray(new float[] { 12, 3 }))
+        var table = new Table(UnitValue.CreatePercentArray(new float[] { 4, 4, 1f, 4, 4 }))
             .UseAllAvailableWidth()
             .SetMarginRight(7)
             .SetBorder(Border.NO_BORDER);
@@ -108,17 +104,17 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
             AddArabicCell(table, org.ArabicName.ArabicWithFontGlyphsToPDF(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.OrganizationName.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
 
+            AddArabicCell(table, pkg.EnPlateNumber.ArabicWithFontGlyphsToPDF(), Font, fontsize);
+            AddArabicLabelCell(table, $":{loc.PlateNumber.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
+            AddArabicEmptyCell(table);
+            AddArabicCell(table, org.Address.ArabicWithFontGlyphsToPDF(), Font, fontsize);
+            AddArabicLabelCell(table, $":{loc.OrganizationAddress.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
+
             AddArabicCell(table, pkg.ExpiryDate.ToString(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.ExpirationDate.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
             AddArabicEmptyCell(table);
             AddArabicCell(table, pkg.ActivationDateOfPackage!.Value.ToString(), Font, fontsize);
             AddArabicLabelCell(table, $":{loc.SubscriptionDate.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            
-            
-            AddArabicCell(addressSection, pkg.EnPlateNumber.ArabicWithFontGlyphsToPDF(), Font, fontsize);
-            AddArabicLabelCell(addressSection, $":{loc.PlateNumber.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
-            AddArabicCell(addressSection, org.Address.ArabicWithFontGlyphsToPDF(), Font, fontsize);
-            AddArabicLabelCell(addressSection, $":{loc.OrganizationAddress.ArabicWithFontGlyphsToPDF()}", Font, fontsize);
         }
         else
         {
@@ -134,16 +130,14 @@ public class PackagePDFAppService : BasePDFGeneratorAppService<PackagePdfData>, 
             AddEnglishLabelCell(table, $"{loc.OrganizationAddress}:", Font, fontsize);
             AddEnglishCell(table, org.Address, Font, fontsize);
 
-            for (int i = 0; i < 5; i++) AddEnglishEmptyCell(table);
-
             AddEnglishLabelCell(table, $"{loc.SubscriptionDate}:", Font, fontsize);
             AddEnglishCell(table, pkg.ActivationDateOfPackage!.Value.ToString(), Font, fontsize);
+            AddEnglishEmptyCell(table);
             AddEnglishLabelCell(table, $"{loc.ExpirationDate}:", Font, fontsize);
             AddEnglishCell(table, pkg.ExpiryDate.ToString(), Font, fontsize);
         }
 
         doc.Add(table);
-        doc.Add(addressSection);
 
     }
     public void AddSummarySection(Document doc, PackagePdfData data, bool isArabic)
