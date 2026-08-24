@@ -112,6 +112,8 @@ public partial class UnlinkedTransactionAtCamera
                 _unlinkedTransaction = result.Value;
                 editablePlateNumber = _unlinkedTransaction.PlateNumber ?? string.Empty;
                 editableTicketNumber = _unlinkedTransaction.TicketNumber ?? string.Empty;
+                _unlinkedTransaction.OrganizationArabicName= _organization.ArabicName;
+                _unlinkedTransaction.OrganizationEnglishName= _organization.EnglishName;
             }
             else
             {

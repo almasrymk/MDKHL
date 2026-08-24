@@ -92,7 +92,6 @@
                     <LastInvoiceOnGateDetails Key="@L["DeviceId"]" Value="@_unlinkedTransaction.DeviceId" />
                     <LastInvoiceOnGateDetails Key="@L["CaptureTime"]" Value="@((_unlinkedTransaction.AccurateTime ?? _unlinkedTransaction.SnapTime ?? DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"))" />
                     <LastInvoiceOnGateDetails Key="@L["OrganizationName"]" Value="@(CultureInfo.CurrentCulture.Name == "en" ? _unlinkedTransaction.OrganizationEnglishName : _unlinkedTransaction.OrganizationArabicName)" />
-                    <LastInvoiceOnGateDetails Key="@L["GarageName"]" Value="@(CultureInfo.CurrentCulture.Name == "en" ? _unlinkedTransaction.GarageEnglishName : _unlinkedTransaction.GarageArabicName)" />
                     <LastInvoiceOnGateDetails Key="@L["Direction"]" Value="@L["Entry"]" />
                 </div>
             </MudCard>
