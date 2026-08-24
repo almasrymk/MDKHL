@@ -27,7 +27,9 @@ public class KeeperController : AbpController
 {
     private readonly IKeeperAuthenticationAppService _keeperAuthenticationAppService;
     private readonly IKeeperInvoiceAppService _keeperInvoiceAppService;
-    private readonly IKeeperTransactionAppService _keeperTransactionAppService;
+    private readonly IKeeperTransactionQueryAppService _keeperTransactionQueryAppService;
+    private readonly IKeeperTransactionCorrectionAppService _keeperTransactionCorrectionAppService;
+    private readonly IUnlinkedTransactionRecoveryAppService _unlinkedTransactionRecoveryAppService;
     private readonly IShiftZoneActionAppService _shiftZoneActionAppService;
     private readonly IAuthenticationAppService _authenticationAppService;
     private readonly IUsersAppService _usersAppService;
@@ -40,7 +42,9 @@ public class KeeperController : AbpController
     public KeeperController(
         IKeeperAuthenticationAppService keeperAuthenticationAppService,
         IKeeperInvoiceAppService keeperInvoiceAppService,
-        IKeeperTransactionAppService keeperTransactionAppService,
+        IKeeperTransactionQueryAppService keeperTransactionQueryAppService,
+        IKeeperTransactionCorrectionAppService keeperTransactionCorrectionAppService,
+        IUnlinkedTransactionRecoveryAppService unlinkedTransactionRecoveryAppService,
         IShiftZoneActionAppService shiftZoneActionAppService,
         IAuthenticationAppService authenticationAppService,
         ICurrentUser currentUser,
@@ -52,7 +56,9 @@ public class KeeperController : AbpController
     {
         _keeperAuthenticationAppService = keeperAuthenticationAppService;
         _keeperInvoiceAppService = keeperInvoiceAppService;
-        _keeperTransactionAppService = keeperTransactionAppService;
+        _keeperTransactionQueryAppService = keeperTransactionQueryAppService;
+        _keeperTransactionCorrectionAppService = keeperTransactionCorrectionAppService;
+        _unlinkedTransactionRecoveryAppService = unlinkedTransactionRecoveryAppService;
         _shiftZoneActionAppService = shiftZoneActionAppService;
         _authenticationAppService = authenticationAppService;
         _currentUser = currentUser;
@@ -157,28 +163,28 @@ public class KeeperController : AbpController
     [Authorize]
     public async Task<Result<List<GarageTransactionDto>>> GetAllGarageTransactionsWithNoPlateNumber([FromQuery] int organizationId, Guid userId)
     {
-        return await _keeperTransactionAppService.GetAllGarageTransactionsWithNoPlateNumberAsync(organizationId, userId);
+        return await _keeperTransactionQueryAppService.GetAllGarageTransactionsWithNoPlateNumberAsync(organizationId, userId);
     }
 
     [HttpPost("garageTransaction")]
     [Authorize]
     public async Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllGarageTransactions([FromQuery] int organizationId, Guid userId, PagedAndSortedAndSearchResultRequestDto paged)
     {
-        return await _keeperTransactionAppService.GetAllGarageTransactionsAsync(organizationId, userId, paged);
+        return await _keeperTransactionQueryAppService.GetAllGarageTransactionsAsync(organizationId, userId, paged);
     }
 
     [HttpPut("correctTransaction")]
     [Authorize]
     public async Task<Result> CorrectTransactionByPlateNumber([FromQuery] int garageTransactionId, string plateNumber)
     {
-        return await _keeperTransactionAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId, plateNumber);
+        return await _keeperTransactionCorrectionAppService.CorrectTransactionByPlateNumberAsync(garageTransactionId, plateNumber);
     }
 
     [HttpPost("existingTransaction")]
     [Authorize]
     public async Task<Result<PagedResultDto<GarageTransactionDto>>> GetAllExistingTransactions([FromQuery] int organizationId, Guid userId, PagedAndSortedAndSearchResultRequestDto paged)
     {
-        return await _keeperTransactionAppService.GetAllExistingTransactionsAsync(organizationId, userId, paged);
+        return await _keeperTransactionQueryAppService.GetAllExistingTransactionsAsync(organizationId, userId, paged);
     }
 
     [HttpGet("PayAtExitCamera")]
@@ -270,13 +276,13 @@ public class KeeperController : AbpController
     [Authorize(UnlinkedEntryPermissions.View)]
     public async Task<Result<UnlinkedTransactionViewDto>> GetLatestUnlinkedTransaction([FromQuery] int organizationId, [FromQuery] string watcherCode)
     {
-        return await _keeperTransactionAppService.GetLatestUnlinkedTransactionByWatcherCodeAsync(organizationId, watcherCode);
+        return await _unlinkedTransactionRecoveryAppService.GetLatestUnlinkedTransactionByWatcherCodeAsync(organizationId, watcherCode);
     }
 
     [HttpPost("send-unlinked-as-entry")]
     [Authorize(UnlinkedEntryPermissions.SendAsEntry)]
     public async Task<Result<GarageTransactionDto>> SendUnlinkedTransactionAsEntry([FromBody] SendUnlinkedAsEntryDto input)
     {
-        return await _keeperTransactionAppService.SendUnlinkedTransactionAsEntryAsync(input);
+        return await _unlinkedTransactionRecoveryAppService.SendUnlinkedTransactionAsEntryAsync(input);
     }
 }

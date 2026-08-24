@@ -20,7 +20,9 @@ namespace SmartParking.Keepers;
 public abstract class KeeperTransactionAppServiceTests<TStartupModule> : SmartParkingApplicationTestBase<TStartupModule>
     where TStartupModule : IAbpModule
 {
-    private readonly IKeeperTransactionAppService _keeperTransactionAppService;
+    private readonly IUnlinkedTransactionRecoveryAppService _unlinkedTransactionRecoveryAppService;
+    private readonly IKeeperTransactionQueryAppService _keeperTransactionQueryAppService;
+    private readonly IKeeperTransactionCorrectionAppService _keeperTransactionCorrectionAppService;
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly IRepository<Dispenser, int> _dispenserRepository;
     private readonly IRepository<UnLinkedTransaction, int> _unlinkedTransactionRepository;
@@ -29,7 +31,9 @@ public abstract class KeeperTransactionAppServiceTests<TStartupModule> : SmartPa
 
     protected KeeperTransactionAppServiceTests()
     {
-        _keeperTransactionAppService = GetRequiredService<IKeeperTransactionAppService>();
+        _unlinkedTransactionRecoveryAppService = GetRequiredService<IUnlinkedTransactionRecoveryAppService>();
+        _keeperTransactionQueryAppService = GetRequiredService<IKeeperTransactionQueryAppService>();
+        _keeperTransactionCorrectionAppService = GetRequiredService<IKeeperTransactionCorrectionAppService>();
         _organizationRepository = GetRequiredService<IRepository<Organization, int>>();
         _dispenserRepository = GetRequiredService<IRepository<Dispenser, int>>();
         _unlinkedTransactionRepository = GetRequiredService<IRepository<UnLinkedTransaction, int>>();
@@ -62,7 +66,7 @@ public abstract class KeeperTransactionAppServiceTests<TStartupModule> : SmartPa
                     };
                     await _dispenserRepository.InsertAsync(exitWatcher, autoSave: true);
 
-                    var result = await _keeperTransactionAppService.GetLatestUnlinkedTransactionByWatcherCodeAsync(targetOrg.Id, "EXIT_CAM_01");
+                    var result = await _unlinkedTransactionRecoveryAppService.GetLatestUnlinkedTransactionByWatcherCodeAsync(targetOrg.Id, "EXIT_CAM_01");
 
                     result.IsSuccess.ShouldBeFalse();
                     result.ValidationErrors.ShouldContain(v => v.ErrorMessage.Contains("Exit watcher"));
@@ -93,7 +97,7 @@ public abstract class KeeperTransactionAppServiceTests<TStartupModule> : SmartPa
                         CorrectedPlateNumber = "ABC1234"
                     };
 
-                    var result = await _keeperTransactionAppService.SendUnlinkedTransactionAsEntryAsync(input);
+                    var result = await _unlinkedTransactionRecoveryAppService.SendUnlinkedTransactionAsEntryAsync(input);
 
                     result.IsSuccess.ShouldBeFalse();
                     result.ValidationErrors.ShouldContain(v => v.ErrorMessage.Contains("Transaction not found or has already been processed."));
@@ -147,7 +151,7 @@ public abstract class KeeperTransactionAppServiceTests<TStartupModule> : SmartPa
                         CorrectedPlateNumber = ""
                     };
 
-                    var result = await _keeperTransactionAppService.SendUnlinkedTransactionAsEntryAsync(input);
+                    var result = await _unlinkedTransactionRecoveryAppService.SendUnlinkedTransactionAsEntryAsync(input);
 
                     result.IsSuccess.ShouldBeFalse();
                     result.ValidationErrors.ShouldContain(v => v.ErrorMessage.Contains("Plate number is required."));
@@ -202,7 +206,7 @@ public abstract class KeeperTransactionAppServiceTests<TStartupModule> : SmartPa
                         TicketNumber = ""
                     };
 
-                    var result = await _keeperTransactionAppService.SendUnlinkedTransactionAsEntryAsync(input);
+                    var result = await _unlinkedTransactionRecoveryAppService.SendUnlinkedTransactionAsEntryAsync(input);
 
                     result.IsSuccess.ShouldBeFalse();
                     result.ValidationErrors.ShouldContain(v => v.ErrorMessage.Contains("Ticket Number is required for dispenser transactions."));
@@ -258,7 +262,7 @@ public abstract class KeeperTransactionAppServiceTests<TStartupModule> : SmartPa
                         TriggerGateOpen = false
                     };
 
-                    var result = await _keeperTransactionAppService.SendUnlinkedTransactionAsEntryAsync(input);
+                    var result = await _unlinkedTransactionRecoveryAppService.SendUnlinkedTransactionAsEntryAsync(input);
 
                     result.IsSuccess.ShouldBeTrue();
                     result.Value.ShouldNotBeNull();
@@ -267,4 +271,56 @@ public abstract class KeeperTransactionAppServiceTests<TStartupModule> : SmartPa
             }
         });
     }
+
+    [Fact]
+    public async Task Query_Should_Reject_When_User_Not_Found()
+    {
+        await WithUnitOfWorkAsync(async () =>
+        {
+            var fakeUserId = Guid.NewGuid();
+            var result = await _keeperTransactionQueryAppService.GetAllGarageTransactionsWithNoPlateNumberAsync(1, fakeUserId);
+
+            result.IsSuccess.ShouldBeFalse();
+            result.ValidationErrors.ShouldContain(v => v.ErrorMessage.Contains("User not found"));
+        });
+    }
+
+    [Fact]
+    public async Task CorrectTransaction_Should_Return_NotFound_For_Invalid_Id()
+    {
+        await WithUnitOfWorkAsync(async () =>
+        {
+            var result = await _keeperTransactionCorrectionAppService.CorrectTransactionByPlateNumberAsync(999999, "XYZ-999");
+
+            result.IsSuccess.ShouldBeFalse();
+            result.Errors.ShouldContain(e => e.Contains("not found"));
+        });
+    }
+
+    [Fact]
+    public async Task CorrectTransaction_Should_Update_PlateNumber_Successfully()
+    {
+        await WithUnitOfWorkAsync(async () =>
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var transaction = new GarageTransaction
+                {
+                    PlateNumber = "OLD123",
+                    IsIn = true,
+                    OrganizationID = 1,
+                    GarageId = 1,
+                    LaneNO = "LANE1"
+                };
+                var inserted = await _garageTransactionRepository.InsertAsync(transaction, autoSave: true);
+
+                var result = await _keeperTransactionCorrectionAppService.CorrectTransactionByPlateNumberAsync(inserted.Id, "NEW456");
+
+                result.IsSuccess.ShouldBeTrue();
+                var updated = await _garageTransactionRepository.GetAsync(inserted.Id);
+                updated.PlateNumber.ShouldBe("NEW456");
+            }
+        });
+    }
 }
+

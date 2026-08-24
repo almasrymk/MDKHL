@@ -106,7 +106,7 @@ public partial class UnlinkedTransactionAtCamera
 
         try
         {
-            var result = await KeeperTransactionAppService.GetLatestUnlinkedTransactionByWatcherCodeAsync(_organization.Id, SelectedDeviceId);
+            var result = await UnlinkedTransactionRecoveryAppService.GetLatestUnlinkedTransactionByWatcherCodeAsync(_organization.Id, SelectedDeviceId);
             if (result != null && result.IsSuccess && result.Value != null && !result.Value.NoTransaction)
             {
                 _unlinkedTransaction = result.Value;
@@ -229,7 +229,7 @@ public partial class UnlinkedTransactionAtCamera
                 TriggerGateOpen = triggerGateOpen
             };
 
-            var result = await KeeperTransactionAppService.SendUnlinkedTransactionAsEntryAsync(input);
+            var result = await UnlinkedTransactionRecoveryAppService.SendUnlinkedTransactionAsEntryAsync(input);
 
             if (result != null && result.IsSuccess)
             {
