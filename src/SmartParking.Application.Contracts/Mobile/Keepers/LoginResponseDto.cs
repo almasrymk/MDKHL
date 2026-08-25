@@ -10,5 +10,6 @@ public class LoginResponseDto
     public int OrganizationId { get; set; }
     public int GracePeriod { get; set; }
     public bool CanCancelTransaction { get; set; }
+    public bool UnlinkedEntryTransaction { get; set; }
     public bool OrganizationHasShifts { get; set; }
 }

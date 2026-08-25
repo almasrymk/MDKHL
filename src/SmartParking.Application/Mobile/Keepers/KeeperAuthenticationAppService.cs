@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using SmartParking.Permissions.CheckoutPermissions;
+using SmartParking.Permissions.UnlinkedEntryPermissions;
 using SmartParking.Results;
 using SmartParking.Utilities;
 using System;
@@ -102,12 +103,14 @@ public class KeeperAuthenticationAppService : SmartParkingAppService, IKeeperAut
 
             bool canCheckout = await _authorizationService.IsGrantedAsync(CheckoutPermissions.CancelTransaction);
 
+
             return Result<LoginResponseDto>.Success(new LoginResponseDto
             {
                 AccessToken = await _authenticationUtility.GenerateTokenAsync(user) ?? string.Empty,
                 Role = roles.FirstOrDefault(),
                 Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
                 TenantId = tenantId,
+                UnlinkedEntryTransaction= await _authorizationService.IsGrantedAsync(UnlinkedEntryPermissions.Default),
                 UserId = user.Id.ToString(),
                 OrganizationId = organizationEntity.Id,
                 GracePeriod = organizationEntity.Graceperiod,
