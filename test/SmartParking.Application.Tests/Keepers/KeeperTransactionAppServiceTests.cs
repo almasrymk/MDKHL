@@ -258,7 +258,7 @@ public abstract class KeeperTransactionAppServiceTests<TStartupModule> : SmartPa
                         OrganizationId = targetOrg.Id,
                         WatcherCode = "DISP_SUCCESS_01",
                         CorrectedPlateNumber = null,
-                        TicketNumber = "TCK-9999",
+                        TicketNumber = "MAI12345678",
                         TriggerGateOpen = false
                     };
 
@@ -266,7 +266,117 @@ public abstract class KeeperTransactionAppServiceTests<TStartupModule> : SmartPa
 
                     result.IsSuccess.ShouldBeTrue();
                     result.Value.ShouldNotBeNull();
-                    result.Value.TicketId.ShouldBe("TCK-9999");
+                    result.Value.TicketId.ShouldBe("MAI12345678");
+                }
+            }
+        });
+    }
+
+    [Fact]
+    public async Task SendAsEntry_Dispenser_Should_Reject_When_Ticket_Invalid()
+    {
+        await WithUnitOfWorkAsync(async () =>
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var orgList = await _organizationRepository.GetListAsync();
+                var targetOrg = orgList.FirstOrDefault();
+                if (targetOrg != null)
+                {
+                    targetOrg.DispenserTransaction = true;
+                    targetOrg.CameraTransaction = false;
+                    targetOrg.Settings = new OrganizationSettings { UnlinkedEntry = true };
+                    await _organizationRepository.UpdateAsync(targetOrg, autoSave: true);
+
+                    var unlinked = new UnLinkedTransaction
+                    {
+                        DeviceId = "DISP_INVALID_01",
+                        PlateNumber = null,
+                        SnapTime = DateTime.UtcNow,
+                        VehiclePicture = "pic.jpg",
+                        IsIn = true
+                    };
+                    var insertedUnlinked = await _unlinkedTransactionRepository.InsertAsync(unlinked, autoSave: true);
+
+                    var dispenser = new Dispenser
+                    {
+                        Name = "Invalid Dispenser Test",
+                        DeviceId = "DISP_INVALID_01",
+                        CameraType = WatcherType.Entry,
+                        OrganizationId = targetOrg.Id,
+                        GarageId = 1,
+                        Status = Status.Active
+                    };
+                    await _dispenserRepository.InsertAsync(dispenser, autoSave: true);
+
+                    var input = new SendUnlinkedAsEntryDto
+                    {
+                        UnlinkedTransactionId = insertedUnlinked.Id,
+                        OrganizationId = targetOrg.Id,
+                        WatcherCode = "DISP_INVALID_01",
+                        CorrectedPlateNumber = null,
+                        TicketNumber = "MA12345678", // Invalid ticket format (2 letters + 8 digits)
+                        TriggerGateOpen = false
+                    };
+
+                    var result = await _unlinkedTransactionRecoveryAppService.SendUnlinkedTransactionAsEntryAsync(input);
+
+                    result.IsSuccess.ShouldBeFalse();
+                    result.ValidationErrors.ShouldContain(v => v.ErrorMessage.Contains("Invalid ticket number."));
+                }
+            }
+        });
+    }
+
+    [Fact]
+    public async Task SendAsEntry_Camera_Should_Reject_When_Plate_Invalid()
+    {
+        await WithUnitOfWorkAsync(async () =>
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var orgList = await _organizationRepository.GetListAsync();
+                var targetOrg = orgList.FirstOrDefault();
+                if (targetOrg != null)
+                {
+                    targetOrg.CameraTransaction = true;
+                    targetOrg.DispenserTransaction = false;
+                    targetOrg.Settings = new OrganizationSettings { UnlinkedEntry = true };
+                    await _organizationRepository.UpdateAsync(targetOrg, autoSave: true);
+
+                    var unlinked = new UnLinkedTransaction
+                    {
+                        DeviceId = "CAM_INVALID_PLATE",
+                        PlateNumber = null,
+                        SnapTime = DateTime.UtcNow,
+                        VehiclePicture = "pic.jpg",
+                        IsIn = true
+                    };
+                    var insertedUnlinked = await _unlinkedTransactionRepository.InsertAsync(unlinked, autoSave: true);
+
+                    var watcher = new Dispenser
+                    {
+                        Name = "Camera Test Device",
+                        DeviceId = "CAM_INVALID_PLATE",
+                        CameraType = WatcherType.Entry,
+                        OrganizationId = targetOrg.Id,
+                        GarageId = 1,
+                        Status = Status.Active
+                    };
+                    await _dispenserRepository.InsertAsync(watcher, autoSave: true);
+
+                    var input = new SendUnlinkedAsEntryDto
+                    {
+                        UnlinkedTransactionId = insertedUnlinked.Id,
+                        OrganizationId = targetOrg.Id,
+                        WatcherCode = "CAM_INVALID_PLATE",
+                        CorrectedPlateNumber = "BAP1324" // 'P' is not a valid Saudi character
+                    };
+
+                    var result = await _unlinkedTransactionRecoveryAppService.SendUnlinkedTransactionAsEntryAsync(input);
+
+                    result.IsSuccess.ShouldBeFalse();
+                    result.ValidationErrors.ShouldContain(v => v.ErrorMessage.Contains("Invalid Saudi plate number."));
                 }
             }
         });
@@ -290,7 +400,7 @@ public abstract class KeeperTransactionAppServiceTests<TStartupModule> : SmartPa
     {
         await WithUnitOfWorkAsync(async () =>
         {
-            var result = await _keeperTransactionCorrectionAppService.CorrectTransactionByPlateNumberAsync(999999, "XYZ-999");
+            var result = await _keeperTransactionCorrectionAppService.CorrectTransactionByPlateNumberAsync(999999, "2252BHR");
 
             result.IsSuccess.ShouldBeFalse();
             result.Errors.ShouldContain(e => e.Contains("not found"));
@@ -306,7 +416,7 @@ public abstract class KeeperTransactionAppServiceTests<TStartupModule> : SmartPa
             {
                 var transaction = new GarageTransaction
                 {
-                    PlateNumber = "OLD123",
+                    PlateNumber = "1111BHR",
                     IsIn = true,
                     OrganizationID = 1,
                     GarageId = 1,
@@ -314,13 +424,74 @@ public abstract class KeeperTransactionAppServiceTests<TStartupModule> : SmartPa
                 };
                 var inserted = await _garageTransactionRepository.InsertAsync(transaction, autoSave: true);
 
-                var result = await _keeperTransactionCorrectionAppService.CorrectTransactionByPlateNumberAsync(inserted.Id, "NEW456");
+                var result = await _keeperTransactionCorrectionAppService.CorrectTransactionByPlateNumberAsync(inserted.Id, "2252BHR");
 
                 result.IsSuccess.ShouldBeTrue();
                 var updated = await _garageTransactionRepository.GetAsync(inserted.Id);
-                updated.PlateNumber.ShouldBe("NEW456");
+                updated.PlateNumber.ShouldBe("2252BHR");
+            }
+        });
+    }
+
+    [Fact]
+    public async Task CorrectTransaction_Should_Update_TicketNumber_Successfully()
+    {
+        await WithUnitOfWorkAsync(async () =>
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var transaction = new GarageTransaction
+                {
+                    TicketId = "OLD12345678",
+                    IsIn = true,
+                    OrganizationID = 1,
+                    GarageId = 1,
+                    LaneNO = "LANE1"
+                };
+                var inserted = await _garageTransactionRepository.InsertAsync(transaction, autoSave: true);
+
+                var result = await _keeperTransactionCorrectionAppService.CorrectTransactionByPlateNumberAsync(inserted.Id, "MAI12345678");
+
+                result.IsSuccess.ShouldBeTrue();
+                var updated = await _garageTransactionRepository.GetAsync(inserted.Id);
+                updated.TicketId.ShouldBe("MAI12345678");
+            }
+        });
+    }
+
+    [Fact]
+    public async Task CorrectTransaction_Should_Reject_Invalid_Plate_Or_Ticket()
+    {
+        await WithUnitOfWorkAsync(async () =>
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var transaction = new GarageTransaction
+                {
+                    PlateNumber = "2252BHR",
+                    IsIn = true,
+                    OrganizationID = 1,
+                    GarageId = 1,
+                    LaneNO = "LANE1"
+                };
+                var inserted = await _garageTransactionRepository.InsertAsync(transaction, autoSave: true);
+
+                // Reject invalid Saudi plate (invalid char P)
+                var resultInvalidPlate = await _keeperTransactionCorrectionAppService.CorrectTransactionByPlateNumberAsync(inserted.Id, "BAP1324");
+                resultInvalidPlate.IsSuccess.ShouldBeFalse();
+                resultInvalidPlate.ValidationErrors.ShouldContain(v => v.ErrorMessage.Contains("neither a valid Saudi plate number nor a valid ticket number"));
+
+                // Reject invalid ticket (malformed)
+                var resultInvalidTicket = await _keeperTransactionCorrectionAppService.CorrectTransactionByPlateNumberAsync(inserted.Id, "MA12345678");
+                resultInvalidTicket.IsSuccess.ShouldBeFalse();
+                resultInvalidTicket.ValidationErrors.ShouldContain(v => v.ErrorMessage.Contains("neither a valid Saudi plate number nor a valid ticket number"));
+
+                // Transaction should not be modified
+                var current = await _garageTransactionRepository.GetAsync(inserted.Id);
+                current.PlateNumber.ShouldBe("2252BHR");
             }
         });
     }
 }
+
 

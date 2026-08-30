@@ -27,7 +27,7 @@ public class KeeperAuthenticationAppService : SmartParkingAppService, IKeeperAut
     private readonly IRepository<Volo.Abp.Identity.IdentityUser, Guid> _userRepository;
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly IAuthenticationUtility _authenticationUtility;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly Volo.Abp.Authorization.Permissions.IPermissionChecker _permissionChecker;
 
     public KeeperAuthenticationAppService(
         UserManager<Volo.Abp.Identity.IdentityUser> userManager,
@@ -36,7 +36,7 @@ public class KeeperAuthenticationAppService : SmartParkingAppService, IKeeperAut
         IRepository<Volo.Abp.Identity.IdentityUser, Guid> userRepository,
         IRepository<Organization, int> organizationRepository,
         IAuthenticationUtility authenticationUtility,
-        IAuthorizationService authorizationService)
+        Volo.Abp.Authorization.Permissions.IPermissionChecker permissionChecker)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -44,7 +44,7 @@ public class KeeperAuthenticationAppService : SmartParkingAppService, IKeeperAut
         _userRepository = userRepository;
         _organizationRepository = organizationRepository;
         _authenticationUtility = authenticationUtility;
-        _authorizationService = authorizationService;
+        _permissionChecker = permissionChecker;
     }
 
     /// <inheritdoc/>
@@ -96,27 +96,29 @@ public class KeeperAuthenticationAppService : SmartParkingAppService, IKeeperAut
             if (user.GetProperty<UserTypeCategory>("UserTypeCategory") == 0)
                 return Result<LoginResponseDto>.Unauthorized();
 
-            CurrentTenant.Change(user?.TenantId ?? null);
-
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            var tenantId = user.TenantId.ToString();
-
-            bool canCheckout = await _authorizationService.IsGrantedAsync(CheckoutPermissions.CancelTransaction);
-
-
-            return Result<LoginResponseDto>.Success(new LoginResponseDto
+            using (CurrentTenant.Change(user.TenantId))
             {
-                AccessToken = await _authenticationUtility.GenerateTokenAsync(user) ?? string.Empty,
-                Role = roles.FirstOrDefault(),
-                Baseurl = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}",
-                TenantId = tenantId,
-                UnlinkedEntryTransaction= await _authorizationService.IsGrantedAsync(UnlinkedEntryPermissions.Default),
-                UserId = user.Id.ToString(),
-                OrganizationId = organizationEntity.Id,
-                GracePeriod = organizationEntity.Graceperiod,
-                CanCancelTransaction = canCheckout,
-                OrganizationHasShifts = organizationEntity.Settings.UseShifts
-            });
+                var principal = await _signInManager.CreateUserPrincipalAsync(user);
+
+                bool canCheckout = await _permissionChecker.IsGrantedAsync(principal, CheckoutPermissions.CancelTransaction);
+                bool unlinkedEntry = await _permissionChecker.IsGrantedAsync(principal, UnlinkedEntryPermissions.View);
+
+                return Result<LoginResponseDto>.Success(new LoginResponseDto
+                {
+                    AccessToken = await _authenticationUtility.GenerateTokenAsync(user) ?? string.Empty,
+                    Role = roles.FirstOrDefault(),
+                    Baseurl = _httpContext?.HttpContext?.Request != null
+                        ? $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}"
+                        : string.Empty,
+                    TenantId = user.TenantId?.ToString() ?? string.Empty,
+                    UnlinkedEntryTransaction = unlinkedEntry,
+                    UserId = user.Id.ToString(),
+                    OrganizationId = organizationEntity.Id,
+                    GracePeriod = organizationEntity.Graceperiod,
+                    CanCancelTransaction = canCheckout,
+                    OrganizationHasShifts = organizationEntity.Settings?.UseShifts ?? false
+                });
+            }
         }
     }
 }

@@ -8,6 +8,7 @@ using SmartParking.Organizations;
 using SmartParking.Permissions.CheckoutPermissions;
 using SmartParking.Permissions.UnlinkedEntryPermissions;
 using SmartParking.Shifts;
+using SmartParking.Validations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -198,12 +199,30 @@ public partial class UnlinkedTransactionAtCamera
                 SnackBar.ShowSnackbar(Snackbar, L["TicketNumberRequired"], Severity.Warning);
                 return;
             }
+
+            if (!VehicleValidation.IsValidTicketNumber(ticket))
+            {
+                SnackBar.ShowSnackbar(Snackbar, L["InvalidTicketNumber"], Severity.Warning);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(plate) && !VehicleValidation.IsValidSaudiPlate(plate))
+            {
+                SnackBar.ShowSnackbar(Snackbar, L["InvalidSaudiPlateNumber"], Severity.Warning);
+                return;
+            }
         }
         else
         {
             if (string.IsNullOrEmpty(plate))
             {
                 SnackBar.ShowSnackbar(Snackbar, L["PlateNumberRequired"], Severity.Warning);
+                return;
+            }
+
+            if (!VehicleValidation.IsValidSaudiPlate(plate))
+            {
+                SnackBar.ShowSnackbar(Snackbar, L["InvalidSaudiPlateNumber"], Severity.Warning);
                 return;
             }
         }
@@ -256,4 +275,41 @@ public partial class UnlinkedTransactionAtCamera
             StateHasChanged();
         }
     }
+
+    private string? ValidateTicketInput(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return _organization.DispenserTransaction ? L["TicketNumberRequired"] : null;
+        }
+
+        return VehicleValidation.IsValidTicketNumber(value.Trim())
+            ? null
+            : L["InvalidTicketNumber"];
+    }
+
+    private string? ValidatePlateInput(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return L["PlateNumberRequired"];
+        }
+
+        return VehicleValidation.IsValidSaudiPlate(value.Trim())
+            ? null
+            : L["InvalidSaudiPlateNumber"];
+    }
+
+    private string? ValidateOptionalPlateInput(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        return VehicleValidation.IsValidSaudiPlate(value.Trim())
+            ? null
+            : L["InvalidSaudiPlateNumber"];
+    }
 }
+

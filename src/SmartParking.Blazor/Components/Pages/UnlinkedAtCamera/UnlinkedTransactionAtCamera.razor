@@ -83,15 +83,15 @@
         <MudItem md="7" xs="12">
             <MudCard Elevation="2" Class="pa-4 mb-4">
                 <div class="d-flex justify-center mb-4">
-                    <CarImageDetails Date="@(_unlinkedTransaction.AccurateTime ?? _unlinkedTransaction.SnapTime ?? DateTime.Now)"
+                    <CarImageDetails Date="@(DateTime.Now)"
                                      Image="@_unlinkedTransaction.VehiclePicture"
                                      Title="@L["CapturedVehicleImage"]" />
                 </div>
 
                 <div class="px-2">
                     <LastInvoiceOnGateDetails Key="@L["DeviceId"]" Value="@_unlinkedTransaction.DeviceId" />
-                    <LastInvoiceOnGateDetails Key="@L["CaptureTime"]" Value="@((_unlinkedTransaction.AccurateTime ?? _unlinkedTransaction.SnapTime ?? DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"))" />
-                    <LastInvoiceOnGateDetails Key="@L["OrganizationName"]" Value="@(CultureInfo.CurrentCulture.Name == "en" ? _unlinkedTransaction.OrganizationEnglishName : _unlinkedTransaction.OrganizationArabicName)" />
+                    <LastInvoiceOnGateDetails Key="@L["CaptureTime"]" Value="@((DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"))" />
+                    <LastInvoiceOnGateDetails Key="@L["OrganizationName"]" Value="@(CultureInfo.CurrentCulture.Name == "en" ? (!string.IsNullOrWhiteSpace(_organization.EnglishName) ? _organization.EnglishName : _organization.ArabicName) : (!string.IsNullOrWhiteSpace(_organization.ArabicName) ? _organization.ArabicName : _organization.EnglishName))" />
                     <LastInvoiceOnGateDetails Key="@L["Direction"]" Value="@L["Entry"]" />
                 </div>
             </MudCard>
@@ -112,9 +112,6 @@
                 </MudCardHeader>
 
                 <MudCardContent Class="px-0">
-                    <MudText Typo="Typo.body2" Class="text-muted mb-4">
-                        @L["UnlinkedRecoveryDescription"]
-                    </MudText>
 
                     @if (_organization.DispenserTransaction)
                     {
@@ -124,6 +121,7 @@
                                       Variant="Variant.Outlined"
                                       Required="true"
                                       RequiredError="@L["TicketNumberRequired"]"
+                                      Validation="@((Func<string, string?>)ValidateTicketInput)"
                                       Class="mb-4"
                                       Adornment="Adornment.Start"
                                       AdornmentIcon="@Icons.Material.Filled.ConfirmationNumber" />
@@ -133,6 +131,7 @@
                                       Label="@L["PlateNumber"]"
                                       Variant="Variant.Outlined"
                                       Required="false"
+                                      Validation="@((Func<string, string?>)ValidateOptionalPlateInput)"
                                       Class="mb-4"
                                       Adornment="Adornment.Start"
                                       AdornmentIcon="@Icons.Material.Filled.DirectionsCar" />
@@ -145,6 +144,7 @@
                                       Variant="Variant.Outlined"
                                       Required="true"
                                       RequiredError="@L["PlateNumberRequired"]"
+                                      Validation="@((Func<string, string?>)ValidatePlateInput)"
                                       Class="mb-4"
                                       Adornment="Adornment.Start"
                                       AdornmentIcon="@Icons.Material.Filled.DirectionsCar" />

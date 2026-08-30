@@ -992,8 +992,8 @@
     "AllEntriesProcessedForDevice": "All detections have been processed for this device.",
     "CapturedVehicleImage": "Captured Vehicle Image",
     "CaptureTime": "Capture Time",
-    "AccessRequestAction": "Access Request Action",
-    "PendingApproval": "Pending Approval",
+    "AccessRequestAction": "Cars are on hold",
+    "PendingApproval": "Awaiting Approval",
     "TriggerGateOpenOnAccept": "Open barrier on approval",
     "SendAsEntryTransaction": "Send as Entry Transaction",
     "PlateNumberRequired": "Plate number is required",
@@ -1008,7 +1008,9 @@
     "Permission:SendAsEntry": "Send As Entry",
     "TicketNumberRequired": "Ticket number is required",
     "ExitWatcherNotAllowed": "Exit watcher transactions cannot be recovered as entry.",
-    "NoTransactionSelected": "No transaction selected"
-
+    "NoTransactionSelected": "No transaction selected",
+    "Direction": "Transaction type",
+    "InvalidTicketNumber": "Invalid ticket number format",
+    "InvalidSaudiPlateNumber": "Invalid Saudi plate number"
   }
 }

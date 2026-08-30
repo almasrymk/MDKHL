@@ -154,17 +154,27 @@ public class AuthenticationUtility : IAuthenticationUtility, ITransientDependenc
 
         };
         var options = _oidcOptions.CurrentValue;
+        var signingCredential = options.SigningCredentials.FirstOrDefault();
+        if (signingCredential == null || options.JsonWebTokenHandler == null)
+        {
+            return string.Empty;
+        }
+
+        var issuer = _httpContext.HttpContext != null
+            ? $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}"
+            : "SmartParking";
+
         var descriptor = new SecurityTokenDescriptor
         {
             Audience = "SmartParking", // replace with yours,
             EncryptingCredentials = options.DisableAccessTokenEncryption
                 ? null
-                : options.EncryptionCredentials.First(),
+                : options.EncryptionCredentials.FirstOrDefault(),
             Expires = null,
             Subject = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType),
             IssuedAt = DateTime.UtcNow,
-            Issuer = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}", 
-            SigningCredentials = options.SigningCredentials.First(),
+            Issuer = issuer,
+            SigningCredentials = signingCredential,
             TokenType = OpenIddictConstants.JsonWebTokenTypes.AccessToken,
         };
 

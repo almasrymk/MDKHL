@@ -11,6 +11,7 @@ using SmartParking.OpeningGate;
 using SmartParking.Organizations;
 using SmartParking.Results;
 using SmartParking.Utilities;
+using SmartParking.Validations;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -183,10 +184,26 @@ public class UnlinkedTransactionRecoveryAppService : SmartParkingAppService, IUn
                     });
                 }
 
+                if (!VehicleValidation.IsValidTicketNumber(ticket))
+                {
+                    return Result<GarageTransactionDto>.Invalid(new ValidationError
+                    {
+                        ErrorMessage = "Invalid ticket number."
+                    });
+                }
+
                 // Plate is optional for dispenser transactions
                 string rawPlate = (input.CorrectedPlateNumber ?? unlinked.PlateNumber ?? "").Trim().Replace(" ", "");
                 if (!string.IsNullOrEmpty(rawPlate))
                 {
+                    if (!VehicleValidation.IsValidSaudiPlate(rawPlate))
+                    {
+                        return Result<GarageTransactionDto>.Invalid(new ValidationError
+                        {
+                            ErrorMessage = "Invalid Saudi plate number."
+                        });
+                    }
+
                     plate = rawPlate;
                     var existingActivePlate = await _garageTransactionRepository.FirstOrDefaultAsync(
                         gt => gt.PlateNumber == plate && gt.OrganizationID == watcher.OrganizationId && gt.IsIn == true && gt.IsMapped == false);
@@ -218,6 +235,14 @@ public class UnlinkedTransactionRecoveryAppService : SmartParkingAppService, IUn
                     return Result<GarageTransactionDto>.Invalid(new ValidationError
                     {
                         ErrorMessage = "Plate number is required."
+                    });
+                }
+
+                if (!VehicleValidation.IsValidSaudiPlate(plate))
+                {
+                    return Result<GarageTransactionDto>.Invalid(new ValidationError
+                    {
+                        ErrorMessage = "Invalid Saudi plate number."
                     });
                 }
 
@@ -259,8 +284,8 @@ public class UnlinkedTransactionRecoveryAppService : SmartParkingAppService, IUn
                 CanCheckout = true,
                 IsPending = false,
                 VehiclePicture = unlinked.VehiclePicture,
-                AccurateTime = unlinked.AccurateTime ?? unlinked.SnapTime ?? DateTime.Now,
-                SnapTime = unlinked.SnapTime ?? unlinked.CreationTime,
+                AccurateTime = unlinked.SnapTime ?? DateTime.Now,
+                SnapTime = unlinked.SnapTime ?? DateTime.Now,
                 CustomerCategory = category,
                 LaneNO = input.WatcherCode
             };
