@@ -519,9 +519,9 @@ public class SmartParkingMenuContributor : IMenuContributor
 
             reportsGroup.AddItem(
                 new ApplicationMenuItem(
-                    "SmartParking.Reports.PronightBooking",
-                    l["PronightBooking"],
-                    "/pronight-packages",
+                    "SmartParking.Reports.Bookings",
+                    l["Bookings"],
+                    "/bookings",
                     icon: Icons.Material.Filled.DataThresholding
                 ).RequirePermissions(UnitVehiclePackagePermissions.Default)
             );
