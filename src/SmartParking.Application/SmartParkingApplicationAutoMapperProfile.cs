@@ -327,7 +327,6 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
         CreateMap<CustomerPackageDto, CustomerPackage>()
         .ForMember(dest => dest.Customer, opt => opt.Ignore());
-        CreateMap<Banner, BannerDto>();
         CreateMap<CreateUpdateBannerDto, Banner>();
 
         CreateMap<GarageTransaction, GarageTransactionDto>()
@@ -363,7 +362,10 @@ public class SmartParkingApplicationAutoMapperProfile : Profile
 
 
 
-        CreateMap<CustomerPackage, CustomerPackageDto>();
+        CreateMap<CustomerPackage, CustomerPackageDto>()
+                .ForMember(dest => dest.ActivationDate, opt => opt.MapFrom(src => src.ActivationDateOfPackage.HasValue ? DateOnly.FromDateTime(src.ActivationDateOfPackage.Value) : (DateOnly?)null)).ForMember(dest => dest.ExpiryDateOfPackage, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.ExpiryDate)));
+        CreateMap<Banner, BannerDto>();
+
         CreateMap<CustomerPackage, CustomerPackageTransactionDto>();
 
         CreateMap<CreateUpdateCustomerPackageDto, CustomerPackage>();
