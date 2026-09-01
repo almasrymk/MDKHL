@@ -1,4 +1,4 @@
-﻿@page "/pronight-packages"
+﻿@page "/bookings"
 @using Microsoft.Extensions.Localization
 @using SmartParking.CustomerUnitPackages
 @using SmartParking.Cutomers
@@ -21,11 +21,11 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 
-<PageTitle>@L["PronightBooking"]</PageTitle>
+<PageTitle>@L["Bookings"]</PageTitle>
 
-<MudText Typo="Typo.h5" Class="mb-2">@L["PronightBooking"]</MudText>
+<MudText Typo="Typo.h5" Class="mb-2">@L["Bookings"]</MudText>
 
-<SPDataGrid PageName=@L["PronightBooking"]
+<SPDataGrid PageName=@L["Bookings"]
             ShowView="AuthorizationService.IsGrantedAsync(UnitVehiclePackagePermissions.Default).Result"
             Data="@itemData"
             TotalItemsInTable="TotalItem"
