@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Threading.Tasks;
 using System;
@@ -43,6 +43,7 @@ public partial class OrganizationView
         organizationSettings.RentalSlots = organization.OrganizationSettings.RentalSlots;
         organizationSettings.IsSlotsEditable = organization.OrganizationSettings.IsSlotsEditable;
         organizationSettings.OwnerVehicles = organization.OrganizationSettings.OwnerVehicles;
+        organizationSettings.UnlinkedEntry = organization.OrganizationSettings.UnlinkedEntry;
         ClosingHoursEnd = organization.ClosingHoursEnd.ToTimeSpan();
         ClosingHoursStart = organization.ClosingHoursStart.ToTimeSpan();
        CRExpiryDate =   organization.CRExpiryDate.ToDateTime(TimeOnly.Parse("00:00 AM"));

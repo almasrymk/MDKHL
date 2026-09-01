@@ -374,4 +374,44 @@ public static class VehicleValidation
             ArPlateLetters = arLet
         };
     }
+
+    public static bool IsValidSaudiPlate(string plate)
+    {
+        if (string.IsNullOrWhiteSpace(plate))
+        {
+            return false;
+        }
+
+        try
+        {
+            var parsed = Parse(plate);
+            if (string.IsNullOrEmpty(parsed.EnPlateLetters) || string.IsNullOrEmpty(parsed.EnPlateNumber))
+            {
+                return false;
+            }
+
+            if (parsed.EnPlateLetters.Length < 1 || parsed.EnPlateLetters.Length > 3 ||
+                parsed.EnPlateNumber.Length < 1 || parsed.EnPlateNumber.Length > 4)
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public static bool IsValidTicketNumber(string ticketNumber)
+    {
+        if (string.IsNullOrWhiteSpace(ticketNumber))
+        {
+            return false;
+        }
+
+        var trimmed = ticketNumber.Trim();
+        return System.Text.RegularExpressions.Regex.IsMatch(trimmed, @"^(?:[A-Za-z]{3}[0-9]{8}|[0-9]{10,11})$");
+    }
 }

@@ -64,10 +64,11 @@ public class InvoicesAppService : ApplicationService, IInvoicesAppService
         using(_dataFilter.Disable<IMultiTenant>())
         {
             var invoice = await _invoiceRepoistory.FindAsync(id);
-            var payment = await _paymentRepoistory.FirstOrDefaultAsync( x => x.InvoiceId == id);
-            var vehicle = await _vehicleRepository.FirstOrDefaultAsync(x => x.EnPlateNumber == invoice.PlateNumber);
             if (invoice == null)
                 return Result<InvoiceDto>.NotFound("There is no such an Invoice , id: 5");
+            var payment = await _paymentRepoistory.FirstOrDefaultAsync( x => x.InvoiceId == id);
+            var vehicle = await _vehicleRepository.FirstOrDefaultAsync(x => x.EnPlateNumber == invoice.PlateNumber);
+
             var invoiceMap = ObjectMapper.Map<Invoice, InvoiceDto>(invoice);
             invoiceMap.QrCodeInvoice =  payment is null  ? "" : payment.QrCodeInvoice;
             invoiceMap.LicenseTypeImage = vehicle is null ? "" : vehicle.LicenceType.Image;

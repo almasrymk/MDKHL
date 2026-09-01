@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -54,8 +54,11 @@ public class AuthenticationUtility : IAuthenticationUtility, ITransientDependenc
         _httpContext = httpContext;
     }
 
-    public async Task CheckNationalId(IdentificationTypes identification, string NationalId)
+    public async Task CheckNationalId(IdentificationTypes identification, string? NationalId)
     {
+        if (string.IsNullOrWhiteSpace(NationalId))
+            return;
+
         if (identification == IdentificationTypes.NationalID)
         {
             var nationalIdPattern = new Regex(@"^(1|2)\d{9}$");
@@ -74,17 +77,21 @@ public class AuthenticationUtility : IAuthenticationUtility, ITransientDependenc
         }
     }
 
-    public async Task CheckIfNationalIDIsUnique(string NationalId)
+    public async Task CheckIfNationalIDIsUnique(string? NationalId)
     {
-        var query = await _userRepository.GetQueryableAsync();
-        query = query.Where(x => EF.Property<string>(x, "NationalId") == NationalId);
-        var result = await query.FirstOrDefaultAsync();
-        if (result is not null)
+        if (string.IsNullOrWhiteSpace(NationalId))
+            return;
+
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            throw new Exception(LocalizationHelper.GetLocalizedString("NationalId") + " " + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
-
+            var query = await _userRepository.GetQueryableAsync();
+            query = query.Where(x => EF.Property<string>(x, "NationalId") == NationalId);
+            var result = await query.FirstOrDefaultAsync();
+            if (result is not null)
+            {
+                throw new Exception(LocalizationHelper.GetLocalizedString("NationalId") + " " + LocalizationHelper.GetLocalizedString("DuplicateValidation"));
+            }
         }
-
     }
 
     public async Task<IdentityRole?> GetRoleByNameAndTenant(string RoleName, Guid? TenantId)
@@ -147,17 +154,27 @@ public class AuthenticationUtility : IAuthenticationUtility, ITransientDependenc
 
         };
         var options = _oidcOptions.CurrentValue;
+        var signingCredential = options.SigningCredentials.FirstOrDefault();
+        if (signingCredential == null || options.JsonWebTokenHandler == null)
+        {
+            return string.Empty;
+        }
+
+        var issuer = _httpContext.HttpContext != null
+            ? $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}"
+            : "SmartParking";
+
         var descriptor = new SecurityTokenDescriptor
         {
             Audience = "SmartParking", // replace with yours,
             EncryptingCredentials = options.DisableAccessTokenEncryption
                 ? null
-                : options.EncryptionCredentials.First(),
+                : options.EncryptionCredentials.FirstOrDefault(),
             Expires = null,
             Subject = new ClaimsIdentity(claims, TokenValidationParameters.DefaultAuthenticationType),
             IssuedAt = DateTime.UtcNow,
-            Issuer = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host}{_httpContext.HttpContext.Request.PathBase}", 
-            SigningCredentials = options.SigningCredentials.First(),
+            Issuer = issuer,
+            SigningCredentials = signingCredential,
             TokenType = OpenIddictConstants.JsonWebTokenTypes.AccessToken,
         };
 

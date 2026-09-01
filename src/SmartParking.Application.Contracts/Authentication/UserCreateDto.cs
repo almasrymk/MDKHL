@@ -1,4 +1,4 @@
-﻿using JetBrains.Annotations;
+using JetBrains.Annotations;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using System;
@@ -36,7 +36,7 @@ public class UserCreateDto
    
     public string Email { get; set; } = string.Empty;
     public IdentificationTypes IdentificationTypes { get; set; }
-    public string NationalId { get; set; }
+    public string? NationalId { get; set; }
 
     public bool IsCustomer { get; set; }
     public UserTypeCategory? UserTypeCategory { get; set; }

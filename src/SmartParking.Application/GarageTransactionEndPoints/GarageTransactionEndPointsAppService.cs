@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.Cameras;
@@ -204,7 +204,7 @@ public class GarageTransactionEndPointsAppService : SmartParkingAppService, IGar
         bool _categoryHasChanged = await GetCategory(exitTransaction, _entryTransaction);
         var _customer = _customerId is not null ? await _garageTransactionUtilityAppService.GetCustomer(Guid.Parse(_customerId)) : null;
         //Check if that transaction has been checked out before.
-        var CheckedOutTransaction = await _garageTransactionActionsHandler.CheckIfCheckoutFromMobile(new GarageTransactionDto {PlateNumber=exitTransaction.PlateNumber , TicketId=exitTransaction.TicketId });
+        var CheckedOutTransaction = await _garageTransactionActionsHandler.CheckIfCheckoutFromMobile(new GarageTransactionDto {PlateNumber=exitTransaction.PlateNumber , TicketId=exitTransaction.TicketId , OrganizationID=organization.Id , GarageId=exitTransaction.GarageId });
         if (CheckedOutTransaction != null)
             return await CheckoutFromMobileSequence(exitTransaction, organization, CheckedOutTransaction, _categoryHasChanged, _customer);
         //Check if doesn't pass organization free minutes.

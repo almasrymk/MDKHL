@@ -1,4 +1,4 @@
-﻿using SmartParking.Enums;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,7 @@ public class UserDto:IdentityUserDto
     public Guid RoleId { get; set; }
     public IdentityRoleDto Role { get; set; }
     public IdentificationTypes IdentificationTypes { get; set; }
-    public string NationalId { get; set; }
+    public string? NationalId { get; set; }
     public bool IsCustomer { get; set; }
     public UserTypeCategory UserTypeCategory { get; set; }
 

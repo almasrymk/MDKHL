@@ -1,4 +1,4 @@
-﻿using SmartParking.CustomerPackages.Dtos;
+using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Results;
 using SmartParking.UnitPackages;
 using System;
@@ -59,6 +59,8 @@ public interface ICustomerUnitPackageAppService :
     /// customer is eligible to rent multiple units; otherwise, <see langword="false"/>.</returns>
     Task<bool> MultipuleCustomerRentalValidation(Guid CustomerId, UnitPackageDto dto, string unitCode);
 
+    Task<CustomerUnitPackageDto> GetConflictingRentalPackageAsync(Guid customerId, UnitPackageDto dto, string unitCode);
+
     Task<Result<CustomerUnitPackageDto>> GetCustomerUnitPackageByCustomerIdAsync(Guid id);
     /// <summary>
     /// get all pronight packages for the authenticated customer with pagination and sorting capabilities.
@@ -66,4 +68,6 @@ public interface ICustomerUnitPackageAppService :
     /// <param name="input"></param>
     /// <returns></returns>
     Task<PagedResultDto<CustomerUnitPackageDto>> GetAllPronightPackages(PagedAndSortedResultRequestDto input);
+
+    Task<PagedResultDto<CustomerUnitPackageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input);
 }

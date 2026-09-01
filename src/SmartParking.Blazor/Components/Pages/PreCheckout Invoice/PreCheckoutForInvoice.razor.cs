@@ -49,12 +49,6 @@ public partial class PreCheckoutForInvoice
     private async Task PayInvoice()
     {
         isPaying = true;
-        var invoice = await keeperTransactionsAppService.Checkout(GarageTransactionDto, Invoice);
-        Id = invoice.Value.Id;
-        if (Discount != default)
-        {
-            await InvoiceAppService.UpdateDiscountForInvoice(Id, Discount);
-        }
         try
         {
             if (PaymentMethod == PaymentMethod.POS)
@@ -77,7 +71,21 @@ public partial class PreCheckoutForInvoice
                 var parameters = new DialogParameters<PosPaymentDialog>
                 {
                     { x => x.Request, checkoutRequest },
-                    { x => x.OnPaymentCreated, EventCallback.Factory.Create<Guid>(this, id => createdPaymentId = id) }
+                    { x => x.OnPaymentCreated, EventCallback.Factory.Create<Guid>(this, id => createdPaymentId = id) },
+                    { x => x.OnBeforeSendPurchase, EventCallback.Factory.Create(this, async () =>
+                        {
+                            if (Id == 0)
+                            {
+                                var invoice = await keeperTransactionsAppService.Checkout(GarageTransactionDto, Invoice);
+                                Id = invoice.Value.Id;
+                                if (Discount != default)
+                                {
+                                    await InvoiceAppService.UpdateDiscountForInvoice(Id, Discount);
+                                }
+                                checkoutRequest.InvoiceId = Id;
+                            }
+                        })
+                    }
                 };
 
                 var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Small, FullWidth = true };
@@ -100,6 +108,13 @@ public partial class PreCheckoutForInvoice
             }
             else
             {
+                var invoice = await keeperTransactionsAppService.Checkout(GarageTransactionDto, Invoice);
+                Id = invoice.Value.Id;
+                if (Discount != default)
+                {
+                    await InvoiceAppService.UpdateDiscountForInvoice(Id, Discount);
+                }
+
                 PaymentCheckoutDto payment = await RequestToPaymentCheckout();
                 if (payment != null)
                 {
@@ -118,6 +133,9 @@ public partial class PreCheckoutForInvoice
         finally
         {
             isPaying = false;
+            Navigation.NavigateTo($"/invoices/details/{Id}",true);
+
+
         }
     }
 
@@ -130,7 +148,7 @@ public partial class PreCheckoutForInvoice
             PaymentCategory = PaymentCategory.PaymentParking,
             InvoiceId = Id,
             PaymentMethod = PaymentMethod,
-            Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Discount),
+            Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Invoice.Discount),
             CustomerId = Invoice.CustomerId
         };
 

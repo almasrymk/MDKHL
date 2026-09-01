@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute; // This is a tool to create "fakes"
@@ -22,5 +22,7 @@ public class SmartParkingApplicationTestModule : AbpModule
 
         // If you still get an error about "IHttpContextAccessor", add this:
         context.Services.AddHttpContextAccessor();
+
+        context.Services.AddSingleton(Substitute.For<SmartParking.OpeningGate.IOpenGateFactoryService>());
     }
 }

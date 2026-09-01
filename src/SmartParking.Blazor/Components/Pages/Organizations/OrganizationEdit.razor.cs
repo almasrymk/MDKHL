@@ -140,7 +140,10 @@ public partial class OrganizationEdit
             UseShifts = _organizationSettingsDto.UseShifts,
             OwnerSlots = _organizationSettingsDto.OwnerSlots,
             RentalSlots = _organizationSettingsDto.RentalSlots,
-            OwnerVehicles = _organizationSettingsDto.OwnerVehicles
+            OwnerVehicles = _organizationSettingsDto.OwnerVehicles,
+            UnlinkedEntry = _organizationSettingsDto.UnlinkedEntry,
+            IsSlotsEditable= _organizationSettingsDto.IsSlotsEditable
+
         };
         
         //_createUpdateOrganiztionDto.OrganizationSettingsDto.VehcileAccess = _organizationSettingsDto.VehcileAccess;
@@ -239,7 +242,10 @@ public partial class OrganizationEdit
                 UseShifts = organization.OrganizationSettings.UseShifts,
                 RentalSlots = organization.OrganizationSettings.RentalSlots,
                 OwnerSlots = organization.OrganizationSettings.OwnerSlots,
-                OwnerVehicles = organization.OrganizationSettings.OwnerVehicles
+                OwnerVehicles = organization.OrganizationSettings.OwnerVehicles,
+                UnlinkedEntry = organization.OrganizationSettings.UnlinkedEntry,
+                IsSlotsEditable=organization.OrganizationSettings.IsSlotsEditable
+                
             };
         }
         StateHasChanged();

@@ -61,7 +61,7 @@ public partial class CustomerUnitPackageDialog
         customer = await CustomersAppService.GetAsync(Guid.Parse(CustomerId));
         organization = await OrganizationsAppService.GetOrganizationForCurrentTenatAsync();
         var data = await CustomerUnitPackageAppService.GetAllByCustomerId(Guid.Parse(CustomerId), input, includeDeleted: true);
-        //var result = await CustomerUnitPackageAppService.GetListOfUnitPackageByCustomer(Guid.Parse(CustomerId) , organization.Id);
+        TotalItem = (int)data.TotalCount;
         await CreateTable(data.Items.ToList());
     }
 
@@ -121,11 +121,13 @@ public partial class CustomerUnitPackageDialog
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["NumberOfVehicles"], item.NumberOfVehicles.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["NumberOfSlots"], item.NumberOfSlots.ToString()));
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Published"], item.PublishTo==item.PublishFrom ? 24 + L["Hour"] : $" {item.PublishFrom} " + " - " + $" {item.PublishTo}"));
-            CustomerPackageStatus displayStatus = BlazorPackageValidations.GetDisplayStatus(new PackageDisplayStatusDto { ActivationDate= item.ActivationDate,ExpiryDate=item.DectivationDate,CustomerPackageStatus=item.CustomerPackageStatus,IsPublished= PackageValidations.CheckPackageTimeValiditity(item.PublishFrom,item.PublishTo),PublishFrom=item.PublishFrom,PublishTo=item.PublishTo });
+            CustomerPackageStatus displayStatus = item.Status == Status.Deleted 
+                ? CustomerPackageStatus.Deleted 
+                : BlazorPackageValidations.GetDisplayStatus(new PackageDisplayStatusDto { ActivationDate= item.ActivationDate,ExpiryDate=item.DectivationDate,CustomerPackageStatus=item.CustomerPackageStatus,IsPublished= PackageValidations.CheckPackageTimeValiditity(item.PublishFrom,item.PublishTo),PublishFrom=item.PublishFrom,PublishTo=item.PublishTo });
 
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], L[$"{displayStatus.ToString()}"]));
 
-            if (displayStatus == CustomerPackageStatus.Deleted || displayStatus == CustomerPackageStatus.Expired)
+            if (displayStatus == CustomerPackageStatus.Expired)
                 continue;
             tableData.Rows.Add(rowDef);
             

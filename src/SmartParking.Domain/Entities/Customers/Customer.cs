@@ -1,4 +1,4 @@
-﻿using SmartParking.Entities.Invoices;
+using SmartParking.Entities.Invoices;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.Payments;
 using SmartParking.Enums;
@@ -17,7 +17,7 @@ public class Customer : FullAuditedEntity<Guid>, IMultiTenant
     public string OTP { get; set; }
     public DateTime OtpExpirationDate { get; set; }
     public IdentificationTypes IdentificationTypes { get; set; }
-    public string NationalId { get; set; }
+    public string? NationalId { get; set; }
     public string ArabicName { get; set; }
     public bool IsEmployee { get; set; }
     public virtual ICollection<CustomerPackage> CustomerPackages { get; set; }

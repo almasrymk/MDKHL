@@ -1,4 +1,4 @@
-﻿using SmartParking.Enums;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +11,7 @@ namespace SmartParking.GarageTransactions;
 public class GarageTransactionRawDto
 {
     public int Id { get; set; }
+    public int CameraId { get; set; }
     public string PlateNumber { get; set; }
     public DateTime? AccurateTime { get; set; }
     public WatcherType CameraType { get; set; }
@@ -20,6 +21,13 @@ public class GarageTransactionRawDto
     public bool IsMapped { get; set; }
     public bool IsIn { get; set; }
     public DateTime? CheckoutMobile { get; set; }
+    public int OrganizationID { get; set; }
+    public int GarageId { get; set; }
+    public string VehiclePicture { get; set; }
+    public Guid? TenantId { get; set; }
+    public int? DispenserId { get; set; }
+    public string LaneNO { get; set; }
+    public bool CanCheckout { get; set; }
     public string GarageEnglishName { get; set; }
     public string GarageArabicName { get; set; }
     public string OrganizationEnglishName { get; set; }

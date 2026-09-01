@@ -3469,6 +3469,10 @@ namespace SmartParking.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("CustomerUnitPackageId");
+
                     b.ToTable("UnitVehiclePackges");
                 });
 
@@ -4470,7 +4474,6 @@ namespace SmartParking.Migrations
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("Email");
@@ -4540,7 +4543,6 @@ namespace SmartParking.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("NormalizedEmail")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("NormalizedEmail");
@@ -5916,6 +5918,25 @@ namespace SmartParking.Migrations
                         .IsRequired();
 
                     b.Navigation("SubscriptionType");
+                });
+
+            modelBuilder.Entity("SmartParking.Entities.UnitVehiclePackges.UnitVehiclePackge", b =>
+                {
+                    b.HasOne("SmartParking.Entities.Customers.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SmartParking.Entities.CustomerUnitPackages.CustomerUnitPackage", "CustomerUnitPackage")
+                        .WithMany()
+                        .HasForeignKey("CustomerUnitPackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("CustomerUnitPackage");
                 });
 
             modelBuilder.Entity("SmartParking.Entities.Vehicles.Vehicle", b =>

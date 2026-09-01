@@ -1,4 +1,4 @@
-﻿using SmartParking.Enums;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +18,7 @@ public class CreateUpdateCustomerDto
     public string RepeatPassword { get; set; }
     public string PhoneNumber { get; set; }
     public IdentificationTypes IdentificationType { get; set; }
-    public string NationalId { get; set; }
+    public string? NationalId { get; set; }
     public bool isActive { get; set; } = true;
     public CustomerCategoryStatus CustomerCategory { get; set; }
     public int OrganizationId { get; set; }

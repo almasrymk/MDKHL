@@ -113,9 +113,15 @@ public class UsersAppService : ApplicationService, IUsersAppService
             throw new Exception(LocalizationHelper.GetLocalizedString("PhoneNumber") + " " +
                 LocalizationHelper.GetLocalizedString("DuplicateValidation"));
         }
+        input.NationalId = NationalIdHelper.Normalize(input.NationalId);
+        if (input.NationalId == null)
+            input.IdentificationTypes = IdentificationTypes.None;
         SetUserProperties(user, input);
-        await _authenticationUtility.CheckNationalId(input.IdentificationTypes, input.NationalId);
-        await _authenticationUtility.CheckIfNationalIDIsUnique(input.NationalId);
+        if (!string.IsNullOrWhiteSpace(input.NationalId))
+        {
+            await _authenticationUtility.CheckNationalId(input.IdentificationTypes, input.NationalId);
+            await _authenticationUtility.CheckIfNationalIDIsUnique(input.NationalId);
+        }
         var creationResult = await _userManager.CreateAsync(user, input.Password);
 
         await _userManager.SetPhoneNumberAsync(user, input.PhoneNumber);
@@ -422,12 +428,15 @@ public class UsersAppService : ApplicationService, IUsersAppService
                 IdentityUser? user = await IsUserFound(id);
                 var UpdateDataDto = new UpdateUserDto
                 {
+                    UserName = user.UserName,
                     Name = input.FullName,
-                    IdentificationTypes = (IdentificationTypes)Enum.Parse(typeof(IdentificationTypes), input.IdentificationTypes),
+                    Surname = user.Surname,
+                    ConcurrencyStamp = user.ConcurrencyStamp,
+                    IdentificationTypes = Enum.TryParse<IdentificationTypes>(input.IdentificationTypes, true, out var identificationType) ? identificationType : IdentificationTypes.None,
                     PhoneNumber = input.Phone,
                     Email = input.Email,
                     NationalId = input.NationalId,
-                    OrganizationId=user.GetProperty<int>("OrganizationId")
+                    OrganizationId = user.GetProperty<int>("OrganizationId")
 
                 };
                 await UpdateUserProperties(user, UpdateDataDto);
@@ -729,8 +738,9 @@ public class UsersAppService : ApplicationService, IUsersAppService
         user.SetProperty("OtpExpirationDate", DateTime.Now);
         user.SetProperty("UserTypeId", input.UserType);
         user.SetProperty("OrganizationId", input.OrganizationId);
-        user.SetProperty("IdentificationTypes", input.IdentificationTypes);
-        user.SetProperty("NationalId", input.NationalId);
+        var normalizedNationalId = NationalIdHelper.Normalize(input.NationalId);
+        user.SetProperty("IdentificationTypes", normalizedNationalId == null ? IdentificationTypes.None : input.IdentificationTypes);
+        user.SetProperty("NationalId", normalizedNationalId);
         if (input.UserTypeCategory.HasValue)
             user.SetProperty("UserTypeCategory", input.UserTypeCategory);
     }
@@ -743,15 +753,16 @@ public class UsersAppService : ApplicationService, IUsersAppService
     /// <param name="ArabicName">The Arabic name of the customer.</param>
     /// <param name="userId">The user ID of the customer.</param>
     /// <exception cref="Exception">Thrown if the customer cannot be added.</exception>
-    private async Task AddCustomer(IdentificationTypes identificationTypes, string NationalId, string ArabicName, Guid userId)
+    private async Task AddCustomer(IdentificationTypes identificationTypes, string? NationalId, string ArabicName, Guid userId)
     {
         try
         {
+            var normalizedNationalId = NationalIdHelper.Normalize(NationalId);
             var customer = new Customer
             {
                 IdentityUserId = userId,
-                IdentificationTypes = identificationTypes,
-                NationalId = NationalId,
+                IdentificationTypes = normalizedNationalId == null ? IdentificationTypes.None : identificationTypes,
+                NationalId = normalizedNationalId,
                 ArabicName = ArabicName,
                 TenantId = null
             };
@@ -870,7 +881,8 @@ public class UsersAppService : ApplicationService, IUsersAppService
     {
         if (input.IsCustomer)
         {
-            await AddCustomer(input.IdentificationTypes, input.NationalId, input.Surname, user.Id);
+            var normalizedNationalId = NationalIdHelper.Normalize(input.NationalId);
+            await AddCustomer(input.IdentificationTypes, normalizedNationalId, input.Surname, user.Id);
             var roleCustomer = await GetCustomerRole();
             user.AddRole(roleCustomer.Id);
         }
@@ -883,7 +895,11 @@ public class UsersAppService : ApplicationService, IUsersAppService
     /// <param name="input">The data transfer object containing the updated user information.</param>
     private async Task UpdateUserProperties(IdentityUser user, UpdateUserDto input)
     {
-        await CheckNationalIdValid(user, input.IdentificationTypes, input.NationalId);
+        var normalizedNationalId = NationalIdHelper.Normalize(input.NationalId);
+        input.NationalId = normalizedNationalId;
+        if (normalizedNationalId == null)
+            input.IdentificationTypes = IdentificationTypes.None;
+        await CheckNationalIdValid(user, input.IdentificationTypes, normalizedNationalId);
         await CheckUpdatePhoneNumber(user, input);
         await _authenticationUtility.CheckPhoneNumberIsValid(input.PhoneNumber);
         await _authenticationUtility.CheckUserNameIsValid(input.Name);
@@ -902,7 +918,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
 );
         user.SetIsActive(input.IsActive);
         user.SetProperty("IdentificationTypes", input.IdentificationTypes);
-        user.SetProperty("NationalId", input.NationalId);
+        user.SetProperty("NationalId", normalizedNationalId);
         user.SetProperty("OrganizationId", input.OrganizationId);
         ObjectHelper.TrySetProperty(
             user,
@@ -940,11 +956,14 @@ public class UsersAppService : ApplicationService, IUsersAppService
     /// <param name="identification">The identification type being validated.</param>
     /// <param name="nationalId">The national ID to validate.</param>
     /// <exception cref="Exception">Thrown if the national ID is invalid or not unique.</exception>
-    private async Task CheckNationalIdValid(IdentityUser user, IdentificationTypes identification, string nationalId)
+    private async Task CheckNationalIdValid(IdentityUser user, IdentificationTypes identification, string? nationalId)
     {
-        var IdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes");
-        var NationalId = user.GetProperty<string>("NationalId");
-        if (IdentificationTypes != identification || NationalId != nationalId)
+        if (string.IsNullOrWhiteSpace(nationalId))
+            return;
+
+        var existingIdentificationTypes = user.GetProperty<IdentificationTypes>("IdentificationTypes");
+        var existingNationalId = user.GetProperty<string>("NationalId");
+        if (existingIdentificationTypes != identification || existingNationalId != nationalId)
         {
             await _authenticationUtility.CheckNationalId(identification, nationalId);
             await _authenticationUtility.CheckIfNationalIDIsUnique(nationalId);

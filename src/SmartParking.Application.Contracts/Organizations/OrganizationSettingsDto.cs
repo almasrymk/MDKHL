@@ -9,4 +9,5 @@ public class OrganizationSettingsDto
     public int OwnerSlots { get; set; }
     public int RentalSlots { get; set; }
     public bool IsSlotsEditable { get; set; }
+    public bool UnlinkedEntry { get; set; }
 }

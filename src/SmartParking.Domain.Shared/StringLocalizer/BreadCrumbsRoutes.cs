@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,6 +49,7 @@ public static class BreadCrumbsRoutes
             "users" => LocalizationHelper.GetLocalizedString("Users") ,
             "payments" => LocalizationHelper.GetLocalizedString("Payments") ,
             "unLinkedTransaction" => LocalizationHelper.GetLocalizedString("UnLinkedTransaction") ,
+            "unlinked-at-camera" => LocalizationHelper.GetLocalizedString("UnlinkedEntry") ,
             "plateColors" => LocalizationHelper.GetLocalizedString("PlateColors") ,
             "licenceTypes" => LocalizationHelper.GetLocalizedString("LicenceTypes") ,
             "vehicleBrands" => LocalizationHelper.GetLocalizedString("VehicleBrands") ,

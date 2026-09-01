@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using MudBlazor;
@@ -8,6 +9,7 @@ using SmartParking.Enums;
 using SmartParking.Invoices;
 using SmartParking.Payments;
 using SmartParking.Payments.PaymentIntegrations;
+using SmartParking.Payments.Reconciliation;
 using SmartParking.Utilities;
 using SmartParking.Validations;
 using SmartParking.GarageTransactions;
@@ -27,7 +29,10 @@ public partial class CustomInvoiceMainPage : IDisposable
     [Inject] private IOptionsMonitor<GeideaOptions>     GeideaOptions  { get; set; } = default!;
     [Inject] private IOptionsMonitor<OppwaRootOptions>  OppwaOptions   { get; set; } = default!;
     [Inject] private IPaymentWebAppService              PaymentWebAppService { get; set; } = default!;
+    [Inject] private IPaymentAppService                  PaymentAppService { get; set; } = default!;
+    [Inject] private IPaymentReconciliationAppService    PaymentReconciliationAppService { get; set; } = default!;
     [Inject] private IOrganizationsAppService           OrganizationsAppService { get; set; } = default!;
+    [Inject] private ILogger<CustomInvoiceMainPage>     Logger { get; set; } = default!;
 
     // ── Page parameters / state ───────────────────────────────────────────────
 
@@ -67,11 +72,18 @@ public partial class CustomInvoiceMainPage : IDisposable
 
     private int _currentInvoiceId;
     private bool _checkoutClicked = false;
+    private bool _hasProcessedPaymentCallback = false;
+    private bool _shouldShowSuccessDialog = false;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     protected override async Task OnInitializedAsync()
     {
+        Logger.LogInformation(
+            "[TRACE] OnInitializedAsync — Uri={Uri}, PaymentId={PaymentId}, RouteTicketId={RouteTicketId}, Thread={Thread}",
+            navigationManager.Uri, PaymentId, RouteTicketId,
+            System.Threading.Thread.CurrentThread.ManagedThreadId);
+
         _objRef = DotNetObjectReference.Create(this);
         try
         {
@@ -80,8 +92,9 @@ public partial class CustomInvoiceMainPage : IDisposable
             Vat = 0;
             InvoiceAmount = 0;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Logger.LogError(ex, "[TRACE] OnInitializedAsync — init values threw, navigating to /");
             navigationManager.NavigateTo("/", true);
         }
 
@@ -90,68 +103,99 @@ public partial class CustomInvoiceMainPage : IDisposable
             SearchText = RouteTicketId;
             await OnSearch();
         }
+
+        if (PaymentId.HasValue)
+        {
+            await ProcessPaymentCallbackAsync();
+        }
+    }
+
+    private async Task ProcessPaymentCallbackAsync()
+    {
+        if (_hasProcessedPaymentCallback || !PaymentId.HasValue) return;
+        _hasProcessedPaymentCallback = true;
+
+        Logger.LogInformation("[TRACE] ProcessPaymentCallbackAsync — Processing PaymentId={PaymentId}", PaymentId.Value);
+
+        PaymentGetResponseDto? payment = null;
+        bool fetchException = false;
+        try
+        {
+            payment = await PaymentWebAppService.GetMdkhlAsync(PaymentId.Value);
+        }
+        catch (Exception fetchEx)
+        {
+            fetchException = true;
+            Logger.LogWarning("[TRACE] ProcessPaymentCallbackAsync — GetMdkhlAsync threw for PaymentId={PaymentId}: {Message}", PaymentId.Value, fetchEx.Message);
+        }
+
+        if (fetchException)
+        {
+            // Payment record already deleted or invalid, clean URL bar without duplicate cancellation
+            var cleanPath = new Uri(navigationManager.Uri).GetLeftPart(UriPartial.Path);
+            navigationManager.NavigateTo(cleanPath, forceLoad: false);
+            return;
+        }
+
+        var expectedStatus = PaymentStatus.Success.ToString();
+        bool isSuccess = payment != null && string.Equals(payment.PaymentStatus, expectedStatus, StringComparison.OrdinalIgnoreCase);
+
+        if (isSuccess)
+        {
+            Logger.LogInformation("[TRACE] ProcessPaymentCallbackAsync — Payment successful. Status={Status}, PaymentId={PaymentId}", payment!.PaymentStatus, PaymentId.Value);
+
+            InvoicePrice = payment.Invoice?.InvoicePrice ?? payment.Amount;
+            InvoiceSearchDto.TicketId = payment.Invoice?.TicketId ?? "";
+            VatRate = 15;
+            Vat = payment.Invoice?.Vat ?? 0;
+            InvoiceAmount = InvoicePrice + Vat;
+            CheckIn = payment.Invoice?.EntranceTime ?? DateTime.Now;
+            Checkout = payment.Invoice?.InvoiceTime ?? DateTime.Now;
+            _currentInvoiceId = payment.Invoice?.Id ?? 0;
+
+            _shouldShowSuccessDialog = true;
+        }
+        else
+        {
+            Logger.LogWarning(
+                "[TRACE] ProcessPaymentCallbackAsync — Payment not successful. Status={Status}, PaymentId={PaymentId}",
+                payment?.PaymentStatus ?? "Null", PaymentId.Value);
+
+            int invoiceIdToCancel = payment?.Invoice?.Id ?? _currentInvoiceId;
+            await CancelInvoiceAndDeletePaymentAsync(invoiceIdToCancel, PaymentId.Value);
+        }
     }
 
     // ── Event handlers ────────────────────────────────────────────────────────
 
+    private bool _hasShownPaymentSuccessDialog = false;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && PaymentId.HasValue)
+        if (firstRender && _shouldShowSuccessDialog && PaymentId.HasValue)
         {
+            _shouldShowSuccessDialog = false;
+            PaymentGetResponseDto? payment = null;
             try
             {
-                // Remove the paymentId from the browser's address bar immediately 
-                // so that refreshing the page does not re-open the dialog.
-                // await JS.InvokeVoidAsync("history.replaceState", null, "", "/checkout-extension");
-
-                var payment = await PaymentWebAppService.GetMdkhlAsync(PaymentId.Value);
-
-                if (payment != null && payment.PaymentStatus == PaymentStatus.Success.ToString())
-                {
-                    InvoicePrice = payment.Invoice?.InvoicePrice ?? payment.Amount;
-                    InvoiceSearchDto.TicketId = payment.Invoice?.TicketId ?? "";
-                    VatRate = 15;
-                    Vat = payment.Invoice?.Vat ?? 0;
-                    InvoiceAmount = InvoicePrice + Vat;
-                    CheckIn = payment.Invoice?.EntranceTime ?? DateTime.Now;
-                    Checkout = payment.Invoice?.InvoiceTime ?? DateTime.Now;
-                    _currentInvoiceId = payment.Invoice?.Id ?? 0;
-                    
-                    string qrData = payment.QrCodeInvoice;
-                    int gracePeriod = payment.Organization?.Graceperiod ?? 0;
-
-                    var parameters = new DialogParameters
-                    {
-                        { "Price", (double)InvoicePrice },
-                        { "TicketId", InvoiceSearchDto.TicketId },
-                        { "TaxPercentage", (double)VatRate },
-                        { "TaxAmount", (double)Vat },
-                        { "TotalAmount", (double)InvoiceAmount },
-                        { "QrData", qrData },
-                        { "EntranceTime", CheckIn },
-                        { "ExitTime", Checkout },
-                        { "InvoiceId", _currentInvoiceId },
-                        { "GracePeriod", gracePeriod }
-                    };
-
-                    var options = new DialogOptions
-                    {
-                        CloseButton = false,
-                        CloseOnEscapeKey = false,
-                        BackdropClick = false,
-                        MaxWidth = MaxWidth.Small,
-                        FullWidth = true
-                    };
-
-                    var dialog = await DialogService.ShowAsync<PaymentSuccessDialog>(" ", parameters, options);
-                    await dialog.Result;
-                    StateHasChanged();
-                }
+                payment = await PaymentWebAppService.GetMdkhlAsync(PaymentId.Value);
             }
-            catch (Exception ex)
-            {
-                snackbar.Add(L["PaymentFailed"] + " " + ex.Message, Severity.Error);
-            }
+            catch { }
+
+            string qrData = payment?.QrCodeInvoice ?? "";
+            int gracePeriod = payment?.Organization?.Graceperiod ?? 0;
+
+            await ShowPaymentSuccessDialogAsync(
+                (double)InvoicePrice,
+                InvoiceSearchDto.TicketId,
+                (double)VatRate,
+                (double)Vat,
+                (double)InvoiceAmount,
+                qrData,
+                CheckIn,
+                Checkout,
+                _currentInvoiceId,
+                gracePeriod);
         }
     }
 
@@ -238,7 +282,6 @@ public partial class CustomInvoiceMainPage : IDisposable
     {
         try
         {
-
             if (!string.IsNullOrEmpty(SearchText) && SearchText.Any(char.IsLetter))
             {
                 InvoiceSearchDto.TicketId = string.Empty;
@@ -275,14 +318,19 @@ public partial class CustomInvoiceMainPage : IDisposable
             }
             else
             {
-                snackbar.Add(L["InvoiceNotFound"], Severity.Error);
-                await Task.Delay(1000);
+                ShowInvoiceDetails = false;
+                snackbar.Add(L["CarNotFound"], Severity.Error);
             }
         }
-        catch (Exception e)
+        catch (Volo.Abp.UserFriendlyException ex)
         {
-            snackbar.Add(e.Message, Severity.Error);
-            await Task.Delay(1000);
+            ShowInvoiceDetails = false;
+            snackbar.Add(ex.Message, Severity.Error);
+        }
+        catch (Exception)
+        {
+            ShowInvoiceDetails = false;
+            snackbar.Add(L["CarNotFound"], Severity.Error);
         }
         StateHasChanged();
     }
@@ -318,7 +366,7 @@ public partial class CustomInvoiceMainPage : IDisposable
     {
         snackbar.Add("Payment successful!", Severity.Success);
 
-        string qrData = null;
+        string? qrData = null;
         qrData = FetchQrData(geideaOrder, qrData);
 
         int gracePeriod = 0;
@@ -328,29 +376,137 @@ public partial class CustomInvoiceMainPage : IDisposable
             gracePeriod = org?.Graceperiod ?? 0;
         }
 
-         var dialog = await DialogService.ShowAsync<PaymentSuccessDialog>(" ", new DialogParameters
-        {
-            { "Price", (double)InvoicePrice },
-            { "TicketId", InvoiceSearchDto.TicketId },
-            { "TaxPercentage", (double)VatRate },
-            { "TaxAmount", (double)Vat },
-            { "TotalAmount", (double)InvoiceAmount },
-            { "QrData", qrData },
-            { "EntranceTime", CheckIn },
-            { "ExitTime", Checkout },
-            { "InvoiceId", _currentInvoiceId },
-            { "GracePeriod", gracePeriod }
-        }, new DialogOptions
-         {
-             CloseButton = false,
-             CloseOnEscapeKey = false,
-             BackdropClick = false,
-             MaxWidth = MaxWidth.Small,
-             FullWidth = true
-         });
-        await dialog.Result;
+        await ShowPaymentSuccessDialogAsync(
+            (double)InvoicePrice,
+            InvoiceSearchDto.TicketId,
+            (double)VatRate,
+            (double)Vat,
+            (double)InvoiceAmount,
+            qrData,
+            CheckIn,
+            Checkout,
+            _currentInvoiceId,
+            gracePeriod);
+    }
 
-        StateHasChanged();
+    private async Task ShowPaymentSuccessDialogAsync(
+        double price,
+        string ticketId,
+        double taxPercentage,
+        double taxAmount,
+        double totalAmount,
+        string? qrData,
+        DateTime? entranceTime,
+        DateTime? exitTime,
+        int invoiceId,
+        int gracePeriod)
+    {
+        Logger.LogInformation(
+            "[TRACE] ShowPaymentSuccessDialogAsync — entered. _hasShown={HasShown}, InvoiceId={InvoiceId}, Thread={Thread}",
+            _hasShownPaymentSuccessDialog, invoiceId,
+            System.Threading.Thread.CurrentThread.ManagedThreadId);
+
+        if (_hasShownPaymentSuccessDialog)
+        {
+            Logger.LogWarning("[TRACE] ShowPaymentSuccessDialogAsync — already shown, returning early (duplicate guard)");
+            return;
+        }
+        _hasShownPaymentSuccessDialog = true;
+
+        IDialogReference? dialog = null;
+
+        try
+        {
+            var parameters = new DialogParameters
+            {
+                { "Price", price },
+                { "TicketId", ticketId },
+                { "TaxPercentage", taxPercentage },
+                { "TaxAmount", taxAmount },
+                { "TotalAmount", totalAmount },
+                { "QrData", qrData },
+                { "EntranceTime", entranceTime },
+                { "ExitTime", exitTime },
+                { "InvoiceId", invoiceId },
+                { "GracePeriod", gracePeriod }
+            };
+
+            var options = new DialogOptions
+            {
+                CloseButton = false,
+                CloseOnEscapeKey = false,
+                BackdropClick = false,
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true
+            };
+
+            Logger.LogInformation("[TRACE] ShowPaymentSuccessDialogAsync — calling InvokeAsync → DialogService.ShowAsync");
+
+            try
+            {
+                await InvokeAsync(async () =>
+                {
+                    Logger.LogInformation(
+                        "[TRACE] ShowPaymentSuccessDialogAsync — inside InvokeAsync, Thread={Thread}",
+                        System.Threading.Thread.CurrentThread.ManagedThreadId);
+
+                    dialog = await DialogService.ShowAsync<PaymentSuccessDialog>(" ", parameters, options);
+
+                    Logger.LogInformation(
+                        "[TRACE] ShowPaymentSuccessDialogAsync — ShowAsync returned. dialog={DialogNull}",
+                        dialog == null ? "NULL" : "OK");
+                });
+            }
+            catch (Exception showEx)
+            {
+                Logger.LogError(showEx, "[TRACE] ShowPaymentSuccessDialogAsync — DialogService.ShowAsync THREW inside InvokeAsync");
+                _hasShownPaymentSuccessDialog = false;
+                snackbar.Add("Dialog open error: " + showEx.Message, Severity.Error);
+                return;
+            }
+
+            if (dialog == null)
+            {
+                Logger.LogError("[TRACE] ShowPaymentSuccessDialogAsync — dialog reference is NULL after ShowAsync. MudDialogProvider may be missing.");
+                _hasShownPaymentSuccessDialog = false;
+                snackbar.Add("Dialog could not be opened (null reference). Check MudDialogProvider in layout.", Severity.Error);
+                return;
+            }
+
+            Logger.LogInformation("[TRACE] ShowPaymentSuccessDialogAsync — awaiting dialog.Result (waiting for user to close)");
+
+            // Wait until the user explicitly closes the dialog.
+            var result = await dialog.Result;
+
+            Logger.LogInformation(
+                "[TRACE] ShowPaymentSuccessDialogAsync — dialog closed by user. Canceled={Canceled}",
+                result?.Canceled);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "[TRACE] ShowPaymentSuccessDialogAsync — unhandled exception");
+            _hasShownPaymentSuccessDialog = false;
+            snackbar.Add("Payment success dialog error: " + ex.Message, Severity.Error);
+            return;
+        }
+
+        // Dialog closed by user.
+        // 1. Clean the URL address bar.
+        try
+        {
+            var cleanPath = new Uri(navigationManager.Uri).GetLeftPart(UriPartial.Path);
+            Logger.LogInformation("[TRACE] ShowPaymentSuccessDialogAsync — calling history.replaceState to {CleanPath}", cleanPath);
+            await JS.InvokeVoidAsync("history.replaceState", null, "", cleanPath);
+        }
+        catch (Exception jsEx)
+        {
+            Logger.LogWarning(jsEx, "[TRACE] ShowPaymentSuccessDialogAsync — history.replaceState failed (ignored)");
+        }
+
+        // 2. Reload once with clean path.
+        var refreshUrl = new Uri(navigationManager.Uri).GetLeftPart(UriPartial.Path);
+        Logger.LogInformation("[TRACE] ShowPaymentSuccessDialogAsync — navigating to {RefreshUrl} with forceLoad=true", refreshUrl);
+        navigationManager.NavigateTo(refreshUrl, forceLoad: true);
     }
 
     private static string FetchQrData(System.Text.Json.JsonElement? geideaOrder, string qrData)
@@ -419,28 +575,44 @@ public partial class CustomInvoiceMainPage : IDisposable
         return qrData;
     }
 
+    private bool _hasCancelledInvoice = false;
+
     private async Task Cancel()
     {
+        await CancelInvoiceAndDeletePaymentAsync(_currentInvoiceId, PaymentId);
+    }
+
+    private async Task CancelInvoiceAndDeletePaymentAsync(int invoiceId, Guid? paymentId)
+    {
+        if (_hasCancelledInvoice) return;
+        _hasCancelledInvoice = true;
+
         try
         {
-            await InvoiceUiAppService.CancelInvoiceAsync(
-                _currentInvoiceId
-                );
+            await PaymentReconciliationAppService.ProcessNonSuccessPaymentAsync(paymentId ?? Guid.Empty, invoiceId);
 
-            snackbar.Add(
-                $"{L["Done"]} {L["Delete"]} {L["Invoice"]}",
-                Severity.Success);
+            snackbar.Add($"{L["Done"]} {L["Delete"]} {L["Invoice"]}", Severity.Success);
 
-            await Task.Delay(1000);
+            await Task.Delay(500);
 
             ResetPage();
 
-            navigationManager.NavigateTo(
-                navigationManager.Uri,
-                forceLoad: true);
+            var cleanPath = new Uri(navigationManager.Uri).GetLeftPart(UriPartial.Path);
+            try
+            {
+                await JS.InvokeVoidAsync("history.replaceState", null, "", cleanPath);
+            }
+            catch { }
+
+            navigationManager.NavigateTo(cleanPath, forceLoad: true);
+        }
+        catch (NavigationException)
+        {
+            throw; // Let Blazor handle forceLoad navigation redirect
         }
         catch (Exception ex)
         {
+            Logger.LogError(ex, "[TRACE] CancelInvoiceAndDeletePaymentAsync — error during cancellation");
             snackbar.Add(ex.Message, Severity.Error);
         }
     }

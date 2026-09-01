@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Entities.Organizations;
 using SmartParking.Entities.UnitVehiclePackges;
 using SmartParking.Enums;
+using SmartParking.Filters;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,41 @@ public class UnitVehiclePackageAppService : CrudAppService<
     }
 
     #region public methods
+
+    public async Task<PagedResultDto<UnitVehiclePackageDto>> Filter(PagedAndSortedAndFilteredResultRequestDto input)
+    {
+        return await GetListAsync(input);
+    }
+
+    protected override async Task<IQueryable<UnitVehiclePackge>> CreateFilteredQueryAsync(PagedAndSortedResultRequestDto input)
+    {
+        var query = await base.CreateFilteredQueryAsync(input);
+        query = query.Include(x => x.Customer)
+                     .Include(x => x.CustomerUnitPackage);
+
+        if (input is PagedAndSortedAndFilteredResultRequestDto filteredInput && filteredInput.filters != null && filteredInput.filters.Any())
+        {
+            var filterExpression = BuildExpression<UnitVehiclePackge>.BuildFilterExpression(filteredInput.filters);
+            if (filterExpression != null)
+            {
+                query = query.Where(filterExpression);
+            }
+        }
+
+        if (input is PagedAndSortedAndSearchResultRequestDto searchInput && !string.IsNullOrWhiteSpace(searchInput.SearchingTerm))
+        {
+            var term = searchInput.SearchingTerm.ToLower();
+            query = query.Where(x =>
+                x.UnitCode.ToLower().Contains(term) ||
+                x.EnPlateNumber.ToLower().Contains(term) ||
+                x.ArPlateNumber.ToLower().Contains(term) ||
+                (x.Customer != null && x.Customer.ArabicName.ToLower().Contains(term)) ||
+                (x.CustomerUnitPackage != null && x.CustomerUnitPackage.ArabicName.ToLower().Contains(term))
+            );
+        }
+
+        return query;
+    }
 
     public override async Task<UnitVehiclePackageDto> CreateAsync(CreateUpdateUnitVehiclePackageDto input)
     {
@@ -79,7 +115,7 @@ public class UnitVehiclePackageAppService : CrudAppService<
     public async Task<bool> CheckDuplicationForVehicle(string EnPlateNumber, int customerUnitPackageId)
     {
          return await _repository.AnyAsync(x => x.EnPlateNumber == EnPlateNumber 
-         && x.CustomerUnitPackageId == customerUnitPackageId);
+         && x.CustomerUnitPackageId == customerUnitPackageId && x.IsDeleted==false);
     }
 
     public async Task<PagedResultDto<UnitVehiclePackageDto>> GetAllByCustomerId(Guid customerId, PagedAndSortedResultRequestDto input)
@@ -136,6 +172,13 @@ public class UnitVehiclePackageAppService : CrudAppService<
         var result = await AsyncExecuter.ToListAsync(query);
         return ObjectMapper.Map<List<UnitVehiclePackge>, List<UnitVehiclePackageDto>>(result);
     }
+
+
+    public async Task DeleteByPlateNumber(string EnPlateNumber)
+    {
+        await _repository.DeleteAsync(x => x.EnPlateNumber == EnPlateNumber);
+    }
+
 
     #endregion
 

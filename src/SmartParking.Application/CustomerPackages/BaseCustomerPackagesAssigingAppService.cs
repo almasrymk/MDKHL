@@ -305,15 +305,20 @@ public abstract class BaseCustomerPackagesAssigingAppService :SmartParkingAppSer
 
         // 1. Update Status to Inactive ONLY if the Activation Dates match
         .SetProperty(x => x.Status,
-            x => x.ActivationDateOfPackage == customerPackageDto.ActivationDateOfPackage
+            x => x.ActivationDateOfPackage!.Value.Date == customerPackageDto.ActivationDateOfPackage.Value.Date
                 ? Status.Inactive
                 : x.Status)
 
         // 2. Update ExpiryDate if the existing package is strictly BEFORE the new one
-        .SetProperty(x => x.ExpiryDate,
-            x => x.ActivationDateOfPackage < customerPackageDto.ActivationDateOfPackage
-                ? newExpiryDate
-                : x.ExpiryDate)
+        .SetProperty(
+            x => x.ExpiryDate,
+            x => x.ExpiryDate >= x.ActivationDateOfPackage!.Value.Date
+                ? (x.ExpiryDate >= newExpiryDate
+                    ? x.ExpiryDate
+                    : newExpiryDate)
+                : (x.ActivationDateOfPackage.Value.Date >= newExpiryDate
+                    ? x.ActivationDateOfPackage.Value.Date
+                    : newExpiryDate))
 
         // 3. Update ActivationDate if the existing package is strictly AFTER the new one
         .SetProperty(x => x.ActivationDateOfPackage,

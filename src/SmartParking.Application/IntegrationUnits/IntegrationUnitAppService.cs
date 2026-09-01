@@ -23,6 +23,7 @@ using SmartParking.UnitVehiclePackages;
 using SmartParking.Vehicles;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -477,10 +478,12 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         };
 
 
-        var result = await _customerUnitPackageAppService.MultipuleCustomerRentalValidation(customerId, CustomerPackage, dto.UnitId);
-        if (result)
+        var conflictingPackage = await _customerUnitPackageAppService.GetConflictingRentalPackageAsync(customerId, CustomerPackage, dto.UnitId);
+        if (conflictingPackage != null)
         {
-            return Result<bool>.Error(@L["MultipleRentalError"]);
+            var startDateStr = conflictingPackage.ActivationDate.ToString("d/MM/yyyy hh:mm tt", CultureInfo.InvariantCulture);
+            var endDateStr = conflictingPackage.DectivationDate.ToString("d/MM/yyyy hh:mm tt", CultureInfo.InvariantCulture);
+            return Result<bool>.Error(@L["UnitBookedDuringTime", startDateStr, endDateStr]);
         }
         if (!isUpdate)
         {

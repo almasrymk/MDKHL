@@ -1,4 +1,4 @@
-﻿@using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Localization
 @using SmartParking.BarrierAppService
 @using SmartParking.Blazor.Components.Pages.Invoices
 @using SmartParking.Blazor.Components.Shared
@@ -20,7 +20,7 @@
 @using SmartParking.Watchers
 @page "/lastinvoice"
 @inject IInvoiceAppService InvoiceAppService
-@inject IKeeperAppService KeeperAppService
+@inject IKeeperInvoiceAppService KeeperInvoiceAppService
 @inject IStringLocalizer<SmartParkingResource> L
 @inject IPaymentAppService PaymentAppService
 @inject ISnackbar Snackbar

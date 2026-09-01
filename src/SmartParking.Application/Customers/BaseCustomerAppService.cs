@@ -1,4 +1,4 @@
-﻿using SmartParking.Cutomers;
+using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
@@ -67,6 +67,9 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
     ///<inheritdoc/>
     public async Task CheckCustomer(CreateUpdateCustomerDto input)
     {
+        if (string.IsNullOrWhiteSpace(input.NationalId))
+            return;
+
         if (input.IdentificationType == IdentificationTypes.NationalID)
         {
             var nationalIdPattern = new Regex(@"^(1|2)\d{9}$");
@@ -93,17 +96,21 @@ public class BaseCustomerAppService : ApplicationService, IBaseCustomerAppServic
 
     /// <inheritdoc/>
 
-    public async Task<bool> CheckIfNationalIDIsUnique(string NationalId)
+    public async Task<bool> CheckIfNationalIDIsUnique(string? NationalId)
     {
-        var query = await _repository.GetQueryableAsync();
-        var result = query.Where(x => x.NationalId == NationalId).ToList();
-        if (result.Count == 0)
-        {
+        if (string.IsNullOrWhiteSpace(NationalId))
             return true;
 
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var query = await _repository.GetQueryableAsync();
+            var result = query.Where(x => x.NationalId == NationalId).ToList();
+            if (result.Count == 0)
+            {
+                return true;
+            }
+            return false;
         }
-        return false;
-
     }
 
     /// <inheritdoc/>

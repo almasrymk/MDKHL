@@ -1,4 +1,4 @@
-﻿using AutoMapper.Internal.Mappers;
+using AutoMapper.Internal.Mappers;
 using SmartParking.Cutomers;
 using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
@@ -74,7 +74,7 @@ public interface IBaseCustomerAppService
     /// </summary>
     /// <param name="NationalId">NationalId of customer</param>
     /// <returns>Boolean that indicates the existance of National Id</returns>
-    Task<bool> CheckIfNationalIDIsUnique(string NationalId);
+    Task<bool> CheckIfNationalIDIsUnique(string? NationalId);
 
     /// <summary>
     /// Validates whether the specified email address is in a correct format.

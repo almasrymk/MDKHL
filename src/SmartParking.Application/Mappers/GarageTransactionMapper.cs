@@ -1,4 +1,4 @@
-﻿using SmartParking.Entities.GarageTransactions;
+using SmartParking.Entities.GarageTransactions;
 using SmartParking.Enums;
 using SmartParking.GarageTransactions;
 using System;
@@ -10,25 +10,23 @@ namespace SmartParking.Mappers
     public static class GarageTransactionMapper
     {
         // 1. Entity -> GarageTransactionDto (Read)
-        // Single source of truth for computed properties
-        private static (DateTime? remainingTime, bool isPending, bool canCheckout)
-            ComputeFields(DateTime? checkoutMobile, int? graceperiod, WatcherType cameraType, bool isIn, bool isMapped)
+        // CanCheckout is a pure DB field — read directly from entity, not computed.
+        // Only RemainingTime and IsPending are computed from grace period logic.
+        private static (DateTime? remainingTime, bool isPending)
+            ComputeFields(DateTime? checkoutMobile, int? graceperiod)
         {
+            if (!checkoutMobile.HasValue)
+            {
+                return (null, false);
+            }
+
             var now = DateTime.Now;
-            var graceDeadline = checkoutMobile.HasValue
-                ? checkoutMobile.Value.AddMinutes(graceperiod ?? 0)
-                : (DateTime?)null;
+            var graceDeadline = checkoutMobile.Value.AddMinutes(graceperiod ?? 0);
 
-            var remainingTime = graceDeadline.HasValue
-                ? graceDeadline.Value <= now ? DateTime.MinValue : graceDeadline.Value
-                : (DateTime?)null;
+            var remainingTime = graceDeadline <= now ? DateTime.MinValue : graceDeadline;
+            var isPending = graceDeadline > now;
 
-            var isPending = graceDeadline.HasValue && graceDeadline.Value > now;
-            var canCheckout =  isIn
-                              && !isMapped
-                              && (!checkoutMobile.HasValue || graceDeadline!.Value <= now);
-
-            return (remainingTime, isPending, canCheckout);
+            return (remainingTime, isPending);
         }
 
         // Used by ToDto (entity → dto, full mapping with auditing fields)
@@ -36,12 +34,9 @@ namespace SmartParking.Mappers
         {
             if (entity == null) return null;
 
-            var (remainingTime, isPending, canCheckout) = ComputeFields(
+            var (remainingTime, isPending) = ComputeFields(
                 entity.CheckoutMobile,
-                entity.Organization?.Graceperiod,
-                entity.CameraType,
-                entity.IsIn,
-                entity.IsMapped);
+                entity.Organization?.Graceperiod);
 
             return new GarageTransactionDto
             {
@@ -74,10 +69,11 @@ namespace SmartParking.Mappers
                 DeleterId = entity.DeleterId,
                 DeletionTime = entity.DeletionTime,
                 IsDeleted = entity.IsDeleted,
-                // Computed
+                // Computed timing fields
                 RemainingTime = remainingTime,
                 IsPending = isPending,
-                CanCheckout = canCheckout,
+                // CanCheckout is a DB field — read directly
+                CanCheckout = entity.CanCheckout,
             };
         }
 
@@ -136,36 +132,49 @@ namespace SmartParking.Mappers
         {
             return entities?.Select(e => e.ToDto()).ToList() ?? new List<GarageTransactionDto>();
         }
+
+        public static List<GarageTransactionDto> ToDtoList(this IEnumerable<GarageTransactionRawDto> dtos)
+        {
+            return dtos?.Select(x => x.ToDto()).ToList() ?? new List<GarageTransactionDto>();
+        }
+
         public static GarageTransactionDto ToDto(this GarageTransactionRawDto x)
         {
-            var (remainingTime, isPending, canCheckout) = ComputeFields(
+            if (x == null) return null;
+
+            var (remainingTime, isPending) = ComputeFields(
                 x.CheckoutMobile,
-                x.Graceperiod,
-                x.CameraType,
-                x.IsIn,
-                x.IsMapped);
+                x.Graceperiod);
 
             return new GarageTransactionDto
             {
                 Id = x.Id,
+                CameraId = x.CameraId,
                 PlateNumber = x.PlateNumber,
-                AccurateTime = x.AccurateTime,
-                CameraType = x.CameraType,
                 SnapTime = x.SnapTime,
-                TicketId = x.TicketId,
-                CustomerCategory = x.CustomerCategory,
-                IsMapped = x.IsMapped,
+                AccurateTime = x.AccurateTime,
+                OrganizationID = x.OrganizationID,
+                GarageId = x.GarageId,
+                VehiclePicture = x.VehiclePicture,
+                CameraType = x.CameraType,
+                TenantId = x.TenantId,
                 IsIn = x.IsIn,
                 CheckoutMobile = x.CheckoutMobile,
-                GarageEnglishName = x.GarageEnglishName,
-                GarageArabicName = x.GarageArabicName,
-                OrganizationEnglishName = x.OrganizationEnglishName,
+                IsMapped = x.IsMapped,
+                CustomerCategory = x.CustomerCategory,
                 OrganizationArabicName = x.OrganizationArabicName,
+                OrganizationEnglishName = x.OrganizationEnglishName,
+                GarageArabicName = x.GarageArabicName,
+                GarageEnglishName = x.GarageEnglishName,
+                DispenserId = x.DispenserId,
+                LaneNO = x.LaneNO,
+                TicketId = x.TicketId,
                 ArabicName = x.ArabicName,
-                // Computed
+                // Computed timing fields
                 RemainingTime = remainingTime,
                 IsPending = isPending,
-                CanCheckout = canCheckout,
+                // CanCheckout is a DB field — read directly
+                CanCheckout = x.CanCheckout,
             };
         }
     }

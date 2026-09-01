@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using SmartParking.CalculationsEndpoint;
 using SmartParking.CustomerPackages.CustomerPackageTransactions;
 using SmartParking.GarageTransactions;
@@ -56,6 +56,8 @@ public class KeeperTransactionsAppService : SmartParkingAppService, IKeeperTrans
                 throw new Exception("You have to wait Grace Period");
         }
         var createdExitTransaction = await _garageTransactionUtilityAppService.InitiateExitGarageTransactionForMobileCheckout(entryGarageTransaction);
+        // Maintain invariant: reset all prior CanCheckout=true for this vehicle before creating new stack top
+        await _garageTransactionUtilityAppService.ResetCanCheckoutForVehicle(entryGarageTransaction.PlateNumber, entryGarageTransaction.TicketId);
         await _garageTransactionUtilityAppService.UpdateEntryTransactionCheckouFromMobile(entryGarageTransaction.Id);
         var garageTransaction = await _garageTransactionsAppService.CreateAsync(createdExitTransaction);
         invoice.GarageTransactionExitId = garageTransaction.Id;

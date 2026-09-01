@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SmartParking.Entities.Invoices;
 using SmartParking.Enums;
@@ -35,10 +36,16 @@ public class InvoicePaymentInitializationStrategy : IPaymentInitializationStrate
         }
 
         var invoice = invoiceResult.Value;
+        if (invoice.InvoiceType == InvoiceType.Pending)
+        {
+            return Result<PaymentInitializationContext>.Error("Invoice is being processed");
+
+
+        }
         var amount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, invoice.Discount);
 
         var request = invoice.ToPaymentCheckoutRequestDto(amount, paymentMethod);
-
+        await MarkInvoiceTypeStatusPending(sourceId);
         return Result<PaymentInitializationContext>.Success(new PaymentInitializationContext
         {
             Amount = amount,
@@ -58,5 +65,16 @@ public class InvoicePaymentInitializationStrategy : IPaymentInitializationStrate
             return Result<Invoice>.Error("Invoice already paid");
         }
         return Result<Invoice>.Success(invoice);
+    }
+
+    private async Task MarkInvoiceTypeStatusPending(int invoiceId)
+    {
+        
+        var queryable = await _invoiceRepo.GetQueryableAsync();
+
+        await queryable
+            .Where(inv => inv.Id == invoiceId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(inv => inv.InvoiceType, InvoiceType.Pending));
     }
 }

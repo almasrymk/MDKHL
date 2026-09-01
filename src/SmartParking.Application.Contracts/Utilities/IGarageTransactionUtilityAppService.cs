@@ -1,4 +1,4 @@
-﻿using SmartParking.Cameras;
+using SmartParking.Cameras;
 using SmartParking.Cutomers;
 using SmartParking.Entities.GarageTransactions;
 using SmartParking.Entities.Organizations;
@@ -31,4 +31,6 @@ public interface IGarageTransactionUtilityAppService : IApplicationService
     Task<TransactionOrganizationDto> GetOrganization(int OrganizationId);
     Task<CreateUpdateGarageTransactionDto> InitiateExitGarageTransactionForMobileCheckout(GarageTransactionDto garageTransactionDto);
     Task<CreateUpdateInvoiceDto> InitiateInvoice(DateTime entranceTime, CreateUpdateGarageTransactionDto exitTransaction, int totalHours, decimal price, bool isPackage, CustomerDto customer = null);
+    /// <summary>Resets CanCheckout=false for all transactions of a vehicle. Enforces global invariant: at most one CanCheckout=true per vehicle.</summary>
+    Task ResetCanCheckoutForVehicle(string plateNumber, string? ticketId);
 }

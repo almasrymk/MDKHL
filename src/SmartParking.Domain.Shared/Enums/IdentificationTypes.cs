@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +9,6 @@ namespace SmartParking.Enums;
 public enum  IdentificationTypes
 {
     NationalID,
-    Passport
-
+    Passport,
+    None
 }

@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using SmartParking.Authentication;
 using SmartParking.Localization;
 using System;
@@ -30,9 +30,8 @@ public class CreatedUpdatedUserDtoValidator : AbstractValidator<UserCreateDto>
             .IsInEnum()
             .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
 
-        RuleFor(x => x.NationalId)
-            .NotEmpty()
-            .WithMessage(LocalizationHelper.GetLocalizedString("EmptyValidation"));
+
+
 
         RuleFor(x => x.UserType)
             .NotNull()

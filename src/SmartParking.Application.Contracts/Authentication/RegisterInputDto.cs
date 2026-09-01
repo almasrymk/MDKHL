@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using SmartParking.Enums;
 using SmartParking.Localization;
 using System;
@@ -19,5 +19,5 @@ public class RegisterInputDto
     public string Password { get; set; }
     public string ConfirmPassword { get; set; }
     public IdentificationTypes IdentificationTypes { get; set; }
-    public string NationalId { get; set; }
+    public string? NationalId { get; set; }
 }

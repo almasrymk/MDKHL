@@ -1,4 +1,4 @@
-﻿using SmartParking.Localization;
+using SmartParking.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +37,7 @@ public static class CustomStringLocalizer
     public const string FinancialManagement = "Permission:FinancialManagement";
     public const string TransactionCheckout = "Permission:TransactionCheckout";
     public const string ChangePassword = "Permission:ChangePassword";
+    public const string SendAsEntry = "Permission:SendAsEntry";
     public const char For ='ب';
     public const char ForArabic ='ل';
 

@@ -1,4 +1,4 @@
-﻿using SmartParking.Enums;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +12,8 @@ namespace SmartParking.Utilities;
 public interface IAuthenticationUtility : ITransientDependency
 {
     Task<IdentityRole?> GetRoleByNameAndTenant(string RoleName, Guid? TenantId);
-    Task CheckNationalId(IdentificationTypes identification,string NationalId);
-    Task CheckIfNationalIDIsUnique( string NationalId);
+    Task CheckNationalId(IdentificationTypes identification, string? NationalId);
+    Task CheckIfNationalIDIsUnique(string? NationalId);
     Task CheckPhoneNumberIsValid(string phoneNumber);
     Task CheckUserNameIsValid(string name);
     Task<IdentityUser> CheckPhoneISFound(string phone);

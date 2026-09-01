@@ -1,4 +1,4 @@
-﻿namespace SmartParking.Permissions;
+namespace SmartParking.Permissions;
 
 public static class SmartParkingPermissions
 {
@@ -36,5 +36,6 @@ public static class SmartParkingPermissions
     public const string TransactionCheckout = ".TransactionCheckout";
     public const string ChangePassword = ".ChangePassword";
     public const string EditCountCurrnetCapicity = ".EditCountCurrnetCapicity";
+    public const string SendAsEntry = ".SendAsEntry";
 
 }

@@ -1,4 +1,4 @@
-﻿
+
 using Castle.Core.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -808,18 +808,20 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
             var organizations = await _orgRepo.GetQueryableAsync();
             var userQuery = await _myUserRepository.GetQueryableAsync();
             query = query.Include(_ => _.Customers).ThenInclude(_ => _.IdentityUser);
-            query = query.Where(_ => _.PaymentMethod != PaymentMethod.Cash);
+            query = query.Where(_ => _.PaymentCategory==PaymentCategory.Package);
             var customerPackageQuery = await _customerPackageRepository.GetQueryableAsync();
 
 
             var resultJoin = from payment in query
                              where tenantId.HasValue ? payment.TenantId == tenantId.Value : true
-                             join organization in organizations
-                             on payment.OrganizationId equals organization.Id
-                             join user in userQuery
-                             on payment.CreatorId equals user.Id
-                             join customerPackage in customerPackageQuery on payment.CustomerPackageId equals customerPackage.Id into packageList
-                             from package in packageList
+                             
+                             join organization in organizations on payment.OrganizationId equals organization.Id into orgList
+                             from organization in orgList.DefaultIfEmpty()
+                             
+                             let user = userQuery.FirstOrDefault(u => u.Id == payment.CreatorId)
+                             
+                             join customerPackage in customerPackageQuery on payment.CustomerPackageId equals customerPackage.Id
+                             
                              select new PaymentDto
                              {
                                  Amount = payment.Amount,
@@ -831,17 +833,17 @@ public class AnalysisAppService : SmartParkingAppService, IAnalysisAppService
                                  Customers = payment.Customers,
                                  PaymentMethod = payment.PaymentMethod,
                                  PaymentNumber = payment.PaymentNumber,
-                                 OrganizationArabicName = organization.ArabicName,
-                                 OrganizationEnglishName = organization.EnglishName,
+                                 OrganizationArabicName = organization != null ? organization.ArabicName : string.Empty,
+                                 OrganizationEnglishName = organization != null ? organization.EnglishName : string.Empty,
                                  PlateNumber = payment.Invoice != null ? payment.Invoice.PlateNumber : payment.EnPlateNumber,
-                                 AmountWithoutDiscount = payment.Invoice != null ? (payment.Invoice.InvoicePrice * 1.15m) : 0,
+                                 AmountWithoutDiscount = payment.CustomerPackage != null ? (payment!.CustomerPackage!.PriceOfPackage.Value * 1.15m) : 0,
                                  QrCodeInvoice = payment.QrCodeInvoice,
                                  CreationTime = payment.CreationTime.ToString(),
                                  PaymentCategory = payment.PaymentCategory,
                                  InvoiceId = payment.InvoiceId.HasValue ? payment.InvoiceId.Value : null,
                                  PaymentStatus = payment.PaymentStatus,
-                                 CustomerPackage = package ?? null,
-                                 CashierName = user.Name
+                                 CustomerPackage = customerPackage,
+                                 CashierName = user != null ? user.Name : string.Empty
                              };
 
             //resultJoin = CheckTenantPayment(tenantId, resultJoin);

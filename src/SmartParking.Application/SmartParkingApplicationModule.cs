@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SmartParking.Payments.PaymentIntegrations;
+using SmartParking.Payments.Reconciliation;
 using Org.BouncyCastle.Asn1.X509.Qualified;
 using SmartParking.Application.Utilities;
 using SmartParking.BarrierAppService;
@@ -15,6 +16,8 @@ using SmartParking.GarageTransactions.Factory;
 using SmartParking.Invoices;
 using SmartParking.Invoices.Factory;
 using SmartParking.KeeperShifts;
+using SmartParking.OpenGate;
+using SmartParking.OpeningGate;
 using SmartParking.PDF;
 using SmartParking.PDF.Contracts;
 using SmartParking.Utilities;
@@ -55,6 +58,8 @@ public class SmartParkingApplicationModule : AbpModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         var configuration = context.Services.GetConfiguration();
+
+        Configure<PaymentReconciliationOptions>(configuration.GetSection(PaymentReconciliationOptions.SectionName));
 
         // ── Active-provider IPaymentGatewayIntegrationService ─────────────────
         // Resolves the configured active gateway so Blazor pages can inject
@@ -120,10 +125,12 @@ public class SmartParkingApplicationModule : AbpModule
         context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, CameraTransactionActionsAppService>();
         context.Services.AddScoped<ICustomerPackageTransactionActionsAppService, DispenserTransactionActionsAppService>();
         context.Services.AddScoped<IAssignCustomerPackagesAppService, OrganizationAwareCustomerPackagesAppService>();
+        context.Services.AddScoped<IOpenGateFactoryService, OpenGateFactoryService>();
 
 
 
         context.Services.AddTransient<WebSocketHeartbeatWorker>();
+        context.Services.AddTransient<PaymentReconciliationWorker>();
         Configure<AbpAutoMapperOptions>(options =>
         {
             options.AddMaps<SmartParkingApplicationModule>();
@@ -140,6 +147,10 @@ public class SmartParkingApplicationModule : AbpModule
         var backgroundWorkerManager = context.ServiceProvider.GetRequiredService<IBackgroundWorkerManager>();
         var worker = context.ServiceProvider.GetRequiredService<WebSocketHeartbeatWorker>();
         backgroundWorkerManager.AddAsync(worker);
+
+        var reconciliationWorker = context.ServiceProvider.GetRequiredService<PaymentReconciliationWorker>();
+        backgroundWorkerManager.AddAsync(reconciliationWorker);
+
         base.OnApplicationInitialization(context);
     }
 

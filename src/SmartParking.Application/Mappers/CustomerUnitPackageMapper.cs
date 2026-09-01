@@ -1,5 +1,6 @@
-﻿using SmartParking.CustomerUnitPackages;
+using SmartParking.CustomerUnitPackages;
 using SmartParking.Entities.CustomerUnitPackages;
+using SmartParking.Enums;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -30,15 +31,13 @@ public static class CustomerUnitPackageMapper
             ArabicName = entity.ArabicName,
             EnglishName = entity.EnglishName,
             Status = entity.Status,
+            CustomerPackageStatus = entity.Status == Enums.Status.Deleted ? CustomerPackageStatus.Deleted : CustomerPackageStatus.Active,
             OrganizationId = entity.OrganizationId,
             CustomerCategory = entity.CustomerCategory,
             UnitCode = entity.UnitCode,
             UnitPackageType = entity.UnitPackageType,
             CustomerArabicName=entity.Customer?.ArabicName??"",
             CustomerFullName=entity.Customer?.IdentityUser?.Name??"",
-
-
-
         };
     }
 

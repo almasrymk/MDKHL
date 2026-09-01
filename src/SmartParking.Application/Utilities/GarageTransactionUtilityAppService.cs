@@ -1,4 +1,4 @@
-﻿using iText.Svg.Renderers.Path.Impl;
+using iText.Svg.Renderers.Path.Impl;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SmartParking.Cameras;
@@ -224,6 +224,12 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
     {
         await _garageTransactionManager.UpdateEntryTransactionCheckouFromMobile(entryGarageTransactionId);
     }
+
+    /// <inheritdoc/>
+    public async Task ResetCanCheckoutForVehicle(string plateNumber, string? ticketId)
+    {
+        await _garageTransactionManager.ResetCanCheckoutForVehicle(plateNumber, ticketId);
+    }
     public async Task<CustomerDto> GetCurrentCustomer()
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -310,7 +316,7 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
             IsIn = true,
             IsPending = true,
             IsMapped=false,
-            CanCheckout = false,
+            CanCheckout = true,  // new stack top
             CheckoutMobile = DateTime.Now,
             VehiclePicture = garageTransactionDto.VehiclePicture,
             CameraType = WatcherType.Exit,
@@ -418,8 +424,8 @@ public class GarageTransactionUtilityAppService : SmartParkingAppService, IGarag
                                    DispenserTransaction = x.DispenserTransaction,
                                    CameraTransaction = x.CameraTransaction,
                                    TenantId = x.TenantId!.Value,
-                                   UserAccess = x.Settings.CustomerPackage,
-                                   VehicleAccess = x.Settings.VehcilePackage
+                                   UserAccess = x.Settings != null && x.Settings.CustomerPackage,
+                                   VehicleAccess = x.Settings != null && x.Settings.VehcilePackage,
 
                                }).FirstOrDefaultAsync();
 
