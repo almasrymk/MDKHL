@@ -1,4 +1,4 @@
-﻿using SmartParking.Cutomers;
+using SmartParking.Cutomers;
 using SmartParking.Enums;
 using SmartParking.UnitPackages;
 using SmartParking.Validations;
@@ -27,6 +27,7 @@ public class CreateUpdateCustomerUnitPackageDto
     public CustomerCategoryStatus CustomerCategory { get; set; }
     public string UnitCode { get; set; }
     public CustomerUnitPackageType UnitPackageType { get; set; }
+    public bool IsExternal { get; set; }
 
 
     public static CreateUpdateCustomerUnitPackageDto CreateFrom(
@@ -66,7 +67,8 @@ public class CreateUpdateCustomerUnitPackageDto
             Vat = assignDto.Vat,
             Discount = assignDto.Discount,
             UnitCode = assignDto.UnitCode,
-            UnitPackageType = assignDto.UnitPackageType
+            UnitPackageType = assignDto.UnitPackageType,
+            IsExternal = assignDto.IsExternal
         };
     }
 

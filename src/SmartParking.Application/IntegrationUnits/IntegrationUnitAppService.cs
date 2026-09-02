@@ -87,7 +87,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         var providerArabicName = (dto is CreateUpdateBookingV2Dto v2DtoAr && !string.IsNullOrWhiteSpace(v2DtoAr.ProviderArabicName))
             ? v2DtoAr.ProviderArabicName
             : "باقه برونايت";
-        return await CreateBookingInternalAsync(dto, providerName, providerArabicName);
+        return await CreateBookingInternalAsync(dto, providerName, providerArabicName, isExternal: false);
     }
 
     [RemoteService(false)]
@@ -97,10 +97,10 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         {
             return Result.Error("ProviderName is required.");
         }
-        return await CreateBookingInternalAsync(dto, dto.ProviderName, dto.ProviderArabicName);
+        return await CreateBookingInternalAsync(dto, dto.ProviderName, dto.ProviderArabicName, isExternal: true);
     }
 
-    private async Task<Result<BookingDto>> CreateBookingInternalAsync(CreateUpdateBookingDto dto, string providerName, string? providerArabicName)
+    private async Task<Result<BookingDto>> CreateBookingInternalAsync(CreateUpdateBookingDto dto, string providerName, string? providerArabicName, bool isExternal)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
@@ -133,7 +133,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
                 {
                     return Result.Error(resultValidate.Errors.FirstOrDefault()!);
                 }
-                var customerUnitPackage = await CreateCustomerUnitPackage(customer, dto, customer.Id, unit, providerName, providerArabicName);
+                var customerUnitPackage = await CreateCustomerUnitPackage(customer, dto, customer.Id, unit, providerName, providerArabicName, isExternal);
                 var customerPackages = await CreateCustomerPackage(customerUnitPackage, vehicles, customer.MobileNumber);
                 var unitVehiclePackages = await CreateUnitVehiclePackage(vehicles, customerUnitPackage, customerPackages);
                 var PackageResult = await HandlePackageResponseDto(customerPackages);
@@ -194,7 +194,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         var providerArabicName = (dto is CreateUpdateBookingV2Dto v2DtoAr && !string.IsNullOrWhiteSpace(v2DtoAr.ProviderArabicName))
             ? v2DtoAr.ProviderArabicName
             : "باقه برونايت";
-        return await UpdateBookingInternalAsync(dto, providerName, providerArabicName);
+        return await UpdateBookingInternalAsync(dto, providerName, providerArabicName, isExternal: false);
     }
 
     [RemoteService(false)]
@@ -204,10 +204,10 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         {
             return Result.Error("ProviderName is required.");
         }
-        return await UpdateBookingInternalAsync(dto, dto.ProviderName, dto.ProviderArabicName);
+        return await UpdateBookingInternalAsync(dto, dto.ProviderName, dto.ProviderArabicName, isExternal: true);
     }
 
-    private async Task<Result<BookingDto>> UpdateBookingInternalAsync(CreateUpdateBookingDto dto, string providerName, string? providerArabicName)
+    private async Task<Result<BookingDto>> UpdateBookingInternalAsync(CreateUpdateBookingDto dto, string providerName, string? providerArabicName, bool isExternal)
     {
         try
         {
@@ -233,7 +233,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
                 return Result.Error($"there is no bookings with such id {dto.Booking.BookingId}");
             }
             var firstUVP = await _unitVehiclePackageAppService.GetAsync(bookings.FirstOrDefault()!.UnitVehiclePackageId);
-            var customerUnitPackage = await UpdateCustomerUnitPackage(firstUVP.CustomerUnitPackageId, dto);
+            var customerUnitPackage = await UpdateCustomerUnitPackage(firstUVP.CustomerUnitPackageId, dto, isExternal);
             foreach (var booking in bookings) 
             { 
                 var unitVehiclePackage = await _unitVehiclePackageAppService.GetAsync(booking.UnitVehiclePackageId);
@@ -344,7 +344,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         }
     }
 
-    private async Task<CustomerUnitPackageDto> CreateCustomerUnitPackage(CustomerDto customerDto, CreateUpdateBookingDto dto, Guid customerId, UnitDto unitDto, string providerName = "Pronight Package", string? providerArabicName = "باقه برونايت") 
+    private async Task<CustomerUnitPackageDto> CreateCustomerUnitPackage(CustomerDto customerDto, CreateUpdateBookingDto dto, Guid customerId, UnitDto unitDto, string providerName = "Pronight Package", string? providerArabicName = "باقه برونايت", bool isExternal = false) 
     {
         var organization = await _organizationsAppService.GetOrganizationForCurrentTenatAsync();
         CustomerUnitPackageAssignationDto customerUnitPackageAssignationDto = new CustomerUnitPackageAssignationDto
@@ -354,7 +354,8 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
             Vat = dto.Price.Amount * 0.15m,
             DurationOfPackage = dto.Booking.NoOfDays,
             IsOwnerPackage = false,
-            UnitPackageType = CustomerUnitPackageType.Renter
+            UnitPackageType = CustomerUnitPackageType.Renter,
+            IsExternal = isExternal
         };
         PackageDto packageDto = new PackageDto
         {
@@ -549,7 +550,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         return unitPackageIntegrations;
     }
 
-    private async Task<CustomerUnitPackageDto> UpdateCustomerUnitPackage(int id, CreateUpdateBookingDto bookingDto)
+    private async Task<CustomerUnitPackageDto> UpdateCustomerUnitPackage(int id, CreateUpdateBookingDto bookingDto, bool isExternal)
     {
         var customerUnitPackage = await _customerUnitPackageAppService.GetAsync(id);
         var dto = customerUnitPackage.ToCreateUpdateDto();
@@ -557,6 +558,7 @@ public class IntegrationUnitAppService : ApplicationService, IIntegrationUnitApp
         dto.DectivationDate = bookingDto.Booking.EndDate;
         dto.UnitCode = bookingDto.UnitId;
         dto.DurationOfPackage = bookingDto.Booking.NoOfDays;
+        dto.IsExternal = isExternal;
         var result = await _customerUnitPackageAppService.UpdateAsync(id, dto);
         return result;
     }

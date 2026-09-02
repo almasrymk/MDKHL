@@ -339,6 +339,9 @@ namespace SmartParking.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
 
+                    b.Property<bool>("IsExternal")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("LastModificationTime");
@@ -5784,6 +5787,9 @@ namespace SmartParking.Migrations
 
                             b1.Property<int>("RentalSlots")
                                 .HasColumnType("integer");
+
+                            b1.Property<bool>("UnlinkedEntry")
+                                .HasColumnType("boolean");
 
                             b1.Property<bool>("UseShifts")
                                 .HasColumnType("boolean");

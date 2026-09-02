@@ -1,4 +1,4 @@
-﻿using SmartParking.CustomerPackages.Inputs;
+using SmartParking.CustomerPackages.Inputs;
 using SmartParking.Enums;
 using SmartParking.Packages;
 using System;
@@ -32,13 +32,11 @@ public class CustomerUnitPackageDto
     public string UnitCode { get; set; }
     public Status Status { get; set; }
     public CustomerUnitPackageType UnitPackageType { get; set; }
-
-
+    public bool IsExternal { get; set; }
 
     public CreateUpdateCustomerPackageDto ToCreateUpdateCustomerPackageDto(
         string enPlateNumber,
         string arPlateNumber
-
         )
     {
         if (string.IsNullOrWhiteSpace(enPlateNumber))

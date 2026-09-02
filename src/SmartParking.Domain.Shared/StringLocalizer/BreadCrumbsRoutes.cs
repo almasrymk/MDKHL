@@ -77,6 +77,7 @@ public static class BreadCrumbsRoutes
             "shifts" => LocalizationHelper.GetLocalizedString("AddShifts"),
             "myshifts" => LocalizationHelper.GetLocalizedString("MyShifts"),
             "discounts" => LocalizationHelper.GetLocalizedString("Discounts"),
+            "bookings" => LocalizationHelper.GetLocalizedString("Bookings"),
             "dispensers" => LocalizationHelper.GetLocalizedString("Dispensers"),
             "lastinvoice" => LocalizationHelper.GetLocalizedString("Checkout"),
             "beneficiariesvehiclesreport" => LocalizationHelper.GetLocalizedString("BeneficiariesVehicles"),

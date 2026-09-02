@@ -36,6 +36,7 @@ public static class CustomerUnitPackageMapper
             CustomerCategory = entity.CustomerCategory,
             UnitCode = entity.UnitCode,
             UnitPackageType = entity.UnitPackageType,
+            IsExternal = entity.IsExternal,
             CustomerArabicName=entity.Customer?.ArabicName??"",
             CustomerFullName=entity.Customer?.IdentityUser?.Name??"",
         };
@@ -75,6 +76,7 @@ public static class CustomerUnitPackageMapper
         entity.CustomerCategory = dto.CustomerCategory;
         entity.UnitCode = dto.UnitCode;
         entity.UnitPackageType = dto.UnitPackageType;
+        entity.IsExternal = dto.IsExternal;
     }
 
     // 4. Entity -> CreateUpdateCustomerUnitPackageDto (Useful if you need to load an edit form)
@@ -102,7 +104,8 @@ public static class CustomerUnitPackageMapper
             OrganizationId = entity.OrganizationId,
             CustomerCategory = entity.CustomerCategory,
             UnitCode = entity.UnitCode,
-            UnitPackageType = entity.UnitPackageType
+            UnitPackageType = entity.UnitPackageType,
+            IsExternal = entity.IsExternal
         };
     }
 
@@ -137,7 +140,8 @@ public static class CustomerUnitPackageMapper
             OrganizationId = src.OrganizationId,
             CustomerCategory = src.CustomerCategory,
             UnitCode = src.UnitCode,
-            UnitPackageType = src.UnitPackageType
+            UnitPackageType = src.UnitPackageType,
+            IsExternal = src.IsExternal
         };
     }
 }

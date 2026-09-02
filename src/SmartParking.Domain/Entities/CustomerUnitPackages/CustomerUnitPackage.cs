@@ -1,4 +1,4 @@
-﻿using SmartParking.Entities.Customers;
+using SmartParking.Entities.Customers;
 using SmartParking.Entities.Organizations;
 using SmartParking.Enums;
 using System;
@@ -27,6 +27,5 @@ public class CustomerUnitPackage : BaseEntity
     public CustomerCategoryStatus CustomerCategory { get; set; }
     public string UnitCode { get; set; }
     public CustomerUnitPackageType UnitPackageType { get; set; }
-
-
+    public bool IsExternal { get; set; }
 }

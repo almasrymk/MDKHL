@@ -66,7 +66,7 @@ public partial class PronightReport
     {
         var tableData = new TableData()
         {
-            Name = L["UnitVehiclePackages"],
+            Name = L["Bookings"],
             ShowHeader = true
         };
 

@@ -237,7 +237,7 @@ public class CustomerUnitPackageAppService :
     public async Task<PagedResultDto<CustomerUnitPackageDto>> GetAllPronightPackages(PagedAndSortedResultRequestDto input)
     {
         var query = await _repository.GetQueryableAsync();
-        query = query.Where(x => x.EnglishName != null);
+        query = query.Where(x => x.IsExternal==true);
         var totalCount = await AsyncExecuter.CountAsync(query);
         query = query
             .Skip(input.SkipCount)

@@ -1,4 +1,4 @@
-﻿using SmartParking.Enums;
+using SmartParking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +15,5 @@ public class CustomerUnitPackageAssignationDto
     public string UnitCode { get; set; }
     public bool IsOwnerPackage { get; set; }
     public CustomerUnitPackageType UnitPackageType { get; set; }
-
+    public bool IsExternal { get; set; }
 }
