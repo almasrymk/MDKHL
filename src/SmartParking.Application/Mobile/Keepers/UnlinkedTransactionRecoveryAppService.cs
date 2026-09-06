@@ -93,7 +93,7 @@ public class UnlinkedTransactionRecoveryAppService : SmartParkingAppService, IUn
 
             var query = await _unlinkedTransactionRepository.GetQueryableAsync();
             var unlinked = await query
-                .Where(u => u.DeviceId == watcherCode && u.IsDeleted == false)
+                .Where(u => u.DeviceId == watcherCode && u.IsDeleted == false && u.CreationTime >= DateTime.Now.AddMinutes(-10))
                 .OrderByDescending(u => u.CreationTime)
                 .FirstOrDefaultAsync();
 
@@ -284,8 +284,8 @@ public class UnlinkedTransactionRecoveryAppService : SmartParkingAppService, IUn
                 CanCheckout = true,
                 IsPending = false,
                 VehiclePicture = unlinked.VehiclePicture,
-                AccurateTime = unlinked.SnapTime ?? DateTime.Now,
-                SnapTime = unlinked.SnapTime ?? DateTime.Now,
+                AccurateTime = DateTime.Now,
+                SnapTime =  DateTime.Now,
                 CustomerCategory = category,
                 LaneNO = input.WatcherCode
             };

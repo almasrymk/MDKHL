@@ -90,7 +90,7 @@
 
                 <div class="px-2">
                     <LastInvoiceOnGateDetails Key="@L["DeviceId"]" Value="@_unlinkedTransaction.DeviceId" />
-                    <LastInvoiceOnGateDetails Key="@L["CaptureTime"]" Value="@((DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"))" />
+                    <LastInvoiceOnGateDetails Key="@L["CaptureTime"]" Value="@(_unlinkedTransaction.SnapTime.Value.ToString("yyyy-MM-dd HH:mm:ss"))" />
                     <LastInvoiceOnGateDetails Key="@L["OrganizationName"]" Value="@(CultureInfo.CurrentCulture.Name == "en" ? (!string.IsNullOrWhiteSpace(_organization.EnglishName) ? _organization.EnglishName : _organization.ArabicName) : (!string.IsNullOrWhiteSpace(_organization.ArabicName) ? _organization.ArabicName : _organization.EnglishName))" />
                     <LastInvoiceOnGateDetails Key="@L["Direction"]" Value="@L["Entry"]" />
                 </div>
