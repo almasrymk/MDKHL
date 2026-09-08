@@ -18,7 +18,8 @@ public partial class PosTerminalPanel : IAsyncDisposable
 
     /// <summary>Full payment request DTO — panel owns CreatePendingPosPaymentAsync internally.</summary>
     [Parameter, EditorRequired] public PaymentCheckoutRequestDto Request { get; set; } = default!;
-
+    [Parameter] public Guid? ExistingPaymentId { get; set; }
+    [Parameter] public string? ExistingPaymentNumber { get; set; }
 
     /// <summary>Fires before creating pending payment and dispatching purchase to POS terminal.</summary>
     [Parameter] public EventCallback OnBeforeSendPurchase { get; set; }
@@ -107,14 +108,25 @@ public partial class PosTerminalPanel : IAsyncDisposable
                 await OnBeforeSendPurchase.InvokeAsync();
             }
 
-            // Step 1: Create Pending payment row in DB
-            var pending = await PaymentAppService.CreatePendingPosPaymentAsync(Request);
-            var paymentId = pending.PaymentId;
+            Guid paymentId;
+            string paymentNumber;
+            if (ExistingPaymentId.HasValue && ExistingPaymentId.Value != Guid.Empty)
+            {
+                paymentId = ExistingPaymentId.Value;
+                paymentNumber = ExistingPaymentNumber ?? string.Empty;
+            }
+            else
+            {
+                // Step 1: Create Pending payment row in DB
+                var pending = await PaymentAppService.CreatePendingPosPaymentAsync(Request);
+                paymentId = pending.PaymentId;
+                paymentNumber = pending.PaymentNumber;
+            }
             _activePaymentWasCreated = true;
 
             await OnPaymentCreated.InvokeAsync(paymentId);
 
-            string ecrNumber = DeriveEcrNumber(pending.PaymentNumber);
+            string ecrNumber = DeriveEcrNumber(paymentNumber);
 
             Logger.LogInformation("[PosTerminalPanel] Dispatching PURCHASE via browser JS WebSocket Interop to {Url} for PaymentId={PaymentId}, ECR={EcrNumber}, Amount={Amount}",
                 Options.WebSocketUrl, paymentId, ecrNumber, Request.Amount);

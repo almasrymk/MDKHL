@@ -32,6 +32,7 @@ public class KeeperInvoiceAppService : SmartParkingAppService, IKeeperInvoiceApp
     private readonly IPaymentWebAppService _paymentWebAppService;
     private readonly IQRCodeAppService _qrCodeAppService;
     private readonly IVehicleAppService _vehicleAppService;
+    private readonly IInvoicePaymentProcessorAppService _invoicePaymentProcessorAppService;
     private const string NotFoundMessage = "Not found";
 
     public KeeperInvoiceAppService(
@@ -41,7 +42,8 @@ public class KeeperInvoiceAppService : SmartParkingAppService, IKeeperInvoiceApp
         IPaymentAppService paymentAppService,
         IPaymentWebAppService paymentWebAppService,
         IQRCodeAppService qrCodeAppService,
-        IVehicleAppService vehicleAppService)
+        IVehicleAppService vehicleAppService,
+        IInvoicePaymentProcessorAppService invoicePaymentProcessorAppService)
     {
         _invoiceRepository = invoiceRepository;
         _garageTransactionRepository = garageTransactionRepository;
@@ -50,6 +52,7 @@ public class KeeperInvoiceAppService : SmartParkingAppService, IKeeperInvoiceApp
         _paymentWebAppService = paymentWebAppService;
         _qrCodeAppService = qrCodeAppService;
         _vehicleAppService = vehicleAppService;
+        _invoicePaymentProcessorAppService = invoicePaymentProcessorAppService;
     }
 
     /// <inheritdoc/>
@@ -102,27 +105,41 @@ public class KeeperInvoiceAppService : SmartParkingAppService, IKeeperInvoiceApp
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            var invoice = await _invoiceAppService.GetAsync(invoiceId);
-            if (CheckIfInvoiceIsPaid(invoice))
+            if (!Enum.IsDefined(typeof(PaymentMethod), paymentMethodType))
             {
-                return Result.Error("InvoiceIsAlreadyPaid");
+                throw new ArgumentException($"Invalid payment method type: {paymentMethodType}");
             }
-            if (discountValue != default)
+
+            var paymentResult = await _invoicePaymentProcessorAppService.InitiatePaymentAsync(new ProcessInvoicePaymentRequestDto
             {
-                try
-                {
-                    await _invoiceAppService.UpdateDiscountForInvoice(invoiceId, discountValue);
-                }
-                catch (Exception ex)
-                {
-                    return Result.Error(ex.Message);
-                }
+                InvoiceId = invoiceId,
+                PaymentMethod = (PaymentMethod)paymentMethodType,
+                Discount = discountValue
+            });
+
+            switch (paymentResult.Result)
+            {
+                case InvoicePaymentResult.AlreadyPaid:
+                    return Result.Error("InvoiceIsAlreadyPaid");
+
+                case InvoicePaymentResult.PaymentInProgress:
+                    return Result.Error("PaymentInProgress");
+
+                case InvoicePaymentResult.Failed:
+                    return Result.Error(paymentResult.Message ?? "PaymentFailed");
+
+                case InvoicePaymentResult.Started:
+                case InvoicePaymentResult.Completed:
+                    break;
+
+                default:
+                    return Result.Error(paymentResult.Message ?? "PaymentFailed");
             }
-            var result = await RequestToPaymentCheckout(invoice, paymentMethodType, discountValue);
-            var image = await _qrCodeAppService.CreateQRCOdeImageAsync(result is null ? " " : result.QrCodeInvoice);
+
+            var image = await _qrCodeAppService.CreateQRCOdeImageAsync(paymentResult.CheckoutData?.QrCodeInvoice ?? " ");
             var mobileInvoice = await ProcessingInvoiceMobileDto(discountValue, invoiceId, image);
-            mobileInvoice.Value.PaymentMethod = result?.PaymentMethod.ToString();
-            mobileInvoice.Value.InvoiceNumber = result?.PaymentNumber;
+            mobileInvoice.Value.PaymentMethod = ((PaymentMethod)paymentMethodType).ToString();
+            mobileInvoice.Value.InvoiceNumber = paymentResult.PaymentNumber;
             return mobileInvoice;
         }
     }
@@ -158,11 +175,6 @@ public class KeeperInvoiceAppService : SmartParkingAppService, IKeeperInvoiceApp
 
     #region Private Helpers
 
-    private static bool CheckIfInvoiceIsPaid(InvoiceDto invoice)
-    {
-        return invoice.InvoiceType == InvoiceType.Paid.ToString();
-    }
-
     private async Task<Result<InvoiceMobileDto>> ProcessingInvoiceMobileDto(decimal discountValue, int invoiceId, Result<string> image)
     {
         var invoice = await _invoiceAppService.GetAsync(invoiceId);
@@ -172,27 +184,6 @@ public class KeeperInvoiceAppService : SmartParkingAppService, IKeeperInvoiceApp
         invoiceDto.TotalPriceWithVatAndDiscount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, discountValue);
         invoiceDto.ExitTransactionImage = invoiceDto.ExitTransactionImage;
         return invoiceDto;
-    }
-
-    private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout(InvoiceDto invoice, int paymentMethodType, decimal discountValue)
-    {
-        if (!Enum.IsDefined(typeof(PaymentMethod), paymentMethodType))
-        {
-            throw new ArgumentException($"Invalid payment method type: {paymentMethodType}");
-        }
-        var paymentMethod = (PaymentMethod)paymentMethodType;
-        var paymentCheckout = new PaymentCheckoutRequestDto
-        {
-            PaymentCategory = PaymentCategory.PaymentParking,
-            PaymentMethod = paymentMethod,
-            Amount = PaymentUtilityCalculationts.GetPriceForPayment(invoice.InvoicePrice, discountValue),
-            CustomerId = invoice.CustomerId,
-            OrganizationId = invoice.OrganizationId,
-            InvoiceId = invoice.Id,
-            PaymentName = paymentMethod.ToString(),
-            TenantId = invoice.TenantId.Value
-        };
-        return await _paymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentCheckout);
     }
 
     #endregion

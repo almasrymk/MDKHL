@@ -17,6 +17,7 @@ namespace SmartParking.Blazor.Components.Pages.LastInvoiceAtCamera;
 public partial class LastInvoiceAtCamera
 {
     [Inject] private IDialogService DialogService { get; set; } = default!;
+    [Inject] private IInvoicePaymentProcessorAppService InvoicePaymentProcessorAppService { get; set; } = default!;
 
     private InvoiceDto Invoice = new InvoiceDto();
     private OrganizationDto _organization = new OrganizationDto();
@@ -121,16 +122,39 @@ public partial class LastInvoiceAtCamera
     }
     private async Task PayInvoice()
     {
+        if (Invoice == null || Invoice.Id == 0) return;
+
         isPaying = true;
-        if (Discount != default)
-        {
-            await InvoiceAppService.UpdateDiscountForInvoice(Invoice.Id, Discount);
-        }
         try
         {
+            var initResult = await InvoicePaymentProcessorAppService.InitiatePaymentAsync(new ProcessInvoicePaymentRequestDto
+            {
+                InvoiceId = Invoice.Id,
+                PaymentMethod = PaymentMethod,
+                Discount = Discount
+            });
+
+            if (initResult.Result == InvoicePaymentResult.AlreadyPaid)
+            {
+                Snackbar.Add(L["InvoiceIsAlreadyPaid"], MudBlazor.Severity.Info);
+                await Refresh();
+                return;
+            }
+
+            if (initResult.Result == InvoicePaymentResult.PaymentInProgress)
+            {
+                Snackbar.Add(L["PaymentInProgress"], MudBlazor.Severity.Warning);
+                return;
+            }
+
+            if (initResult.Result == InvoicePaymentResult.Failed)
+            {
+                Snackbar.Add(initResult.Message ?? L["PaymentFailed"], MudBlazor.Severity.Error);
+                return;
+            }
+
             if (PaymentMethod == PaymentMethod.POS)
             {
-
                 var checkoutRequest = new PaymentCheckoutRequestDto
                 {
                     OrganizationId = Invoice.OrganizationId,
@@ -140,15 +164,17 @@ public partial class LastInvoiceAtCamera
                     Amount = PaymentUtilityCalculationts.GetPriceForPayment(InvoicePrice, Discount),
                     CustomerId = Invoice.CustomerId,
                     PaymentName = PaymentMethod.POS.ToString(),
-                    PaymentNumber = string.Empty // Generated inside SavePaymentRequest
+                    PaymentNumber = initResult.PaymentNumber ?? string.Empty
                 };
 
-                Guid createdPaymentId = Guid.Empty;
+                Guid createdPaymentId = initResult.PaymentId ?? Guid.Empty;
 
                 var parameters = new DialogParameters<PosPaymentDialog>
                 {
                     { x => x.Request, checkoutRequest },
                     { x => x.OrgSettings, _organization!.OrganizationSettings },
+                    { x => x.ExistingPaymentId, createdPaymentId },
+                    { x => x.ExistingPaymentNumber, initResult.PaymentNumber },
                     { x => x.OnPaymentCreated, EventCallback.Factory.Create<Guid>(this, id => createdPaymentId = id) }
                 };
 
@@ -158,28 +184,46 @@ public partial class LastInvoiceAtCamera
 
                 if (result != null && !result.Canceled && result.Data is PosTerminalStateSnapshot snapshot)
                 {
-                    if (snapshot.Outcome == SamaResponseOutcome.Approved)
+                    var completeResult = await InvoicePaymentProcessorAppService.CompletePosPaymentAsync(new CompletePosPaymentRequestDto
+                    {
+                        InvoiceId = Invoice.Id,
+                        PaymentId = createdPaymentId,
+                        SamaCode = snapshot.SamaCode,
+                        RawJsonResult = snapshot.Outcome.ToString(),
+                        TerminalId = checkoutRequest.PaymentNumber,
+                        TransactionStan = null,
+                        Rrn = snapshot.Rrn,
+                        AuthCode = snapshot.AuthCode,
+                        MaskedPan = snapshot.MaskedPan,
+                        CardScheme = snapshot.CardScheme
+                    });
+
+                    if (completeResult.Result == InvoicePaymentResult.Completed)
                     {
                         SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
                         await Task.Delay(500);
                         await OpenGate();
                         await JSRuntime.InvokeVoidAsync("eval", $"window.open('/payments/view/{createdPaymentId}', '_blank');");
                     }
+                    else if (completeResult.Result == InvoicePaymentResult.AlreadyPaid)
+                    {
+                        Snackbar.Add(completeResult.Message ?? L["InvoiceIsAlreadyPaid"], MudBlazor.Severity.Warning);
+                        await Refresh();
+                    }
                     else
                     {
-                        Snackbar.Add(snapshot.SamaDescription ?? "Transaction Declined", MudBlazor.Severity.Warning);
+                        Snackbar.Add(snapshot.SamaDescription ?? completeResult.Message ?? "Transaction Declined", MudBlazor.Severity.Warning);
                     }
                 }
             }
             else
             {
-                PaymentCheckoutDto payment = await RequestToPaymentCheckout();
-                if (payment != null)
+                if (initResult.Result == InvoicePaymentResult.Completed && initResult.PaymentId.HasValue)
                 {
                     SnackBar.ShowSnackbar(Snackbar, $"{L[AlertMessages.AlertMessages.SUCCESS]} {L[AlertMessages.AlertMessages.ADD]}", MudBlazor.Severity.Success);
                     await Task.Delay(500);
                     await OpenGate();
-                    await JSRuntime.InvokeVoidAsync("eval", $"window.open('/payments/view/{payment.PaymentId}', '_blank');");
+                    await JSRuntime.InvokeVoidAsync("eval", $"window.open('/payments/view/{initResult.PaymentId.Value}', '_blank');");
                 }
                 else
                 {
@@ -262,19 +306,5 @@ public partial class LastInvoiceAtCamera
         await LoadInvoiceForSelectedDevice();
     }
 
-    private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()
-    {
-        var paymentChekout = new PaymentCheckoutRequestDto
-        {
-            OrganizationId = Invoice.OrganizationId,
-            PaymentCategory = PaymentCategory.PaymentParking,
-            InvoiceId = Invoice.Id,
-            PaymentMethod = PaymentMethod,
-            Amount = PaymentUtilityCalculationts.GetPriceForPayment(InvoicePrice, Discount),
-            CustomerId = Invoice.CustomerId,
-            PaymentName = PaymentMethod.Cash.ToString()
-        };
-        PaymentCheckoutDto? payment = await PaymentAppService.CreateCheckoutInvoicePaymentWebAsync(paymentChekout);
-        return payment;
-    }
+
 }

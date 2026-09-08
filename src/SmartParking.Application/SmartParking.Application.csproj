@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<Import Project="..\..\common.props" />
 
@@ -40,6 +40,7 @@
 		<PackageReference Include="Volo.Abp.TenantManagement.Application" Version="9.1.0" />
 		<PackageReference Include="Volo.Abp.FeatureManagement.Application" Version="9.1.0" />
 		<PackageReference Include="Volo.Abp.SettingManagement.Application" Version="9.1.0" />
+		<PackageReference Include="Volo.Abp.DistributedLocking.Abstractions" Version="9.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>

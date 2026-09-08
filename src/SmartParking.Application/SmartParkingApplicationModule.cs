@@ -37,6 +37,7 @@ using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
+using Volo.Abp.DistributedLocking;
 using SmartParking.CustomerPackages.AssignantionsContarcts;
 using SmartParking.CustomerPackages;
 
@@ -51,7 +52,8 @@ namespace SmartParking;
     typeof(AbpTenantManagementApplicationModule),
     typeof(AbpFeatureManagementApplicationModule),
     typeof(AbpSettingManagementApplicationModule),
-    typeof(AbpFluentValidationModule)
+    typeof(AbpFluentValidationModule),
+    typeof(AbpDistributedLockingAbstractionsModule)
     )]
 public class SmartParkingApplicationModule : AbpModule
 {

@@ -192,6 +192,11 @@ public class KeeperController : AbpController
     public async Task<Result<InvoiceMobileDto>> PayInvoice(int InvoiceId, decimal DiscountValue, int paymentMethodType)
     {
         var invoice = await _keeperInvoiceAppService.CheckoutAsync(InvoiceId, paymentMethodType, DiscountValue);
+        if (!invoice.IsSuccess)
+        {
+            return invoice;
+        }
+
         var gt = await _garageTransactionsAppService.GetAsync(invoice.Value.GarageTransactionExitId);
         string code = gt.LaneNO;
         if (string.IsNullOrEmpty(gt.LaneNO))

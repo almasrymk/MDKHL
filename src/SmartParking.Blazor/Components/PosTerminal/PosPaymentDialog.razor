@@ -8,6 +8,9 @@
     <DialogContent>
         <PosTerminalPanel @ref="_panel"
                           Request="Request"
+                          OrgSettings="OrgSettings"
+                          ExistingPaymentId="ExistingPaymentId"
+                          ExistingPaymentNumber="ExistingPaymentNumber"
                           OnPaymentCreated="OnPaymentCreated"
                           OnBeforeSendPurchase="OnBeforeSendPurchase"
                           OnTransactionCompleted="HandleTransactionCompleted"

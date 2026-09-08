@@ -31,6 +31,7 @@ namespace SmartParking.Blazor.Components.Pages.Invoices;
 
 public partial class DetailsInvoice 
 {
+    [Inject] private IInvoicePaymentProcessorAppService InvoicePaymentProcessorAppService { get; set; } = default!;
 
     [Parameter] 
     public int Id { get; set; }
@@ -49,19 +50,22 @@ public partial class DetailsInvoice
     {
         PaymentMethod = selected;
     }
-
     protected override async Task OnInitializedAsync()
     {
-        await FetchData();  
-        StateHasChanged();
-        await base.OnInitializedAsync();
+        await GetInvoice();
+        LocalizedInvoiceType = Invoice.InvoiceType switch
+        {
+            "Paid" => L["Paid"],
+            "UnPaid" => L["UnPaid"],
+            _ => Invoice.InvoiceType
+        };
+        IsPaid = Invoice.InvoiceType == InvoiceType.Paid.ToString();
     }
-    private async Task FetchData()
+    private async Task GetInvoice()
     {
         Invoice = await InvoiceAppService.GetAsync(Id);
-
-        LocalizedInvoiceType = L[Invoice.InvoiceType];
-        IsPaid= Invoice.InvoiceType == Enums.InvoiceType.Paid.ToString()?true:false;
+        IsPaid = Invoice.InvoiceType == InvoiceType.Paid.ToString();
+        StateHasChanged();
     }
     private void Back()
     {
@@ -69,17 +73,38 @@ public partial class DetailsInvoice
     }
     private async Task PayInvoice()
     {
-        if (Discount != default)
-        {
-            await InvoiceAppService.UpdateDiscountForInvoice(Id, Discount);
-        }
-
         try
         {
-            var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+            var initResult = await InvoicePaymentProcessorAppService.InitiatePaymentAsync(new ProcessInvoicePaymentRequestDto
+            {
+                InvoiceId = Id,
+                PaymentMethod = PaymentMethod,
+                Discount = Discount
+            });
+
+            if (initResult.Result == InvoicePaymentResult.AlreadyPaid)
+            {
+                Snackbar.Add(L["InvoiceIsAlreadyPaid"], MudBlazor.Severity.Info);
+                await GetInvoice();
+                return;
+            }
+
+            if (initResult.Result == InvoicePaymentResult.PaymentInProgress)
+            {
+                Snackbar.Add(L["PaymentInProgress"], MudBlazor.Severity.Warning);
+                return;
+            }
+
+            if (initResult.Result == InvoicePaymentResult.Failed)
+            {
+                Snackbar.Add(initResult.Message ?? L["PaymentFailed"], MudBlazor.Severity.Error);
+                return;
+            }
 
             if (PaymentMethod == PaymentMethod.POS)
             {
+                var organization = await OrganizationAppService.GetOrganizationForCurrentTenatAsync();
+
                 var checkoutRequest = new PaymentCheckoutRequestDto
                 {
                     OrganizationId = Invoice.OrganizationId,
@@ -89,15 +114,17 @@ public partial class DetailsInvoice
                     Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Discount),
                     CustomerId = Invoice.CustomerId,
                     PaymentName = PaymentMethod.POS.ToString(),
-                    PaymentNumber = string.Empty
+                    PaymentNumber = initResult.PaymentNumber ?? string.Empty
                 };
 
-                Guid createdPaymentId = Guid.Empty;
+                Guid createdPaymentId = initResult.PaymentId ?? Guid.Empty;
 
                 var parameters = new DialogParameters<PosPaymentDialog>
                 {
                     { x => x.Request, checkoutRequest },
                     { x => x.OrgSettings, organization.OrganizationSettings },
+                    { x => x.ExistingPaymentId, createdPaymentId },
+                    { x => x.ExistingPaymentNumber, initResult.PaymentNumber },
                     { x => x.OnPaymentCreated, EventCallback.Factory.Create<Guid>(this, id => createdPaymentId = id) }
                 };
 
@@ -107,26 +134,44 @@ public partial class DetailsInvoice
 
                 if (result != null && !result.Canceled && result.Data is PosTerminalStateSnapshot snapshot)
                 {
-                    if (snapshot.Outcome == SamaResponseOutcome.Approved)
+                    var completeResult = await InvoicePaymentProcessorAppService.CompletePosPaymentAsync(new CompletePosPaymentRequestDto
+                    {
+                        InvoiceId = Id,
+                        PaymentId = createdPaymentId,
+                        SamaCode = snapshot.SamaCode,
+                        RawJsonResult = snapshot.Outcome.ToString(),
+                        TerminalId = checkoutRequest.PaymentNumber,
+                        TransactionStan = null,
+                        Rrn = snapshot.Rrn,
+                        AuthCode = snapshot.AuthCode,
+                        MaskedPan = snapshot.MaskedPan,
+                        CardScheme = snapshot.CardScheme
+                    });
+
+                    if (completeResult.Result == InvoicePaymentResult.Completed)
                     {
                         SnackBar.ShowSnackbar(Snackbar, $"{L["CheckoutConfirm"]}", MudBlazor.Severity.Success);
                         await Task.Delay(1000);
                         Navigation.NavigateTo($"/payments/view/{createdPaymentId}");
                     }
+                    else if (completeResult.Result == InvoicePaymentResult.AlreadyPaid)
+                    {
+                        Snackbar.Add(completeResult.Message ?? L["InvoiceIsAlreadyPaid"], MudBlazor.Severity.Warning);
+                        await GetInvoice();
+                    }
                     else
                     {
-                        Snackbar.Add(snapshot.SamaDescription ?? "Transaction Declined", MudBlazor.Severity.Warning);
+                        Snackbar.Add(snapshot.SamaDescription ?? completeResult.Message ?? "Transaction Declined", MudBlazor.Severity.Warning);
                     }
                 }
             }
             else
             {
-                PaymentCheckoutDto payment = await RequestToPaymentCheckout();
-                if (payment != null)
+                if (initResult.Result == InvoicePaymentResult.Completed && initResult.PaymentId.HasValue)
                 {
                     SnackBar.ShowSnackbar(Snackbar, $"{L["CheckoutConfirm"]}", MudBlazor.Severity.Success);
                     await Task.Delay(1000);
-                    Navigation.NavigateTo($"/payments/view/{payment.PaymentId}");
+                    Navigation.NavigateTo($"/payments/view/{initResult.PaymentId.Value}");
                 }
             }
         }
@@ -134,20 +179,5 @@ public partial class DetailsInvoice
         {
             Snackbar.Add(L[ex.Message], MudBlazor.Severity.Error);
         }
-    }
-
-    private async Task<PaymentCheckoutDto?> RequestToPaymentCheckout()
-    {
-        var paymentCheckout = new PaymentCheckoutRequestDto
-        {
-            OrganizationId = Invoice.OrganizationId,
-            PaymentCategory = PaymentCategory.PaymentParking,
-            InvoiceId = Id,
-            PaymentMethod = PaymentMethod,
-            Amount = PaymentUtilityCalculationts.GetPriceForPayment(Invoice.InvoicePrice, Discount),
-            CustomerId = Invoice.CustomerId
-        };
-        PaymentCheckoutDto? payment = await PaymentAppSerivce.CreateCheckoutInvoicePaymentWebAsync(paymentCheckout);
-        return payment;
     }
 }
