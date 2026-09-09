@@ -63,7 +63,15 @@ public class UnlinkedTransactionRecoveryAppService : SmartParkingAppService, IUn
         using (DataFilter.Disable<IMultiTenant>())
         {
             var org = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == organizationId);
-            if (org?.Settings?.UnlinkedEntry != true)
+            if (org == null || (CurrentTenant.Id.HasValue && org.TenantId != CurrentTenant.Id))
+            {
+                return Result<UnlinkedTransactionViewDto>.Invalid(new ValidationError
+                {
+                    ErrorMessage = "Organization not found."
+                });
+            }
+
+            if (org.Settings?.UnlinkedEntry != true)
             {
                 return Result<UnlinkedTransactionViewDto>.Invalid(new ValidationError
                 {
@@ -72,7 +80,7 @@ public class UnlinkedTransactionRecoveryAppService : SmartParkingAppService, IUn
             }
 
             var watcher = await _watcherRepository.FirstOrDefaultAsync(w => w.DeviceId == watcherCode && w.OrganizationId == organizationId);
-            if (watcher == null)
+            if (watcher == null || (CurrentTenant.Id.HasValue && watcher.TenantId != CurrentTenant.Id))
             {
                 return Result<UnlinkedTransactionViewDto>.Success(new UnlinkedTransactionViewDto
                 {
@@ -127,7 +135,15 @@ public class UnlinkedTransactionRecoveryAppService : SmartParkingAppService, IUn
         using (DataFilter.Disable<IMultiTenant>())
         {
             var org = await _organizationRepository.FirstOrDefaultAsync(o => o.Id == input.OrganizationId);
-            if (org?.Settings?.UnlinkedEntry != true)
+            if (org == null || (CurrentTenant.Id.HasValue && org.TenantId != CurrentTenant.Id))
+            {
+                return Result<GarageTransactionDto>.Invalid(new ValidationError
+                {
+                    ErrorMessage = "Organization not found."
+                });
+            }
+
+            if (org.Settings?.UnlinkedEntry != true)
             {
                 return Result<GarageTransactionDto>.Invalid(new ValidationError
                 {
@@ -153,7 +169,7 @@ public class UnlinkedTransactionRecoveryAppService : SmartParkingAppService, IUn
             }
 
             var watcher = await _watcherRepository.FirstOrDefaultAsync(w => w.DeviceId == input.WatcherCode && w.OrganizationId == input.OrganizationId);
-            if (watcher == null)
+            if (watcher == null || (CurrentTenant.Id.HasValue && watcher.TenantId != CurrentTenant.Id))
             {
                 return Result<GarageTransactionDto>.Invalid(new ValidationError
                 {

@@ -29,6 +29,7 @@ public abstract class KeeperAuthenticationAppServiceTests<TStartupModule> : Smar
     protected readonly IdentityUserManager _userManager;
     protected readonly IRepository<IdentityUser, Guid> _userRepository;
     protected readonly IRepository<IdentityRole, Guid> _roleRepository;
+    protected readonly IdentityRoleManager _roleManager;
     protected readonly IRepository<Organization, int> _organizationRepository;
     protected readonly IPermissionManager _permissionManager;
     protected readonly IDataFilter _dataFilter;
@@ -38,6 +39,7 @@ public abstract class KeeperAuthenticationAppServiceTests<TStartupModule> : Smar
     {
         _keeperAuthAppService = GetRequiredService<IKeeperAuthenticationAppService>();
         _userManager = GetRequiredService<IdentityUserManager>();
+        _roleManager = GetRequiredService<IdentityRoleManager>();
         _userRepository = GetRequiredService<IRepository<IdentityUser, Guid>>();
         _roleRepository = GetRequiredService<IRepository<IdentityRole, Guid>>();
         _organizationRepository = GetRequiredService<IRepository<Organization, int>>();
@@ -71,11 +73,12 @@ public abstract class KeeperAuthenticationAppServiceTests<TStartupModule> : Smar
     {
         var (user, password, org) = await CreateTestKeeperAsync("101");
 
+        var roleId = Guid.NewGuid();
+        var roleName = "KeeperRole_WithPerm_" + roleId.ToString("N").Substring(0, 6);
+
         using (_dataFilter.Disable<IMultiTenant>())
         {
             // Create role and assign permission
-            var roleId = Guid.NewGuid();
-            var roleName = "KeeperRole_WithPerm_" + roleId.ToString("N").Substring(0, 6);
             var role = new IdentityRole(roleId, roleName, org.TenantId);
             await _roleRepository.InsertAsync(role, autoSave: true);
 
@@ -128,6 +131,8 @@ public abstract class KeeperAuthenticationAppServiceTests<TStartupModule> : Smar
         loginResult.Value.ShouldNotBeNull();
         loginResult.Value.UnlinkedEntryTransaction.ShouldBeFalse();
     }
+
+
 
     [Fact]
     public async Task LoginAsync_Should_Correctly_Evaluate_Different_Permissions_For_Different_Keepers()
@@ -200,5 +205,101 @@ public abstract class KeeperAuthenticationAppServiceTests<TStartupModule> : Smar
         loginResult.ShouldNotBeNull();
         loginResult.IsSuccess.ShouldBeTrue();
         loginResult.Value.CanCancelTransaction.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task GenerateTokenAsync_Should_Include_Abp_Standard_Claims_And_Individual_Roles()
+    {
+        var authUtility = GetRequiredService<SmartParking.Utilities.IAuthenticationUtility>();
+
+        string role1Name = "RoleOne_" + Guid.NewGuid().ToString("N").Substring(0, 6);
+        string role2Name = "RoleTwo_" + Guid.NewGuid().ToString("N").Substring(0, 6);
+
+        IdentityUser user;
+        Organization org;
+
+        using (var uow = _unitOfWorkManager.Begin())
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var created = await CreateTestKeeperAsync("201");
+                user = created.user;
+                org = created.org;
+
+                var role1 = new IdentityRole(Guid.NewGuid(), role1Name, org.TenantId);
+                var role2 = new IdentityRole(Guid.NewGuid(), role2Name, org.TenantId);
+                (await _roleManager.CreateAsync(role1)).Succeeded.ShouldBeTrue();
+                (await _roleManager.CreateAsync(role2)).Succeeded.ShouldBeTrue();
+
+                (await _userManager.AddToRoleAsync(user, role1Name)).Succeeded.ShouldBeTrue();
+                (await _userManager.AddToRoleAsync(user, role2Name)).Succeeded.ShouldBeTrue();
+            }
+            await uow.CompleteAsync();
+        }
+
+        var token = await authUtility.GenerateTokenAsync(user);
+        token.ShouldNotBeNullOrEmpty();
+
+        var handler = new Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler();
+        var jwt = handler.ReadJsonWebToken(token);
+
+        // Verify standard ABP user identification claims
+        jwt.Claims.ShouldContain(c => c.Type == "sub" && c.Value == user.Id.ToString());
+        jwt.Claims.ShouldContain(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier && c.Value == user.Id.ToString());
+        jwt.Claims.ShouldContain(c => c.Type == Volo.Abp.Security.Claims.AbpClaimTypes.UserId && c.Value == user.Id.ToString());
+
+        // Verify standard ABP username claims
+        jwt.Claims.ShouldContain(c => c.Type == "name" && c.Value == user.UserName);
+        jwt.Claims.ShouldContain(c => c.Type == System.Security.Claims.ClaimTypes.Name && c.Value == user.UserName);
+        jwt.Claims.ShouldContain(c => c.Type == Volo.Abp.Security.Claims.AbpClaimTypes.UserName && c.Value == user.UserName);
+
+        // Verify individual role claims (both standard "role" and ClaimTypes.Role for ABP RolePermissionValueProvider)
+        jwt.Claims.ShouldContain(c => c.Type == "role" && c.Value == role1Name);
+        jwt.Claims.ShouldContain(c => c.Type == "role" && c.Value == role2Name);
+        jwt.Claims.ShouldContain(c => c.Type == System.Security.Claims.ClaimTypes.Role && c.Value == role1Name);
+        jwt.Claims.ShouldContain(c => c.Type == System.Security.Claims.ClaimTypes.Role && c.Value == role2Name);
+        jwt.Claims.ShouldContain(c => c.Type == Volo.Abp.Security.Claims.AbpClaimTypes.Role && c.Value == role1Name);
+        jwt.Claims.ShouldContain(c => c.Type == Volo.Abp.Security.Claims.AbpClaimTypes.Role && c.Value == role2Name);
+
+        // Verify tenant claim
+        if (org.TenantId.HasValue)
+        {
+            jwt.Claims.ShouldContain(c => c.Type == "tenantid" && c.Value == org.TenantId.ToString());
+            jwt.Claims.ShouldContain(c => c.Type == Volo.Abp.Security.Claims.AbpClaimTypes.TenantId && c.Value == org.TenantId.ToString());
+        }
+        else
+        {
+            jwt.Claims.Any(c => c.Type == "tenantid").ShouldBeFalse();
+        }
+    }
+
+    [Fact]
+    public async Task GenerateTokenAsync_Should_Include_TenantId_Claim_When_User_Belongs_To_Tenant()
+    {
+        var authUtility = GetRequiredService<SmartParking.Utilities.IAuthenticationUtility>();
+        var tenantId = Guid.NewGuid();
+
+        IdentityUser tenantUser;
+        using (var uow = _unitOfWorkManager.Begin())
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var userId = Guid.NewGuid();
+                var suffix = Guid.NewGuid().ToString("N").Substring(0, 6);
+                tenantUser = new IdentityUser(userId, "tkeeper_" + suffix, $"tkeeper_{suffix}@example.com", tenantId);
+                tenantUser.SetPhoneNumber("055" + suffix.PadLeft(7, '1').Substring(0, 7), true);
+                (await _userManager.CreateAsync(tenantUser, "P@ssw0rd123!")).Succeeded.ShouldBeTrue();
+            }
+            await uow.CompleteAsync();
+        }
+
+        var token = await authUtility.GenerateTokenAsync(tenantUser);
+        token.ShouldNotBeNullOrEmpty();
+
+        var handler = new Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler();
+        var jwt = handler.ReadJsonWebToken(token);
+
+        jwt.Claims.ShouldContain(c => c.Type == "tenantid" && c.Value == tenantId.ToString());
+        jwt.Claims.ShouldContain(c => c.Type == Volo.Abp.Security.Claims.AbpClaimTypes.TenantId && c.Value == tenantId.ToString());
     }
 }

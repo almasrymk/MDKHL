@@ -133,7 +133,7 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
                 {
                     try
                     {
-                        var existingPayment = await _paymentRepository.FirstOrDefaultAsync(p => p.Id == paymentId);
+                        var existingPayment = await _paymentRepository.FirstOrDefaultAsync(p => p.Id == paymentId && p.Invoice.InvoiceType==InvoiceType.Pending);
                         if (existingPayment != null)
                         {
                             await _paymentRepository.DeleteAsync(existingPayment.Id);
@@ -192,7 +192,7 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
         {
             var query = await _paymentRepository.GetQueryableAsync();
             stalePayments = await query
-                .Where(p => p.PaymentStatus == PaymentStatus.Pending && p.CreationTime <= cutoffTime)
+                .Where(p => p.PaymentStatus == PaymentStatus.Pending && p.CreationTime <= cutoffTime )
                 .ToListAsync();
         }
 

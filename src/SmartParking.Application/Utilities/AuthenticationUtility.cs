@@ -27,6 +27,7 @@ using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using Microsoft.Extensions.Options;
 using OpenIddict.Server;
 using Microsoft.AspNetCore.Http;
+using Volo.Abp.Security.Claims;
 using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 namespace SmartParking.Utilities;
 
@@ -141,18 +142,55 @@ public class AuthenticationUtility : IAuthenticationUtility, ITransientDependenc
     /// <returns>A string representing the generated JWT token.</returns>
     public async Task<string> GenerateTokenAsync(IdentityUser user)
     {
-        var roles = await _userManager.GetRolesAsync(user);
-
-        var claims = new List<Claim>()
+        IList<string> roles;
+        using (_dataFilter.Disable<IMultiTenant>())
         {
-            new Claim("sub", user.Id.ToString()),
-            new Claim("given_name", user.UserName),
-            new Claim("email", user.Email),
-            new Claim("role", string.Join(",", roles)),
-            new Claim("tenantid", user.TenantId?.ToString() ?? ""),
-            new Claim("scope", "address email phone roles profile offline_access SmartParking") //replace Qa with yours
+            roles = await _userManager.GetRolesAsync(user);
+        }
 
-        };
+        var claims = new List<Claim>();
+
+        void AddClaim(string type, string value)
+        {
+            if (!claims.Any(c => c.Type == type && c.Value == value))
+            {
+                claims.Add(new Claim(type, value));
+            }
+        }
+
+        var userIdString = user.Id.ToString();
+        AddClaim("sub", userIdString);
+        AddClaim(ClaimTypes.NameIdentifier, userIdString);
+        AddClaim(AbpClaimTypes.UserId, userIdString);
+
+        var userName = user.UserName ?? string.Empty;
+        AddClaim("name", userName);
+        AddClaim("given_name", userName);
+        AddClaim(ClaimTypes.Name, userName);
+        AddClaim(AbpClaimTypes.UserName, userName);
+
+        if (!string.IsNullOrEmpty(user.Email))
+        {
+            AddClaim("email", user.Email);
+            AddClaim(ClaimTypes.Email, user.Email);
+            AddClaim(AbpClaimTypes.Email, user.Email);
+        }
+
+        if (user.TenantId.HasValue)
+        {
+            var tenantIdString = user.TenantId.Value.ToString();
+            AddClaim("tenantid", tenantIdString);
+            AddClaim(AbpClaimTypes.TenantId, tenantIdString);
+        }
+
+        foreach (var role in roles)
+        {
+            AddClaim("role", role);
+            AddClaim(ClaimTypes.Role, role);
+            AddClaim(AbpClaimTypes.Role, role);
+        }
+
+        AddClaim("scope", "address email phone roles profile offline_access SmartParking");
         var options = _oidcOptions.CurrentValue;
         var signingCredential = options.SigningCredentials.FirstOrDefault();
         if (signingCredential == null || options.JsonWebTokenHandler == null)

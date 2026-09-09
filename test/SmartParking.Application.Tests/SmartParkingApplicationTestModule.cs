@@ -24,5 +24,13 @@ public class SmartParkingApplicationTestModule : AbpModule
         context.Services.AddHttpContextAccessor();
 
         context.Services.AddSingleton(Substitute.For<SmartParking.OpeningGate.IOpenGateFactoryService>());
+
+        Configure<global::OpenIddict.Server.OpenIddictServerOptions>(options =>
+        {
+            var key = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("test_key_for_openiddict_server_signing_credential_long_enough_123456"));
+            options.SigningCredentials.Add(new Microsoft.IdentityModel.Tokens.SigningCredentials(key, Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256));
+            options.JsonWebTokenHandler = new Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler();
+            options.DisableAccessTokenEncryption = true;
+        });
     }
 }
