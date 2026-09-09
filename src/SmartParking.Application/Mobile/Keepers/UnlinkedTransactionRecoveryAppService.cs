@@ -100,11 +100,15 @@ public class UnlinkedTransactionRecoveryAppService : SmartParkingAppService, IUn
             }
 
             var query = await _unlinkedTransactionRepository.GetQueryableAsync();
+            var cutoffTime = DateTime.Now.AddMinutes(-30);
+
             var unlinked = await query
-                .Where(u => u.DeviceId == watcherCode && u.IsDeleted == false && u.CreationTime >= DateTime.Now.AddMinutes(-10))
+                .Where(u =>
+                    u.DeviceId == watcherCode &&
+                    !u.IsDeleted &&
+                    u.CreationTime >= cutoffTime)
                 .OrderByDescending(u => u.CreationTime)
                 .FirstOrDefaultAsync();
-
             if (unlinked == null)
             {
                 return Result<UnlinkedTransactionViewDto>.Success(new UnlinkedTransactionViewDto
