@@ -133,12 +133,15 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
                     try
                     {
                         var existingPayment = await _paymentRepository.FirstOrDefaultAsync(p => p.Id == paymentId && p.Invoice.InvoiceType==InvoiceType.Pending);
-                        var existingGarageTransaction = await _garageTransactionRepository.FirstOrDefaultAsync(gt => gt.Id == existingPayment!.Invoice!.GarageTransactionExitId);
-                        if(existingGarageTransaction!.CheckoutMobile == null)
+                        if (existingPayment!.Invoice != null)
                         {
-                            Logger.LogInformation("[RECONCILIATION] That Invoice will not be cancellled as it is system generated {PaymentId} {InvoiceId} {GarageTransactionId}", paymentId,existingPayment!.InvoiceId , existingGarageTransaction.Id);
-                            return Result.SuccessWithMessage("Payment and associated invoice cancellation processed successfully.");
+                            var existingGarageTransaction = await _garageTransactionRepository.FirstOrDefaultAsync(gt => gt.Id == existingPayment!.Invoice!.GarageTransactionExitId);
+                            if (existingGarageTransaction!.CheckoutMobile == null)
+                            {
+                                Logger.LogInformation("[RECONCILIATION] That Invoice will not be cancellled as it is system generated {PaymentId} {InvoiceId} {GarageTransactionId}", paymentId, existingPayment!.InvoiceId, existingGarageTransaction.Id);
+                                return Result.SuccessWithMessage("Payment and associated invoice cancellation processed successfully.");
 
+                            }
                         }
                         if (existingPayment != null)
                         {
