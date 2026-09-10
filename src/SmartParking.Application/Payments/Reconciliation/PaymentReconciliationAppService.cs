@@ -17,15 +17,16 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using SmartParking.Results;
+using SmartParking.Entities.Invoices;
+using SmartParking.Entities.GarageTransactions;
 
 namespace SmartParking.Payments.Reconciliation;
 
 public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentReconciliationAppService
 {
     private readonly IRepository<Payment, Guid> _paymentRepository;
+    private readonly IRepository<GarageTransaction, int> _garageTransactionRepository;
     private readonly IPublicInvoiceAppService _publicInvoiceAppService;
-    private readonly IPaymentAppService _paymentAppService;
-    private readonly IPaymentCompletionService _paymentCompletionService;
     private readonly ICustomerPackagesAppService _customerPackagesAppService;
     private readonly IDataFilter _dataFilter;
     private readonly IOptions<PaymentReconciliationOptions> _reconciliationOptions;
@@ -33,19 +34,17 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
     public PaymentReconciliationAppService(
         IRepository<Payment, Guid> paymentRepository,
         IPublicInvoiceAppService publicInvoiceAppService,
-        IPaymentAppService paymentAppService,
-        IPaymentCompletionService paymentCompletionService,
         ICustomerPackagesAppService customerPackagesAppService,
         IDataFilter dataFilter,
-        IOptions<PaymentReconciliationOptions> reconciliationOptions)
+        IOptions<PaymentReconciliationOptions> reconciliationOptions,
+        IRepository<GarageTransaction, int> garageTransactionRepository)
     {
         _paymentRepository = paymentRepository;
         _publicInvoiceAppService = publicInvoiceAppService;
-        _paymentAppService = paymentAppService;
-        _paymentCompletionService = paymentCompletionService;
         _customerPackagesAppService = customerPackagesAppService;
         _dataFilter = dataFilter;
         _reconciliationOptions = reconciliationOptions;
+        _garageTransactionRepository = garageTransactionRepository;
     }
 
     public async Task<Result> ProcessNonSuccessPaymentAsync(Guid paymentId, int? invoiceId = null)
@@ -134,6 +133,13 @@ public class PaymentReconciliationAppService : SmartParkingAppService, IPaymentR
                     try
                     {
                         var existingPayment = await _paymentRepository.FirstOrDefaultAsync(p => p.Id == paymentId && p.Invoice.InvoiceType==InvoiceType.Pending);
+                        var existingGarageTransaction = await _garageTransactionRepository.FirstOrDefaultAsync(gt => gt.Id == existingPayment!.Invoice!.GarageTransactionExitId);
+                        if(existingGarageTransaction!.CheckoutMobile == null)
+                        {
+                            Logger.LogInformation("[RECONCILIATION] That Invoice will not be cancellled as it is system generated {PaymentId} {InvoiceId} {GarageTransactionId}", paymentId,existingPayment!.InvoiceId , existingGarageTransaction.Id);
+                            return Result.SuccessWithMessage("Payment and associated invoice cancellation processed successfully.");
+
+                        }
                         if (existingPayment != null)
                         {
                             await _paymentRepository.DeleteAsync(existingPayment.Id);
