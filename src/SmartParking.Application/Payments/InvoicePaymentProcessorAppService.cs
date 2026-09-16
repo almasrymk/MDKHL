@@ -131,6 +131,8 @@ public class InvoicePaymentProcessorAppService : ApplicationService, IInvoicePay
         if (input.PaymentMethod == PaymentMethod.POS)
         {
             var pendingPayment = await _paymentAppService.CreatePendingPosPaymentAsync(checkoutRequest, input.TerminalId);
+            invoice.InvoiceType = InvoiceType.Pending;
+            await _invoiceRepository.UpdateAsync(invoice, autoSave: true);
             return new ProcessInvoicePaymentResultDto
             {
                 Result = InvoicePaymentResult.Started,

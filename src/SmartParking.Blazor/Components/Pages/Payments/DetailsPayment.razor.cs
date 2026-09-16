@@ -58,10 +58,11 @@ public partial class DetailsPayment
                 Discount = paymentRelation.Discount.ToString();
             else
                 Discount = dto.Discount.ToString();
-            Payment?.customerPackageDto?.PackageArabicName = 
-                Payment?.customerPackageDto?.PackageArabicName is not null ? Payment?.customerPackageDto?.PackageArabicName : paymentRelation.ArabicName;
-            Payment?.customerPackageDto?.PackageEnglishName = 
-                Payment?.customerPackageDto?.PackageEnglishName is not null ? Payment?.customerPackageDto?.PackageEnglishName : paymentRelation.EnglishName;
+            if (Payment?.customerPackageDto is not null)
+            {
+                Payment.customerPackageDto.PackageArabicName ??= paymentRelation.ArabicName;
+                Payment.customerPackageDto.PackageEnglishName ??= paymentRelation.EnglishName;
+            }
 
         }
         else

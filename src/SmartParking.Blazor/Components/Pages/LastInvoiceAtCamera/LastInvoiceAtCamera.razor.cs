@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
@@ -144,12 +145,15 @@ public partial class LastInvoiceAtCamera
             if (initResult.Result == InvoicePaymentResult.PaymentInProgress)
             {
                 Snackbar.Add(L["PaymentInProgress"], MudBlazor.Severity.Warning);
+                await LoadInvoiceForSelectedDevice();
                 return;
             }
 
             if (initResult.Result == InvoicePaymentResult.Failed)
             {
                 Snackbar.Add(initResult.Message ?? L["PaymentFailed"], MudBlazor.Severity.Error);
+                await LoadInvoiceForSelectedDevice();
+
                 return;
             }
 
