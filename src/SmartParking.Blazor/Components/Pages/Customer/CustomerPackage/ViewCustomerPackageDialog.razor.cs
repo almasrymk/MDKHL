@@ -9,6 +9,7 @@ using SmartParking.Blazor.Components.Shared.Utilities;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Blazor.Dtos;
 using SmartParking.Currency;
+using SmartParking.CustomerPackages;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.Enums;
 using SmartParking.Localization;
@@ -181,11 +182,11 @@ namespace SmartParking.Blazor.Components.Pages.Customer.CustomerPackage
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Published"], publishedText));
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["PlateNumber"], $"{RLM}{item.ArPlateNumber} , {LRM}{item.EnPlateNumber}"));
-                CustomerPackageStatus displayStatus = BlazorPackageValidations.GetDisplayStatus(new PackageDisplayStatusDto { ActivationDate = item.ActivationDateOfPackage, ExpiryDate = item.DectivationDateOfPackage, CustomerPackageStatus = item.CustomerPackageStatus, IsPublished = PackageValidations.CheckPackageTimeValiditity(item.PublishFromOfPackage, item.PublishToOfPackage), PublishFrom = item.PublishFromOfPackage, PublishTo = item.PublishToOfPackage });
+                CustomerPackageStatus displayStatus = CustomerPackageStatusResolver.Resolve(item.CustomerPackageStatus, item.ActivationDateOfPackage, item.ExpiryDate, DateTime.Now);
 
                 rowDef.Cells.Add(new KeyValuePair<string, string>(_localizer["Status"], _localizer[$"{displayStatus.ToString()}"]));
 
-                if (displayStatus == CustomerPackageStatus.Deleted || displayStatus == CustomerPackageStatus.Expired)
+                if (displayStatus == CustomerPackageStatus.Deleted)
                     continue;
 
                 tableData.Rows.Add(rowDef);
