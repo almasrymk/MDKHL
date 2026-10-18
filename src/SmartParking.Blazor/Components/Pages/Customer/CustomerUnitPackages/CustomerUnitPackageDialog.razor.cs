@@ -5,6 +5,7 @@ using SmartParking.Blazor.Components.Shared.Utilities;
 using SmartParking.Blazor.Components.SPComponents;
 using SmartParking.Blazor.Dtos;
 using SmartParking.Currency;
+using SmartParking.CustomerPackages;
 using SmartParking.CustomerPackages.Dtos;
 using SmartParking.CustomerUnitPackages;
 using SmartParking.Cutomers;
@@ -123,12 +124,10 @@ public partial class CustomerUnitPackageDialog
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Published"], item.PublishTo==item.PublishFrom ? 24 + L["Hour"] : $" {item.PublishFrom} " + " - " + $" {item.PublishTo}"));
             CustomerPackageStatus displayStatus = item.Status == Status.Deleted 
                 ? CustomerPackageStatus.Deleted 
-                : BlazorPackageValidations.GetDisplayStatus(new PackageDisplayStatusDto { ActivationDate= item.ActivationDate,ExpiryDate=item.DectivationDate,CustomerPackageStatus=item.CustomerPackageStatus,IsPublished= PackageValidations.CheckPackageTimeValiditity(item.PublishFrom,item.PublishTo),PublishFrom=item.PublishFrom,PublishTo=item.PublishTo });
+                : CustomerPackageStatusResolver.Resolve(item.CustomerPackageStatus, item.ActivationDate, item.DectivationDate, DateTime.Now);
 
             rowDef.Cells.Add(new KeyValuePair<string, string>(L["Status"], L[$"{displayStatus.ToString()}"]));
 
-            if (displayStatus == CustomerPackageStatus.Expired)
-                continue;
             tableData.Rows.Add(rowDef);
             
         }
