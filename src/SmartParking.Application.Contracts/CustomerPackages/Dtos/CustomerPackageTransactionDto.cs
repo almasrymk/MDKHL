@@ -29,7 +29,7 @@ public class CustomerPackageTransactionDto
     public DateTime ExpiryDate { get; set; }
     public string PackageArabicName { get; set; }
     public string PackageEnglishName { get; set; }
-    public CustomerCategoryStatus CustomerCategory { get; set; }
+    public CustomerCategoryStatus CustomerCategory { get; set; } = CustomerCategoryStatus.Customer;
     public string CustomerArabicName { get; set; }
     public string CustomerEnglishName { get; set; }
     public string EnPlateNumber { get; set; }
