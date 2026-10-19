@@ -7,18 +7,14 @@
 @using SmartParking.Localization
 @using System.Globalization
 @using SmartParking.Organizations
-@using SmartParking.Permissions.MyAccount
 @using SmartParking.StringLocalizer
 @using Volo.Abp.Localization
-@using Volo.Abp.MultiTenancy
 @using Volo.Abp.SettingManagement
 @using Volo.Abp.Users
 @inherits LayoutComponentBase;
 @inject IStringLocalizer<SmartParkingResource> L
 @inject ICurrentUser CurrentUser
-@inject ICurrentTenant currenttenant
 @inject IOrganizationsAppService OrganizationAppService
-@inject IAuthorizationService AuthorizationService
 @inject IJSRuntime Js
 
 <MudDialogProvider FullWidth="true"
@@ -64,13 +60,10 @@
                     <div>
                         <p class="mb-0">@L["Hello"]</p>
                         <p class="mb-0 fw-bold">@UserName </p>
-                        @if (hasPermission)
-                        {
-                            <a Class="text-white border-bottom text-decoration-none"
-                            href=@("/view-my-account" )>
-                            @L["Profile Details"]
-                            </a>
-                        }
+                        <a Class="text-white border-bottom text-decoration-none"
+                        href="/edit-profile">
+                        @L["Profile Details"]
+                        </a>
 
                     </div>
                 </div>
@@ -111,7 +104,6 @@
 
     @inject IUsersAppService UsersAppService
     private string UserName { get; set; }
-    private bool hasPermission;
 
     
     protected async override Task OnInitializedAsync()
@@ -119,7 +111,6 @@
         UserName = CurrentUser.Name;
         var user = await UsersAppService.GetAsync(CurrentUser.Id);
         Picture = string.IsNullOrWhiteSpace(user.Image)?"images/MDHKL_04.png":user.Image;
-        hasPermission = currenttenant.Id != null && await AuthorizationService.IsGrantedAnyAsync(MyAccountPermissions.Default);
         await base.OnInitializedAsync();
     }
     protected override void OnParametersSet()

@@ -671,7 +671,7 @@ public class UsersAppService : ApplicationService, IUsersAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             IdentityRole? role = await GetCustomerRole();
-            return user.Roles.Any(r => r.RoleId == role.Id);
+            return user.Roles.Any(r => r.RoleId == role?.Id);
         }
     }
 
@@ -884,7 +884,10 @@ public class UsersAppService : ApplicationService, IUsersAppService
             var normalizedNationalId = NationalIdHelper.Normalize(input.NationalId);
             await AddCustomer(input.IdentificationTypes, normalizedNationalId, input.Surname, user.Id);
             var roleCustomer = await GetCustomerRole();
-            user.AddRole(roleCustomer.Id);
+            if (roleCustomer != null)
+            {
+                user.AddRole(roleCustomer.Id);
+            }
         }
     }
 
